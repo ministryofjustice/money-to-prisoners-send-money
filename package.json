@@ -1,0 +1,23 @@
+{
+  "name": "money-to-prisoners-send-money",
+  "description": "Citizen-facing public site for Money to Prisoners",
+  "version": "0.1.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ministryofjustice/money-to-prisoners-send-money"
+  },
+  "bugs": {
+    "url": "https://github.com/ministryofjustice/money-to-prisoners-send-money/issues"
+  },
+  "engines": {
+    "node": "0.10.x"
+  },
+  "config": {
+    "unsafe-perm": true
+  },
+  "license": "MIT",
+  "dependencies": {
+    "money-to-prisoners-common": "ministryofjustice/money-to-prisoners-common#1.2.2",
+    "phantomjs": "^1.9.19"
+  }
+}
