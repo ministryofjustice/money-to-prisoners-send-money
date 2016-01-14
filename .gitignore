@@ -1,0 +1,38 @@
+*.pyc
+include/
+lib/
+static/
+media/
+.build
+
+# Sass-cache
+*.sass-cache/
+
+# sublime stuff
+*.sublime-workspace
+*.sublime-project
+
+# Virtual env
+venv/
+
+# Mac crap
+*.DS_Store
+
+# Ignore settings/local.py
+*/settings/local.py
+
+# Node Stuff
+node_modules
+npm-debug.log
+
+# App assets
+mtp_send_money/assets/
+
+# Docker make targets
+.dev_django_container
+
+# failed test screenshots
+test/errorshots/
+
+# ghostdriver
+ghostdriver.log

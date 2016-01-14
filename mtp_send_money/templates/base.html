@@ -1,0 +1,14 @@
+{% extends 'mtp_base.html' %}
+{% load i18n %}
+{% load moj_utils %}
+
+{% block main_js %}
+  {{ block.super }}
+  {% sentry_js %}
+{% endblock %}
+
+{% block user_details %}{% endblock %}
+
+{% block page_title %}{% trans 'Send money to prisoners' %}{% endblock %}
+
+{% block proposition %}{% trans 'Send money to prisoners' %}{% endblock %}
