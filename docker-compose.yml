@@ -1,0 +1,14 @@
+django:
+  build: .
+  command: >
+    /bin/bash -c "
+    pip install -r requirements/dev.txt &&
+    python manage.py runserver 0.0.0.0:8004"
+  volumes:
+    - .:/app
+    - /tmp/pip_download_cache/:/tmp/pip_download_cache
+  ports:
+    - "8004:8004"
+  environment:
+    PIP_DOWNLOAD_CACHE: /tmp/pip_download_cache/
+    API_URL: http://localhost:8000
