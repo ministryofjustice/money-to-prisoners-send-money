@@ -46,7 +46,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'moj_auth.csrf.CsrfViewMiddleware',
-    'moj_auth.middleware.AuthenticationMiddleware',
+    'send_money.middleware.SendMoneyAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.security.SecurityMiddleware',
