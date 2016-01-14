@@ -1,0 +1,16 @@
+*.pyc
+include/
+lib/
+staticfiles/
+media/
+.build
+
+# sublime stuff
+*.sublime-workspace
+*.sublime-project
+
+# Virtual env
+venv/
+
+# Mac crap
+*.DS_Store
