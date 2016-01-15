@@ -1,6 +1,53 @@
 {% extends 'base.html' %}
 {% load i18n %}
+{% load send_money %}
 
 {% block content %}
   <h1>{% trans 'Send money to prisoners' %}</h1>
+
+  <form method="post" action=".">
+    {% csrf_token %}
+
+    {% if preview %}
+
+      <p>
+        {% trans 'Please check the details below and click Next if everything is correct.' %}
+      </p>
+      <dl>
+        <dt>{% trans 'Prisoner’s name' %}</dt>
+        <dd>{{ form.prisoner_name.value }}</dd>
+
+        <dt>{% trans 'Prisoner’s number' %}</dt>
+        <dd>{{ form.prisoner_number.value }}</dd>
+
+        <dt>{% trans 'Prisoner’s date of birth' %}</dt>
+        <dd>{{ form.prisoner_dob.value }}</dd>
+
+        <dt>{% trans 'Amount' %}</dt>
+        <dd>{{ form.amount.value|currency_format }}</dd>
+
+        <dt>{% trans 'Payment method' %}</dt>
+        <dd>{{ form.payment_method.value|payment_method_description }}</dd>
+      </dl>
+
+      {{ form }}
+
+      <p>
+        <input id="id_next_btn" class="button" type="submit" name="next" value="{% trans 'Next' %}">
+        <input id="id_back_btn" class="button button-secondary" type="submit" name="change" value="{% trans 'Go back and change details' %}">
+      </p>
+
+        <!-- {{ request.resolver_match.url_name }}.preview -->
+    {% else %}
+
+      {{ form.as_p }}
+
+      <p>
+        <input id="id_next_btn" class="button" type="submit" value="{% trans 'Next' %}">
+      </p>
+
+        <!-- {{ request.resolver_match.url_name }}.form -->
+    {% endif %}
+
+  </form>
 {% endblock %}

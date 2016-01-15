@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% load send_money %}
+
+{% block content %}
+  <h1>{% trans 'Send money by bank transfer' %}</h1>
+
+  <p>
+    {% trans 'Use your bank’s online or mobile banking to setup a bank transfer.' %}
+    {% trans 'Alternatively, you can visit your local branch.' %}
+  </p>
+  <p>
+    {% blocktrans trimmed %}
+      Make the transfer payable to <strong>{{ payable_to }}</strong>,
+      account number <strong>{{ account_number }}</strong>,
+      sort code <strong>{{ sort_code }}</strong>.
+    {% endblocktrans %}
+    {% blocktrans trimmed %}
+      You must include <code><strong>{{ bank_transfer_reference }}</strong></code> as the reference.
+    {% endblocktrans %}
+  </p>
+
+  <!-- {{ request.resolver_match.url_name }} -->
+{% endblock %}
