@@ -1,6 +1,7 @@
 from functools import wraps
 import logging
 
+from django.conf import settings
 from django.core.urlresolvers import reverse, reverse_lazy
 from django.shortcuts import redirect, render
 from django.views.generic import FormView
@@ -36,6 +37,10 @@ class SendMoneyView(FormView):
     def get_context_data(self, **kwargs):
         context_data = super().get_context_data(**kwargs)
         context_data.update(self.extra_context)
+
+        # TODO: remove option once TD allows showing bank transfers
+        context_data['HIDE_BANK_TRANSFER_OPTION'] = settings.HIDE_BANK_TRANSFER_OPTION
+
         return context_data
 
     def get_form_kwargs(self):

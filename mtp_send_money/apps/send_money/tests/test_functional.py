@@ -1,6 +1,7 @@
 import os
 import unittest
 
+from django.conf import settings
 from django.test import LiveServerTestCase
 from selenium import webdriver
 
@@ -27,9 +28,14 @@ class SendMoneyFunctionalTestCase(LiveServerTestCase):
         for key in data:
             field = self.driver.find_element_by_id('id_%s' % key)
             field.send_keys(data[key])
-        field = self.driver.find_element_by_xpath('//ul[@id="id_payment_method"]//input[@value="%s"]' % payment_method)
-        field.click()
+        # TODO: remove condition once TD allows showing bank transfers
+        if not settings.HIDE_BANK_TRANSFER_OPTION:
+            field = self.driver.find_element_by_xpath('//ul[@id="id_payment_method"]//input[@value="%s"]'
+                                                      % payment_method)
+            field.click()
 
+    # TODO: remove skip once TD allows showing bank transfers
+    @unittest.skipIf(settings.HIDE_BANK_TRANSFER_OPTION, 'bank transfer is disabled')
     def test_bank_transfer_flow(self):
         self.driver.get(self.live_server_url)
         self.fill_in_send_money_form({

@@ -40,6 +40,15 @@
         <!-- {{ request.resolver_match.url_name }}.preview -->
     {% else %}
 
+      {# TODO: remove style block once TD allows showing bank transfers #}
+      {% if HIDE_BANK_TRANSFER_OPTION %}
+        <style type="text/css" scoped>
+          #id_payment_method, label[for=id_payment_method_0] {
+            display: none;
+          }
+        </style>
+      {% endif %}
+
       {{ form.as_p }}
 
       <p>

@@ -185,6 +185,9 @@ ZENDESK_CUSTOM_FIELDS = {
     'user_agent': 23791776
 }
 
+# TODO: remove option once TD allows showing bank transfers
+HIDE_BANK_TRANSFER_OPTION = True
+
 try:
     from .local import *  # noqa
 except ImportError:
