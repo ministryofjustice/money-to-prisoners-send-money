@@ -15,8 +15,8 @@ from send_money.utils import serialise_date, unserialise_date, \
 
 
 class PaymentMethod(Enum):
-    bank_transfer = _('Bank transfer')
     debit_card = _('Debit card through this website')
+    bank_transfer = _('Bank transfer')
 
     def __str__(self):
         return self.name
@@ -47,7 +47,8 @@ class SendMoneyForm(forms.Form):
     payment_method = forms.ChoiceField(
         label=_('Payment method'),
         widget=forms.RadioSelect,
-        choices=PaymentMethod.django_choices()
+        choices=PaymentMethod.django_choices(),
+        initial=PaymentMethod.debit_card,
     )
 
     @classmethod
