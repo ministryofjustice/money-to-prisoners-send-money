@@ -17,5 +17,5 @@ class SendMoneyAuthenticationMiddleware(AuthenticationMiddleware):
                 'Shared send money user was not authorised to access api'
             )
             logout(request)
-            return Http404(_('Could not connect to service, '
-                             'please try again later'))
+            raise Http404(_('Could not connect to service, '
+                            'please try again later'))
