@@ -1,5 +1,6 @@
 Django==1.9.1
 slumber==0.7.1
+requests==2.8.1
 git+git://github.com/ministryofjustice/django-moj-auth.git
 git+git://github.com/ministryofjustice/django-moj-irat.git
 git+git://github.com/ministryofjustice/django-utils.git

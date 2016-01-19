@@ -3,5 +3,9 @@
 
 {% block content %}
   <h1>{% trans 'Send money to prisoners' %}</h1>
-  <p>CONFIRMATION</p>
+  {% if success %}
+  <p>SUCCESS</p>
+  {% else %}
+  <p>FAILURE</p>
+  {% endif %}
 {% endblock %}
