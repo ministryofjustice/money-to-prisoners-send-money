@@ -1,5 +1,7 @@
 import glob
+import logging
 import os
+import socket
 import unittest
 
 from django.conf import settings
@@ -7,6 +9,8 @@ from django.test import LiveServerTestCase
 from selenium import webdriver
 
 from send_money.forms import PaymentMethod
+
+logger = logging.getLogger()
 
 
 @unittest.skipUnless('RUN_FUNCTIONAL_TESTS' in os.environ, 'functional tests are disabled')
@@ -37,6 +41,22 @@ class SendMoneyFunctionalTestCase(LiveServerTestCase):
 
     def tearDown(self):
         self.driver.quit()
+
+    def load_test_data(self):
+        logger.info('Reloading test data')
+        sock = None
+        try:
+            sock = socket.socket()
+            sock.connect(('localhost', os.environ.get('CONTROLLER_PORT', 8800)))
+            sock.sendall(b'load_test_data')
+            response = sock.recv(1024).strip()
+            if response != b'done':
+                logger.error('Test data not reloaded!')
+        except OSError:
+            logger.exception('Error communicating with test server controller socket')
+        finally:
+            if sock:
+                sock.close()
 
     def fill_in_send_money_form(self, data, payment_method):
         for key in data:
