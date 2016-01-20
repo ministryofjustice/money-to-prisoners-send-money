@@ -157,9 +157,25 @@ AUTHENTICATION_BACKENDS = (
     'moj_auth.backends.MojBackend',
 )
 
+
+def find_api_url():
+    import socket
+    import subprocess
+
+    api_port = int(os.environ.get('API_PORT', '8000'))
+    try:
+        host_machine_ip = subprocess.check_output(['docker-machine', 'ip', 'default'])
+        host_machine_ip = host_machine_ip.decode('ascii').strip()
+        with socket.socket() as sock:
+            sock.connect((host_machine_ip, api_port))
+    except (subprocess.CalledProcessError, OSError):
+        host_machine_ip = 'localhost'
+    return 'http://%s:%s' % (host_machine_ip, api_port)
+
+
 API_CLIENT_ID = 'send-money'
 API_CLIENT_SECRET = os.environ.get('API_CLIENT_SECRET', 'send-money')
-API_URL = os.environ.get('API_URL', 'http://localhost:8000')
+API_URL = os.environ.get('API_URL', find_api_url())
 
 SHARED_API_USERNAME = os.environ.get('SHARED_API_USERNAME', 'send-money')
 SHARED_API_PASSWORD = os.environ.get('SHARED_API_PASSWORD', 'send-money')

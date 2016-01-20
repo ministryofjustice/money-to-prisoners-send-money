@@ -1,14 +1,15 @@
+# NB: this is only used for local development
+# see Dockerfile for deployed version
+
 django:
   build: .
-  command: >
-    /bin/bash -c "
-    pip install -r requirements/dev.txt &&
-    python manage.py runserver 0.0.0.0:8004"
+  command: ./run.sh start
   volumes:
-    - .:/app
-    - /tmp/pip_download_cache/:/tmp/pip_download_cache
+    # - .:/app
+    - /tmp/pip_download_cache:/root/.cache/pip
   ports:
     - "8004:8004"
   environment:
-    PIP_DOWNLOAD_CACHE: /tmp/pip_download_cache/
-    API_URL: http://localhost:8000
+    ENV: local
+    DEBUG: "True"
+    DJANGO_SECRET_KEY: CHANGE_ME

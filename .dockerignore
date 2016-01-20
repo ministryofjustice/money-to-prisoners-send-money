@@ -1,16 +1,16 @@
-*.pyc
-include/
-lib/
-staticfiles/
-media/
-.build
+# general
+*.DS_Store
+*.py?
+*~
 
-# sublime stuff
+# editors
+.idea/
 *.sublime-workspace
 *.sublime-project
 
-# Virtual env
+# project
+mtp_send_money/settings/local.py
+mtp_send_money/assets/
+node_modules/
+static/
 venv/
-
-# Mac crap
-*.DS_Store
