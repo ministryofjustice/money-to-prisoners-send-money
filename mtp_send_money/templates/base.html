@@ -1,4 +1,4 @@
-{% extends 'mtp_base.html' %}
+{% extends 'mtp_base_public.html' %}
 {% load i18n %}
 {% load moj_utils %}
 
@@ -9,6 +9,6 @@
 
 {% block user_details %}{% endblock %}
 
-{% block page_title %}{% trans 'Send money to prisoners' %}{% endblock %}
+{% block page_title %}{% trans 'Sending money to a prisoner - GOV.UK' %}{% endblock %}
 
-{% block proposition %}{% trans 'Send money to prisoners' %}{% endblock %}
+{% block proposition %}<a href="/" class="proposition-name">{% trans 'Sending money to a prisoner' %}</a>{% endblock %}

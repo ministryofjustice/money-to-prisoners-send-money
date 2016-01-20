@@ -2,4 +2,68 @@
 
 $images-dir: '/static/images/';
 
-@import 'mtp';
+@import 'mtp-public';
+
+// govuk_elements overrides
+
+form .form-group.form-date {
+  .form-date-day, .form-date-month, .form-date-year {
+    display: inline-block;
+    margin-right: 1em;
+  }
+  input { min-width: 3em; }
+  .form-date-day input { width: 3em; }
+  .form-date-month input { width: 3em; }
+  .form-date-year input { width: 5em; }
+}
+
+.form-label {
+  margin-bottom: 0;
+}
+
+form fieldset legend {
+  margin-bottom: .5em;
+}
+
+form .form-group .form-hint {
+  margin-top: 0;
+}
+
+
+// Application-specific
+
+.mtp-prisoner-number {
+  width: 12em;
+}
+
+.mtp-amount {
+  margin-top: 2em;
+
+  .mtp-money-amount {
+    margin-bottom: 1em;
+    * {
+      height: 40px;
+      display: inline-block;
+      vertical-align: bottom;
+    }
+    div {
+      width: 2em;
+      min-width: 2em;
+      border-right: 0;
+      line-height: 1;
+      background-color: $panel-colour;
+      text-align: center;
+      font-size: 120%;
+      font-weight: 900;
+    }
+    input {
+      width: 5em;
+    }
+  }
+  > .form-group {
+    margin-bottom: 4em;
+  }
+  .mtp-charges-total {
+    margin-top: 1em;
+  }
+}
