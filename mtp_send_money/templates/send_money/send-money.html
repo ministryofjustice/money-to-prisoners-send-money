@@ -3,7 +3,7 @@
 {% load send_money %}
 
 {% block content %}
-  <h1>{% trans 'Send money to prisoners' %}</h1>
+  <h1>{% trans 'Who are you sending money to?' %}</h1>
 
   <form method="post" action=".">
     {% csrf_token %}
@@ -40,6 +40,58 @@
         <!-- {{ request.resolver_match.url_name }}.preview -->
     {% else %}
 
+    <fieldset>
+      <legend class="form-label-bold">{% trans "Prisoner details" %}</legend>
+      <div class="form-group">
+        <label class="form-label" for="prisoner-name">{% trans "Prisoner name" %}</label>
+        <input class="form-control" id="prisoner-name" type="text"/>
+      </div>
+      <div class="form-group form-date">
+        <label class="form-label">{% trans "Prisoner date of birth" %}</label>
+        <div class="form-hint">{% trans "eg 28 04 1996" %}</div>
+        <div>
+           <div class="form-date-day">
+             <label class="form-label" for="prisoner-dob-day">{% trans "Day" %}</label>
+             <input class="form-control" id="prisoner-dob-day" type="text"/>
+           </div>
+           <div class="form-date-month">
+             <label class="form-label" for="prisoner-dob-month">{% trans "Month" %}</label>
+             <input class="form-control" id="prisoner-dob-month" type="text"/>
+           </div>
+           <div class="form-date-year">
+             <label class="form-label" for="prisoner-dob-year">{% trans "Year" %}</label>
+             <input class="form-control" id="prisoner-dob-year" type="text"/>
+           </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="prisoner-number">{% trans "Prisoner number" %}</label>
+        <div class="form-hint">{% trans "eg a1234bc" %}</div>
+        <input class="form-control mtp-prisoner-number" id="prisoner-number" type="text"/>
+      </div>
+    </fieldset>
+
+    <div class="mtp-amount">
+      <fieldset>
+        <legend class="form-label-bold" for="amount">{% trans "How much are you sending?" %}</legend>
+        <div class="form-group mtp-money-amount">
+          <div class="form-control">{% trans "£" %}</div><input class="form-control mtp-charges-amount" type="text"/>
+        </div>
+      </fieldset>
+      <div class="form-group">
+        <fieldset class="mtp-charges-js" style="display:none">
+          <p class="form-label">{% trans "Service charge: £" %}<span class="mtp-charges-charges"></span></p>
+          <p class="form-hint">{% trans "The service charge is 2.4% of the amount you're sending, plus 20p. This fee is charged by your card provider." %}</p>
+          <p class="form-label-bold mtp-charges-total">{% trans "Total to pay: £" %}<span></span></p>
+        </fieldset>
+        <fieldset class="mtp-charges-no-js">
+          <p>{% trans "The service charge is 2.4% of the amount you're sending, plus 20p. This fee is charged by your card provider." %}</p>
+          <p>{% trans "For instance, if you want to send £20, you will be charged £20.68" %}</p>
+        </fieldset>
+      </div>
+    </div>
+
+
       {# TODO: remove style block once TD allows showing bank transfers #}
       {% if HIDE_BANK_TRANSFER_OPTION %}
         <style type="text/css" scoped>
@@ -49,10 +101,12 @@
         </style>
       {% endif %}
 
+{% comment %}
       {{ form.as_p }}
+{% endcomment %}
 
       <p>
-        <input id="id_next_btn" class="button" type="submit" value="{% trans 'Next' %}">
+        <input id="id_next_btn" class="button" type="submit" value="{% trans 'Continue' %}">
       </p>
 
         <!-- {{ request.resolver_match.url_name }}.form -->

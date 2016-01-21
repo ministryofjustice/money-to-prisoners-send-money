@@ -14,7 +14,9 @@
       require('print'),
       require('polyfills'),
       require('unload'),
-      require('help-popup')
+      require('help-popup'),
+
+      require('charges')
     ])
     .init();
 
