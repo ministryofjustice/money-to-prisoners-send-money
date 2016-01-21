@@ -16,12 +16,14 @@ RUN apt-get update && \
 RUN update-alternatives --install /usr/bin/python python /usr/bin/python3 10
 
 WORKDIR /app
+RUN mkdir -p /app/mtp_send_money/assets
+RUN mkdir -p /app/static
 
 RUN npm install npm -g
 RUN npm config set python python2.7
 
 # cache node modules, unless requirements change
-ADD ./package.json /app
+ADD ./package.json /app/package.json
 RUN npm install
 
 RUN pip3 install -U setuptools pip wheel virtualenv
@@ -32,7 +34,7 @@ ADD ./requirements /app/requirements
 RUN venv/bin/pip install -r requirements/docker.txt
 
 ADD . /app
-RUN ./run.sh build python_requirements=requirements/docker.txt
+RUN make build python_requirements=requirements/docker.txt
 
 EXPOSE 8080
-CMD ["venv/bin/uwsgi", "--ini", "conf/uwsgi/send_money.ini"]
+CMD make uwsgi python_requirements=requirements/docker.txt

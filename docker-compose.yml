@@ -1,9 +1,11 @@
+# do not run docker-compose directly, see README.md
+
 # NB: this is only used for local development
 # see Dockerfile for deployed version
 
 django:
   build: .
-  command: ./run.sh start
+  command: make start
   volumes:
     # - .:/app
     - /tmp/pip_download_cache:/root/.cache/pip
@@ -13,3 +15,4 @@ django:
     ENV: local
     DEBUG: "True"
     DJANGO_SECRET_KEY: CHANGE_ME
+    API_URL: http://${HOST_MACHINE_IP}:8000
