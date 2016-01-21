@@ -1,14 +1,34 @@
 from unittest import mock
 
+from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.test.testcases import SimpleTestCase
 from requests import ConnectionError
+import responses
 
 from send_money.forms import PaymentMethod, SendMoneyForm
+from send_money.utils import govuk_url, api_url
+from .test_utils import mock_auth
 
 
 class BaseTestCase(SimpleTestCase):
     send_money_url = reverse('send_money:send_money')
+
+    def populate_session(
+        self,
+        prisoner_name='John Smith',
+        prisoner_number='A1231DE',
+        prisoner_dob='1980-10-04',
+        amount='10.00'
+    ):
+        s = self.client.session
+        s['prisoner_name'] = prisoner_name
+        s['prisoner_number'] = prisoner_number
+        s['prisoner_dob'] = prisoner_dob
+        s['amount'] = amount
+        s['payment_method'] = PaymentMethod.debit_card.name
+        s.save()
+        self.client.cookies[settings.SESSION_COOKIE_NAME] = s.session_key
 
     def assertPageNotDirectlyAccessible(self):  # noqa
         response = self.client.get(self.url)
@@ -19,7 +39,7 @@ class BaseTestCase(SimpleTestCase):
             'prisoner_number': 'A1231DE',
             'prisoner_dob': '1980-10-04',
         }
-        mocked_client = mocked_api_client.get_connection()
+        mocked_client = mocked_api_client.get_authenticated_connection()
         mocked_client.prisoner_validity().get.return_value = {
             'count': 1,
             'results': [prisoner_details]
@@ -40,11 +60,11 @@ class SendMoneyViewTestCase(BaseTestCase):
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
 
-    @mock.patch('send_money.forms.api_client')
+    @mock.patch('send_money.utils.api_client')
     def test_send_money_page_previews_form(self, mocked_api_client):
         response = self.submit_send_money_form(mocked_api_client)
         self.assertEqual(response.status_code, 200)
-        self.assertIn(b'<!-- send_money.preview -->', response.content)
+        self.assertContains(response, '<!-- send_money.preview -->')
         form = response.context['form']
         self.assertFalse(form.errors)
 
@@ -58,7 +78,7 @@ class SendMoneyViewTestCase(BaseTestCase):
             'payment_method': PaymentMethod.debit_card,
         })
         self.assertEqual(response.status_code, 200)
-        self.assertIn(b'Incorrect prisoner number format', response.content)
+        self.assertContains(response, 'Incorrect prisoner number format')
         form = response.context['form']
         self.assertTrue(form.errors)
         self.assertEqual(mocked_check_prisoner_validity.call_count, 0)
@@ -72,7 +92,7 @@ class SendMoneyViewTestCase(BaseTestCase):
             'payment_method': PaymentMethod.debit_card,
         })
         self.assertEqual(response.status_code, 200)
-        self.assertIn(b'This field is required', response.content)
+        self.assertContains(response, 'This field is required')
         form = response.context['form']
         self.assertTrue(form.errors)
         self.assertEqual(mocked_check_prisoner_validity.call_count, 0)
@@ -88,7 +108,7 @@ class SendMoneyViewTestCase(BaseTestCase):
             'payment_method': PaymentMethod.debit_card,
         })
         self.assertEqual(response.status_code, 200)
-        self.assertIn(b'No prisoner was found with given number and date of birth', response.content)
+        self.assertContains(response, 'No prisoner was found with given number and date of birth')
         form = response.context['form']
         self.assertTrue(form.errors)
 
@@ -103,15 +123,15 @@ class SendMoneyViewTestCase(BaseTestCase):
             'payment_method': PaymentMethod.debit_card,
         })
         self.assertEqual(response.status_code, 200)
-        self.assertIn(b'Could not connect to service, please try again later', response.content)
+        self.assertContains(response, 'Could not connect to service, please try again later')
         form = response.context['form']
         self.assertTrue(form.errors)
 
-    @mock.patch('send_money.forms.api_client')
+    @mock.patch('send_money.utils.api_client')
     def test_send_money_page_allows_changing_form(self, mocked_api_client):
         response = self.submit_send_money_form(mocked_api_client)
         self.assertEqual(response.status_code, 200)
-        self.assertIn(b'<!-- send_money.preview -->', response.content)
+        self.assertContains(response, '<!-- send_money.preview -->')
         response = self.submit_send_money_form(mocked_api_client, {
             'prisoner_name': 'John Smith',
             'amount': '10.00',
@@ -119,22 +139,24 @@ class SendMoneyViewTestCase(BaseTestCase):
             'change': '',
         })
         self.assertEqual(response.status_code, 200)
-        self.assertIn(b'<!-- send_money.form -->', response.content)
+        self.assertContains(response, '<!-- send_money.form -->')
 
-    @mock.patch('send_money.forms.api_client')
+    @mock.patch('send_money.utils.api_client')
     def test_send_money_page_can_proceed_to_debit_card(self, mocked_api_client):
         response = self.submit_send_money_form(mocked_api_client)
         self.assertEqual(response.status_code, 200)
-        self.assertIn(b'<!-- send_money.preview -->', response.content)
+        self.assertContains(response, '<!-- send_money.preview -->')
         response = self.submit_send_money_form(mocked_api_client, {
             'prisoner_name': 'John Smith',
             'amount': '10.00',
             'payment_method': PaymentMethod.debit_card,
             'next': '',
         })
-        self.assertRedirects(response, reverse('send_money:debit_card'))
+        self.assertRedirects(
+            response, reverse('send_money:debit_card'), fetch_redirect_response=False
+        )
 
-    @mock.patch('send_money.forms.api_client')
+    @mock.patch('send_money.utils.api_client')
     def test_send_money_page_can_proceed_to_bank_transfer(self, mocked_api_client):
         response = self.submit_send_money_form(mocked_api_client, {
             'prisoner_name': 'John Smith',
@@ -142,7 +164,7 @@ class SendMoneyViewTestCase(BaseTestCase):
             'payment_method': PaymentMethod.bank_transfer,
         })
         self.assertEqual(response.status_code, 200)
-        self.assertIn(b'<!-- send_money.preview -->', response.content)
+        self.assertContains(response, '<!-- send_money.preview -->')
         response = self.submit_send_money_form(mocked_api_client, {
             'prisoner_name': 'John Smith',
             'amount': '10.00',
@@ -162,7 +184,7 @@ class BankTransferViewTestCase(BaseTestCase):
             'payment_method': PaymentMethod.bank_transfer,
         })
         self.assertEqual(response.status_code, 200)
-        self.assertIn(b'<!-- send_money.preview -->', response.content)
+        self.assertContains(response, '<!-- send_money.preview -->')
         response = self.submit_send_money_form(mocked_api_client, {
             'prisoner_name': 'John Smith',
             'amount': '10.00',
@@ -170,30 +192,30 @@ class BankTransferViewTestCase(BaseTestCase):
             'next': '',
         }, follow=True)
         self.assertEqual(response.status_code, 200)
-        self.assertIn(b'<!-- bank_transfer -->', response.content)
+        self.assertContains(response, '<!-- bank_transfer -->')
         return response
 
     def test_bank_transfer_page_not_directly_accessible(self):
         self.assertPageNotDirectlyAccessible()
 
-    @mock.patch('send_money.forms.api_client')
+    @mock.patch('send_money.utils.api_client')
     def test_bank_transfer_page_renders_prisoner_reference(self, mocked_api_client):
         response = self.bank_transfer_flow(mocked_api_client)
         bank_transfer_reference = 'A1231DE 04/10/1980'
-        self.assertIn(bank_transfer_reference.encode('utf-8'), response.content)
+        self.assertContains(response, bank_transfer_reference)
         self.assertEqual(response.context['bank_transfer_reference'],
                          bank_transfer_reference)
 
-    @mock.patch('send_money.forms.api_client')
+    @mock.patch('send_money.utils.api_client')
     def test_bank_transfer_page_renders_noms_account_details(self, mocked_api_client):
         response = self.bank_transfer_flow(mocked_api_client)
         keys = ['payable_to', 'account_number', 'sort_code']
         for key in keys:
             value = response.context[key]
             self.assertTrue(value)
-            self.assertIn(value.encode('utf-8'), response.content)
+            self.assertContains(response, value)
 
-    @mock.patch('send_money.forms.api_client')
+    @mock.patch('send_money.utils.api_client')
     def test_bank_transfer_page_clears_session(self, mocked_api_client):
         self.bank_transfer_flow(mocked_api_client)
         for key in SendMoneyForm.get_field_names():
@@ -202,37 +224,132 @@ class BankTransferViewTestCase(BaseTestCase):
 
 class CardPaymentViewTestCase(BaseTestCase):
     url = reverse('send_money:debit_card')
-
-    def debit_card_flow(self, mocked_api_client):
-        response = self.submit_send_money_form(mocked_api_client)
-        self.assertEqual(response.status_code, 200)
-        self.assertIn(b'<!-- send_money.preview -->', response.content)
-        response = self.submit_send_money_form(mocked_api_client, {
-            'prisoner_name': 'John Smith',
-            'amount': '10.00',
-            'payment_method': PaymentMethod.debit_card,
-            'next': '',
-        }, follow=True)
-        self.assertEqual(response.status_code, 200)
-        self.assertIn(b'<!-- debit_card -->', response.content)
+    payment_process_path = '/take'
 
     def test_debit_card_page_not_directly_accessible(self):
         self.assertPageNotDirectlyAccessible()
 
-    @mock.patch('send_money.forms.api_client')
-    def test_debit_card_page_renders(self, mocked_api_client):
-        self.debit_card_flow(mocked_api_client)
-        # NB: nothing else to test yet
+    def test_debit_card_payment(self):
+        self.populate_session()
+        with responses.RequestsMock() as rsps, self.settings(GOVUK_PAY_URL='http://payment.gov.uk'):
+            mock_auth(rsps)
+            rsps.add(
+                rsps.POST,
+                api_url('/send_money/transactions/'),
+                json={'id': 3},
+                status=201,
+            )
+            rsps.add(
+                rsps.POST,
+                govuk_url('/payments/'),
+                json={
+                    'links': [
+                        {'rel': 'next_url', 'href': govuk_url(self.payment_process_path)}
+                    ]
+                },
+                status=201
+            )
+            response = self.client.get(self.url, follow=False)
+            self.assertRedirects(
+                response, govuk_url(self.payment_process_path),
+                fetch_redirect_response=False
+            )
+
+    def test_debit_card_payment_handles_api_errors(self):
+        self.populate_session()
+        with responses.RequestsMock() as rsps, self.settings(GOVUK_PAY_URL='http://payment.gov.uk'):
+            mock_auth(rsps)
+            rsps.add(
+                rsps.POST,
+                api_url('/send_money/transactions/'),
+                status=500,
+            )
+            response = self.client.get(self.url, follow=False)
+            self.assertContains(response, 'Sorry, we are unable to take your payment.')
+
+    def test_debit_card_payment_handles_govuk_errors(self):
+        self.populate_session()
+        with responses.RequestsMock() as rsps, self.settings(GOVUK_PAY_URL='http://payment.gov.uk'):
+            mock_auth(rsps)
+            rsps.add(
+                rsps.POST,
+                api_url('/send_money/transactions/'),
+                json={'id': 3},
+                status=201,
+            )
+            rsps.add(
+                rsps.POST,
+                govuk_url('/payments/'),
+                status=500
+            )
+            response = self.client.get(self.url, follow=False)
+            self.assertContains(response, 'Sorry, we are unable to take your payment.')
 
 
 class ConfirmationViewTestCase(BaseTestCase):
     url = reverse('send_money:confirmation')
 
-    def test_confirmation_page_not_directly_accessible(self):
-        self.assertPageNotDirectlyAccessible()
+    def test_confirmation_redirects_if_no_reference_param(self):
+        response = self.client.get(self.url, follow=False)
+        self.assertRedirects(response, self.send_money_url)
 
-    def test_confirmation_page_clears_session(self):
-        # NB: can't reach this page properly yet
-        pass
+    def test_confirmation(self):
+        self.populate_session()
+        with responses.RequestsMock() as rsps, self.settings(GOVUK_PAY_URL='http://payment.gov.uk'):
+            ref = '3'
+            rsps.add(
+                rsps.GET,
+                govuk_url('/payments/%s/' % ref),
+                json={
+                    'status': 'SUCCEEDED'
+                },
+                status=200
+            )
+            mock_auth(rsps)
+            rsps.add(
+                rsps.POST,
+                api_url('/send_money/transactions/%s/' % ref),
+                status=200,
+            )
+            response = self.client.get(
+                self.url, {'paymentReference': ref}, follow=False
+            )
+            self.assertContains(response, 'SUCCESS')
+            # check session is cleared
+            self.assertEqual(None, self.client.session.get('prisoner_number'))
+            self.assertEqual(None, self.client.session.get('amount'))
 
-    # NB: nothing else to test yet
+    def test_confirmation_handles_api_errors(self):
+        with responses.RequestsMock() as rsps, self.settings(GOVUK_PAY_URL='http://payment.gov.uk'):
+            ref = '3'
+            rsps.add(
+                rsps.GET,
+                govuk_url('/payments/%s/' % ref),
+                json={
+                    'status': 'SUCCEEDED'
+                },
+                status=200
+            )
+            mock_auth(rsps)
+            rsps.add(
+                rsps.POST,
+                api_url('/send_money/transactions/%s/' % ref),
+                status=500,
+            )
+            response = self.client.get(
+                self.url, {'paymentReference': ref}, follow=False
+            )
+            self.assertContains(response, 'FAILURE')
+
+    def test_confirmation_handles_govuk_errors(self):
+        with responses.RequestsMock() as rsps, self.settings(GOVUK_PAY_URL='http://payment.gov.uk'):
+            ref = '3'
+            rsps.add(
+                rsps.GET,
+                govuk_url('/payments/%s/' % ref),
+                status=500
+            )
+            response = self.client.get(
+                self.url, {'paymentReference': ref}, follow=False
+            )
+            self.assertContains(response, 'FAILURE')

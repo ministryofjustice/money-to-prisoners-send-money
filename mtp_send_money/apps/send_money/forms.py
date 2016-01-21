@@ -2,16 +2,15 @@ import decimal
 from enum import Enum
 
 from django import forms
-from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext_lazy as _
 from requests.exceptions import RequestException
 from slumber.exceptions import HttpNotFoundError, SlumberHttpBaseException
 
-from moj_auth import api_client, get_user_model
-from send_money.utils import serialise_date, unserialise_date, \
-    serialise_amount, unserialise_amount, \
-    validate_prisoner_number
+from send_money.utils import (
+    serialise_date, unserialise_date, serialise_amount, unserialise_amount,
+    validate_prisoner_number, get_api_client
+)
 
 
 class PaymentMethod(Enum):
@@ -86,12 +85,7 @@ class SendMoneyForm(forms.Form):
 
     def check_prisoner_validity(self, prisoner_number, prisoner_dob):
         prisoner_dob = serialise_date(prisoner_dob)
-        user = api_client.authenticate(settings.SHARED_API_USERNAME,
-                                       settings.SHARED_API_PASSWORD)
-        user = get_user_model()(user.get('pk'), user.get('token'),
-                                user.get('user_data'))
-        self.request.user = user
-        client = api_client.get_connection(self.request)
+        client = get_api_client()
         try:
             prisoners = client.prisoner_validity().get(prisoner_number=prisoner_number,
                                                        prisoner_dob=prisoner_dob)

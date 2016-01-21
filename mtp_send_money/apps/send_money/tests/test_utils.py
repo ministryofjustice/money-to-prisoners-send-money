@@ -3,6 +3,9 @@ import decimal
 import unittest
 
 from django.core.exceptions import ValidationError
+from django.utils.crypto import get_random_string
+from moj_auth.api_client import REQUEST_TOKEN_URL
+
 
 from send_money.utils import serialise_amount, unserialise_amount, \
     serialise_date, unserialise_date, \
@@ -48,3 +51,15 @@ class BankTransferReference(unittest.TestCase):
             bank_transfer_reference('AB1234AB', datetime.date(1980, 1, 4)),
             'AB1234AB 04/01/1980',
         )
+
+
+def mock_auth(rsps):
+    rsps.add(
+        rsps.POST,
+        REQUEST_TOKEN_URL,
+        json={
+            'access_token': get_random_string(length=30),
+            'refresh_token': get_random_string(length=30)
+        },
+        status=200,
+    )

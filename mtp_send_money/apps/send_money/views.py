@@ -4,10 +4,17 @@ import logging
 from django.conf import settings
 from django.core.urlresolvers import reverse, reverse_lazy
 from django.shortcuts import redirect, render
+from django.utils import timezone
+from django.utils.translation import ugettext as _
 from django.views.generic import FormView
+import requests
+from slumber.exceptions import SlumberHttpBaseException
 
 from send_money.forms import PaymentMethod, SendMoneyForm
-from send_money.utils import unserialise_amount, unserialise_date, bank_transfer_reference
+from send_money.utils import (
+    unserialise_amount, unserialise_date, bank_transfer_reference,
+    govuk_headers, govuk_url, get_api_client, site_url, get_link_by_rel
+)
 
 logger = logging.getLogger()
 
@@ -92,19 +99,74 @@ def bank_transfer_view(request):
 @require_session_parameters
 def debit_card_view(request):
     context = make_context_from_session(request.session)
-    # stub for GOV.UK Pay integration:
-    # - create payment request
-    # - redirect user to payment site
-    return render(request, 'send_money/debit-card.html', context)
+
+    new_transaction = {
+        'amount': int(context['amount']*100),
+        'reference': context['prisoner_name'],
+        'prisoner_number': context['prisoner_number'],
+        'prisoner_dob': context['prisoner_dob'].isoformat(),
+        'received_at': timezone.now().replace(microsecond=0).isoformat(),
+        'category': 'online_credit',
+        'payment_outcome': 'pending'
+    }
+
+    client = get_api_client()
+    try:
+        api_response = client.send_money.transactions.post(new_transaction)
+
+        new_payment = {
+            'accountId': settings.GOVUK_PAY_ACCOUNT_ID,
+            'amount': int(context['amount']*100),
+            'reference': api_response['id'],
+            'description': _('Payment to prisoner %(prisoner_number)s'
+                             % {'prisoner_number': context['prisoner_number']}),
+            'returnUrl': site_url(reverse('send_money:confirmation')),
+        }
+
+        govuk_response = requests.post(
+            govuk_url('/payments'), headers=govuk_headers(), data=new_payment
+        )
+
+        if govuk_response.status_code == 201:
+            return redirect(get_link_by_rel(govuk_response.json(), 'next_url')['href'])
+        else:
+            logger.error(
+                'Failed to create new GOV.UK payment for transaction %s'
+                % api_response['id']
+            )
+    except SlumberHttpBaseException:
+        logger.exception('Failed to create new transaction')
+
+    return render(request, 'send_money/failure.html', context)
 
 
-@require_session_parameters
 def confirmation_view(request):
-    context = make_context_from_session(request.session)
-    # stub for GOV.UK Pay integration:
-    # - check payment status
-    # - present errors or redirect to start form?
-    # - present confirmation message?
-    # - present payment pending message? how would user check back?
+    ref = request.GET.get('paymentReference')
+    if ref is None:
+        return redirect(reverse('send_money:send_money'))
+    context = {'success': False}
+
+    govuk_response = requests.get(
+        govuk_url('/payments/%s' % ref), headers=govuk_headers()
+    )
+
+    if (govuk_response.status_code == 200 and
+            govuk_response.json()['status'] == 'SUCCEEDED'):
+        payment_update = {
+            'payment_outcome': 'taken'
+        }
+        client = get_api_client()
+        try:
+            client.send_money.transactions(ref).post(payment_update)
+            context['success'] = True
+        except SlumberHttpBaseException:
+            logger.exception(
+                'Failed to update payment_outcome of transaction %s to "taken"' % ref,
+            )
+    else:
+        logger.error(
+            'Failed to retrieve payment status from GOV.UK for transaction %s' % ref
+        )
+
     request.session.flush()
     return render(request, 'send_money/confirmation.html', context)
