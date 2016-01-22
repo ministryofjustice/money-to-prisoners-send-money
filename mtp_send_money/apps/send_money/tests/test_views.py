@@ -63,7 +63,6 @@ class SendMoneyViewTestCase(BaseTestCase):
     @mock.patch('send_money.utils.api_client')
     def test_send_money_page_previews_form(self, mocked_api_client):
         response = self.submit_send_money_form(mocked_api_client)
-        self.assertEqual(response.status_code, 200)
         self.assertContains(response, '<!-- send_money.preview -->')
         form = response.context['form']
         self.assertFalse(form.errors)
@@ -77,7 +76,6 @@ class SendMoneyViewTestCase(BaseTestCase):
             'amount': '10.00',
             'payment_method': PaymentMethod.debit_card,
         })
-        self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'Incorrect prisoner number format')
         form = response.context['form']
         self.assertTrue(form.errors)
@@ -91,7 +89,6 @@ class SendMoneyViewTestCase(BaseTestCase):
             'amount': '10.00',
             'payment_method': PaymentMethod.debit_card,
         })
-        self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'This field is required')
         form = response.context['form']
         self.assertTrue(form.errors)
@@ -107,7 +104,6 @@ class SendMoneyViewTestCase(BaseTestCase):
             'amount': '10.00',
             'payment_method': PaymentMethod.debit_card,
         })
-        self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'No prisoner was found with given number and date of birth')
         form = response.context['form']
         self.assertTrue(form.errors)
@@ -122,7 +118,6 @@ class SendMoneyViewTestCase(BaseTestCase):
             'amount': '10.00',
             'payment_method': PaymentMethod.debit_card,
         })
-        self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'Could not connect to service, please try again later')
         form = response.context['form']
         self.assertTrue(form.errors)
@@ -130,7 +125,6 @@ class SendMoneyViewTestCase(BaseTestCase):
     @mock.patch('send_money.utils.api_client')
     def test_send_money_page_allows_changing_form(self, mocked_api_client):
         response = self.submit_send_money_form(mocked_api_client)
-        self.assertEqual(response.status_code, 200)
         self.assertContains(response, '<!-- send_money.preview -->')
         response = self.submit_send_money_form(mocked_api_client, {
             'prisoner_name': 'John Smith',
@@ -138,13 +132,11 @@ class SendMoneyViewTestCase(BaseTestCase):
             'payment_method': PaymentMethod.debit_card,
             'change': '',
         })
-        self.assertEqual(response.status_code, 200)
         self.assertContains(response, '<!-- send_money.form -->')
 
     @mock.patch('send_money.utils.api_client')
     def test_send_money_page_can_proceed_to_debit_card(self, mocked_api_client):
         response = self.submit_send_money_form(mocked_api_client)
-        self.assertEqual(response.status_code, 200)
         self.assertContains(response, '<!-- send_money.preview -->')
         response = self.submit_send_money_form(mocked_api_client, {
             'prisoner_name': 'John Smith',
@@ -163,7 +155,6 @@ class SendMoneyViewTestCase(BaseTestCase):
             'amount': '10.00',
             'payment_method': PaymentMethod.bank_transfer,
         })
-        self.assertEqual(response.status_code, 200)
         self.assertContains(response, '<!-- send_money.preview -->')
         response = self.submit_send_money_form(mocked_api_client, {
             'prisoner_name': 'John Smith',
@@ -183,7 +174,6 @@ class BankTransferViewTestCase(BaseTestCase):
             'amount': '10.00',
             'payment_method': PaymentMethod.bank_transfer,
         })
-        self.assertEqual(response.status_code, 200)
         self.assertContains(response, '<!-- send_money.preview -->')
         response = self.submit_send_money_form(mocked_api_client, {
             'prisoner_name': 'John Smith',
@@ -191,7 +181,6 @@ class BankTransferViewTestCase(BaseTestCase):
             'payment_method': PaymentMethod.bank_transfer,
             'next': '',
         }, follow=True)
-        self.assertEqual(response.status_code, 200)
         self.assertContains(response, '<!-- bank_transfer -->')
         return response
 
@@ -222,7 +211,7 @@ class BankTransferViewTestCase(BaseTestCase):
             self.assertNotIn(key, self.client.session)
 
 
-class CardPaymentViewTestCase(BaseTestCase):
+class DebitCardViewTestCase(BaseTestCase):
     url = reverse('send_money:debit_card')
     payment_process_path = '/take'
 
