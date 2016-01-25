@@ -2,6 +2,7 @@ import glob
 import logging
 import os
 import socket
+from urllib.parse import urlparse
 import unittest
 
 from django.conf import settings
@@ -15,7 +16,6 @@ logger = logging.getLogger()
 
 @unittest.skipUnless('RUN_FUNCTIONAL_TESTS' in os.environ, 'functional tests are disabled')
 class SendMoneyFunctionalTestCase(LiveServerTestCase):
-
     @classmethod
     def _databases_names(cls, include_mirrors=True):
         # this app has no databases
@@ -44,19 +44,18 @@ class SendMoneyFunctionalTestCase(LiveServerTestCase):
 
     def load_test_data(self):
         logger.info('Reloading test data')
-        sock = None
         try:
-            sock = socket.socket()
-            sock.connect(('localhost', os.environ.get('CONTROLLER_PORT', 8800)))
-            sock.sendall(b'load_test_data')
-            response = sock.recv(1024).strip()
-            if response != b'done':
-                logger.error('Test data not reloaded!')
+            with socket.socket() as sock:
+                sock.connect((
+                    urlparse(settings.API_URL).netloc.split(':')[0],
+                    os.environ.get('CONTROLLER_PORT', 8800)
+                ))
+                sock.sendall(b'load_test_data')
+                response = sock.recv(1024).strip()
+                if response != b'done':
+                    logger.error('Test data not reloaded!')
         except OSError:
             logger.exception('Error communicating with test server controller socket')
-        finally:
-            if sock:
-                sock.close()
 
     def fill_in_send_money_form(self, data, payment_method):
         for key in data:
@@ -70,6 +69,7 @@ class SendMoneyFunctionalTestCase(LiveServerTestCase):
 
     # TODO: remove skip once TD allows showing bank transfers
     @unittest.skipIf(settings.HIDE_BANK_TRANSFER_OPTION, 'bank transfer is disabled')
+    @unittest.skip('the form is currently half-done')
     def test_bank_transfer_flow(self):
         self.driver.get(self.live_server_url)
         self.fill_in_send_money_form({
@@ -82,6 +82,7 @@ class SendMoneyFunctionalTestCase(LiveServerTestCase):
         self.driver.find_element_by_id('id_next_btn').click()
         self.assertIn('<!-- bank_transfer -->', self.driver.page_source)
 
+    @unittest.skip('debit card flow has changed')
     def test_debit_card_flow(self):
         self.driver.get(self.live_server_url)
         self.fill_in_send_money_form({
