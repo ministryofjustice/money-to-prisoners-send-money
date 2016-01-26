@@ -4,7 +4,6 @@ import logging
 from django.conf import settings
 from django.core.urlresolvers import reverse, reverse_lazy
 from django.shortcuts import redirect, render
-from django.utils import timezone
 from django.utils.translation import ugettext as _
 from django.views.generic import FormView
 import requests
@@ -100,73 +99,81 @@ def bank_transfer_view(request):
 def debit_card_view(request):
     context = make_context_from_session(request.session)
 
-    new_transaction = {
+    new_payment = {
         'amount': int(context['amount']*100),
-        'reference': context['prisoner_name'],
+        'recipient_name': context['prisoner_name'],
         'prisoner_number': context['prisoner_number'],
         'prisoner_dob': context['prisoner_dob'].isoformat(),
-        'received_at': timezone.now().replace(microsecond=0).isoformat(),
-        'category': 'online_credit',
-        'payment_outcome': 'pending'
     }
 
     client = get_api_client()
     try:
-        api_response = client.send_money.transactions.post(new_transaction)
+        api_response = client.payments.post(new_payment)
+        payment_ref = api_response['uuid']
 
-        new_payment = {
-            'accountId': settings.GOVUK_PAY_ACCOUNT_ID,
+        new_govuk_payment = {
             'amount': int(context['amount']*100),
-            'reference': api_response['id'],
+            'reference': payment_ref,
             'description': _('Payment to prisoner %(prisoner_number)s'
                              % {'prisoner_number': context['prisoner_number']}),
-            'returnUrl': site_url(reverse('send_money:confirmation')),
+            'return_url': site_url(
+                reverse('send_money:confirmation') + '?payment_ref=' + payment_ref
+            ),
         }
 
         govuk_response = requests.post(
-            govuk_url('/payments'), headers=govuk_headers(), data=new_payment
+            govuk_url('/payments'), headers=govuk_headers(), json=new_govuk_payment
         )
 
         if govuk_response.status_code == 201:
-            return redirect(get_link_by_rel(govuk_response.json(), 'next_url')['href'])
+            govuk_data = govuk_response.json()
+            payment_update = {
+                'processor_id': govuk_data['payment_id']
+            }
+            client.payments(payment_ref).patch(payment_update)
+            return redirect(get_link_by_rel(govuk_data, 'next_url')['href'])
         else:
             logger.error(
                 'Failed to create new GOV.UK payment for transaction %s'
-                % api_response['id']
+                % api_response['uuid']
             )
     except SlumberHttpBaseException:
-        logger.exception('Failed to create new transaction')
+        logger.exception('Failed to create new payment')
 
     return render(request, 'send_money/failure.html', context)
 
 
 def confirmation_view(request):
-    ref = request.GET.get('paymentReference')
-    if ref is None:
+    payment_ref = request.GET.get('payment_ref')
+    if payment_ref is None:
         return redirect(reverse('send_money:send_money'))
     context = {'success': False}
 
-    govuk_response = requests.get(
-        govuk_url('/payments/%s' % ref), headers=govuk_headers()
-    )
-
-    if (govuk_response.status_code == 200 and
-            govuk_response.json()['status'] == 'SUCCEEDED'):
-        payment_update = {
-            'payment_outcome': 'taken'
-        }
+    try:
         client = get_api_client()
-        try:
-            client.send_money.transactions(ref).post(payment_update)
-            context['success'] = True
-        except SlumberHttpBaseException:
-            logger.exception(
-                'Failed to update payment_outcome of transaction %s to "taken"' % ref,
-            )
-    else:
-        logger.error(
-            'Failed to retrieve payment status from GOV.UK for transaction %s' % ref
+        api_response = client.payments(payment_ref).get()
+        govuk_id = api_response['processor_id']
+
+        govuk_response = requests.get(
+            govuk_url('/payments/%s' % govuk_id), headers=govuk_headers()
         )
+
+        if (govuk_response.status_code == 200 and
+                govuk_response.json()['status'] == 'SUCCEEDED'):
+            payment_update = {
+                'status': 'taken'
+            }
+
+            client.payments(payment_ref).patch(payment_update)
+            context['success'] = True
+        else:
+            logger.error(
+                'Failed to retrieve payment status from GOV.UK for payment %s' % payment_ref
+            )
+    except SlumberHttpBaseException:
+            logger.exception(
+                'Failed to access payment %s' % payment_ref,
+            )
 
     request.session.flush()
     return render(request, 'send_money/confirmation.html', context)

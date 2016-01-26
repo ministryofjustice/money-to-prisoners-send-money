@@ -226,22 +226,30 @@ class DebitCardViewTestCase(BaseTestCase):
     def test_debit_card_payment(self):
         self.populate_session()
         with responses.RequestsMock() as rsps, self.settings(GOVUK_PAY_URL='http://payment.gov.uk'):
+            ref = 'wargle-blargle'
+            processor_id = '3'
             mock_auth(rsps)
             rsps.add(
                 rsps.POST,
-                api_url('/send_money/transactions/'),
-                json={'id': 3},
+                api_url('/payments/'),
+                json={'uuid': ref},
                 status=201,
             )
             rsps.add(
                 rsps.POST,
                 govuk_url('/payments/'),
                 json={
+                    'payment_id': processor_id,
                     'links': [
                         {'rel': 'next_url', 'href': govuk_url(self.payment_process_path)}
                     ]
                 },
                 status=201
+            )
+            rsps.add(
+                rsps.PATCH,
+                api_url('/payments/%s/' % ref),
+                status=200,
             )
             response = self.client.get(self.url, follow=False)
             self.assertRedirects(
@@ -255,7 +263,7 @@ class DebitCardViewTestCase(BaseTestCase):
             mock_auth(rsps)
             rsps.add(
                 rsps.POST,
-                api_url('/send_money/transactions/'),
+                api_url('/payments/'),
                 status=500,
             )
             response = self.client.get(self.url, follow=False)
@@ -267,8 +275,8 @@ class DebitCardViewTestCase(BaseTestCase):
             mock_auth(rsps)
             rsps.add(
                 rsps.POST,
-                api_url('/send_money/transactions/'),
-                json={'id': 3},
+                api_url('/payments/'),
+                json={'uuid': 'wargle-blargle'},
                 status=201,
             )
             rsps.add(
@@ -290,23 +298,30 @@ class ConfirmationViewTestCase(BaseTestCase):
     def test_confirmation(self):
         self.populate_session()
         with responses.RequestsMock() as rsps, self.settings(GOVUK_PAY_URL='http://payment.gov.uk'):
-            ref = '3'
+            ref = 'wargle-blargle'
+            processor_id = '3'
+            mock_auth(rsps)
             rsps.add(
                 rsps.GET,
-                govuk_url('/payments/%s/' % ref),
+                api_url('/payments/%s/' % ref),
+                json={'processor_id': processor_id},
+                status=200,
+            )
+            rsps.add(
+                rsps.GET,
+                govuk_url('/payments/%s/' % processor_id),
                 json={
                     'status': 'SUCCEEDED'
                 },
                 status=200
             )
-            mock_auth(rsps)
             rsps.add(
-                rsps.POST,
-                api_url('/send_money/transactions/%s/' % ref),
+                rsps.PATCH,
+                api_url('/payments/%s/' % ref),
                 status=200,
             )
             response = self.client.get(
-                self.url, {'paymentReference': ref}, follow=False
+                self.url, {'payment_ref': ref}, follow=False
             )
             self.assertContains(response, 'SUCCESS')
             # check session is cleared
@@ -315,35 +330,50 @@ class ConfirmationViewTestCase(BaseTestCase):
 
     def test_confirmation_handles_api_errors(self):
         with responses.RequestsMock() as rsps, self.settings(GOVUK_PAY_URL='http://payment.gov.uk'):
-            ref = '3'
+            ref = 'wargle-blargle'
+            processor_id = '3'
+            mock_auth(rsps)
             rsps.add(
                 rsps.GET,
-                govuk_url('/payments/%s/' % ref),
+                api_url('/payments/%s/' % ref),
+                json={'processor_id': processor_id},
+                status=200,
+            )
+            rsps.add(
+                rsps.GET,
+                govuk_url('/payments/%s/' % processor_id),
                 json={
                     'status': 'SUCCEEDED'
                 },
                 status=200
             )
-            mock_auth(rsps)
             rsps.add(
-                rsps.POST,
-                api_url('/send_money/transactions/%s/' % ref),
+                rsps.PATCH,
+                api_url('/payments/%s/' % ref),
                 status=500,
             )
             response = self.client.get(
-                self.url, {'paymentReference': ref}, follow=False
+                self.url, {'payment_ref': ref}, follow=False
             )
             self.assertContains(response, 'FAILURE')
 
     def test_confirmation_handles_govuk_errors(self):
         with responses.RequestsMock() as rsps, self.settings(GOVUK_PAY_URL='http://payment.gov.uk'):
-            ref = '3'
+            ref = 'wargle-blargle'
+            processor_id = '3'
+            mock_auth(rsps)
             rsps.add(
                 rsps.GET,
-                govuk_url('/payments/%s/' % ref),
+                api_url('/payments/%s/' % ref),
+                json={'processor_id': processor_id},
+                status=200,
+            )
+            rsps.add(
+                rsps.GET,
+                govuk_url('/payments/%s/' % processor_id),
                 status=500
             )
             response = self.client.get(
-                self.url, {'paymentReference': ref}, follow=False
+                self.url, {'payment_ref': ref}, follow=False
             )
             self.assertContains(response, 'FAILURE')
