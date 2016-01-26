@@ -7,7 +7,7 @@ from moj_auth import logout
 from moj_auth.exceptions import Unauthorized
 from moj_auth.middleware import AuthenticationMiddleware
 
-logger = logging.getLogger()
+logger = logging.getLogger('mtp')
 
 
 class SendMoneyAuthenticationMiddleware(AuthenticationMiddleware):

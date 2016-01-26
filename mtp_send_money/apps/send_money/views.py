@@ -16,7 +16,7 @@ from send_money.utils import (
     govuk_headers, govuk_url, get_api_client, site_url, get_link_by_rel
 )
 
-logger = logging.getLogger()
+logger = logging.getLogger('mtp')
 
 
 def require_session_parameters(func):
