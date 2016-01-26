@@ -120,6 +120,10 @@ LOGGING = {
         },
     },
     'handlers': {
+        'null': {
+            'level': 'DEBUG',
+            'class': 'logging.NullHandler',
+        },
         'console': {
             'level': 'DEBUG',
             'class': 'logging.StreamHandler',
@@ -135,6 +139,10 @@ LOGGING = {
         'handlers': ['console'],
     },
     'loggers': {
+        'django.security.DisallowedHost': {
+            'handlers': ['null'],
+            'propagate': False,
+        },
         'mtp': {
             'level': 'INFO',
             'handlers': ['console'],
