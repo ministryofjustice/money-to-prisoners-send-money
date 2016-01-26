@@ -1,4 +1,4 @@
-import decimal
+from decimal import Decimal
 
 from django import template
 
@@ -17,6 +17,27 @@ def payment_method_description(payment_method):
 
 @register.filter
 def currency_format(amount):
-    if not isinstance(amount, decimal.Decimal):
+    """
+    Formats a number into currency format
+    @param amount: amount in pounds
+    """
+    if not isinstance(amount, Decimal):
         amount = unserialise_amount(amount)
     return '£' + serialise_amount(amount)
+
+
+@register.filter
+def currency_format_pence(amount_pence):
+    """
+    Formats a int into currency format
+    @param amount_pence: amount in pence
+    @type amount_pence: int
+    """
+    if amount_pence < 100:
+        return '%sp' % amount_pence
+    return currency_format(Decimal(amount_pence) / Decimal('100'))
+
+
+@register.filter
+def format_percentage(number):
+    return '%s%%' % number

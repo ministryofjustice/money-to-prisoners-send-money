@@ -4,6 +4,7 @@ Django settings for mtp_send_money project.
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.9/ref/settings/
 """
+from decimal import Decimal
 from functools import partial
 import os
 from os.path import abspath, dirname, join
@@ -202,6 +203,8 @@ LOGOUT_URL = 'logout'
 
 OAUTHLIB_INSECURE_TRANSPORT = True
 
+SERVICE_CHARGE_PERCENTAGE = Decimal('2.4')
+SERVICE_CHARGE_FIXED = 20  # int, in pence
 
 GOOGLE_ANALYTICS_ID = os.environ.get('GOOGLE_ANALYTICS_ID', None)
 

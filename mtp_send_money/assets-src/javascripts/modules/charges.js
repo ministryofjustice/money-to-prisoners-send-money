@@ -11,6 +11,9 @@ exports.Charges = {
     var $noJsSection = $(this.selector + ' .mtp-charges-no-js');
     var $input = $(this.selector + ' .mtp-charges-amount');
 
+    this.percentageCharge = $input.data('percentage-charge');
+    this.fixedCharge = $input.data('fixed-charge');
+
     this.$charges = $(this.selector + ' .mtp-charges-charges');
     this.$total = $(this.selector + ' .mtp-charges-total span');
 
@@ -22,15 +25,15 @@ exports.Charges = {
   },
 
   _formatAsPrice: function(num) {
-    return num.toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    return '£' + num.toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
   },
 
   _updateTotal: function (event) {
     var amount = event.target.value;
     var serviceCharge;
-    if (/^\d+(\.\d{2})?$/.test(amount)) {
+    if (/^\d+(\.\d{1,2})?$/.test(amount)) {
       amount = Number(amount);
-      serviceCharge = amount * 0.024 + .2;
+      serviceCharge = (amount * this.percentageCharge + this.fixedCharge) / 100;
       this.$charges.text(this._formatAsPrice(serviceCharge));
       this.$total.text(this._formatAsPrice(amount + serviceCharge));
     } else {

@@ -1,5 +1,5 @@
 import datetime
-import decimal
+from decimal import Decimal
 import re
 
 from django.conf import settings
@@ -26,13 +26,27 @@ def validate_prisoner_number(value):
         raise ValidationError(_('Incorrect prisoner number format'), code='invalid')
 
 
+def get_service_charge(amount):
+    if not isinstance(amount, Decimal):
+        amount = Decimal(amount)
+    percentage_pence = amount * settings.SERVICE_CHARGE_PERCENTAGE
+    fixed_pence = Decimal(settings.SERVICE_CHARGE_FIXED)
+    return (percentage_pence + fixed_pence) / Decimal('100')
+
+
+def get_total_charge(amount):
+    if not isinstance(amount, Decimal):
+        amount = Decimal(amount)
+    return amount + get_service_charge(amount)
+
+
 def serialise_amount(amount):
     return '{0:.2f}'.format(amount)
 
 
 def unserialise_amount(amount_text):
     amount_text = force_text(amount_text)
-    return decimal.Decimal(amount_text)
+    return Decimal(amount_text)
 
 
 def serialise_date(date):
