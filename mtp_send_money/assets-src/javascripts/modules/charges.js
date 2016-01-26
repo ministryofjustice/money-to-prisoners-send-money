@@ -22,14 +22,13 @@ exports.Charges = {
   },
 
   _formatAsPrice: function(num) {
-
     return num.toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
   },
 
   _updateTotal: function (event) {
     var amount = event.target.value;
     var serviceCharge;
-    if (/^\d*\.?\d{2}?$/.test(amount)) {
+    if (/^\d+(\.\d{2})?$/.test(amount)) {
       amount = Number(amount);
       serviceCharge = amount * 0.024 + .2;
       this.$charges.text(this._formatAsPrice(serviceCharge));

@@ -1,12 +1,41 @@
 {% extends 'base.html' %}
 {% load i18n %}
-{% load send_money %}
+{% load send_money moj_utils %}
 
 {% block content %}
   <h1>{% trans 'Who are you sending money to?' %}</h1>
 
   <form method="post" action=".">
     {% csrf_token %}
+
+    {% if form.errors %}
+      <div class="error-summary" aria-labelledby="error-summary-heading" tabindex="-1" role="alert">
+        <h1 class="error-summary-heading heading-medium" id="error-summary-heading">{% trans 'There was a problem submitting the form' %}</h1>
+        <p>{% trans 'Because of the following problems:' %}</p>
+        <ol class="error-summary-list">
+          {% for field, errors in form.errors.items %}
+            {% with field_obj=form|field_from_name:field %}
+              <li>
+                {% if field_obj %}
+                  <a href="#{{ field_obj.auto_id }}-label">
+                  {{ field_obj.label }} —
+                {% endif %}
+                {% for error in errors %}
+                  {% if not forloop.first  %}
+                    {% trans 'and' %}
+                  {% endif %}
+                  {{ error }}
+                {% endfor %}
+                {% if field_obj %}
+                  </a>
+                {% endif %}
+              </li>
+            {% endwith %}
+          {% endfor %}
+        </ol>
+      </div>
+    {% endif %}
+
 
     {% if preview %}
 
@@ -42,40 +71,60 @@
 
     <fieldset>
       <legend class="form-label-bold">{% trans "Prisoner details" %}</legend>
-      <div class="form-group">
-        <label class="form-label" for="prisoner-name">{% trans "Prisoner name" %}</label>
-        <input class="form-control" id="prisoner-name" type="text"/>
+      <div class="form-group {% if form.prisoner_name.errors %}error{% endif %}">
+        <label class="form-label" for="id_prisoner_name">{% trans "Prisoner name" %}</label>
+        {% for error in form.prisoner_name.errors %}
+          <span class="error-message">{{ error }}</span>
+        {% endfor %}
+        <input class="form-control" id="id_prisoner_name" name="prisoner_name" type="text"/>
       </div>
       <div class="form-group form-date">
         <label class="form-label">{% trans "Prisoner date of birth" %}</label>
         <div class="form-hint">{% trans "eg 28 04 1996" %}</div>
         <div>
-           <div class="form-date-day">
-             <label class="form-label" for="prisoner-dob-day">{% trans "Day" %}</label>
-             <input class="form-control" id="prisoner-dob-day" type="text"/>
+           <div class="form-date-day {% if form.prisoner_dob_day.errors %}error{% endif %}">
+             <label class="form-label" for="prisoner_dob_day">{% trans "Day" %}</label>
+             {% for error in form.prisoner_dob_day.errors %}
+             <span class="error-message">{{ error }}</span>
+             {% endfor %}
+             <input class="form-control" id="prisoner_dob_day" name="prisoner_dob_day" type="text"/>
            </div>
-           <div class="form-date-month">
-             <label class="form-label" for="prisoner-dob-month">{% trans "Month" %}</label>
-             <input class="form-control" id="prisoner-dob-month" type="text"/>
+           <div class="form-date-month {% if form.prisoner_dob_month.errors %}error{% endif %}">
+             <label class="form-label" for="prisoner_dob_month">{% trans "Month" %}</label>
+             {% for error in form.prisoner_dob_month.errors %}
+             <span class="error-message">{{ error }}</span>
+             {% endfor %}
+             <input class="form-control" id="prisoner_dob_month" name="prisoner_dob_month" type="text"/>
            </div>
-           <div class="form-date-year">
-             <label class="form-label" for="prisoner-dob-year">{% trans "Year" %}</label>
-             <input class="form-control" id="prisoner-dob-year" type="text"/>
+           <div class="form-date-year {% if form.prisoner_dob_year.errors %}error{% endif %}">
+             <label class="form-label" for="prisoner_dob_year">{% trans "Year" %}</label>
+             {% for error in form.prisoner_dob_year.errors %}
+             <span class="error-message">{{ error }}</span>
+             {% endfor %}
+             <input class="form-control" id="prisoner_dob_year" name="prisoner_dob_year" type="text"/>
            </div>
         </div>
       </div>
-      <div class="form-group">
-        <label class="form-label" for="prisoner-number">{% trans "Prisoner number" %}</label>
+      <div class="form-group {% if form.prisoner_number.errors %}error{% endif %}">
+        <label class="form-label" for="id_prisoner_number">{% trans "Prisoner number" %}</label>
+        {% for error in form.prisoner_number.errors %}
+          <span class="error-message">{{ error }}</span>
+        {% endfor %}
         <div class="form-hint">{% trans "eg a1234bc" %}</div>
-        <input class="form-control mtp-prisoner-number" id="prisoner-number" type="text"/>
+        <input class="form-control mtp-prisoner-number" id="id_prisoner_number" name="prisoner_number" type="text"/>
       </div>
     </fieldset>
 
     <div class="mtp-amount">
       <fieldset>
-        <legend class="form-label-bold" for="amount">{% trans "How much are you sending?" %}</legend>
-        <div class="form-group mtp-money-amount">
-          <div class="form-control">{% trans "£" %}</div><input class="form-control mtp-charges-amount" type="text"/>
+        <legend class="form-label-bold" for="id_amount">{% trans "How much are you sending?" %}</legend>
+        <div class="form-group mtp-money-amount {% if form.amount.errors %}error{% endif %}">
+         {% for error in form.amount.errors %}
+         <div class="error-message">{{ error }}</div>
+         {% endfor %}
+         <div class="money-box">
+            <div class="form-control">{% trans "£" %}</div><input id="id_amount" class="form-control mtp-charges-amount" name="amount" type="text"/>
+         </div>
         </div>
       </fieldset>
       <div class="form-group">
@@ -91,6 +140,8 @@
       </div>
     </div>
 
+<p><label for="id_payment_method_0">Payment method:</label> <ul id="id_payment_method"><li><label for="id_payment_method_0"><input checked="checked" id="id_payment_method_0" name="payment_method" type="radio" value="debit_card" /> Debit card through this website</label></li>
+<li><label for="id_payment_method_1"><input id="id_payment_method_1" name="payment_method" type="radio" value="bank_transfer" /> Bank transfer</label></li></ul></p>
 
       {# TODO: remove style block once TD allows showing bank transfers #}
       {% if HIDE_BANK_TRANSFER_OPTION %}

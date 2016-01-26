@@ -35,8 +35,20 @@ class SendMoneyForm(forms.Form):
         max_length=7,
         validators=[validate_prisoner_number],
     )
-    prisoner_dob = forms.DateField(
-        label=_('Prisoner’s date of birth'),
+    prisoner_dob_day = forms.IntegerField(
+        label=_('Prisoner’s day of birth'),
+        min_value=1,
+        max_value=31
+    )
+    prisoner_dob_month = forms.IntegerField(
+        label=_('Prisoner’s month of birth'),
+        min_value=1,
+        max_value=12
+    )
+    prisoner_dob_year = forms.IntegerField(
+        label=_('Prisoner’s year of birth'),
+        min_value=1000,
+        max_value=3000
     )
     amount = forms.DecimalField(
         label=_('Amount'),
@@ -70,7 +82,10 @@ class SendMoneyForm(forms.Form):
 
     def clean(self):
         prisoner_number = self.cleaned_data.get('prisoner_number')
-        prisoner_dob = self.cleaned_data.get('prisoner_dob')
+        prisoner_dob_day = self.cleaned_data.get('prisoner_dob_day')
+        prisoner_dob_month = self.cleaned_data.get('prisoner_dob_month')
+        prisoner_dob_year = self.cleaned_data.get('prisoner_dob_year')
+        prisoner_dob = unserialise_date(prisoner_dob_day, prisoner_dob_month, prisoner_dob_year)
         try:
             if not self.errors and \
                     not self.check_prisoner_validity(prisoner_number, prisoner_dob):

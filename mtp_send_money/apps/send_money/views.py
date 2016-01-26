@@ -74,7 +74,7 @@ class SendMoneyView(FormView):
 
 def make_context_from_session(session):
     context = {field: session[field] for field in SendMoneyForm.get_field_names()}
-    context['prisoner_dob'] = unserialise_date(context['prisoner_dob'])
+    context['prisoner_dob'] = unserialise_date(context['prisoner_dob_day'], context['prisoner_dob_month'], context['prisoner_dob_year'])
     context['amount'] = unserialise_amount(context['amount'])
     return context
 

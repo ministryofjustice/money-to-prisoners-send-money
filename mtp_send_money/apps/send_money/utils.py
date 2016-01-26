@@ -39,16 +39,16 @@ def serialise_date(date):
     return format_date(date, 'Y-m-d')
 
 
-def unserialise_date(date_text):
-    date_text = force_text(date_text)
+def unserialise_date(date_text_day, date_text_month, date_text_year):
+    date_text = force_text('%d-%02d-%d' % (date_text_year, date_text_month, date_text_month ))
     date = parse_date(date_text)
     if not date:
         raise ValueError('Invalid date')
     return date
 
 
-def lenient_unserialise_date(date_text):
-    date_text = force_text(date_text)
+def lenient_unserialise_date(date_text_day, date_text_month, date_text_year):
+    date_text = force_text('%d-%02d-%d' % (date_text_year, date_text_month, date_text_month ))
     date_formats = formats.get_format('DATE_INPUT_FORMATS')
     for date_format in date_formats:
         try:
