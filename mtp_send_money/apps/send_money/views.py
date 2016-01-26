@@ -186,3 +186,8 @@ def confirmation_view(request):
 
     request.session.flush()
     return render(request, 'send_money/confirmation.html', context)
+
+
+def clear_session_view(request):
+    request.session.flush()
+    return redirect('send_money:send_money')
