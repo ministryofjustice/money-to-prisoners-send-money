@@ -1,183 +1,206 @@
 {% extends 'base.html' %}
 {% load i18n %}
-{% load send_money moj_utils %}
+{% load moj_utils %}
+{% load send_money %}
 
 {% block content %}
-  <h1>{% trans 'Who are you sending money to?' %}</h1>
-
   <form method="post" action=".">
     {% csrf_token %}
 
-    {% if form.errors %}
-      <div class="error-summary" aria-labelledby="error-summary-heading" tabindex="-1" role="alert">
-        <h1 class="error-summary-heading heading-medium" id="error-summary-heading">{% trans 'There was a problem submitting the form' %}</h1>
-        <p>{% trans 'Because of the following problems:' %}</p>
-        <ol class="error-summary-list">
-          {% for field, errors in form.errors.items %}
-            {% with field_obj=form|field_from_name:field %}
-              <li>
-                {% if field_obj %}
-                  <a href="#{{ field_obj.auto_id }}-label">
-                  {{ field_obj.label }} —
-                {% endif %}
-                {% for error in errors %}
-                  {% if not forloop.first  %}
-                    {% trans 'and' %}
-                  {% endif %}
-                  {{ error }}
-                {% endfor %}
-                {% if field_obj %}
-                  </a>
-                {% endif %}
-              </li>
-            {% endwith %}
-          {% endfor %}
-        </ol>
-      </div>
-    {% endif %}
-
-
     {% if preview %}
+      <h1>{% trans 'Check details' %}</h1>
 
       <p>
-        {% trans 'Please check the details below and click Next if everything is correct.' %}
+        {% trans 'Check and change any details that are incorrect.' %}
       </p>
-      <dl>
-        <dt>{% trans 'Prisoner’s name' %}</dt>
-        <dd>{{ form.prisoner_name.value }}</dd>
 
-        <dt>{% trans 'Prisoner’s number' %}</dt>
-        <dd>{{ form.prisoner_number.value }}</dd>
+      <hr/>
 
-        <dt>{% trans 'Prisoner’s date of birth' %}</dt>
-        <dd>{{ form.prisoner_dob.value }}</dd>
+      <h2>{% trans 'Prisoner details' %}</h2>
+      {# edit without clearing: #}
+      <input class="button button-secondary" type="submit" name="change" value="{% trans 'Change this' %}">
 
-        <dt>{% trans 'Amount' %}</dt>
-        <dd>{{ form.amount.value|currency_format }}</dd>
+      <p>
+        {% trans 'Name' %}: {{ form.prisoner_name.value }}<br>
+        {% trans 'Date of birth' %}: {{ form.prisoner_dob.value|join:'/' }}<br>
+        {% trans 'Prisoner number' %}: {{ form.prisoner_number.value }}
+      </p>
 
-        <dt>{% trans 'Payment method' %}</dt>
-        <dd>{{ form.payment_method.value|payment_method_description }}</dd>
-      </dl>
+      <h2>{% trans 'Money you are sending' %}</h2>
+      {# edit without clearing: #}
+      <input class="button button-secondary" type="submit" name="change" value="{% trans 'Change this' %}">
 
+      <p>
+        {% trans 'Total to prisoner' %}: {{ form.amount.value|currency_format }}<br>
+        {% trans 'Total to be taken from your account' %}: {{ form.amount.value|add_service_charge|currency_format }}<br>
+        <!-- {{ form.payment_method.label }}: {{ form.payment_method.value|payment_method_description }} -->
+      </p>
+
+      {# hidden form #}
       {{ form }}
 
       <p>
-        <input id="id_next_btn" class="button" type="submit" name="next" value="{% trans 'Next' %}">
-        <input id="id_back_btn" class="button button-secondary" type="submit" name="change" value="{% trans 'Go back and change details' %}">
+        <input id="id_next_btn" class="button" type="submit" name="next" value="{% trans 'Make payment' %}">
+        {# clear form: #}
+        <a href="{% url 'send_money:clear_session' %}">{% trans 'Cancel and delete all details' %}</a>
       </p>
 
-        <!-- {{ request.resolver_match.url_name }}.preview -->
+      <!-- {{ request.resolver_match.url_name }}.preview -->
     {% else %}
+      <h1>{% trans 'Who are you sending money to?' %}</h1>
 
-    <fieldset>
-      <legend class="form-label-bold">{% trans "Prisoner details" %}</legend>
-      <div class="form-group {% if form.prisoner_name.errors %}error{% endif %}">
-        <label class="form-label" for="id_prisoner_name">{% trans "Prisoner name" %}</label>
-        {% for error in form.prisoner_name.errors %}
-          <span class="error-message">{{ error }}</span>
-        {% endfor %}
-        <input class="form-control" id="id_prisoner_name" name="prisoner_name" type="text"/>
-      </div>
-      <div class="form-group form-date">
-        <label class="form-label">{% trans "Prisoner date of birth" %}</label>
-        <div class="form-hint">{% trans "eg 28 04 1996" %}</div>
-        <div>
-           <div class="form-date-day {% if form.prisoner_dob_day.errors %}error{% endif %}">
-             <label class="form-label" for="prisoner_dob_day">{% trans "Day" %}</label>
-             {% for error in form.prisoner_dob_day.errors %}
-             <span class="error-message">{{ error }}</span>
-             {% endfor %}
-             <input class="form-control" id="prisoner_dob_day" name="prisoner_dob_day" type="text"/>
-           </div>
-           <div class="form-date-month {% if form.prisoner_dob_month.errors %}error{% endif %}">
-             <label class="form-label" for="prisoner_dob_month">{% trans "Month" %}</label>
-             {% for error in form.prisoner_dob_month.errors %}
-             <span class="error-message">{{ error }}</span>
-             {% endfor %}
-             <input class="form-control" id="prisoner_dob_month" name="prisoner_dob_month" type="text"/>
-           </div>
-           <div class="form-date-year {% if form.prisoner_dob_year.errors %}error{% endif %}">
-             <label class="form-label" for="prisoner_dob_year">{% trans "Year" %}</label>
-             {% for error in form.prisoner_dob_year.errors %}
-             <span class="error-message">{{ error }}</span>
-             {% endfor %}
-             <input class="form-control" id="prisoner_dob_year" name="prisoner_dob_year" type="text"/>
-           </div>
+      {% if form.errors %}
+        <div class="error-summary" aria-labelledby="error-summary-heading" tabindex="-1" role="alert">
+          <h1 class="error-summary-heading heading-medium" id="error-summary-heading">{% trans 'There was a problem submitting the form' %}</h1>
+          <p>{% trans 'Because of the following problems:' %}</p>
+          <ol class="error-summary-list">
+            {% for field, errors in form.errors.items %}
+              {% with field_obj=form|field_from_name:field %}
+                <li>
+                  {% if field_obj %}
+                    <a href="#{{ field_obj.id_for_label }}-label">
+                    {{ field_obj.label }} —
+                  {% endif %}
+                  {% for error in errors %}
+                    {% if not forloop.first  %}
+                      <br /> —
+                    {% endif %}
+                    {{ error }}
+                  {% endfor %}
+                  {% if field_obj %}
+                    </a>
+                  {% endif %}
+                </li>
+              {% endwith %}
+            {% endfor %}
+          </ol>
         </div>
-      </div>
-      <div class="form-group {% if form.prisoner_number.errors %}error{% endif %}">
-        <label class="form-label" for="id_prisoner_number">{% trans "Prisoner number" %}</label>
-        {% for error in form.prisoner_number.errors %}
-          <span class="error-message">{{ error }}</span>
-        {% endfor %}
-        <div class="form-hint">{% trans "eg a1234bc" %}</div>
-        <input class="form-control mtp-prisoner-number" id="id_prisoner_number" name="prisoner_number" type="text"/>
-      </div>
-    </fieldset>
-
-    <div class="mtp-amount">
-      <fieldset>
-        <legend class="form-label-bold" for="id_amount">{% trans "How much are you sending?" %}</legend>
-        <div class="form-group mtp-money-amount {% if form.amount.errors %}error{% endif %}">
-         {% for error in form.amount.errors %}
-         <div class="error-message">{{ error }}</div>
-         {% endfor %}
-         <div class="money-box">
-            <div class="form-control">{% trans "£" %}</div><input id="id_amount" class="form-control mtp-charges-amount" name="amount" type="text" data-percentage-charge="{{ service_charge_percentage }}" data-fixed-charge="{{ service_charge_fixed }}" />
-         </div>
-        </div>
-      </fieldset>
-      <div class="form-group">
-        <fieldset class="mtp-charges-js" style="display:none">
-          <p class="form-label">
-            {% trans "Service charge:" %}
-            <span class="mtp-charges-charges"></span>
-          </p>
-          <p class="form-hint">
-            {% blocktrans trimmed with charge_percentage=service_charge_percentage|format_percentage charge_fixed=service_charge_fixed|currency_format_pence %}
-              The service charge is {{ charge_percentage }} of the amount you’re sending, plus {{ charge_fixed }}. This fee is charged by your card provider.
-            {% endblocktrans %}
-          </p>
-          <p class="form-label-bold mtp-charges-total">
-            {% trans "Total to pay:" %}
-            <span></span>
-          </p>
-        </fieldset>
-        <fieldset class="mtp-charges-no-js">
-          <p>
-            {% blocktrans trimmed with charge_percentage=service_charge_percentage|format_percentage charge_fixed=service_charge_fixed|currency_format_pence %}
-              The service charge is {{ charge_percentage }} of the amount you’re sending, plus {{ charge_fixed }}. This fee is charged by your card provider.
-            {% endblocktrans %}
-          </p>
-          <p>
-            {% blocktrans trimmed with sample_amount=sample_amount|currency_format sample_amount_total_charge=sample_amount_total_charge|currency_format %}
-              For instance, if you want to send {{ sample_amount }}, you will be charged {{ sample_amount_total_charge }}.
-            {% endblocktrans %}
-          </p>
-        </fieldset>
-      </div>
-    </div>
-
-<p><label for="id_payment_method_0">Payment method:</label> <ul id="id_payment_method"><li><label for="id_payment_method_0"><input checked="checked" id="id_payment_method_0" name="payment_method" type="radio" value="debit_card" /> Debit card through this website</label></li>
-<li><label for="id_payment_method_1"><input id="id_payment_method_1" name="payment_method" type="radio" value="bank_transfer" /> Bank transfer</label></li></ul></p>
-
-      {# TODO: remove style block once TD allows showing bank transfers #}
-      {% if HIDE_BANK_TRANSFER_OPTION %}
-        <style type="text/css" scoped>
-          #id_payment_method, label[for=id_payment_method_0] {
-            display: none;
-          }
-        </style>
       {% endif %}
 
-      {% csrf_token %}
-      {{ form.as_p }}
+      <fieldset>
+        <legend class="form-label-bold">{% trans "Prisoner details" %}</legend>
+
+        {% with field=form.prisoner_name %}
+          <div class="form-group {% if field.errors %}error{% endif %}">
+            <label id="{{ field.id_for_label }}-label" class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {% for error in field.errors %}
+              <span class="error-message">{{ error }}</span>
+            {% endfor %}
+            <input class="form-control" id="{{ field.id_for_label }}" name="{{ field.html_name }}" value="{{ field.value|default:'' }}" type="text"/>
+          </div>
+        {% endwith %}
+
+        {% with field=form.prisoner_dob %}
+          <div class="form-group form-date {% if field.errors %}error{% endif %}">
+            <label class="form-label">{{ field.label }}</label>
+            {% for error in field.errors %}
+              <span class="error-message">{{ error }}</span>
+            {% endfor %}
+            <div class="form-hint">{% trans "eg 28 04 1996" %}</div>
+            <div>
+               <div class="form-date-day {% if field.errors %}error{% endif %}">
+                 <label id="{{ field.auto_id }}_0-label" class="form-label" for="{{ field.auto_id }}_0">{% trans "Day" %}</label>
+                 <input class="form-control" id="{{ field.auto_id }}_0" name="{{ field.html_name }}_0" value="{{ field.value.0|default:'' }}" type="text"/>
+               </div>
+               <div class="form-date-month {% if field.errors %}error{% endif %}">
+                 <label id="{{ field.auto_id }}_1-label" class="form-label" for="{{ field.auto_id }}_1">{% trans "Month" %}</label>
+                 <input class="form-control" id="{{ field.auto_id }}_1" name="{{ field.html_name }}_1" value="{{ field.value.1|default:'' }}" type="text"/>
+               </div>
+               <div class="form-date-year {% if field.errors %}error{% endif %}">
+                 <label id="{{ field.auto_id }}_2-label" class="form-label" for="{{ field.auto_id }}_2">{% trans "Year" %}</label>
+                 <input class="form-control" id="{{ field.auto_id }}_2" name="{{ field.html_name }}_2" value="{{ field.value.2|default:'' }}" type="text"/>
+               </div>
+            </div>
+          </div>
+        {% endwith %}
+
+        {% with field=form.prisoner_number %}
+          <div class="form-group {% if field.errors %}error{% endif %}">
+            <label id="{{ field.id_for_label }}-label" class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {% for error in field.errors %}
+              <span class="error-message">{{ error }}</span>
+            {% endfor %}
+            <div class="form-hint">{% trans "eg A1234BC" %}</div>
+            <input class="form-control mtp-prisoner-number" id="{{ field.id_for_label }}" name="{{ field.html_name }}" value="{{ field.value|default:'' }}" type="text"/>
+          </div>
+        {% endwith %}
+      </fieldset>
+
+      {% with field=form.amount %}
+        <div class="mtp-amount">
+          <fieldset>
+            <label id="{{ field.id_for_label }}-label" class="form-label-bold" for="{{ field.id_for_label }}">{% trans "How much are you sending?" %}</label>
+            <div class="form-group mtp-money-amount {% if field.errors %}error{% endif %}">
+             {% for error in field.errors %}
+               <div class="error-message">{{ error }}</div>
+             {% endfor %}
+             <div class="money-box">
+               <div class="form-control">£</div><input id="{{ field.id_for_label }}" class="form-control mtp-charges-amount" name="{{ field.html_name }}" value="{{ field.value|default:'' }}" type="text" data-percentage-charge="{{ service_charge_percentage }}" data-fixed-charge="{{ service_charge_fixed }}" />
+             </div>
+            </div>
+          </fieldset>
+          <div class="form-group">
+            <fieldset class="mtp-charges-js" style="display:none">
+              <p class="form-label">
+                {% trans "Service charge:" %}
+                <span class="mtp-charges-charges"></span>
+              </p>
+              <p class="form-hint">
+                {% blocktrans trimmed with charge_percentage=service_charge_percentage|format_percentage charge_fixed=service_charge_fixed|currency_format_pence %}
+                  The service charge is {{ charge_percentage }} of the amount you’re sending, plus {{ charge_fixed }}. This fee is charged by your card provider.
+                {% endblocktrans %}
+              </p>
+              <p class="form-label-bold mtp-charges-total">
+                {% trans "Total to pay:" %}
+                <span></span>
+              </p>
+            </fieldset>
+            <fieldset class="mtp-charges-no-js">
+              <p>
+                {% blocktrans trimmed with charge_percentage=service_charge_percentage|format_percentage charge_fixed=service_charge_fixed|currency_format_pence %}
+                  The service charge is {{ charge_percentage }} of the amount you’re sending, plus {{ charge_fixed }}. This fee is charged by your card provider.
+                {% endblocktrans %}
+              </p>
+              <p>
+                {% blocktrans trimmed with sample_amount=sample_amount|currency_format sample_amount_total_charge=sample_amount|add_service_charge|currency_format %}
+                  For instance, if you want to send {{ sample_amount }}, you will be charged {{ sample_amount_total_charge }}.
+                {% endblocktrans %}
+              </p>
+            </fieldset>
+          </div>
+        </div>
+      {% endwith %}
+
+      {% with field=form.payment_method %}
+        {# TODO: remove style block once TD allows showing bank transfers #}
+        <style type="text/css" scoped>
+          #{{ field.auto_id }} {
+            {% if HIDE_BANK_TRANSFER_OPTION %}
+            visibility: hidden;
+            {% else %}
+            background: repeating-linear-gradient(-45deg, transparent, transparent 10px, #fee 10px, #fee 20px);
+            {% endif %}
+          }
+        </style>
+
+        <div id="{{ field.auto_id }}" class="form-group">
+          <fieldset>
+            <legend class="form-label-bold">{{ field.label }}</legend>
+            {% for option in field.field.choices %}
+              <label class="block-label {% if field.value|to_string == option.0 %}selected{% endif %}">
+                <input {% if field.value|to_string == option.0 %}checked="checked"{% endif %} name="{{ field.html_name }}" type="radio" value="{{ option.0 }}"/>
+                {{ option.1 }}
+              </label>
+            {% endfor %}
+          </fieldset>
+        </div>
+      {% endwith %}
 
       <p>
         <input id="id_next_btn" class="button" type="submit" value="{% trans 'Continue' %}">
       </p>
 
-        <!-- {{ request.resolver_match.url_name }}.form -->
+      <!-- {{ request.resolver_match.url_name }}.form -->
     {% endif %}
 
   </form>

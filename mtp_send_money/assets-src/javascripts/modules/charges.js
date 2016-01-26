@@ -17,10 +17,15 @@ exports.Charges = {
     this.$charges = $(this.selector + ' .mtp-charges-charges');
     this.$total = $(this.selector + ' .mtp-charges-total span');
 
+    var updateTotal = $.proxy(this._updateTotal, this);
+
     if ($jsSection.length) {
       $jsSection.show();
       $noJsSection.hide();
-      $input.on('keyup', $.proxy(this._updateTotal, this));
+      $input.on('keyup', function(event) {
+        updateTotal(event.target.value);
+      });
+      updateTotal($input.val());
     }
   },
 
@@ -28,12 +33,10 @@ exports.Charges = {
     return '£' + num.toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
   },
 
-  _updateTotal: function (event) {
-    var amount = event.target.value;
-    var serviceCharge;
+  _updateTotal: function (amount) {
     if (/^\d+(\.\d{1,2})?$/.test(amount)) {
       amount = Number(amount);
-      serviceCharge = (amount * this.percentageCharge + this.fixedCharge) / 100;
+      var serviceCharge = (amount * this.percentageCharge + this.fixedCharge) / 100;
       this.$charges.text(this._formatAsPrice(serviceCharge));
       this.$total.text(this._formatAsPrice(amount + serviceCharge));
     } else {

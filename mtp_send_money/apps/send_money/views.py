@@ -49,7 +49,6 @@ class SendMoneyView(FormView):
             'service_charge_percentage': settings.SERVICE_CHARGE_PERCENTAGE,
             'service_charge_fixed': settings.SERVICE_CHARGE_FIXED,
             'sample_amount': sample_amount,
-            'sample_amount_total_charge': get_total_charge(sample_amount),
         })
 
         # TODO: remove option once TD allows showing bank transfers
@@ -83,7 +82,7 @@ class SendMoneyView(FormView):
 
 def make_context_from_session(session):
     context = {field: session[field] for field in SendMoneyForm.get_field_names()}
-    context['prisoner_dob'] = unserialise_date(context['prisoner_dob_day'], context['prisoner_dob_month'], context['prisoner_dob_year'])
+    context['prisoner_dob'] = unserialise_date(context['prisoner_dob'])
     context['amount'] = unserialise_amount(context['amount'])
     return context
 
@@ -92,13 +91,14 @@ def make_context_from_session(session):
 def bank_transfer_view(request):
     context = make_context_from_session(request.session)
     context.update({
-        'payable_to': 'NOMS',
-        'account_number': '#########',
-        'sort_code': '##-##-##',
+        'payable_to': settings.NOMS_HOLDING_ACCOUNT_NAME,
+        'account_number': settings.NOMS_HOLDING_ACCOUNT_NUMBER,
+        'sort_code': settings.NOMS_HOLDING_ACCOUNT_SORT_CODE,
         'bank_transfer_reference': bank_transfer_reference(
             context['prisoner_number'],
             context['prisoner_dob'],
         ),
+        'amount_to_pay': get_total_charge(request.session['amount']),
     })
     request.session.flush()
     return render(request, 'send_money/bank-transfer.html', context)

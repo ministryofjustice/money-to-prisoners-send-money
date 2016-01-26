@@ -26,6 +26,31 @@ def validate_prisoner_number(value):
         raise ValidationError(_('Incorrect prisoner number format'), code='invalid')
 
 
+def format_percentage(number):
+    return '%s%%' % number
+
+
+def currency_format(amount):
+    """
+    Formats a number into currency format
+    @param amount: amount in pounds
+    """
+    if not isinstance(amount, Decimal):
+        amount = unserialise_amount(amount)
+    return '£' + serialise_amount(amount)
+
+
+def currency_format_pence(amount_pence):
+    """
+    Formats a int into currency format
+    @param amount_pence: amount in pence
+    @type amount_pence: int
+    """
+    if amount_pence < 100:
+        return '%sp' % amount_pence
+    return currency_format(Decimal(amount_pence) / Decimal('100'))
+
+
 def get_service_charge(amount):
     if not isinstance(amount, Decimal):
         amount = Decimal(amount)
@@ -53,16 +78,16 @@ def serialise_date(date):
     return format_date(date, 'Y-m-d')
 
 
-def unserialise_date(date_text_day, date_text_month, date_text_year):
-    date_text = force_text('%d-%02d-%d' % (date_text_year, date_text_month, date_text_month ))
+def unserialise_date(date_text):
+    date_text = force_text(date_text)
     date = parse_date(date_text)
     if not date:
         raise ValueError('Invalid date')
     return date
 
 
-def lenient_unserialise_date(date_text_day, date_text_month, date_text_year):
-    date_text = force_text('%d-%02d-%d' % (date_text_year, date_text_month, date_text_month ))
+def lenient_unserialise_date(date_text):
+    date_text = force_text(date_text)
     date_formats = formats.get_format('DATE_INPUT_FORMATS')
     for date_format in date_formats:
         try:
