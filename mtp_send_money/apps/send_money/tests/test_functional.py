@@ -11,7 +11,7 @@ from selenium import webdriver
 
 from send_money.forms import PaymentMethod
 
-logger = logging.getLogger()
+logger = logging.getLogger('mtp')
 
 
 @unittest.skipUnless('RUN_FUNCTIONAL_TESTS' in os.environ, 'functional tests are disabled')
