@@ -30,17 +30,20 @@ def format_percentage(number):
     return '%s%%' % number
 
 
-def currency_format(amount):
+def currency_format(amount, trim_empty_pence=False):
     """
     Formats a number into currency format
     @param amount: amount in pounds
     """
     if not isinstance(amount, Decimal):
         amount = unserialise_amount(amount)
-    return '£' + serialise_amount(amount)
+    text_amount = serialise_amount(amount)
+    if trim_empty_pence and text_amount.endswith('.00'):
+        text_amount = text_amount[:-3]
+    return '£' + text_amount
 
 
-def currency_format_pence(amount_pence):
+def currency_format_pence(amount_pence, trim_empty_pence=False):
     """
     Formats a int into currency format
     @param amount_pence: amount in pence
@@ -48,7 +51,8 @@ def currency_format_pence(amount_pence):
     """
     if amount_pence < 100:
         return '%sp' % amount_pence
-    return currency_format(Decimal(amount_pence) / Decimal('100'))
+    return currency_format(Decimal(amount_pence) / Decimal('100'),
+                           trim_empty_pence=trim_empty_pence)
 
 
 def get_service_charge(amount):
