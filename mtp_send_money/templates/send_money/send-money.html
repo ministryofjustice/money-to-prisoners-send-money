@@ -86,7 +86,7 @@
             {% for error in field.errors %}
               <span class="error-message">{{ error }}</span>
             {% endfor %}
-            <input class="form-control" id="{{ field.id_for_label }}" name="{{ field.html_name }}" value="{{ field.value|default:'' }}" type="text"/>
+            <input class="form-control" id="{{ field.id_for_label }}" name="{{ field.html_name }}" value="{{ field.value|default:'' }}" {{ field|get_widget_attrs|safe }} />
           </div>
         {% endwith %}
 
@@ -100,15 +100,15 @@
             <div>
                <div class="form-date-day {% if field.errors %}error{% endif %}">
                  <label id="{{ field.auto_id }}_0-label" class="form-label" for="{{ field.auto_id }}_0">{% trans "Day" %}</label>
-                 <input class="form-control" id="{{ field.auto_id }}_0" name="{{ field.html_name }}_0" value="{{ field.value.0|default:'' }}" type="text"/>
+                 <input class="form-control" id="{{ field.auto_id }}_0" name="{{ field.html_name }}_0" value="{{ field.value.0|default:'' }}" {{ field|get_widget_attrs:0|safe }} />
                </div>
                <div class="form-date-month {% if field.errors %}error{% endif %}">
                  <label id="{{ field.auto_id }}_1-label" class="form-label" for="{{ field.auto_id }}_1">{% trans "Month" %}</label>
-                 <input class="form-control" id="{{ field.auto_id }}_1" name="{{ field.html_name }}_1" value="{{ field.value.1|default:'' }}" type="text"/>
+                 <input class="form-control" id="{{ field.auto_id }}_1" name="{{ field.html_name }}_1" value="{{ field.value.1|default:'' }}" {{ field|get_widget_attrs:1|safe }} />
                </div>
                <div class="form-date-year {% if field.errors %}error{% endif %}">
                  <label id="{{ field.auto_id }}_2-label" class="form-label" for="{{ field.auto_id }}_2">{% trans "Year" %}</label>
-                 <input class="form-control" id="{{ field.auto_id }}_2" name="{{ field.html_name }}_2" value="{{ field.value.2|default:'' }}" type="text"/>
+                 <input class="form-control" id="{{ field.auto_id }}_2" name="{{ field.html_name }}_2" value="{{ field.value.2|default:'' }}" {{ field|get_widget_attrs:2|safe }} />
                </div>
             </div>
           </div>
@@ -121,7 +121,7 @@
               <span class="error-message">{{ error }}</span>
             {% endfor %}
             <div class="form-hint">{% trans "eg A1234BC" %}</div>
-            <input class="form-control mtp-prisoner-number" id="{{ field.id_for_label }}" name="{{ field.html_name }}" value="{{ field.value|default:'' }}" type="text"/>
+            <input class="form-control mtp-prisoner-number" id="{{ field.id_for_label }}" name="{{ field.html_name }}" value="{{ field.value|default:'' }}" {{ field|get_widget_attrs|safe }} />
           </div>
         {% endwith %}
       </fieldset>
@@ -135,7 +135,7 @@
                <div class="error-message">{{ error }}</div>
              {% endfor %}
              <div class="money-box">
-               <div class="form-control">£</div><input id="{{ field.id_for_label }}" class="form-control mtp-charges-amount" name="{{ field.html_name }}" value="{{ field.value|default:'' }}" type="text" data-percentage-charge="{{ service_charge_percentage }}" data-fixed-charge="{{ service_charge_fixed }}" />
+               <div class="form-control">£</div><input id="{{ field.id_for_label }}" class="form-control mtp-charges-amount" name="{{ field.html_name }}" value="{{ field.value|default:'' }}" {{ field|get_widget_attrs|safe }} data-percentage-charge="{{ service_charge_percentage }}" data-fixed-charge="{{ service_charge_fixed }}" />
              </div>
             </div>
           </fieldset>
