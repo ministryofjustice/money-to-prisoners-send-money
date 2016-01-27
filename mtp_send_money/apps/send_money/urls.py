@@ -2,6 +2,7 @@ from django.conf.urls import url
 
 from send_money import views
 
+app_name = 'send_money'
 urlpatterns = [
     url(r'^$', views.SendMoneyView.as_view(), name='send_money'),
     url(r'^bank-transfer/$', views.bank_transfer_view, name='bank_transfer'),
