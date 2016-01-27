@@ -240,9 +240,12 @@ class DebitCardViewTestCase(BaseTestCase):
                 govuk_url('/payments/'),
                 json={
                     'payment_id': processor_id,
-                    'links': [
-                        {'rel': 'next_url', 'href': govuk_url(self.payment_process_path)}
-                    ]
+                    '_links': {
+                        'next_url': {
+                            'method': 'GET',
+                            'href': govuk_url(self.payment_process_path),
+                        }
+                    }
                 },
                 status=201
             )

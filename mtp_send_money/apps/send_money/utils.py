@@ -126,6 +126,5 @@ def site_url(path):
 
 
 def get_link_by_rel(data, rel):
-    for link in data['links']:
-        if link['rel'] == rel:
-            return link
+    if rel in data['_links']:
+        return data['_links'][rel]
