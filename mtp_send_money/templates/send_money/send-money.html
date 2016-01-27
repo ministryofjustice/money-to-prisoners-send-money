@@ -173,28 +173,26 @@
       {% endwith %}
 
       {% with field=form.payment_method %}
-        {# TODO: remove style block once TD allows showing bank transfers #}
-        <style type="text/css" scoped>
-          #{{ field.auto_id }} {
-            {% if HIDE_BANK_TRANSFER_OPTION %}
-            visibility: hidden;
-            {% else %}
-            background: repeating-linear-gradient(-45deg, transparent, transparent 10px, #fee 10px, #fee 20px);
-            {% endif %}
-          }
-        </style>
+        {# TODO: remove if block once TD allows showing bank transfers #}
+        {% if HIDE_BANK_TRANSFER_OPTION %}
 
-        <div id="{{ field.auto_id }}" class="form-group">
-          <fieldset>
-            <legend class="form-label-bold">{{ field.label }}</legend>
-            {% for option in field.field.choices %}
-              <label class="block-label {% if field.value|to_string == option.0 %}selected{% endif %}">
-                <input {% if field.value|to_string == option.0 %}checked="checked"{% endif %} name="{{ field.html_name }}" type="radio" value="{{ option.0 }}"/>
-                {{ option.1 }}
-              </label>
-            {% endfor %}
-          </fieldset>
-        </div>
+          <input name="{{ field.html_name }}" value="{{ field.value|to_string }}" type="hidden">
+
+        {% else %}
+
+          <div id="{{ field.auto_id }}" class="form-group" style="background: repeating-linear-gradient(-45deg, transparent, transparent 10px, #fee 10px, #fee 20px)">
+            <fieldset>
+              <legend class="form-label-bold">{{ field.label }}</legend>
+              {% for option in field.field.choices %}
+                <label class="block-label {% if field.value|to_string == option.0 %}selected{% endif %}">
+                  <input {% if field.value|to_string == option.0 %}checked="checked"{% endif %} name="{{ field.html_name }}" type="radio" value="{{ option.0 }}"/>
+                  {{ option.1 }}
+                </label>
+              {% endfor %}
+            </fieldset>
+          </div>
+
+        {% endif %}
       {% endwith %}
 
       <p>
