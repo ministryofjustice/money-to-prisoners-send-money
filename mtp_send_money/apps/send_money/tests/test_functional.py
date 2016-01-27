@@ -10,6 +10,7 @@ from django.test import LiveServerTestCase
 from selenium import webdriver
 
 from send_money.forms import PaymentMethod
+from send_money.tests import split_prisoner_dob_for_post
 
 logger = logging.getLogger('mtp')
 
@@ -63,34 +64,32 @@ class SendMoneyFunctionalTestCase(LiveServerTestCase):
             field.send_keys(data[key])
         # TODO: remove condition once TD allows showing bank transfers
         if not settings.HIDE_BANK_TRANSFER_OPTION:
-            field = self.driver.find_element_by_xpath('//ul[@id="id_payment_method"]//input[@value="%s"]'
+            field = self.driver.find_element_by_xpath('//div[@id="id_payment_method"]//input[@value="%s"]'
                                                       % payment_method)
             field.click()
 
     # TODO: remove skip once TD allows showing bank transfers
     @unittest.skipIf(settings.HIDE_BANK_TRANSFER_OPTION, 'bank transfer is disabled')
-    @unittest.skip('the form is currently half-done')
     def test_bank_transfer_flow(self):
         self.driver.get(self.live_server_url)
-        self.fill_in_send_money_form({
+        self.fill_in_send_money_form(split_prisoner_dob_for_post({
             'prisoner_name': 'James Halls',
             'prisoner_number': 'A1409AE',
             'prisoner_dob': '21/01/1989',
             'amount': '34.50',
-        }, PaymentMethod.bank_transfer)
+        }), PaymentMethod.bank_transfer)
         self.driver.find_element_by_id('id_next_btn').click()
         self.driver.find_element_by_id('id_next_btn').click()
         self.assertIn('<!-- bank_transfer -->', self.driver.page_source)
 
-    @unittest.skip('debit card flow has changed')
+    @unittest.skip('gov.uk pay testing not implemented')
     def test_debit_card_flow(self):
         self.driver.get(self.live_server_url)
-        self.fill_in_send_money_form({
+        self.fill_in_send_money_form(split_prisoner_dob_for_post({
             'prisoner_name': 'James Halls',
             'prisoner_number': 'A1409AE',
             'prisoner_dob': '21/01/1989',
             'amount': '0.51',
-        }, PaymentMethod.debit_card)
+        }), PaymentMethod.debit_card)
         self.driver.find_element_by_id('id_next_btn').click()
-        self.driver.find_element_by_id('id_next_btn').click()
-        self.assertIn('<!-- debit_card -->', self.driver.page_source)
+        # TODO: add gov.uk mock and test various responses
