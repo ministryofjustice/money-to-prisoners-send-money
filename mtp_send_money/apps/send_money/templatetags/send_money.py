@@ -1,5 +1,4 @@
 from django import template
-from django.forms.utils import flatatt
 
 from send_money.models import PaymentMethod
 from send_money.utils import format_percentage, \
@@ -31,17 +30,3 @@ def format_percentage_filter(number):
 @register.filter
 def add_service_charge(amount):
     return get_total_charge(amount)
-
-
-@register.filter
-def get_widget_attrs(bound_field, field_index=None):
-    if field_index is not None:
-        field = bound_field.field.fields[field_index]
-    else:
-        field = bound_field.field
-    widget = field.widget
-    attrs = widget.build_attrs()
-    attrs.update(field.widget_attrs(widget))
-    if hasattr(widget, 'input_type'):
-        attrs['type'] = widget.input_type
-    return flatatt(attrs)

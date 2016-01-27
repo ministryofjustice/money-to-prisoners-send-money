@@ -34,7 +34,7 @@ exports.Charges = {
   },
 
   _updateTotal: function (amount) {
-    if (/^\d+(\.\d{1,2})?$/.test(amount)) {
+    if (/^\d+(\.\d{2})?$/.test(amount)) {
       amount = Number(amount);
       var serviceCharge = (amount * this.percentageCharge + this.fixedCharge) / 100;
       this.$charges.text(this._formatAsPrice(serviceCharge));
