@@ -23,7 +23,7 @@ DEBUG = True
 SECRET_KEY = 'CHANGE_ME'
 ALLOWED_HOSTS = []
 
-SITE_URL = os.environ.get('SITE_URL', 'localhost')
+SITE_URL = os.environ.get('SITE_URL', 'http://localhost:8004')
 
 # Application definition
 INSTALLED_APPS = (
@@ -222,7 +222,6 @@ ZENDESK_CUSTOM_FIELDS = {
 HIDE_BANK_TRANSFER_OPTION = True
 
 GOVUK_PAY_URL = os.environ.get('GOVUK_PAY_URL', '')
-GOVUK_PAY_ACCOUNT_ID = os.environ.get('GOVUK_PAY_ACCOUNT_ID', '')
 GOVUK_PAY_AUTH_TOKEN = os.environ.get('GOVUK_PAY_AUTH_TOKEN', '')
 
 

@@ -101,9 +101,8 @@
         </style>
       {% endif %}
 
-{% comment %}
+      {% csrf_token %}
       {{ form.as_p }}
-{% endcomment %}
 
       <p>
         <input id="id_next_btn" class="button" type="submit" value="{% trans 'Continue' %}">
