@@ -1,5 +1,5 @@
 import datetime
-from decimal import Decimal
+from decimal import Decimal, ROUND_HALF_UP
 import re
 
 from django.conf import settings
@@ -26,14 +26,20 @@ def validate_prisoner_number(value):
         raise ValidationError(_('Incorrect prisoner number format'), code='invalid')
 
 
-def format_percentage(number):
-    return '%s%%' % number
+def format_percentage(number, decimals=1, trim_zeros=True):
+    if not isinstance(number, Decimal):
+        number = Decimal(number)
+    percentage_text = ('{0:.%sf}' % decimals).format(number)
+    if decimals and trim_zeros and percentage_text.endswith('.' + ('0' * decimals)):
+        percentage_text = percentage_text[:-decimals - 1]
+    return percentage_text + '%'
 
 
 def currency_format(amount, trim_empty_pence=False):
     """
     Formats a number into currency format
     @param amount: amount in pounds
+    @param trim_empty_pence: if True, strip off .00
     """
     if not isinstance(amount, Decimal):
         amount = unserialise_amount(amount)
@@ -48,25 +54,44 @@ def currency_format_pence(amount_pence, trim_empty_pence=False):
     Formats a int into currency format
     @param amount_pence: amount in pence
     @type amount_pence: int
+    @param trim_empty_pence: if True, strip off .00
     """
-    if amount_pence < 100:
+    amount_pence = Decimal(amount_pence)
+    if amount_pence < Decimal('100'):
         return '%sp' % amount_pence
-    return currency_format(Decimal(amount_pence) / Decimal('100'),
+    return currency_format(amount_pence / Decimal('100'),
                            trim_empty_pence=trim_empty_pence)
 
 
-def get_service_charge(amount):
+def clamp_amount(amount):
+    """
+    Round the amount to integer pence,
+    rounding half pence up (away form zero)
+    @param amount: Decimal amount to round
+    """
+    return amount.quantize(Decimal('1.00'), rounding=ROUND_HALF_UP)
+
+
+def get_service_charge(amount, clamp=True):
     if not isinstance(amount, Decimal):
         amount = Decimal(amount)
     percentage_pence = amount * settings.SERVICE_CHARGE_PERCENTAGE
     fixed_pence = Decimal(settings.SERVICE_CHARGE_FIXED)
-    return (percentage_pence + fixed_pence) / Decimal('100')
+    charge_pence = percentage_pence + fixed_pence
+    result = charge_pence / Decimal('100')
+    if clamp:
+        return clamp_amount(result)
+    return result
 
 
-def get_total_charge(amount):
+def get_total_charge(amount, clamp=True):
     if not isinstance(amount, Decimal):
         amount = Decimal(amount)
-    return amount + get_service_charge(amount)
+    charge = get_service_charge(amount, clamp=False)
+    result = amount + charge
+    if clamp:
+        return clamp_amount(result)
+    return result
 
 
 def serialise_amount(amount):

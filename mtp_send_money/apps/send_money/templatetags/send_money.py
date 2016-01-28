@@ -23,8 +23,8 @@ def currency_format_pence_filter(amount_pence):
 
 
 @register.filter(name='format_percentage')
-def format_percentage_filter(number):
-    return format_percentage(number)
+def format_percentage_filter(number, decimals=1):
+    return format_percentage(number, decimals=decimals)
 
 
 @register.filter
