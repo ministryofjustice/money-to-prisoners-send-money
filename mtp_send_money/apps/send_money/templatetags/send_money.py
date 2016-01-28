@@ -13,13 +13,13 @@ def payment_method_description(payment_method):
 
 
 @register.filter(name='currency_format')
-def currency_format_filter(amount):
-    return currency_format(amount, trim_empty_pence=True)
+def currency_format_filter(amount, trim_empty_pence=True):
+    return currency_format(amount, trim_empty_pence=trim_empty_pence)
 
 
 @register.filter(name='currency_format_pence')
-def currency_format_pence_filter(amount_pence):
-    return currency_format_pence(amount_pence, trim_empty_pence=True)
+def currency_format_pence_filter(amount, trim_empty_pence=True):
+    return currency_format_pence(amount, trim_empty_pence=trim_empty_pence)
 
 
 @register.filter(name='format_percentage')
