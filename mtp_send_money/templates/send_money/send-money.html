@@ -135,7 +135,7 @@
                <div class="error-message">{{ error }}</div>
              {% endfor %}
              <div class="money-box">
-               <div class="form-control">£</div><input id="{{ field.id_for_label }}" class="form-control mtp-charges-amount" name="{{ field.html_name }}" value="{{ field.value|default:'' }}" type="text" required
+               <div class="form-control">£</div><input id="{{ field.id_for_label }}" class="form-control mtp-charges-amount" maxlength="13" name="{{ field.html_name }}" value="{{ field.value|default:'' }}" type="text" required
                                                        data-percentage-charge="{{ service_charge_percentage }}" data-fixed-charge="{{ service_charge_fixed }}" />
              </div>
             </div>

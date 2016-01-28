@@ -93,3 +93,31 @@ class SendMoneyFunctionalTestCase(LiveServerTestCase):
         }), PaymentMethod.debit_card)
         self.driver.find_element_by_id('id_next_btn').click()
         # TODO: add gov.uk mock and test various responses
+
+    def check_service_charge(self, input, expected):
+        amount_field = self.driver.find_element_by_id('id_amount')
+        total_field = self.driver.find_element_by_css_selector('.mtp-charges-total span')
+        amount_field.clear()
+        amount_field.send_keys(input)
+        self.assertEqual(total_field.text, expected)
+
+    def test_service_charge_js(self):
+        self.driver.get(self.live_server_url)
+        self.check_service_charge('3.14     ', '£3.42')
+        self.check_service_charge('a', '')
+        self.check_service_charge('3', '£3.27')
+        self.check_service_charge('3', '£3.27')
+        self.check_service_charge('-12', '')
+        self.check_service_charge('.12', '')
+        self.check_service_charge('32345', '£33,121.48')
+        self.check_service_charge('10000000', '£10,240,000.20')
+        self.check_service_charge('0.01', '£0.21')
+        self.check_service_charge('9999999999999999999999', '£10,239,999,999,999.18')
+        self.check_service_charge('three', '')
+        self.check_service_charge('  3.1415     ', '')
+        self.check_service_charge('0', '£0.20')
+        self.check_service_charge('0.01', '£0.21')
+        self.check_service_charge('0.1', '')
+        self.check_service_charge('0.10', '£0.30')
+        self.check_service_charge('0.001', '')
+        self.check_service_charge('0.005', '')
