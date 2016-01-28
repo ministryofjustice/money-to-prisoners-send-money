@@ -49,18 +49,17 @@ def currency_format(amount, trim_empty_pence=False):
     return '£' + text_amount
 
 
-def currency_format_pence(amount_pence, trim_empty_pence=False):
+def currency_format_pence(amount, trim_empty_pence=False):
     """
-    Formats a int into currency format
-    @param amount_pence: amount in pence
-    @type amount_pence: int
+    Formats a number into currency format display pence only as #p
+    @param amount: amount in pounds
     @param trim_empty_pence: if True, strip off .00
     """
-    amount_pence = Decimal(amount_pence)
-    if amount_pence < Decimal('100'):
-        return '%sp' % amount_pence
-    return currency_format(amount_pence / Decimal('100'),
-                           trim_empty_pence=trim_empty_pence)
+    if not isinstance(amount, Decimal):
+        amount = unserialise_amount(amount)
+    if amount.__abs__() < Decimal('1'):
+        return '%sp' % (amount * Decimal('100')).to_integral_value()
+    return currency_format(amount, trim_empty_pence=trim_empty_pence)
 
 
 def clamp_amount(amount):
@@ -78,13 +77,11 @@ def clamp_amount(amount):
 def get_service_charge(amount, clamp=True):
     if not isinstance(amount, Decimal):
         amount = Decimal(amount)
-    percentage_pence = amount * settings.SERVICE_CHARGE_PERCENTAGE
-    fixed_pence = Decimal(settings.SERVICE_CHARGE_FIXED)
-    charge_pence = percentage_pence + fixed_pence
-    result = charge_pence / Decimal('100')
+    percentage_charge = amount * settings.SERVICE_CHARGE_PERCENTAGE / Decimal('100')
+    service_charge = percentage_charge + settings.SERVICE_CHARGE_FIXED
     if clamp:
-        return clamp_amount(result)
-    return result
+        return clamp_amount(service_charge)
+    return service_charge
 
 
 def get_total_charge(amount, clamp=True):

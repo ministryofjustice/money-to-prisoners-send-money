@@ -141,22 +141,20 @@ class CurrencyFormatTestCase(BaseEqualityTestCase):
     def test_pence_currency_formatting(self):
         cases = [
             (0, '0p'),
-            (1, '1p'),
-            (99, '99p'),
-            (100, '£1.00'),
-            (12345, '£123.45'),
-            (123.45, '£1.23'),
+            (0.01, '1p'),
+            (0.99, '99p'),
+            (1, '£1.00'),
+            (123.45, '£123.45'),
         ]
         self.assertCaseEquality(currency_format_pence, cases,
                                 'Expected %(value)s to pence format into %(expected)s')
 
         cases = [
             (0, '0p'),
-            (1, '1p'),
-            (99, '99p'),
-            (100, '£1'),
-            (12345, '£123.45'),
-            (123.45, '£1.23'),
+            (0.01, '1p'),
+            (0.99, '99p'),
+            (1, '£1'),
+            (123.45, '£123.45'),
         ]
         self.assertCaseEquality(partial(currency_format_pence, trim_empty_pence=True), cases,
                                 'Expected %(value)s to trimmed pence format into %(expected)s')
@@ -214,7 +212,7 @@ class ServiceChargeTestCase(BaseEqualityTestCase):
         return value, clamp_amount(expected - Decimal(value))
 
     @override_settings(SERVICE_CHARGE_PERCENTAGE=Decimal('0'),
-                       SERVICE_CHARGE_FIXED=0)
+                       SERVICE_CHARGE_FIXED=Decimal('0'))
     def test_no_service_charge(self):
         cases = [
             (0, Decimal('0')),
@@ -232,7 +230,7 @@ class ServiceChargeTestCase(BaseEqualityTestCase):
                                 ' with no service charge')
 
     @override_settings(SERVICE_CHARGE_PERCENTAGE=Decimal('2.4'),
-                       SERVICE_CHARGE_FIXED=0)
+                       SERVICE_CHARGE_FIXED=Decimal('0'))
     def test_percentage_service_charge(self):
         cases = [
             (0, Decimal('0')),
@@ -250,7 +248,7 @@ class ServiceChargeTestCase(BaseEqualityTestCase):
                                 ' with percentage service charge')
 
     @override_settings(SERVICE_CHARGE_PERCENTAGE=Decimal('0'),
-                       SERVICE_CHARGE_FIXED=20)
+                       SERVICE_CHARGE_FIXED=Decimal('0.20'))
     def test_fixed_service_charge(self):
         cases = [
             (0, Decimal('0.2')),
@@ -268,7 +266,7 @@ class ServiceChargeTestCase(BaseEqualityTestCase):
                                 ' with fixed service charge')
 
     @override_settings(SERVICE_CHARGE_PERCENTAGE=Decimal('2.4'),
-                       SERVICE_CHARGE_FIXED=20)
+                       SERVICE_CHARGE_FIXED=Decimal('0.20'))
     def test_both_service_charges(self):
         cases = [
             (0, Decimal('0.2')),
