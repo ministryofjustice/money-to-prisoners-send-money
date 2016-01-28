@@ -1,5 +1,5 @@
 import datetime
-from decimal import Decimal, ROUND_HALF_UP
+from decimal import Decimal, ROUND_DOWN, ROUND_UP
 import re
 
 from django.conf import settings
@@ -66,10 +66,13 @@ def currency_format_pence(amount_pence, trim_empty_pence=False):
 def clamp_amount(amount):
     """
     Round the amount to integer pence,
-    rounding half pence up (away form zero)
+    rounding fractional pence up (away from zero) for any fractional pence value
+    that is greater than or equal to a tenth of a penny.
     @param amount: Decimal amount to round
     """
-    return amount.quantize(Decimal('1.00'), rounding=ROUND_HALF_UP)
+    tenths_of_pennies = (amount * Decimal('1000')).to_integral_value(rounding=ROUND_DOWN)
+    pounds = tenths_of_pennies / Decimal('1000')
+    return pounds.quantize(Decimal('1.00'), rounding=ROUND_UP)
 
 
 def get_service_charge(amount, clamp=True):
