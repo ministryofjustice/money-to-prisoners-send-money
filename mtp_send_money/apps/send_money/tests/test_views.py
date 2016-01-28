@@ -1,9 +1,11 @@
+from decimal import Decimal
 import unittest
 from unittest import mock
 
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.test.testcases import SimpleTestCase
+from django.test.utils import override_settings
 from requests import ConnectionError
 import responses
 
@@ -66,6 +68,18 @@ class SendMoneyViewTestCase(BaseTestCase):
     def test_send_money_page_loads(self):
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
+
+    @override_settings(SERVICE_CHARGE_PERCENTAGE=Decimal('2.5'),
+                       SERVICE_CHARGE_FIXED=Decimal('0.21'))
+    def test_send_money_page_shows_service_charge(self):
+        response = self.client.get(self.url)
+        self.assertContains(response, '2.5%')
+        self.assertContains(response, '21p')
+
+    @override_settings(SERVICE_CHARGED=False)
+    def test_send_money_page_shows_no_service_charge(self):
+        response = self.client.get(self.url)
+        self.assertNotContains(response, 'service charge')
 
     @mock.patch('send_money.utils.api_client')
     def test_send_money_page_previews_form(self, mocked_api_client):

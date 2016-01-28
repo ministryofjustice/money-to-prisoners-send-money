@@ -209,6 +209,8 @@ NOMS_HOLDING_ACCOUNT_SORT_CODE = '##-##-##'
 
 SERVICE_CHARGE_PERCENTAGE = Decimal('2.4')  # always use `Decimal` percentage
 SERVICE_CHARGE_FIXED = Decimal('0.20')  # always use `Decimal` in pounds
+SERVICE_CHARGED = SERVICE_CHARGE_PERCENTAGE > Decimal('0') or \
+                  SERVICE_CHARGE_FIXED > Decimal('0')
 
 GOOGLE_ANALYTICS_ID = os.environ.get('GOOGLE_ANALYTICS_ID', None)
 

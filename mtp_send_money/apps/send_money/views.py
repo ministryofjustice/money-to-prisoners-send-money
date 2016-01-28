@@ -46,6 +46,7 @@ class SendMoneyView(FormView):
 
         sample_amount = 20  # in pounds
         context_data.update({
+            'service_charged': settings.SERVICE_CHARGED,
             'service_charge_percentage': settings.SERVICE_CHARGE_PERCENTAGE,
             'service_charge_fixed': settings.SERVICE_CHARGE_FIXED,
             'sample_amount': sample_amount,

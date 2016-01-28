@@ -31,7 +31,9 @@
       <input class="button button-secondary" type="submit" name="change" value="{% trans 'Change this' %}">
 
       <p>
-        {% trans 'Total to prisoner' %}: {{ form.amount.value|currency_format }}<br>
+        {% if service_charged %}
+          {% trans 'Total to prisoner' %}: {{ form.amount.value|currency_format }}<br>
+        {% endif %}
         {% trans 'Total to be taken from your account' %}: {{ form.amount.value|add_service_charge|currency_format }}<br>
         <!-- {{ form.payment_method.label }}: {{ form.payment_method.value|payment_method_description }} -->
       </p>
@@ -140,35 +142,38 @@
              </div>
             </div>
           </fieldset>
-          <div class="form-group">
-            <fieldset class="mtp-charges-js" style="display:none">
-              <p class="form-label">
-                {% trans "Service charge:" %}
-                <span class="mtp-charges-charges"></span>
-              </p>
-              <p class="form-hint">
-                {% blocktrans trimmed with charge_percentage=service_charge_percentage|format_percentage charge_fixed=service_charge_fixed|currency_format_pence %}
-                  The service charge is {{ charge_percentage }} of the amount you’re sending, plus {{ charge_fixed }}. This fee is charged by your card provider.
-                {% endblocktrans %}
-              </p>
-              <p class="form-label-bold mtp-charges-total">
-                {% trans "Total to pay:" %}
-                <span></span>
-              </p>
-            </fieldset>
-            <fieldset class="mtp-charges-no-js">
-              <p>
-                {% blocktrans trimmed with charge_percentage=service_charge_percentage|format_percentage charge_fixed=service_charge_fixed|currency_format_pence %}
-                  The service charge is {{ charge_percentage }} of the amount you’re sending, plus {{ charge_fixed }}. This fee is charged by your card provider.
-                {% endblocktrans %}
-              </p>
-              <p>
-                {% blocktrans trimmed with sample_amount=sample_amount|currency_format sample_amount_total_charge=sample_amount|add_service_charge|currency_format %}
-                  For instance, if you want to send {{ sample_amount }}, you will be charged {{ sample_amount_total_charge }}.
-                {% endblocktrans %}
-              </p>
-            </fieldset>
-          </div>
+
+          {% if service_charged %}
+            <div class="form-group">
+              <fieldset class="mtp-charges-js" style="display:none">
+                <p class="form-label">
+                  {% trans "Service charge:" %}
+                  <span class="mtp-charges-charges"></span>
+                </p>
+                <p class="form-hint">
+                  {% blocktrans trimmed with charge_percentage=service_charge_percentage|format_percentage charge_fixed=service_charge_fixed|currency_format_pence %}
+                    The service charge is {{ charge_percentage }} of the amount you’re sending, plus {{ charge_fixed }}. This fee is charged by your card provider.
+                  {% endblocktrans %}
+                </p>
+                <p class="form-label-bold mtp-charges-total">
+                  {% trans "Total to pay:" %}
+                  <span></span>
+                </p>
+              </fieldset>
+              <fieldset class="mtp-charges-no-js">
+                <p>
+                  {% blocktrans trimmed with charge_percentage=service_charge_percentage|format_percentage charge_fixed=service_charge_fixed|currency_format_pence %}
+                    The service charge is {{ charge_percentage }} of the amount you’re sending, plus {{ charge_fixed }}. This fee is charged by your card provider.
+                  {% endblocktrans %}
+                </p>
+                <p>
+                  {% blocktrans trimmed with sample_amount=sample_amount|currency_format sample_amount_total_charge=sample_amount|add_service_charge|currency_format %}
+                    For instance, if you want to send {{ sample_amount }}, you will be charged {{ sample_amount_total_charge }}.
+                  {% endblocktrans %}
+                </p>
+              </fieldset>
+            </div>
+          {% endif %}
         </div>
       {% endwith %}
 
