@@ -1,15 +1,17 @@
+from decimal import Decimal
 import unittest
 from unittest import mock
 
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.test.testcases import SimpleTestCase
+from django.test.utils import override_settings
 from requests import ConnectionError
 import responses
 
 from send_money.forms import PaymentMethod, SendMoneyForm
+from send_money.tests import mock_auth, split_prisoner_dob_for_post
 from send_money.utils import govuk_url, api_url
-from .test_utils import mock_auth
 
 
 class BaseTestCase(SimpleTestCase):
@@ -22,20 +24,20 @@ class BaseTestCase(SimpleTestCase):
         prisoner_dob='1980-10-04',
         amount='10.00'
     ):
-        s = self.client.session
-        s['prisoner_name'] = prisoner_name
-        s['prisoner_number'] = prisoner_number
-        s['prisoner_dob'] = prisoner_dob
-        s['amount'] = amount
-        s['payment_method'] = PaymentMethod.debit_card.name
-        s.save()
-        self.client.cookies[settings.SESSION_COOKIE_NAME] = s.session_key
+        session = self.client.session
+        session['prisoner_name'] = prisoner_name
+        session['prisoner_number'] = prisoner_number
+        session['prisoner_dob'] = prisoner_dob
+        session['amount'] = amount
+        session['payment_method'] = PaymentMethod.debit_card.name
+        session.save()
+        self.client.cookies[settings.SESSION_COOKIE_NAME] = session.session_key
 
     def assertPageNotDirectlyAccessible(self):  # noqa
         response = self.client.get(self.url)
         self.assertRedirects(response, self.send_money_url)
 
-    def submit_send_money_form(self, mocked_api_client, data=None, follow=False):
+    def submit_send_money_form(self, mocked_api_client, update_data=None, replace_data=None, follow=False):
         prisoner_details = {
             'prisoner_number': 'A1231DE',
             'prisoner_dob': '1980-10-04',
@@ -45,12 +47,18 @@ class BaseTestCase(SimpleTestCase):
             'count': 1,
             'results': [prisoner_details]
         }
-        data = data or {
-            'prisoner_name': 'John Smith',
-            'amount': '10.00',
-            'payment_method': PaymentMethod.debit_card,
-        }
-        data.update(prisoner_details)
+        if replace_data is None:
+            data = {
+                'prisoner_name': 'John Smith',
+                'amount': '10.00',
+                'payment_method': PaymentMethod.debit_card,
+            }
+            data.update(prisoner_details)
+        else:
+            data = replace_data
+        if update_data:
+            data.update(update_data)
+        data = split_prisoner_dob_for_post(data)
         return self.client.post(self.send_money_url, data=data, follow=follow)
 
 
@@ -61,6 +69,18 @@ class SendMoneyViewTestCase(BaseTestCase):
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
 
+    @override_settings(SERVICE_CHARGE_PERCENTAGE=Decimal('2.5'),
+                       SERVICE_CHARGE_FIXED=Decimal('0.21'))
+    def test_send_money_page_shows_service_charge(self):
+        response = self.client.get(self.url)
+        self.assertContains(response, '2.5%')
+        self.assertContains(response, '21p')
+
+    @override_settings(SERVICE_CHARGED=False)
+    def test_send_money_page_shows_no_service_charge(self):
+        response = self.client.get(self.url)
+        self.assertNotContains(response, 'service charge')
+
     @mock.patch('send_money.utils.api_client')
     def test_send_money_page_previews_form(self, mocked_api_client):
         response = self.submit_send_money_form(mocked_api_client)
@@ -68,22 +88,20 @@ class SendMoneyViewTestCase(BaseTestCase):
         form = response.context['form']
         self.assertFalse(form.errors)
 
-    @unittest.skip('the form is currently half-done')
     @mock.patch('send_money.forms.SendMoneyForm.check_prisoner_validity')
     def test_send_money_page_displays_errors_for_invalid_prisoner_number(self, mocked_check_prisoner_validity):
-        response = self.client.post(self.url, data={
+        response = self.client.post(self.url, data=split_prisoner_dob_for_post({
             'prisoner_name': 'John Smith',
             'prisoner_number': 'a1231a1',
             'prisoner_dob': '1980-10-04',
             'amount': '10.00',
             'payment_method': PaymentMethod.debit_card,
-        })
+        }))
         self.assertContains(response, 'Incorrect prisoner number format')
         form = response.context['form']
         self.assertTrue(form.errors)
         self.assertEqual(mocked_check_prisoner_validity.call_count, 0)
 
-    @unittest.skip('the form is currently half-done')
     @mock.patch('send_money.forms.SendMoneyForm.check_prisoner_validity')
     def test_send_money_page_displays_errors_for_invalid_prisoner_dob(self, mocked_check_prisoner_validity):
         response = self.client.post(self.url, data={
@@ -97,32 +115,30 @@ class SendMoneyViewTestCase(BaseTestCase):
         self.assertTrue(form.errors)
         self.assertEqual(mocked_check_prisoner_validity.call_count, 0)
 
-    @unittest.skip('the form is currently half-done')
     @mock.patch('send_money.forms.SendMoneyForm.check_prisoner_validity')
-    def test_send_money_page_displats_errors_for_invalid_prisoner_details(self, mocked_check_prisoner_validity):
+    def test_send_money_page_displays_errors_for_invalid_prisoner_details(self, mocked_check_prisoner_validity):
         mocked_check_prisoner_validity.return_value = False
-        response = self.client.post(self.url, data={
+        response = self.client.post(self.url, data=split_prisoner_dob_for_post({
             'prisoner_name': 'John Smith',
             'prisoner_number': 'A1231DE',
             'prisoner_dob': '1980-10-04',
             'amount': '10.00',
             'payment_method': PaymentMethod.debit_card,
-        })
+        }))
         self.assertContains(response, 'No prisoner was found with given number and date of birth')
         form = response.context['form']
         self.assertTrue(form.errors)
 
-    @unittest.skip('the form is currently half-done')
     @mock.patch('send_money.forms.SendMoneyForm.check_prisoner_validity')
     def test_send_money_page_displays_errors_for_dropped_api_connection(self, mocked_check_prisoner_validity):
         mocked_check_prisoner_validity.side_effect = ConnectionError
-        response = self.client.post(self.url, data={
+        response = self.client.post(self.url, data=split_prisoner_dob_for_post({
             'prisoner_name': 'John Smith',
             'prisoner_number': 'A1231DE',
             'prisoner_dob': '1980-10-04',
             'amount': '10.00',
             'payment_method': PaymentMethod.debit_card,
-        })
+        }))
         self.assertContains(response, 'Could not connect to service, please try again later')
         form = response.context['form']
         self.assertTrue(form.errors)
@@ -131,10 +147,7 @@ class SendMoneyViewTestCase(BaseTestCase):
     def test_send_money_page_allows_changing_form(self, mocked_api_client):
         response = self.submit_send_money_form(mocked_api_client)
         self.assertContains(response, '<!-- send_money.preview -->')
-        response = self.submit_send_money_form(mocked_api_client, {
-            'prisoner_name': 'John Smith',
-            'amount': '10.00',
-            'payment_method': PaymentMethod.debit_card,
+        response = self.submit_send_money_form(mocked_api_client, update_data={
             'change': '',
         })
         self.assertContains(response, '<!-- send_money.form -->')
@@ -143,10 +156,7 @@ class SendMoneyViewTestCase(BaseTestCase):
     def test_send_money_page_can_proceed_to_debit_card(self, mocked_api_client):
         response = self.submit_send_money_form(mocked_api_client)
         self.assertContains(response, '<!-- send_money.preview -->')
-        response = self.submit_send_money_form(mocked_api_client, {
-            'prisoner_name': 'John Smith',
-            'amount': '10.00',
-            'payment_method': PaymentMethod.debit_card,
+        response = self.submit_send_money_form(mocked_api_client, update_data={
             'next': '',
         })
         self.assertRedirects(
@@ -155,34 +165,27 @@ class SendMoneyViewTestCase(BaseTestCase):
 
     @mock.patch('send_money.utils.api_client')
     def test_send_money_page_can_proceed_to_bank_transfer(self, mocked_api_client):
-        response = self.submit_send_money_form(mocked_api_client, {
-            'prisoner_name': 'John Smith',
-            'amount': '10.00',
+        response = self.submit_send_money_form(mocked_api_client, update_data={
             'payment_method': PaymentMethod.bank_transfer,
         })
         self.assertContains(response, '<!-- send_money.preview -->')
-        response = self.submit_send_money_form(mocked_api_client, {
-            'prisoner_name': 'John Smith',
-            'amount': '10.00',
+        response = self.submit_send_money_form(mocked_api_client, update_data={
             'payment_method': PaymentMethod.bank_transfer,
             'next': '',
         })
         self.assertRedirects(response, reverse('send_money:bank_transfer'))
 
 
+@unittest.skipIf(settings.HIDE_BANK_TRANSFER_OPTION, 'bank transfer is disabled')
 class BankTransferViewTestCase(BaseTestCase):
     url = reverse('send_money:bank_transfer')
 
     def bank_transfer_flow(self, mocked_api_client):
-        response = self.submit_send_money_form(mocked_api_client, {
-            'prisoner_name': 'John Smith',
-            'amount': '10.00',
+        response = self.submit_send_money_form(mocked_api_client, update_data={
             'payment_method': PaymentMethod.bank_transfer,
         })
         self.assertContains(response, '<!-- send_money.preview -->')
-        response = self.submit_send_money_form(mocked_api_client, {
-            'prisoner_name': 'John Smith',
-            'amount': '10.00',
+        response = self.submit_send_money_form(mocked_api_client, update_data={
             'payment_method': PaymentMethod.bank_transfer,
             'next': '',
         }, follow=True)
@@ -240,9 +243,12 @@ class DebitCardViewTestCase(BaseTestCase):
                 govuk_url('/payments/'),
                 json={
                     'payment_id': processor_id,
-                    'links': [
-                        {'rel': 'next_url', 'href': govuk_url(self.payment_process_path)}
-                    ]
+                    '_links': {
+                        'next_url': {
+                            'method': 'GET',
+                            'href': govuk_url(self.payment_process_path),
+                        }
+                    }
                 },
                 status=201
             )

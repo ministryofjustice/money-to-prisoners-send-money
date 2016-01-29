@@ -1,5 +1,4 @@
 import decimal
-from enum import Enum
 
 from django import forms
 from django.core.exceptions import ValidationError
@@ -7,40 +6,31 @@ from django.utils.translation import ugettext_lazy as _
 from requests.exceptions import RequestException
 from slumber.exceptions import HttpNotFoundError, SlumberHttpBaseException
 
+from send_money.fields import SplitDateField
+from send_money.models import PaymentMethod
 from send_money.utils import (
     serialise_date, unserialise_date, serialise_amount, unserialise_amount,
     validate_prisoner_number, get_api_client
 )
 
 
-class PaymentMethod(Enum):
-    debit_card = _('Debit card through this website')
-    bank_transfer = _('Bank transfer')
-
-    def __str__(self):
-        return self.name
-
-    @classmethod
-    def django_choices(cls):
-        return tuple((option.name, option.value) for option in cls)
-
-
 class SendMoneyForm(forms.Form):
     prisoner_name = forms.CharField(
-        label=_('Prisoner’s name'),
+        label=_('Prisoner name'),
         max_length=250,
     )
     prisoner_number = forms.CharField(
-        label=_('Prisoner’s number'),
+        label=_('Prisoner number'),
         max_length=7,
         validators=[validate_prisoner_number],
     )
-    prisoner_dob = forms.DateField(
-        label=_('Prisoner’s date of birth'),
+    prisoner_dob = SplitDateField(
+        label=_('Prisoner date of birth'),
     )
     amount = forms.DecimalField(
-        label=_('Amount'),
+        label=_('Amount you are sending'),
         min_value=decimal.Decimal('0.01'),
+        max_value=decimal.Decimal('1000000'),
         decimal_places=2,
     )
     payment_method = forms.ChoiceField(
@@ -60,7 +50,7 @@ class SendMoneyForm(forms.Form):
 
     def switch_to_hidden(self):
         for field in self.fields.values():
-            field.widget = forms.HiddenInput()
+            field.widget = field.hidden_widget()
 
     def clean_prisoner_number(self):
         prisoner_number = self.cleaned_data.get('prisoner_number')

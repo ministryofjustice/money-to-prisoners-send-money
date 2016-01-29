@@ -5,8 +5,8 @@ from django.http import HttpRequest
 import responses
 
 from send_money.forms import PaymentMethod, SendMoneyForm
+from send_money.tests import mock_auth, split_prisoner_dob_for_post
 from send_money.utils import lenient_unserialise_date, serialise_date, api_url
-from .test_utils import mock_auth
 
 
 class SendMoneyFormTestCase(unittest.TestCase):
@@ -49,6 +49,18 @@ valid_data_sets = [
         },
     },
     {
+        'name': 'debit_card_3',
+        'prisoner_details': {
+            'prisoner_number': 'A1234AB',
+            'prisoner_dob': '1980-10-05',
+        },
+        'data': {
+            'prisoner_name': 'John Smith',
+            'amount': '1000000.00',
+            'payment_method': PaymentMethod.debit_card,
+        },
+    },
+    {
         'name': 'bank_transfer_1',
         'prisoner_details': {
             'prisoner_number': 'A1234AB',
@@ -76,6 +88,10 @@ valid_data_sets = [
 
 
 def normalise_prisoner_details(prisoner_details):
+    """
+    Normalises the input prisoner details into the canonical form
+    in the form that the API would provide.
+    """
     prisoner_details['prisoner_number'] = prisoner_details['prisoner_number'].upper()
     prisoner_details['prisoner_dob'] = serialise_date(
         lenient_unserialise_date(prisoner_details['prisoner_dob'])
@@ -96,7 +112,7 @@ def make_valid_test(name, prisoner_details, data):
                 },
                 status=200,
             )
-            data.update(prisoner_details)
+            data.update(split_prisoner_dob_for_post(prisoner_details))
             form = SendMoneyForm(request=HttpRequest(), data=data)
             self.assertTrue(form.is_valid(), msg='\n\n%s' % form.errors.as_text())
     return test
@@ -233,6 +249,30 @@ invalid_data_sets = [
         },
     },
     {
+        'name': 'amount_4',
+        'prisoner_details': {
+            'prisoner_number': 'A1234AB',
+            'prisoner_dob': '1980-10-05',
+        },
+        'data': {
+            'prisoner_name': 'John Smith',
+            'amount': '-10',
+            'payment_method': PaymentMethod.debit_card,
+        },
+    },
+    {
+        'name': 'amount_5',
+        'prisoner_details': {
+            'prisoner_number': 'A1234AB',
+            'prisoner_dob': '1980-10-05',
+        },
+        'data': {
+            'prisoner_name': 'John Smith',
+            'amount': '1000000.01',
+            'payment_method': PaymentMethod.debit_card,
+        },
+    },
+    {
         'name': 'payment_method',
         'prisoner_details': {
             'prisoner_number': 'A1234AB',
@@ -250,7 +290,7 @@ invalid_data_sets = [
 def make_invalid_test(name, prisoner_details, data):
     @mock.patch('send_money.utils.api_client')
     def test(self, mocked_api_client):
-        data.update(prisoner_details)
+        data.update(split_prisoner_dob_for_post(prisoner_details))
         form = SendMoneyForm(request=HttpRequest(), data=data)
         self.assertFormInvalid(form, mocked_api_client)
     return test

@@ -41,23 +41,26 @@ form .form-group .form-hint {
 
   .mtp-money-amount {
     margin-bottom: 1em;
-    * {
-      height: 40px;
-      display: inline-block;
-      vertical-align: bottom;
-    }
-    div {
-      width: 2em;
-      min-width: 2em;
-      border-right: 0;
-      line-height: 1;
-      background-color: $panel-colour;
-      text-align: center;
-      font-size: 120%;
-      font-weight: 900;
-    }
-    input {
-      width: 5em;
+
+    .money-box {
+      * {
+        height: 40px;
+        display: inline-block;
+        vertical-align: bottom;
+      }
+      div.form-control {
+        width: 2em;
+        min-width: 2em;
+        border-right: 0;
+        line-height: 1;
+        background-color: $panel-colour;
+        text-align: center;
+        font-size: 120%;
+        font-weight: 900;
+      }
+      input {
+        width: 5em;
+      }
     }
   }
   > .form-group {

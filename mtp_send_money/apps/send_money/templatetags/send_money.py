@@ -1,22 +1,32 @@
-import decimal
-
 from django import template
 
-from send_money.forms import PaymentMethod
-from send_money.utils import serialise_amount, unserialise_amount
+from send_money.models import PaymentMethod
+from send_money.utils import format_percentage, \
+    currency_format, currency_format_pence, get_total_charge
 
 register = template.Library()
 
 
 @register.filter
 def payment_method_description(payment_method):
-    if not isinstance(payment_method, PaymentMethod):
-        payment_method = PaymentMethod[payment_method]
-    return payment_method.value
+    return PaymentMethod.lookup_description(payment_method)
+
+
+@register.filter(name='currency_format')
+def currency_format_filter(amount, trim_empty_pence=True):
+    return currency_format(amount, trim_empty_pence=trim_empty_pence)
+
+
+@register.filter(name='currency_format_pence')
+def currency_format_pence_filter(amount, trim_empty_pence=True):
+    return currency_format_pence(amount, trim_empty_pence=trim_empty_pence)
+
+
+@register.filter(name='format_percentage')
+def format_percentage_filter(number, decimals=1):
+    return format_percentage(number, decimals=decimals)
 
 
 @register.filter
-def currency_format(amount):
-    if not isinstance(amount, decimal.Decimal):
-        amount = unserialise_amount(amount)
-    return '£' + serialise_amount(amount)
+def add_service_charge(amount):
+    return get_total_charge(amount)

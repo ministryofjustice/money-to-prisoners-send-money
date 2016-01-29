@@ -12,7 +12,8 @@ from slumber.exceptions import SlumberHttpBaseException
 from send_money.forms import PaymentMethod, SendMoneyForm
 from send_money.utils import (
     unserialise_amount, unserialise_date, bank_transfer_reference,
-    govuk_headers, govuk_url, get_api_client, site_url, get_link_by_rel
+    govuk_headers, govuk_url, get_api_client, site_url, get_link_by_rel,
+    get_total_charge
 )
 
 logger = logging.getLogger('mtp')
@@ -42,11 +43,19 @@ class SendMoneyView(FormView):
 
     def get_context_data(self, **kwargs):
         context_data = super().get_context_data(**kwargs)
-        context_data.update(self.extra_context)
+
+        sample_amount = 20  # in pounds
+        context_data.update({
+            'service_charged': settings.SERVICE_CHARGED,
+            'service_charge_percentage': settings.SERVICE_CHARGE_PERCENTAGE,
+            'service_charge_fixed': settings.SERVICE_CHARGE_FIXED,
+            'sample_amount': sample_amount,
+        })
 
         # TODO: remove option once TD allows showing bank transfers
         context_data['HIDE_BANK_TRANSFER_OPTION'] = settings.HIDE_BANK_TRANSFER_OPTION
 
+        context_data.update(self.extra_context)
         return context_data
 
     def get_form_kwargs(self):
@@ -83,13 +92,14 @@ def make_context_from_session(session):
 def bank_transfer_view(request):
     context = make_context_from_session(request.session)
     context.update({
-        'payable_to': 'NOMS',
-        'account_number': '#########',
-        'sort_code': '##-##-##',
+        'payable_to': settings.NOMS_HOLDING_ACCOUNT_NAME,
+        'account_number': settings.NOMS_HOLDING_ACCOUNT_NUMBER,
+        'sort_code': settings.NOMS_HOLDING_ACCOUNT_SORT_CODE,
         'bank_transfer_reference': bank_transfer_reference(
             context['prisoner_number'],
             context['prisoner_dob'],
         ),
+        'amount_to_pay': get_total_charge(request.session['amount']),
     })
     request.session.flush()
     return render(request, 'send_money/bank-transfer.html', context)
@@ -177,3 +187,8 @@ def confirmation_view(request):
 
     request.session.flush()
     return render(request, 'send_money/confirmation.html', context)
+
+
+def clear_session_view(request):
+    request.session.flush()
+    return redirect('send_money:send_money')

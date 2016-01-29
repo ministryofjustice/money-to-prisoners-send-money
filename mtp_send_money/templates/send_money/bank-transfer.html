@@ -6,7 +6,9 @@
   <h1>{% trans 'Send money by bank transfer' %}</h1>
 
   <p>
-    {% trans 'Use your bank’s online or mobile banking to setup a bank transfer.' %}
+    {% blocktrans trimmed with amount_to_pay=amount_to_pay|currency_format %}
+      Use your bank’s online or mobile banking to setup a bank transfer for <strong>{{ amount_to_pay }}</strong>.
+    {% endblocktrans %}
     {% trans 'Alternatively, you can visit your local branch.' %}
   </p>
   <p>

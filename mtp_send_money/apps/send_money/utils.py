@@ -1,5 +1,5 @@
 import datetime
-import decimal
+from decimal import Decimal, ROUND_DOWN, ROUND_UP
 import re
 
 from django.conf import settings
@@ -26,13 +26,81 @@ def validate_prisoner_number(value):
         raise ValidationError(_('Incorrect prisoner number format'), code='invalid')
 
 
+def format_percentage(number, decimals=1, trim_zeros=True):
+    if not isinstance(number, Decimal):
+        number = Decimal(number)
+    percentage_text = ('{0:.%sf}' % decimals).format(number)
+    if decimals and trim_zeros and percentage_text.endswith('.' + ('0' * decimals)):
+        percentage_text = percentage_text[:-decimals - 1]
+    return percentage_text + '%'
+
+
+def currency_format(amount, trim_empty_pence=False):
+    """
+    Formats a number into currency format
+    @param amount: amount in pounds
+    @param trim_empty_pence: if True, strip off .00
+    """
+    if not isinstance(amount, Decimal):
+        amount = unserialise_amount(amount)
+    text_amount = serialise_amount(amount)
+    if trim_empty_pence and text_amount.endswith('.00'):
+        text_amount = text_amount[:-3]
+    return '£' + text_amount
+
+
+def currency_format_pence(amount, trim_empty_pence=False):
+    """
+    Formats a number into currency format display pence only as #p
+    @param amount: amount in pounds
+    @param trim_empty_pence: if True, strip off .00
+    """
+    if not isinstance(amount, Decimal):
+        amount = unserialise_amount(amount)
+    if amount.__abs__() < Decimal('1'):
+        return '%sp' % (amount * Decimal('100')).to_integral_value()
+    return currency_format(amount, trim_empty_pence=trim_empty_pence)
+
+
+def clamp_amount(amount):
+    """
+    Round the amount to integer pence,
+    rounding fractional pence up (away from zero) for any fractional pence value
+    that is greater than or equal to a tenth of a penny.
+    @param amount: Decimal amount to round
+    """
+    tenths_of_pennies = (amount * Decimal('1000')).to_integral_value(rounding=ROUND_DOWN)
+    pounds = tenths_of_pennies / Decimal('1000')
+    return pounds.quantize(Decimal('1.00'), rounding=ROUND_UP)
+
+
+def get_service_charge(amount, clamp=True):
+    if not isinstance(amount, Decimal):
+        amount = Decimal(amount)
+    percentage_charge = amount * settings.SERVICE_CHARGE_PERCENTAGE / Decimal('100')
+    service_charge = percentage_charge + settings.SERVICE_CHARGE_FIXED
+    if clamp:
+        return clamp_amount(service_charge)
+    return service_charge
+
+
+def get_total_charge(amount, clamp=True):
+    if not isinstance(amount, Decimal):
+        amount = Decimal(amount)
+    charge = get_service_charge(amount, clamp=False)
+    result = amount + charge
+    if clamp:
+        return clamp_amount(result)
+    return result
+
+
 def serialise_amount(amount):
     return '{0:.2f}'.format(amount)
 
 
 def unserialise_amount(amount_text):
     amount_text = force_text(amount_text)
-    return decimal.Decimal(amount_text)
+    return Decimal(amount_text)
 
 
 def serialise_date(date):
@@ -83,6 +151,5 @@ def site_url(path):
 
 
 def get_link_by_rel(data, rel):
-    for link in data['links']:
-        if link['rel'] == rel:
-            return link
+    if rel in data['_links']:
+        return data['_links'][rel]
