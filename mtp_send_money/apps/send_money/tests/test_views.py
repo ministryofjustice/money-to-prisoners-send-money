@@ -13,34 +13,37 @@ from send_money.forms import PaymentMethod, SendMoneyForm
 from send_money.tests import mock_auth, split_prisoner_dob_for_post
 from send_money.utils import govuk_url, api_url
 
+SAMPLE_FORM = {
+    'prisoner_name': 'John Smith',
+    'prisoner_number': 'A1231DE',
+    'prisoner_dob': '1980-10-04',
+    'amount': '10.00',
+    'payment_method': str(PaymentMethod.debit_card),
+}
+
 
 class BaseTestCase(SimpleTestCase):
     send_money_url = reverse('send_money:send_money')
+    check_details_url = reverse('send_money:check_details')
 
-    def populate_session(
-        self,
-        prisoner_name='John Smith',
-        prisoner_number='A1231DE',
-        prisoner_dob='1980-10-04',
-        amount='10.00'
-    ):
-        session = self.client.session
-        session['prisoner_name'] = prisoner_name
-        session['prisoner_number'] = prisoner_number
-        session['prisoner_dob'] = prisoner_dob
-        session['amount'] = amount
-        session['payment_method'] = PaymentMethod.debit_card.name
-        session.save()
-        self.client.cookies[settings.SESSION_COOKIE_NAME] = session.session_key
+    def assertOnPage(self, response, url_name):  # noqa
+        self.assertContains(response, '<!-- %s -->' % url_name)
 
     def assertPageNotDirectlyAccessible(self):  # noqa
         response = self.client.get(self.url)
         self.assertRedirects(response, self.send_money_url)
 
-    def submit_send_money_form(self, mocked_api_client, update_data=None, replace_data=None, follow=False):
+    def populate_session(self, **kwargs):
+        session = self.client.session
+        for key, default in SAMPLE_FORM.items():
+            session[key] = kwargs.get(key, SAMPLE_FORM[key])
+        session.save()
+        self.client.cookies[settings.SESSION_COOKIE_NAME] = session.session_key
+
+    def _prepare_post_data(self, mocked_api_client, update_data=None, replace_data=None):
         prisoner_details = {
-            'prisoner_number': 'A1231DE',
-            'prisoner_dob': '1980-10-04',
+            'prisoner_number': SAMPLE_FORM['prisoner_number'],
+            'prisoner_dob': SAMPLE_FORM['prisoner_dob'],
         }
         mocked_client = mocked_api_client.get_authenticated_connection()
         mocked_client.prisoner_validity().get.return_value = {
@@ -49,17 +52,24 @@ class BaseTestCase(SimpleTestCase):
         }
         if replace_data is None:
             data = {
-                'prisoner_name': 'John Smith',
-                'amount': '10.00',
-                'payment_method': PaymentMethod.debit_card,
+                'prisoner_name': SAMPLE_FORM['prisoner_name'],
+                'amount': SAMPLE_FORM['amount'],
+                'payment_method': SAMPLE_FORM['payment_method'],
             }
             data.update(prisoner_details)
         else:
             data = replace_data
         if update_data:
             data.update(update_data)
-        data = split_prisoner_dob_for_post(data)
+        return split_prisoner_dob_for_post(data)
+
+    def submit_send_money_form(self, mocked_api_client, update_data=None, replace_data=None, follow=False):
+        data = self._prepare_post_data(mocked_api_client, update_data=update_data, replace_data=replace_data)
         return self.client.post(self.send_money_url, data=data, follow=follow)
+
+    def submit_check_details_form(self, mocked_api_client, update_data=None, replace_data=None, follow=False):
+        data = self._prepare_post_data(mocked_api_client, update_data=update_data, replace_data=replace_data)
+        return self.client.post(self.check_details_url, data=data, follow=follow)
 
 
 class SendMoneyViewTestCase(BaseTestCase):
@@ -67,7 +77,7 @@ class SendMoneyViewTestCase(BaseTestCase):
 
     def test_send_money_page_loads(self):
         response = self.client.get(self.url)
-        self.assertEqual(response.status_code, 200)
+        self.assertOnPage(response, 'send_money')
 
     @override_settings(SERVICE_CHARGE_PERCENTAGE=Decimal('2.5'),
                        SERVICE_CHARGE_FIXED=Decimal('0.21'))
@@ -83,10 +93,8 @@ class SendMoneyViewTestCase(BaseTestCase):
 
     @mock.patch('send_money.utils.api_client')
     def test_send_money_page_previews_form(self, mocked_api_client):
-        response = self.submit_send_money_form(mocked_api_client)
-        self.assertContains(response, '<!-- send_money.preview -->')
-        form = response.context['form']
-        self.assertFalse(form.errors)
+        response = self.submit_send_money_form(mocked_api_client, follow=True)
+        self.assertOnPage(response, 'check_details')
 
     @mock.patch('send_money.forms.SendMoneyForm.check_prisoner_validity')
     def test_send_money_page_displays_errors_for_invalid_prisoner_number(self, mocked_check_prisoner_validity):
@@ -145,35 +153,39 @@ class SendMoneyViewTestCase(BaseTestCase):
 
     @mock.patch('send_money.utils.api_client')
     def test_send_money_page_allows_changing_form(self, mocked_api_client):
-        response = self.submit_send_money_form(mocked_api_client)
-        self.assertContains(response, '<!-- send_money.preview -->')
-        response = self.submit_send_money_form(mocked_api_client, update_data={
-            'change': '',
-        })
-        self.assertContains(response, '<!-- send_money.form -->')
+        response = self.submit_send_money_form(mocked_api_client, follow=True)
+        self.assertOnPage(response, 'check_details')
+        response = self.client.get(self.send_money_url + '?change')
+        self.assertOnPage(response, 'send_money')
+        self.assertContains(response, '"John Smith"')
+        self.assertContains(response, '"A1231DE"')
+        self.assertContains(response, '"4"')
+        self.assertContains(response, '"10"')
+        self.assertContains(response, '"1980"')
+        self.assertContains(response, '"10.00"')
 
     @mock.patch('send_money.utils.api_client')
     def test_send_money_page_can_proceed_to_debit_card(self, mocked_api_client):
-        response = self.submit_send_money_form(mocked_api_client)
-        self.assertContains(response, '<!-- send_money.preview -->')
-        response = self.submit_send_money_form(mocked_api_client, update_data={
+        response = self.submit_send_money_form(mocked_api_client, follow=True)
+        self.assertOnPage(response, 'check_details')
+        response = self.submit_check_details_form(mocked_api_client, update_data={
             'next': '',
         })
-        self.assertRedirects(
-            response, reverse('send_money:debit_card'), fetch_redirect_response=False
-        )
+        self.assertRedirects(response, reverse('send_money:debit_card'),
+                             fetch_redirect_response=False)
 
     @mock.patch('send_money.utils.api_client')
     def test_send_money_page_can_proceed_to_bank_transfer(self, mocked_api_client):
         response = self.submit_send_money_form(mocked_api_client, update_data={
             'payment_method': PaymentMethod.bank_transfer,
-        })
-        self.assertContains(response, '<!-- send_money.preview -->')
-        response = self.submit_send_money_form(mocked_api_client, update_data={
+        }, follow=True)
+        self.assertOnPage(response, 'check_details')
+        response = self.submit_check_details_form(mocked_api_client, update_data={
             'payment_method': PaymentMethod.bank_transfer,
             'next': '',
         })
-        self.assertRedirects(response, reverse('send_money:bank_transfer'))
+        self.assertRedirects(response, reverse('send_money:bank_transfer'),
+                             fetch_redirect_response=False)
 
 
 @unittest.skipIf(settings.HIDE_BANK_TRANSFER_OPTION, 'bank transfer is disabled')
@@ -183,13 +195,13 @@ class BankTransferViewTestCase(BaseTestCase):
     def bank_transfer_flow(self, mocked_api_client):
         response = self.submit_send_money_form(mocked_api_client, update_data={
             'payment_method': PaymentMethod.bank_transfer,
-        })
-        self.assertContains(response, '<!-- send_money.preview -->')
-        response = self.submit_send_money_form(mocked_api_client, update_data={
+        }, follow=True)
+        self.assertOnPage(response, 'check_details')
+        response = self.submit_check_details_form(mocked_api_client, update_data={
             'payment_method': PaymentMethod.bank_transfer,
             'next': '',
         }, follow=True)
-        self.assertContains(response, '<!-- bank_transfer -->')
+        self.assertOnPage(response, 'bank_transfer')
         return response
 
     def test_bank_transfer_page_not_directly_accessible(self):
