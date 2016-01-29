@@ -30,6 +30,7 @@ class SendMoneyForm(forms.Form):
     amount = forms.DecimalField(
         label=_('Amount you are sending'),
         min_value=decimal.Decimal('0.01'),
+        max_value=decimal.Decimal('1000000'),
         decimal_places=2,
     )
     payment_method = forms.ChoiceField(

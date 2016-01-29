@@ -49,6 +49,18 @@ valid_data_sets = [
         },
     },
     {
+        'name': 'debit_card_3',
+        'prisoner_details': {
+            'prisoner_number': 'A1234AB',
+            'prisoner_dob': '1980-10-05',
+        },
+        'data': {
+            'prisoner_name': 'John Smith',
+            'amount': '1000000.00',
+            'payment_method': PaymentMethod.debit_card,
+        },
+    },
+    {
         'name': 'bank_transfer_1',
         'prisoner_details': {
             'prisoner_number': 'A1234AB',
@@ -233,6 +245,30 @@ invalid_data_sets = [
         'data': {
             'prisoner_name': 'John Smith',
             'amount': '100.456',
+            'payment_method': PaymentMethod.debit_card,
+        },
+    },
+    {
+        'name': 'amount_4',
+        'prisoner_details': {
+            'prisoner_number': 'A1234AB',
+            'prisoner_dob': '1980-10-05',
+        },
+        'data': {
+            'prisoner_name': 'John Smith',
+            'amount': '-10',
+            'payment_method': PaymentMethod.debit_card,
+        },
+    },
+    {
+        'name': 'amount_5',
+        'prisoner_details': {
+            'prisoner_number': 'A1234AB',
+            'prisoner_dob': '1980-10-05',
+        },
+        'data': {
+            'prisoner_name': 'John Smith',
+            'amount': '1000000.01',
             'payment_method': PaymentMethod.debit_card,
         },
     },
