@@ -5,6 +5,7 @@ from send_money import views
 app_name = 'send_money'
 urlpatterns = [
     url(r'^$', views.SendMoneyView.as_view(), name='send_money'),
+    url(r'^check-details/$', views.CheckDetailsView.as_view(), name='check_details'),
     url(r'^clear-session/$', views.clear_session_view, name='clear_session'),
     url(r'^bank-transfer/$', views.bank_transfer_view, name='bank_transfer'),
     url(r'^card-payment/$', views.debit_card_view, name='debit_card'),

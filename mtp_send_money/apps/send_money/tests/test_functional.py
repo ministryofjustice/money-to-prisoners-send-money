@@ -82,7 +82,7 @@ class SendMoneyFunctionalTestCase(LiveServerTestCase):
         self.driver.find_element_by_id('id_next_btn').click()
         self.assertIn('<!-- bank_transfer -->', self.driver.page_source)
 
-    @unittest.skip('gov.uk pay testing not implemented')
+    @unittest.skip('gov.uk pay functional testing not implemented')
     def test_debit_card_flow(self):
         self.driver.get(self.live_server_url)
         self.fill_in_send_money_form(split_prisoner_dob_for_post({
@@ -94,11 +94,11 @@ class SendMoneyFunctionalTestCase(LiveServerTestCase):
         self.driver.find_element_by_id('id_next_btn').click()
         # TODO: add gov.uk mock and test various responses
 
-    def check_service_charge(self, input, expected):
+    def check_service_charge(self, amount, expected):
         amount_field = self.driver.find_element_by_id('id_amount')
         total_field = self.driver.find_element_by_css_selector('.mtp-charges-total span')
         amount_field.clear()
-        amount_field.send_keys(input)
+        amount_field.send_keys(amount)
         self.assertEqual(total_field.text, expected)
 
     def test_service_charge_js(self):

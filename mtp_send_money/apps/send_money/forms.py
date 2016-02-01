@@ -95,14 +95,22 @@ class SendMoneyForm(forms.Form):
         session['amount'] = serialise_amount(session['amount'])
 
     @classmethod
+    def session_contains_form_data(cls, session):
+        for required_key in SendMoneyForm.get_field_names():
+            if not session.get(required_key):
+                return False
+        return True
+
+    @classmethod
     def form_data_from_session(cls, session):
         try:
             data = {
                 field: session[field]
                 for field in cls.get_field_names()
             }
-            data['prisoner_dob'] = unserialise_date(data['prisoner_dob']),
-            data['amount'] = unserialise_amount(data['amount']),
+            prisoner_dob = unserialise_date(data['prisoner_dob'])
+            data['prisoner_dob'] = [prisoner_dob.day, prisoner_dob.month, prisoner_dob.year]
+            data['amount'] = unserialise_amount(data['amount'])
             return data
         except (KeyError, ValueError):
             raise ValueError('Session does not have a valid form')

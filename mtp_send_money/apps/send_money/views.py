@@ -4,6 +4,7 @@ import logging
 from django.conf import settings
 from django.core.urlresolvers import reverse, reverse_lazy
 from django.shortcuts import redirect, render
+from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext as _
 from django.views.generic import FormView
 import requests
@@ -19,27 +20,53 @@ from send_money.utils import (
 logger = logging.getLogger('mtp')
 
 
-def require_session_parameters(func):
-    @wraps(func)
+def require_session_parameters(view):
+    """
+    View decorator to require a session to include the serialised form
+    @param view: the view callable
+    """
+
+    @wraps(view)
     def inner(request, *args, **kwargs):
-        for required_key in SendMoneyForm.get_field_names():
-            if not request.session.get(required_key):
-                return redirect(reverse('send_money:send_money'))
-        return func(request, *args, **kwargs)
+        if not SendMoneyForm.session_contains_form_data(request.session):
+            return redirect(reverse('send_money:send_money'))
+        return view(request, *args, **kwargs)
+
+    return inner
+
+
+def make_context_from_session(view):
+    """
+    View decorator that creates a template context from the serialised form
+    in a session
+    @param view: the view callable
+    """
+
+    @wraps(view)
+    def inner(request, *args, **kwargs):
+        session = request.session
+        context = {field: session[field] for field in SendMoneyForm.get_field_names()}
+        context['prisoner_dob'] = unserialise_date(context['prisoner_dob'])
+        context['amount'] = unserialise_amount(context['amount'])
+        return view(request, context, *args, **kwargs)
 
     return inner
 
 
 class SendMoneyView(FormView):
+    """
+    The main form-filling view for sending payments
+    """
     form_class = SendMoneyForm
     template_name = 'send_money/send-money.html'
-    success_url = reverse_lazy('send_money:send_money')
+    success_url = reverse_lazy('send_money:check_details')
 
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.extra_context = {
-            'preview': False
-        }
+    def get_initial(self):
+        initial = super().get_initial()
+        session = self.request.session
+        if 'change' in self.request.GET and SendMoneyForm.session_contains_form_data(session):
+            initial.update(SendMoneyForm.form_data_from_session(session))
+        return initial
 
     def get_context_data(self, **kwargs):
         context_data = super().get_context_data(**kwargs)
@@ -55,7 +82,6 @@ class SendMoneyView(FormView):
         # TODO: remove option once TD allows showing bank transfers
         context_data['HIDE_BANK_TRANSFER_OPTION'] = settings.HIDE_BANK_TRANSFER_OPTION
 
-        context_data.update(self.extra_context)
         return context_data
 
     def get_form_kwargs(self):
@@ -64,33 +90,62 @@ class SendMoneyView(FormView):
         return kwargs
 
     def form_valid(self, form):
-        if 'next' in self.request.POST:
-            # proceed
-            return super().form_valid(form)
-        if 'change' not in self.request.POST:
-            # preview form
-            self.extra_context['preview'] = True
-            form.switch_to_hidden()
-            form.save_form_data_in_session(self.request.session)
-        # previewing or changing
-        return self.form_invalid(form)
+        form.save_form_data_in_session(self.request.session)
+        return super().form_valid(form)
+
+
+class CheckDetailsView(SendMoneyView):
+    """
+    The form-previewing view
+    """
+    template_name = 'send_money/check-details.html'
+    success_url = None
+
+    @method_decorator(require_session_parameters)
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_initial(self):
+        initial = super().get_initial()
+        initial.update(SendMoneyForm.form_data_from_session(self.request.session))
+        return initial
+
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+        form.switch_to_hidden()
+        return form
+
+    def get_context_data(self, **kwargs):
+        context_data = super().get_context_data(**kwargs)
+        context_data['preview'] = True
+        return context_data
+
+    def form_valid(self, form):
+        form.save_form_data_in_session(self.request.session)
+        if 'change' in self.request.POST:
+            # pressed back
+            return self.form_invalid(form)
+        # pressed continue
+        return super().form_valid(form)
 
     def get_success_url(self):
         if self.request.session['payment_method'] == str(PaymentMethod.bank_transfer):
             return reverse('send_money:bank_transfer')
         return reverse('send_money:debit_card')
 
-
-def make_context_from_session(session):
-    context = {field: session[field] for field in SendMoneyForm.get_field_names()}
-    context['prisoner_dob'] = unserialise_date(context['prisoner_dob'])
-    context['amount'] = unserialise_amount(context['amount'])
-    return context
+    def form_invalid(self, form):
+        return redirect(reverse('send_money:send_money') + '?change')
 
 
 @require_session_parameters
-def bank_transfer_view(request):
-    context = make_context_from_session(request.session)
+@make_context_from_session
+def bank_transfer_view(request, context):
+    """
+    View displaying details of how to set up a bank transfer.
+    NB: Clears the session
+    @param request: the HTTP request
+    @param context: the template context
+    """
     context.update({
         'payable_to': settings.NOMS_HOLDING_ACCOUNT_NAME,
         'account_number': settings.NOMS_HOLDING_ACCOUNT_NUMBER,
@@ -106,11 +161,15 @@ def bank_transfer_view(request):
 
 
 @require_session_parameters
-def debit_card_view(request):
-    context = make_context_from_session(request.session)
-
+@make_context_from_session
+def debit_card_view(request, context):
+    """
+    View that initiates the gov.uk payment process and displays error responses.
+    @param request: the HTTP request
+    @param context: the template context
+    """
     new_payment = {
-        'amount': int(context['amount']*100),
+        'amount': int(context['amount'] * 100),
         'recipient_name': context['prisoner_name'],
         'prisoner_number': context['prisoner_number'],
         'prisoner_dob': context['prisoner_dob'].isoformat(),
@@ -122,7 +181,7 @@ def debit_card_view(request):
         payment_ref = api_response['uuid']
 
         new_govuk_payment = {
-            'amount': int(context['amount']*100),
+            'amount': int(context['amount'] * 100),
             'reference': payment_ref,
             'description': _('Payment to prisoner %(prisoner_number)s'
                              % {'prisoner_number': context['prisoner_number']}),
@@ -154,6 +213,11 @@ def debit_card_view(request):
 
 
 def confirmation_view(request):
+    """
+    View that presents a confirmation message if a gov.uk payment was successful.
+    NB: Clears the session
+    @param request: the HTTP request
+    """
     payment_ref = request.GET.get('payment_ref')
     if payment_ref is None:
         return redirect(reverse('send_money:send_money'))
@@ -190,5 +254,9 @@ def confirmation_view(request):
 
 
 def clear_session_view(request):
+    """
+    View that clears the session and restarts the user flow.
+    @param request: the HTTP request
+    """
     request.session.flush()
     return redirect('send_money:send_money')
