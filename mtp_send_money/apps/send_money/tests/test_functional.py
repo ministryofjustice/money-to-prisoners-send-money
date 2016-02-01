@@ -25,7 +25,11 @@ class SendMoneyFunctionalTestCase(LiveServerTestCase):
     def setUp(self):
         web_driver = os.environ.get('WEBDRIVER', 'phantomjs')
         if web_driver == 'firefox':
-            self.driver = webdriver.Firefox()
+            fp = webdriver.FirefoxProfile()
+            fp.set_preference('browser.startup.homepage', 'about:blank')
+            fp.set_preference('startup.homepage_welcome_url', 'about:blank')
+            fp.set_preference('startup.homepage_welcome_url.additional', 'about:blank')
+            self.driver = webdriver.Firefox(firefox_profile=fp)
         elif web_driver == 'chrome':
             paths = glob.glob('node_modules/selenium-standalone/.selenium/chromedriver/*-chromedriver')
             paths = filter(lambda path: os.path.isfile(path) and os.access(path, os.X_OK),
@@ -94,12 +98,19 @@ class SendMoneyFunctionalTestCase(LiveServerTestCase):
         self.driver.find_element_by_id('id_next_btn').click()
         # TODO: add gov.uk mock and test various responses
 
+
+class SendMoneyDetailsPage(SendMoneyFunctionalTestCase):
     def check_service_charge(self, amount, expected):
         amount_field = self.driver.find_element_by_id('id_amount')
         total_field = self.driver.find_element_by_css_selector('.mtp-charges-total span')
         amount_field.clear()
         amount_field.send_keys(amount)
         self.assertEqual(total_field.text, expected)
+
+    def test_page_contents(self):
+        self.driver.get(self.live_server_url)
+        self.assertEqual(self.driver.title, 'Send money to a prisoner - GOV.UK')
+        self.assertEqual(self.driver.find_element_by_css_selector('h1').text, 'Who are you sending money to?')
 
     def test_service_charge_js(self):
         self.driver.get(self.live_server_url)
@@ -128,3 +139,36 @@ class SendMoneyFunctionalTestCase(LiveServerTestCase):
         self.check_service_charge('0.87', '£1.09')
         self.check_service_charge('0.001', '')
         self.check_service_charge('0.005', '')
+
+
+class SendMoneyConfirmationPage(SendMoneyFunctionalTestCase):
+    def setUp(self):
+        super().setUp()
+        self.driver.get(self.live_server_url)
+        self.fill_in_send_money_form(split_prisoner_dob_for_post({
+            'prisoner_name': 'James Halls',
+            'prisoner_number': 'A1409AE',
+            'prisoner_dob': '21/01/1989',
+            'amount': '34.50',
+        }), PaymentMethod.bank_transfer)
+        self.driver.find_element_by_id('id_next_btn').click()
+        self.assertEqual(self.driver.current_url, self.live_server_url + '/check-details/')
+        self.assertEqual(self.driver.title, 'Check details - Send money to a prisoner - GOV.UK')
+
+    def test_content(self):
+        self.assertIn('Name: James Halls', self.driver.page_source)
+        self.assertIn('Date of birth: 21/01/1989', self.driver.page_source)
+        self.assertIn('Prisoner number: A1409AE', self.driver.page_source)
+        self.assertIn('Total to prisoner: £12', self.driver.page_source)
+        self.assertIn('value="Make payment"', self.driver.page_source)
+
+    def test_style(self):
+        self.assertEqual('48px', self.driver.find_element_by_css_selector('h1').value_of_css_property('font-size'))
+        self.assertEqual(
+            '0px',
+            self.driver.find_element_by_css_selector('legend').value_of_css_property('margin-bottom')
+        )
+        self.assertEqual(
+            'right',
+            self.driver.find_element_by_xpath('//a[text()="Change this"]').value_of_css_property('text-align')
+        )

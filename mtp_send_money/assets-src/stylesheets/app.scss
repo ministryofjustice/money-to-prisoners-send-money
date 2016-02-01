@@ -70,3 +70,30 @@ form .form-group .form-hint {
     margin-top: 1em;
   }
 }
+
+.mtp-confirm {
+  width: 70%;
+  .mtp-confirm-change {
+    vertical-align: top;
+    text-align:right;
+    width: 39%;
+  }
+  fieldset div {
+    display: inline-block;
+    margin-top: 5em;
+    &.mtp-confirm-fieldset {
+      width: 60%;
+    }
+  }
+  fieldset.mtp-checkgroup {
+    border-top: 2px solid $border-colour;
+    margin-bottom: 1.5em;
+    legend {
+      margin-bottom: 0;
+    }
+    div {
+      margin-top: .7em;
+    }
+  }
+}
+
