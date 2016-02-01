@@ -17,7 +17,7 @@
       <div class="mtp-confirm-fieldset">
         <legend class="form-label-bold">{% trans 'Prisoner details' %}</legend>
         {% trans 'Name' %}: {{ form.prisoner_name.value }}<br>
-        {% trans 'Date of birth' %}: {{ form.prisoner_dob.value|date:'SHORT_DATE_FORMAT' }}<br>
+        {% trans 'Date of birth' %}: {{ form.prisoner_dob.value|prepare_prisoner_dob|date:'d/m/Y' }}<br>
         {% trans 'Prisoner number' %}: {{ form.prisoner_number.value }}
       </div>
       <div class="mtp-confirm-change">
@@ -39,13 +39,12 @@
       </div>
     </fieldset>
 
-    {# hidden form #}
+    {# hidden form to re-check prisoner location #}
     {{ form }}
 
     <fieldset>
       <div class="mtp-confirm-fieldset">
         <input id="id_next_btn" class="button" type="submit" name="next" value="{% trans 'Make payment' %}">
-      {# clear form: #}
       </div>
       <div class="mtp-confirm-change">
         <a href="{% url 'send_money:clear_session' %}">{% trans 'Cancel and delete all details' %}</a>
