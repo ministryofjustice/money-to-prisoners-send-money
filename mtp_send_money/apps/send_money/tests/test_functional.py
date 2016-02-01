@@ -159,7 +159,7 @@ class SendMoneyConfirmationPage(SendMoneyFunctionalTestCase):
         self.assertIn('Name: James Halls', self.driver.page_source)
         self.assertIn('Date of birth: 21/01/1989', self.driver.page_source)
         self.assertIn('Prisoner number: A1409AE', self.driver.page_source)
-        self.assertIn('Total to prisoner: £12', self.driver.page_source)
+        self.assertIn('Total to prisoner: £34.50', self.driver.page_source)
         self.assertIn('value="Make payment"', self.driver.page_source)
 
     def test_style(self):
