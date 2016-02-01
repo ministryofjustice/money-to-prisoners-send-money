@@ -3,46 +3,52 @@
 {% load moj_utils %}
 {% load send_money %}
 
+{% block page_title %}{% trans 'Check details - Send money to a prisoner - GOV.UK' %}{% endblock %}
+
 {% block content %}
   <h1>{% trans 'Check details' %}</h1>
 
-  <p>{% trans 'Check and change any details that are incorrect.' %}</p>
-  <hr/>
 
-  <form method="post" action=".">
+
+  <form class="mtp-confirm" method="post" action=".">
     {% csrf_token %}
+    <p>{% trans 'Check and change any details that are incorrect.' %}</p>
+    <fieldset class="mtp-checkgroup">
+      <div class="mtp-confirm-fieldset">
+        <legend class="form-label-bold">{% trans 'Prisoner details' %}</legend>
+        {% trans 'Name' %}: {{ form.prisoner_name.value }}<br>
+        {% trans 'Date of birth' %}: {{ form.prisoner_dob.value|prepare_prisoner_dob|date:'d/m/Y' }}<br>
+        {% trans 'Prisoner number' %}: {{ form.prisoner_number.value }}
+      </div>
+      <div class="mtp-confirm-change">
+        <a href="{% url 'send_money:send_money' %}?change">{% trans 'Change this' %}</a>
+      </div>
+    </fieldset>
 
-    <h2>{% trans 'Prisoner details' %}</h2>
-    {# edit without clearing: #}
-    {# <input class="button button-secondary" type="submit" name="change" value="{% trans 'Change this' %}"> #}
-    <a href="{% url 'send_money:send_money' %}?change">{% trans 'Change this' %}</a>
+    <fieldset class="mtp-checkgroup">
+      <div class="mtp-confirm-fieldset">
+        <legend class="form-label-bold">{% trans 'Money you are sending' %}</legend>
+        {% if service_charged %}
+          {% trans 'Total to prisoner' %}: {{ form.amount.value|currency_format }}<br>
+        {% endif %}
+        {% trans 'Total to be taken from your account' %}: {{ form.amount.value|add_service_charge|currency_format }}<br>
+        <!-- {{ form.payment_method.label }}: {{ form.payment_method.value|payment_method_description }} -->
+      </div>
+      <div class="mtp-confirm-change">
+        <a href="{% url 'send_money:send_money' %}?change">{% trans 'Change this' %}</a>
+      </div>
+    </fieldset>
 
-    <p>
-      {% trans 'Name' %}: {{ form.prisoner_name.value }}<br>
-      {% trans 'Date of birth' %}: {{ form.prisoner_dob.value|date:'SHORT_DATE_FORMAT' }}<br>
-      {% trans 'Prisoner number' %}: {{ form.prisoner_number.value }}
-    </p>
-
-    <h2>{% trans 'Money you are sending' %}</h2>
-    {# edit without clearing: #}
-    {# <input class="button button-secondary" type="submit" name="change" value="{% trans 'Change this' %}"> #}
-    <a href="{% url 'send_money:send_money' %}?change">{% trans 'Change this' %}</a>
-
-    <p>
-      {% if service_charged %}
-        {% trans 'Total to prisoner' %}: {{ form.amount.value|currency_format }}<br>
-      {% endif %}
-      {% trans 'Total to be taken from your account' %}: {{ form.amount.value|add_service_charge|currency_format }}<br>
-      <!-- {{ form.payment_method.label }}: {{ form.payment_method.value|payment_method_description }} -->
-    </p>
-
-    {# hidden form #}
+    {# hidden form to re-check prisoner location #}
     {{ form }}
 
-    <p>
-      <input id="id_next_btn" class="button" type="submit" name="next" value="{% trans 'Make payment' %}">
-      {# clear form: #}
-      <a href="{% url 'send_money:clear_session' %}">{% trans 'Cancel and delete all details' %}</a>
-    </p>
+    <fieldset>
+      <div class="mtp-confirm-fieldset">
+        <input id="id_next_btn" class="button" type="submit" name="next" value="{% trans 'Make payment' %}">
+      </div>
+      <div class="mtp-confirm-change">
+        <a href="{% url 'send_money:clear_session' %}">{% trans 'Cancel and delete all details' %}</a>
+      </div>
+    </fieldset>
   </form>
 {% endblock %}

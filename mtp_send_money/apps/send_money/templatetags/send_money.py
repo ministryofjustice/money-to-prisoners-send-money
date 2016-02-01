@@ -1,3 +1,5 @@
+import datetime
+
 from django import template
 
 from send_money.models import PaymentMethod
@@ -30,3 +32,15 @@ def format_percentage_filter(number, decimals=1):
 @register.filter
 def add_service_charge(amount):
     return get_total_charge(amount)
+
+
+@register.filter
+def prepare_prisoner_dob(dob):
+    if isinstance(dob, (list, tuple)):
+        try:
+            dob = datetime.date(int(dob[2]), int(dob[1]), int(dob[0]))
+        except (ValueError, IndexError):
+            return None
+    if not isinstance(dob, datetime.date):
+        return None
+    return dob
