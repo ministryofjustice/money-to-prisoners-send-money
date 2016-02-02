@@ -5,4 +5,5 @@ git+git://github.com/ministryofjustice/django-moj-auth.git
 git+git://github.com/ministryofjustice/django-moj-irat.git
 git+git://github.com/ministryofjustice/django-utils.git
 git+git://github.com/ministryofjustice/django-zendesk-tickets.git
+git+git://github.com/ministryofjustice/django-form-error-reporting.git
 pytz>=2015.7
