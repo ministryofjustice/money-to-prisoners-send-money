@@ -21,7 +21,7 @@
         {% trans 'Prisoner number' %}: {{ form.prisoner_number.value }}
       </div>
       <div class="mtp-confirm-change">
-        <a href="{% url 'send_money:send_money' %}?change">{% trans 'Change this' %}</a>
+        <a href="{% url 'send_money:send_money' %}?change&amp;focus=id_prisoner_name">{% trans 'Change this' %}</a>
       </div>
     </fieldset>
 
@@ -35,7 +35,7 @@
         <!-- {{ form.payment_method.label }}: {{ form.payment_method.value|payment_method_description }} -->
       </div>
       <div class="mtp-confirm-change">
-        <a href="{% url 'send_money:send_money' %}?change">{% trans 'Change this' %}</a>
+        <a href="{% url 'send_money:send_money' %}?change&amp;focus=id_amount">{% trans 'Change this' %}</a>
       </div>
     </fieldset>
 

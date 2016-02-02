@@ -15,6 +15,7 @@
       require('polyfills'),
       require('unload'),
       require('help-popup'),
+      require('element-focus'),
 
       require('charges')
     ])
