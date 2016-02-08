@@ -64,13 +64,16 @@ class SendMoneyForm(forms.Form):
         try:
             if not self.errors and \
                     not self.check_prisoner_validity(prisoner_number, prisoner_dob):
-                raise ValidationError(message=_('No prisoner was found with given '
-                                                'number and date of birth'),
-                                      code='not_found')
+                raise ValidationError(
+                    message=[_("No prisoner matches the details you've supplied."),
+                             _("Check the prisoner number and date of birth.")],
+                    code='not_found'
+                )
         except (SlumberHttpBaseException, RequestException):
-            raise ValidationError(message=_('Could not connect to service, '
-                                            'please try again later'),
-                                  code='connection')
+            raise ValidationError(
+                message=[_('Could not connect to the service.'),
+                         _('Please try again later.')],
+                code='connection')
         return self.cleaned_data
 
     def check_prisoner_validity(self, prisoner_number, prisoner_dob):

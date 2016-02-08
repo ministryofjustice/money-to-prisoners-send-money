@@ -1,7 +1,5 @@
 {% extends 'base.html' %}
-{% load i18n %}
-{% load moj_utils %}
-{% load send_money %}
+{% load i18n send_money moj_utils %}
 
 {% block content %}
   <h1>{% trans 'Who are you sending money to?' %}</h1>
@@ -9,31 +7,17 @@
   <form method="post" action=".">
     {% csrf_token %}
 
-    {% if form.errors %}
+    {% if form.non_field_errors %}
       <div class="error-summary" aria-labelledby="error-summary-heading" tabindex="-1" role="alert">
-        <h1 class="error-summary-heading heading-medium" id="error-summary-heading">{% trans 'There was a problem submitting the form' %}</h1>
-        <p>{% trans 'Because of the following problems:' %}</p>
-        <ol class="error-summary-list">
-          {% for field, errors in form.errors.items %}
-            {% with field_obj=form|field_from_name:field %}
-              <li>
-                {% if field_obj %}
-                  <a href="#{{ field_obj.id_for_label }}-label">
-                  {{ field_obj.label }} —
-                {% endif %}
-                {% for error in errors %}
-                  {% if not forloop.first  %}
-                    <br /> —
-                  {% endif %}
-                  {{ error }}
-                {% endfor %}
-                {% if field_obj %}
-                  </a>
-                {% endif %}
-              </li>
-            {% endwith %}
-          {% endfor %}
-        </ol>
+        {% for error in form.non_field_errors %}
+        {% if forloop.first %}
+        <h1 class="error-summary-heading heading-medium" id="error-summary-heading">
+          {{ error }}
+        </h1>
+        {% else %}
+        {{ error }}
+        {% endif %}
+        {% endfor %}
       </div>
     {% endif %}
 
@@ -46,7 +30,7 @@
           {% for error in field.errors %}
             <span class="error-message">{{ error }}</span>
           {% endfor %}
-          <input class="form-control" id="{{ field.id_for_label }}" name="{{ field.html_name }}" value="{{ field.value|default:'' }}" type="text" required />
+          <input class="form-control" id="{{ field.id_for_label }}" name="{{ field.html_name }}" value="{{ field.value|default:'' }}" type="text"  />
         </div>
       {% endwith %}
 
@@ -60,15 +44,15 @@
           <div>
              <div class="form-date-day {% if field.errors %}error{% endif %}">
                <label id="{{ field.auto_id }}_0-label" class="form-label" for="{{ field.auto_id }}_0">{% trans "Day" %}</label>
-               <input class="form-control" id="{{ field.auto_id }}_0" name="{{ field.html_name }}_0" value="{{ field.value.0|default:'' }}" type="text" required />
+               <input class="form-control" id="{{ field.auto_id }}_0" name="{{ field.html_name }}_0" value="{{ field.value.0|default:'' }}" type="text"  />
              </div>
              <div class="form-date-month {% if field.errors %}error{% endif %}">
                <label id="{{ field.auto_id }}_1-label" class="form-label" for="{{ field.auto_id }}_1">{% trans "Month" %}</label>
-               <input class="form-control" id="{{ field.auto_id }}_1" name="{{ field.html_name }}_1" value="{{ field.value.1|default:'' }}" type="text" required />
+               <input class="form-control" id="{{ field.auto_id }}_1" name="{{ field.html_name }}_1" value="{{ field.value.1|default:'' }}" type="text"  />
              </div>
              <div class="form-date-year {% if field.errors %}error{% endif %}">
                <label id="{{ field.auto_id }}_2-label" class="form-label" for="{{ field.auto_id }}_2">{% trans "Year" %}</label>
-               <input class="form-control" id="{{ field.auto_id }}_2" name="{{ field.html_name }}_2" value="{{ field.value.2|default:'' }}" type="text" required />
+               <input class="form-control" id="{{ field.auto_id }}_2" name="{{ field.html_name }}_2" value="{{ field.value.2|default:'' }}" type="text"  />
              </div>
           </div>
         </div>
@@ -81,7 +65,7 @@
             <span class="error-message">{{ error }}</span>
           {% endfor %}
           <div class="form-hint">{% trans "eg A1234BC" %}</div>
-          <input class="form-control mtp-prisoner-number" id="{{ field.id_for_label }}" name="{{ field.html_name }}" value="{{ field.value|default:'' }}" type="text" required />
+          <input class="form-control mtp-prisoner-number" id="{{ field.id_for_label }}" name="{{ field.html_name }}" value="{{ field.value|default:'' }}" type="text"  />
         </div>
       {% endwith %}
     </fieldset>
@@ -101,7 +85,6 @@
                                                      name="{{ field.html_name }}"
                                                      value="{{ field.value|default:'' }}"
                                                      type="text"
-                                                     required="required"
                                                      data-percentage-charge="{{ service_charge_percentage }}"
                                                      data-fixed-charge="{{ service_charge_fixed }}" />
            </div>
