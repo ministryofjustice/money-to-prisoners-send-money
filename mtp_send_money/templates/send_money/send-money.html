@@ -1,7 +1,5 @@
 {% extends 'base.html' %}
-{% load i18n %}
-{% load moj_utils %}
-{% load send_money %}
+{% load i18n send_money moj_utils %}
 
 {% block content %}
   <h1>{% trans 'Who are you sending money to?' %}</h1>
@@ -9,31 +7,17 @@
   <form method="post" action=".">
     {% csrf_token %}
 
-    {% if form.errors %}
+    {% if form.non_field_errors %}
       <div class="error-summary" aria-labelledby="error-summary-heading" tabindex="-1" role="alert">
-        <h1 class="error-summary-heading heading-medium" id="error-summary-heading">{% trans 'There was a problem submitting the form' %}</h1>
-        <p>{% trans 'Because of the following problems:' %}</p>
-        <ol class="error-summary-list">
-          {% for field, errors in form.errors.items %}
-            {% with field_obj=form|field_from_name:field %}
-              <li>
-                {% if field_obj %}
-                  <a href="#{{ field_obj.id_for_label }}-label">
-                  {{ field_obj.label }} —
-                {% endif %}
-                {% for error in errors %}
-                  {% if not forloop.first  %}
-                    <br /> —
-                  {% endif %}
-                  {{ error }}
-                {% endfor %}
-                {% if field_obj %}
-                  </a>
-                {% endif %}
-              </li>
-            {% endwith %}
-          {% endfor %}
-        </ol>
+        {% for error in form.non_field_errors %}
+        {% if forloop.first %}
+        <h1 class="error-summary-heading heading-medium" id="error-summary-heading">
+          {{ error }}
+        </h1>
+        {% else %}
+        {{ error }}
+        {% endif %}
+        {% endfor %}
       </div>
     {% endif %}
 

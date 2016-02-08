@@ -6,6 +6,7 @@ from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.test.testcases import SimpleTestCase
 from django.test.utils import override_settings
+from django.utils.html import escape
 from requests import ConnectionError
 import responses
 
@@ -133,7 +134,7 @@ class SendMoneyViewTestCase(BaseTestCase):
             'amount': '10.00',
             'payment_method': PaymentMethod.debit_card,
         }))
-        self.assertContains(response, 'No prisoner was found with given number and date of birth')
+        self.assertContains(response, escape("No prisoner matches the details you've supplied."))
         form = response.context['form']
         self.assertTrue(form.errors)
 
@@ -147,7 +148,7 @@ class SendMoneyViewTestCase(BaseTestCase):
             'amount': '10.00',
             'payment_method': PaymentMethod.debit_card,
         }))
-        self.assertContains(response, 'Could not connect to service, please try again later')
+        self.assertContains(response, 'Could not connect to the service.')
         form = response.context['form']
         self.assertTrue(form.errors)
 
