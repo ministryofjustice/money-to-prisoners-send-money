@@ -331,7 +331,11 @@ class ConfirmationViewTestCase(BaseTestCase):
             rsps.add(
                 rsps.GET,
                 api_url('/payments/%s/' % ref),
-                json={'processor_id': processor_id},
+                json={
+                    'processor_id': processor_id,
+                    'recipient_name': 'John',
+                    'amount': 1000
+                },
                 status=200,
             )
             rsps.add(
@@ -363,7 +367,11 @@ class ConfirmationViewTestCase(BaseTestCase):
             rsps.add(
                 rsps.GET,
                 api_url('/payments/%s/' % ref),
-                json={'processor_id': processor_id},
+                json={
+                    'processor_id': processor_id,
+                    'recipient_name': 'John',
+                    'amount': 1000
+                },
                 status=200,
             )
             rsps.add(
@@ -392,7 +400,11 @@ class ConfirmationViewTestCase(BaseTestCase):
             rsps.add(
                 rsps.GET,
                 api_url('/payments/%s/' % ref),
-                json={'processor_id': processor_id},
+                json={
+                    'processor_id': processor_id,
+                    'recipient_name': 'John',
+                    'amount': 1000
+                },
                 status=200,
             )
             rsps.add(

@@ -14,7 +14,7 @@ from send_money.forms import PaymentMethod, SendMoneyForm
 from send_money.utils import (
     unserialise_amount, unserialise_date, bank_transfer_reference,
     govuk_headers, govuk_url, get_api_client, site_url, get_link_by_rel,
-    get_total_charge, get_service_charge
+    get_total_charge, get_service_charge, serialise_amount
 )
 
 logger = logging.getLogger('mtp')
@@ -224,11 +224,14 @@ def confirmation_view(request):
     payment_ref = request.GET.get('payment_ref')
     if payment_ref is None:
         return redirect(reverse('send_money:send_money'))
-    context = {'success': False}
+    context = {'success': False, 'payment_ref': payment_ref[:8]}
 
     try:
         client = get_api_client()
         api_response = client.payments(payment_ref).get()
+        context['prisoner_name'] = api_response['recipient_name']
+        context['amount'] = serialise_amount(api_response['amount'] / 100)
+
         govuk_id = api_response['processor_id']
 
         govuk_response = requests.get(
