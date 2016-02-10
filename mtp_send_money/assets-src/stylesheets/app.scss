@@ -44,21 +44,20 @@ form .form-group .form-hint {
 
     .money-box {
       * {
-        height: 40px;
+        height: 34px;
         display: inline-block;
         vertical-align: bottom;
       }
-      div.form-control {
-        width: 2em;
-        min-width: 2em;
-        border-right: 0;
-        line-height: 1;
-        background-color: $panel-colour;
-        text-align: center;
-        font-size: 120%;
+      .mtp-currency-sign {
+        background-color: $highlight-colour;
         font-weight: 900;
+        min-width: 1.8em;
+        width: 1.8em;
+        text-align: center;
+        border-right: 0;
+        color: $text-colour;
       }
-      input {
+      .mtp-charges-amount {
         width: 5em;
       }
     }
