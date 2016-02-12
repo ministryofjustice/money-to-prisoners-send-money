@@ -1,3 +1,4 @@
+import datetime
 from functools import wraps
 import logging
 
@@ -245,7 +246,11 @@ def confirmation_view(request):
             }
 
             client.payments(payment_ref).patch(payment_update)
-            context['success'] = True
+            context.update({
+                'success': True,
+                'payment_created': datetime.datetime.strptime(api_response['created'],
+                                                              '%Y-%m-%dT%H:%M:%S.%fZ'),
+            })
         else:
             logger.error(
                 'Failed to retrieve payment status from GOV.UK for payment %s' % payment_ref

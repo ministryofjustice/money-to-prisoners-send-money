@@ -354,7 +354,7 @@ class ConfirmationViewTestCase(BaseTestCase):
             response = self.client.get(
                 self.url, {'payment_ref': ref}, follow=False
             )
-            self.assertContains(response, 'SUCCESS')
+            self.assertContains(response, 'success')
             # check session is cleared
             self.assertEqual(None, self.client.session.get('prisoner_number'))
             self.assertEqual(None, self.client.session.get('amount'))

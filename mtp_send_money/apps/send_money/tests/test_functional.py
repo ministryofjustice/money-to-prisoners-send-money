@@ -12,6 +12,9 @@ from selenium import webdriver
 from send_money.forms import PaymentMethod
 from send_money.tests import split_prisoner_dob_for_post
 
+from unittest.mock import patch
+from django.shortcuts import render
+
 logger = logging.getLogger('mtp')
 
 
@@ -72,6 +75,8 @@ class SendMoneyFunctionalTestCase(LiveServerTestCase):
                                                       % payment_method)
             field.click()
 
+
+class SendMoneyFlows(SendMoneyFunctionalTestCase):
     # TODO: remove skip once TD allows showing bank transfers
     @unittest.skipIf(settings.HIDE_BANK_TRANSFER_OPTION, 'bank transfer is disabled')
     def test_bank_transfer_flow(self):
@@ -141,7 +146,7 @@ class SendMoneyDetailsPage(SendMoneyFunctionalTestCase):
         self.check_service_charge('0.005', '')
 
 
-class SendMoneyConfirmationPage(SendMoneyFunctionalTestCase):
+class SendMoneyCheckDetailsPage(SendMoneyFunctionalTestCase):
     def setUp(self):
         super().setUp()
         self.driver.get(self.live_server_url)
@@ -172,3 +177,34 @@ class SendMoneyConfirmationPage(SendMoneyFunctionalTestCase):
             'right',
             self.driver.find_element_by_xpath('//a[text()="Change this"]').value_of_css_property('text-align')
         )
+
+
+class SendMoneyConfirmationPage(SendMoneyFunctionalTestCase):
+    def view_success(self, request):
+        return render(
+            request,
+            'send_money/confirmation.html',
+            {'success': True, 'payment_ref': 'meh', 'prisoner_name': 'James Bond', 'amount': 20},
+        )
+
+    def view_failure(self, request):
+        return render(
+            request,
+            'send_money/confirmation.html',
+            {'success': False, 'payment_ref': 'meh'},
+        )
+
+    def test_success(self):
+        with patch('send_money.views.confirmation_view', side_effect=self.view_success):
+            self.driver.get(self.live_server_url + '/confirmation/')
+            self.assertIn('Payment was successful', self.driver.page_source)
+            self.assertIn('Your reference number is <strong>MEH</strong>', self.driver.page_source)
+            self.assertIn('What happens next?', self.driver.page_source)
+            self.assertIn('James Bond', self.driver.page_source)
+            self.assertIn('20', self.driver.page_source)
+            self.assertIn('Print this page', self.driver.page_source)
+
+    def test_failure(self):
+        with patch('send_money.views.confirmation_view', side_effect=self.view_failure):
+            self.driver.get(self.live_server_url + '/confirmation/')
+            self.assertIn('FAILURE', self.driver.page_source)

@@ -32,6 +32,16 @@ form .form-group .form-hint {
 
 // Application-specific
 
+.mtp-summary-line {
+  p {
+    display: inline-block;
+    width: 10em;
+  }
+  strong {
+    display: inline-block;
+  }
+}
+
 .mtp-prisoner-number {
   width: 12em;
 }
