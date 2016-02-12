@@ -134,7 +134,7 @@ class SendMoneyViewTestCase(BaseTestCase):
             'amount': '10.00',
             'payment_method': PaymentMethod.debit_card,
         }))
-        self.assertContains(response, escape("No prisoner matches the details you've supplied."))
+        self.assertContains(response, escape("No prisoner matches the details you’ve supplied."))
         form = response.context['form']
         self.assertTrue(form.errors)
 

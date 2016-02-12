@@ -66,8 +66,8 @@ class SendMoneyForm(GARequestErrorReportingMixin, forms.Form):
             if not self.errors and \
                     not self.check_prisoner_validity(prisoner_number, prisoner_dob):
                 raise ValidationError(
-                    message=[_("No prisoner matches the details you've supplied."),
-                             _("Check the prisoner number and date of birth.")],
+                    message=[_('No prisoner matches the details you’ve supplied.'),
+                             _('Check the prisoner number and date of birth.')],
                     code='not_found'
                 )
         except (SlumberHttpBaseException, RequestException):
