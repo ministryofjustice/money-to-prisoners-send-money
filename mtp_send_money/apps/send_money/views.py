@@ -14,7 +14,7 @@ from send_money.forms import PaymentMethod, SendMoneyForm
 from send_money.utils import (
     unserialise_amount, unserialise_date, bank_transfer_reference,
     govuk_headers, govuk_url, get_api_client, site_url, get_link_by_rel,
-    get_total_charge
+    get_total_charge, get_service_charge
 )
 
 logger = logging.getLogger('mtp')
@@ -168,8 +168,11 @@ def debit_card_view(request, context):
     @param request: the HTTP request
     @param context: the template context
     """
+    amount_pence = int(context['amount'] * 100)
+    service_charge_pence = int(get_service_charge(context['amount']) * 100)
     new_payment = {
-        'amount': int(context['amount'] * 100),
+        'amount': amount_pence,
+        'service_charge': service_charge_pence,
         'recipient_name': context['prisoner_name'],
         'prisoner_number': context['prisoner_number'],
         'prisoner_dob': context['prisoner_dob'].isoformat(),
@@ -181,7 +184,7 @@ def debit_card_view(request, context):
         payment_ref = api_response['uuid']
 
         new_govuk_payment = {
-            'amount': int(context['amount'] * 100),
+            'amount': amount_pence + service_charge_pence,
             'reference': payment_ref,
             'description': _('Payment to prisoner %(prisoner_number)s'
                              % {'prisoner_number': context['prisoner_number']}),
