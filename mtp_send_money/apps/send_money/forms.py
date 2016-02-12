@@ -3,6 +3,7 @@ import decimal
 from django import forms
 from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext_lazy as _
+from form_error_reporting import GARequestErrorReportingMixin
 from requests.exceptions import RequestException
 from slumber.exceptions import HttpNotFoundError, SlumberHttpBaseException
 
@@ -14,7 +15,7 @@ from send_money.utils import (
 )
 
 
-class SendMoneyForm(forms.Form):
+class SendMoneyForm(GARequestErrorReportingMixin, forms.Form):
     prisoner_name = forms.CharField(
         label=_('Prisoner name'),
         max_length=250,
@@ -65,8 +66,8 @@ class SendMoneyForm(forms.Form):
             if not self.errors and \
                     not self.check_prisoner_validity(prisoner_number, prisoner_dob):
                 raise ValidationError(
-                    message=[_("No prisoner matches the details you've supplied."),
-                             _("Check the prisoner number and date of birth.")],
+                    message=[_('No prisoner matches the details you’ve supplied.'),
+                             _('Check the prisoner number and date of birth.')],
                     code='not_found'
                 )
         except (SlumberHttpBaseException, RequestException):
