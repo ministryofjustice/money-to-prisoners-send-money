@@ -1,4 +1,5 @@
 from decimal import Decimal
+import json
 import unittest
 from unittest import mock
 
@@ -271,6 +272,13 @@ class DebitCardViewTestCase(BaseTestCase):
                 status=200,
             )
             response = self.client.get(self.url, follow=False)
+
+            # check amount and service charge submitted to api
+            self.assertEqual(json.loads(rsps.calls[1].request.body)['amount'], 1000)
+            self.assertEqual(json.loads(rsps.calls[1].request.body)['service_charge'], 44)
+            # check total charge submitted to govuk
+            self.assertEqual(json.loads(rsps.calls[2].request.body)['amount'], 1044)
+
             self.assertRedirects(
                 response, govuk_url(self.payment_process_path),
                 fetch_redirect_response=False
