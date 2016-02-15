@@ -1,19 +1,20 @@
+import datetime
 import glob
 import logging
 import os
 import socket
-from urllib.parse import urlparse
 import unittest
+from unittest import mock
+from urllib.parse import urlparse
 
 from django.conf import settings
-from django.test import LiveServerTestCase
+from django.test import LiveServerTestCase, override_settings
+import responses
 from selenium import webdriver
 
 from send_money.forms import PaymentMethod
 from send_money.tests import split_prisoner_dob_for_post
-
-from unittest.mock import patch
-from django.shortcuts import render
+from send_money.utils import govuk_url
 
 logger = logging.getLogger('mtp')
 
@@ -179,32 +180,45 @@ class SendMoneyCheckDetailsPage(SendMoneyFunctionalTestCase):
         )
 
 
+@override_settings(GOVUK_PAY_URL='http://payment.gov.uk',
+                   GOVUK_PAY_AUTH_TOKEN='15a21a56-817a-43d4-bf8d-f01f298298e8')
 class SendMoneyConfirmationPage(SendMoneyFunctionalTestCase):
-    def view_success(self, request):
-        return render(
-            request,
-            'send_money/confirmation.html',
-            {'success': True, 'payment_ref': 'meh', 'prisoner_name': 'James Bond', 'amount': 20},
-        )
+    @mock.patch('send_money.views.get_api_client')
+    def test_success_page(self, mocked_client):
+        processor_id = '3'
+        mocked_client().payments().get.return_value = {
+            'processor_id': processor_id,
+            'recipient_name': 'James Bond',
+            'amount': 2000,
+            'created': datetime.datetime.now().isoformat() + 'Z',
+        }
+        with responses.RequestsMock() as rsps:
+            rsps.add(rsps.GET, govuk_url('/payments/%s' % processor_id), json={
+                'status': 'SUCCEEDED'
+            })
 
-    def view_failure(self, request):
-        return render(
-            request,
-            'send_money/confirmation.html',
-            {'success': False, 'payment_ref': 'meh'},
-        )
-
-    def test_success(self):
-        with patch('send_money.views.confirmation_view', side_effect=self.view_success):
-            self.driver.get(self.live_server_url + '/confirmation/')
+            self.driver.get(self.live_server_url + '/confirmation/?payment_ref=REF12345')
             self.assertIn('Payment was successful', self.driver.page_source)
-            self.assertIn('Your reference number is <strong>MEH</strong>', self.driver.page_source)
+            self.assertIn('Your reference number is <strong>REF12345</strong>', self.driver.page_source)
             self.assertIn('What happens next?', self.driver.page_source)
             self.assertIn('James Bond', self.driver.page_source)
             self.assertIn('20', self.driver.page_source)
             self.assertIn('Print this page', self.driver.page_source)
 
-    def test_failure(self):
-        with patch('send_money.views.confirmation_view', side_effect=self.view_failure):
-            self.driver.get(self.live_server_url + '/confirmation/')
-            self.assertIn('FAILURE', self.driver.page_source)
+    @mock.patch('send_money.views.get_api_client')
+    def test_failure_page(self, mocked_client):
+        processor_id = '3'
+        mocked_client().payments().get.return_value = {
+            'processor_id': processor_id,
+            'recipient_name': 'James Bond',
+            'amount': 2000,
+            'created': datetime.datetime.now().isoformat() + 'Z',
+        }
+        with responses.RequestsMock() as rsps:
+            rsps.add(rsps.GET, govuk_url('/payments/%s' % processor_id), json={
+                'status': 'FAILED'
+            })
+
+            self.driver.get(self.live_server_url + '/confirmation/?payment_ref=REF12345')
+            self.assertIn('We’re sorry, your payment could not be processed on this occasion', self.driver.page_source)
+            self.assertIn('Your reference number is <strong>REF12345</strong>', self.driver.page_source)

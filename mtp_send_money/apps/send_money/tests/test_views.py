@@ -1,3 +1,4 @@
+import datetime
 from decimal import Decimal
 import json
 import unittest
@@ -334,7 +335,8 @@ class ConfirmationViewTestCase(BaseTestCase):
                 json={
                     'processor_id': processor_id,
                     'recipient_name': 'John',
-                    'amount': 1000
+                    'amount': 1000,
+                    'created': datetime.datetime.now().isoformat() + 'Z',
                 },
                 status=200,
             )
@@ -370,7 +372,8 @@ class ConfirmationViewTestCase(BaseTestCase):
                 json={
                     'processor_id': processor_id,
                     'recipient_name': 'John',
-                    'amount': 1000
+                    'amount': 1000,
+                    'created': datetime.datetime.now().isoformat() + 'Z',
                 },
                 status=200,
             )
@@ -390,7 +393,7 @@ class ConfirmationViewTestCase(BaseTestCase):
             response = self.client.get(
                 self.url, {'payment_ref': ref}, follow=False
             )
-            self.assertContains(response, 'FAILURE')
+            self.assertContains(response, 'your payment could not be processed')
 
     def test_confirmation_handles_govuk_errors(self):
         with responses.RequestsMock() as rsps, self.settings(GOVUK_PAY_URL='http://payment.gov.uk'):
@@ -403,7 +406,8 @@ class ConfirmationViewTestCase(BaseTestCase):
                 json={
                     'processor_id': processor_id,
                     'recipient_name': 'John',
-                    'amount': 1000
+                    'amount': 1000,
+                    'created': datetime.datetime.now().isoformat() + 'Z',
                 },
                 status=200,
             )
@@ -415,4 +419,4 @@ class ConfirmationViewTestCase(BaseTestCase):
             response = self.client.get(
                 self.url, {'payment_ref': ref}, follow=False
             )
-            self.assertContains(response, 'FAILURE')
+            self.assertContains(response, 'your payment could not be processed')

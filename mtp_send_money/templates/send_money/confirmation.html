@@ -31,6 +31,7 @@
   <p><a href="javascript:window.print()">{% trans 'Print this page' %}</a></p>
 
   {% else %}
-  <p>{% trans 'FAILURE' %}</p>
+  <p>{% trans 'We’re sorry, your payment could not be processed on this occasion' %}</p>
+  <p>{% trans 'Your reference number is' %} <strong>{{ payment_ref|upper }}</strong></p>
   {% endif %}
 {% endblock %}
