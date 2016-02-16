@@ -1,3 +1,4 @@
+import datetime
 from decimal import Decimal
 import json
 import unittest
@@ -331,7 +332,12 @@ class ConfirmationViewTestCase(BaseTestCase):
             rsps.add(
                 rsps.GET,
                 api_url('/payments/%s/' % ref),
-                json={'processor_id': processor_id},
+                json={
+                    'processor_id': processor_id,
+                    'recipient_name': 'John',
+                    'amount': 1000,
+                    'created': datetime.datetime.now().isoformat() + 'Z',
+                },
                 status=200,
             )
             rsps.add(
@@ -350,7 +356,7 @@ class ConfirmationViewTestCase(BaseTestCase):
             response = self.client.get(
                 self.url, {'payment_ref': ref}, follow=False
             )
-            self.assertContains(response, 'SUCCESS')
+            self.assertContains(response, 'success')
             # check session is cleared
             self.assertEqual(None, self.client.session.get('prisoner_number'))
             self.assertEqual(None, self.client.session.get('amount'))
@@ -363,7 +369,12 @@ class ConfirmationViewTestCase(BaseTestCase):
             rsps.add(
                 rsps.GET,
                 api_url('/payments/%s/' % ref),
-                json={'processor_id': processor_id},
+                json={
+                    'processor_id': processor_id,
+                    'recipient_name': 'John',
+                    'amount': 1000,
+                    'created': datetime.datetime.now().isoformat() + 'Z',
+                },
                 status=200,
             )
             rsps.add(
@@ -382,7 +393,7 @@ class ConfirmationViewTestCase(BaseTestCase):
             response = self.client.get(
                 self.url, {'payment_ref': ref}, follow=False
             )
-            self.assertContains(response, 'FAILURE')
+            self.assertContains(response, 'your payment could not be processed')
 
     def test_confirmation_handles_govuk_errors(self):
         with responses.RequestsMock() as rsps, self.settings(GOVUK_PAY_URL='http://payment.gov.uk'):
@@ -392,7 +403,12 @@ class ConfirmationViewTestCase(BaseTestCase):
             rsps.add(
                 rsps.GET,
                 api_url('/payments/%s/' % ref),
-                json={'processor_id': processor_id},
+                json={
+                    'processor_id': processor_id,
+                    'recipient_name': 'John',
+                    'amount': 1000,
+                    'created': datetime.datetime.now().isoformat() + 'Z',
+                },
                 status=200,
             )
             rsps.add(
@@ -403,4 +419,4 @@ class ConfirmationViewTestCase(BaseTestCase):
             response = self.client.get(
                 self.url, {'payment_ref': ref}, follow=False
             )
-            self.assertContains(response, 'FAILURE')
+            self.assertContains(response, 'your payment could not be processed')

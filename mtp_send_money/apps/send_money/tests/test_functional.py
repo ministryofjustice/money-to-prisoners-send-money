@@ -1,16 +1,20 @@
+import datetime
 import glob
 import logging
 import os
 import socket
-from urllib.parse import urlparse
 import unittest
+from unittest import mock
+from urllib.parse import urlparse
 
 from django.conf import settings
-from django.test import LiveServerTestCase
+from django.test import LiveServerTestCase, override_settings
+import responses
 from selenium import webdriver
 
 from send_money.forms import PaymentMethod
 from send_money.tests import split_prisoner_dob_for_post
+from send_money.utils import govuk_url
 
 logger = logging.getLogger('mtp')
 
@@ -72,6 +76,8 @@ class SendMoneyFunctionalTestCase(LiveServerTestCase):
                                                       % payment_method)
             field.click()
 
+
+class SendMoneyFlows(SendMoneyFunctionalTestCase):
     # TODO: remove skip once TD allows showing bank transfers
     @unittest.skipIf(settings.HIDE_BANK_TRANSFER_OPTION, 'bank transfer is disabled')
     def test_bank_transfer_flow(self):
@@ -141,7 +147,7 @@ class SendMoneyDetailsPage(SendMoneyFunctionalTestCase):
         self.check_service_charge('0.005', '')
 
 
-class SendMoneyConfirmationPage(SendMoneyFunctionalTestCase):
+class SendMoneyCheckDetailsPage(SendMoneyFunctionalTestCase):
     def setUp(self):
         super().setUp()
         self.driver.get(self.live_server_url)
@@ -172,3 +178,47 @@ class SendMoneyConfirmationPage(SendMoneyFunctionalTestCase):
             'right',
             self.driver.find_element_by_xpath('//a[text()="Change this"]').value_of_css_property('text-align')
         )
+
+
+@override_settings(GOVUK_PAY_URL='http://payment.gov.uk',
+                   GOVUK_PAY_AUTH_TOKEN='15a21a56-817a-43d4-bf8d-f01f298298e8')
+class SendMoneyConfirmationPage(SendMoneyFunctionalTestCase):
+    @mock.patch('send_money.views.get_api_client')
+    def test_success_page(self, mocked_client):
+        processor_id = '3'
+        mocked_client().payments().get.return_value = {
+            'processor_id': processor_id,
+            'recipient_name': 'James Bond',
+            'amount': 2000,
+            'created': datetime.datetime.now().isoformat() + 'Z',
+        }
+        with responses.RequestsMock() as rsps:
+            rsps.add(rsps.GET, govuk_url('/payments/%s' % processor_id), json={
+                'status': 'SUCCEEDED'
+            })
+
+            self.driver.get(self.live_server_url + '/confirmation/?payment_ref=REF12345')
+            self.assertIn('Payment was successful', self.driver.page_source)
+            self.assertIn('Your reference number is <strong>REF12345</strong>', self.driver.page_source)
+            self.assertIn('What happens next?', self.driver.page_source)
+            self.assertIn('James Bond', self.driver.page_source)
+            self.assertIn('20', self.driver.page_source)
+            self.assertIn('Print this page', self.driver.page_source)
+
+    @mock.patch('send_money.views.get_api_client')
+    def test_failure_page(self, mocked_client):
+        processor_id = '3'
+        mocked_client().payments().get.return_value = {
+            'processor_id': processor_id,
+            'recipient_name': 'James Bond',
+            'amount': 2000,
+            'created': datetime.datetime.now().isoformat() + 'Z',
+        }
+        with responses.RequestsMock() as rsps:
+            rsps.add(rsps.GET, govuk_url('/payments/%s' % processor_id), json={
+                'status': 'FAILED'
+            })
+
+            self.driver.get(self.live_server_url + '/confirmation/?payment_ref=REF12345')
+            self.assertIn('We’re sorry, your payment could not be processed on this occasion', self.driver.page_source)
+            self.assertIn('Your reference number is <strong>REF12345</strong>', self.driver.page_source)
