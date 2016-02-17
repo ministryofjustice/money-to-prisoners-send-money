@@ -198,6 +198,7 @@ class SendMoneyConfirmationPage(SendMoneyFunctionalTestCase):
             })
 
             self.driver.get(self.live_server_url + '/confirmation/?payment_ref=REF12345')
+            self.assertIn('<h1>Send money to a prisoner</h1>', self.driver.page_source)
             self.assertIn('Payment was successful', self.driver.page_source)
             self.assertIn('Your reference number is <strong>REF12345</strong>', self.driver.page_source)
             self.assertIn('What happens next?', self.driver.page_source)
