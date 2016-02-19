@@ -1,6 +1,6 @@
 // Charges module
 // Automatically shows service charges when typing an amount in the payment page
-/* globals require, exports, $ */
+/* globals exports, $ */
 'use strict';
 
 exports.Charges = {
