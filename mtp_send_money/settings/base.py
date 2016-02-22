@@ -105,6 +105,7 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
                 'moj_utils.context_processors.analytics',
                 'moj_utils.context_processors.app_environment',
+                'send_money.context_processors.support_links'
             ],
         },
     },
