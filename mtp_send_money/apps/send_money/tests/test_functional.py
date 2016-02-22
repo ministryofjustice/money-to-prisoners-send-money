@@ -223,3 +223,37 @@ class SendMoneyConfirmationPage(SendMoneyFunctionalTestCase):
             self.driver.get(self.live_server_url + '/confirmation/?payment_ref=REF12345')
             self.assertIn('We’re sorry, your payment could not be processed on this occasion', self.driver.page_source)
             self.assertIn('Your reference number is <strong>REF12345</strong>', self.driver.page_source)
+
+
+class SendMoneySupportPages(SendMoneyFunctionalTestCase):
+    footer_links = [
+        {
+            'link_name': 'privacy_policy',
+            'link_text': 'Privacy Policy',
+            'page_content': 'Privacy Policy',
+        },
+        {
+            'link_name': 'cookies',
+            'link_text': 'Cookies',
+            'page_content': 'How cookies are used on GOV.UK',
+        },
+    ]
+
+    @classmethod
+    def make_test_methods(cls):
+        for footer_link in cls.footer_links:
+            setattr(cls, 'test_footer_link__%s' % footer_link['link_name'],
+                    cls.make_test_method(footer_link))
+
+    @classmethod
+    def make_test_method(cls, _footer_link):
+        def test(self):
+            self.driver.get(self.live_server_url)
+            link_element = self.driver.find_element_by_link_text(_footer_link['link_text'])
+            link_element.click()
+            self.assertIn(_footer_link['page_content'], self.driver.page_source)
+
+        return test
+
+
+SendMoneySupportPages.make_test_methods()
