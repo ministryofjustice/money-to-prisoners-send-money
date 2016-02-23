@@ -6,11 +6,11 @@ def support_links(request):
     return {
         'support_links': [
             {
-                'url': reverse('send_money:privacy_policy'),
+                'url': reverse('privacy_policy'),
                 'title': _('Privacy Policy'),
             },
             {
-                'url': reverse('send_money:cookies'),
+                'url': reverse('cookies'),
                 'title': _('Cookies'),
             },
             {

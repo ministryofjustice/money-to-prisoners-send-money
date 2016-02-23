@@ -1,10 +1,22 @@
 from django.conf.urls import include, url
+from django.views.generic import TemplateView
 
 from moj_irat.views import HealthcheckView, PingJsonView
 
 urlpatterns = [
     url(r'^', include('send_money.urls', namespace='send_money',)),
     url(r'^', include('feedback.urls')),
+
+    url(
+        r'^privacy-policy/$',
+        TemplateView.as_view(template_name='privacy-policy.html'),
+        name='privacy_policy',
+    ),
+    url(
+        r'^cookies/$',
+        TemplateView.as_view(template_name='cookies.html'),
+        name='cookies',
+    ),
 
     url(r'^ping.json$', PingJsonView.as_view(
         build_date_key='APP_BUILD_DATE',
