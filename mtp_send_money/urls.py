@@ -1,10 +1,10 @@
+from django.conf import settings
 from django.conf.urls import include, url
 from django.views.generic import TemplateView
 
 from moj_irat.views import HealthcheckView, PingJsonView
 
 urlpatterns = [
-    url(r'^', include('send_money.urls', namespace='send_money',)),
     url(r'^', include('feedback.urls')),
 
     url(
@@ -25,3 +25,6 @@ urlpatterns = [
     ), name='ping_json'),
     url(r'^healthcheck.json$', HealthcheckView.as_view(), name='healthcheck_json'),
 ]
+
+if not settings.HIDE_PAYMENT_PAGES:
+    urlpatterns.append(url(r'^', include('send_money.urls', namespace='send_money',)))

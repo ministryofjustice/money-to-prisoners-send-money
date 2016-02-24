@@ -232,6 +232,8 @@ ZENDESK_CUSTOM_FIELDS = {
 # TODO: remove option once TD allows showing bank transfers
 HIDE_BANK_TRANSFER_OPTION = True
 
+HIDE_PAYMENT_PAGES = os.environ.get('HIDE_PAYMENT_PAGES', False)
+
 GOVUK_PAY_URL = os.environ.get('GOVUK_PAY_URL', '')
 GOVUK_PAY_AUTH_TOKEN = os.environ.get('GOVUK_PAY_AUTH_TOKEN', '')
 

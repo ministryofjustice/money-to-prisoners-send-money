@@ -1,11 +1,13 @@
 import datetime
 from decimal import Decimal
+from importlib import reload
 import json
+import sys
 import unittest
 from unittest import mock
 
 from django.conf import settings
-from django.core.urlresolvers import reverse
+from django.core.urlresolvers import reverse, clear_url_caches, set_urlconf
 from django.test.testcases import SimpleTestCase
 from django.test.utils import override_settings
 from django.utils.html import escape
@@ -420,3 +422,26 @@ class ConfirmationViewTestCase(BaseTestCase):
                 self.url, {'payment_ref': ref}, follow=False
             )
             self.assertContains(response, 'your payment could not be processed')
+
+
+class HidePaymentPagesTestCase(SimpleTestCase):
+
+    def reload_urls(self):
+        reload(sys.modules[settings.ROOT_URLCONF])
+        clear_url_caches()
+        set_urlconf(None)
+
+    def assert_url_inaccessible(self, url):
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 404)
+
+    def test_payment_pages_inaccessible(self):
+        with self.settings(HIDE_PAYMENT_PAGES='True'):
+            self.reload_urls()
+            self.assert_url_inaccessible('/')
+            self.assert_url_inaccessible('/check-details')
+            self.assert_url_inaccessible('/clear-session')
+            self.assert_url_inaccessible('/bank-transfer')
+            self.assert_url_inaccessible('/debit-card')
+            self.assert_url_inaccessible('/confirmation')
+        self.reload_urls()
