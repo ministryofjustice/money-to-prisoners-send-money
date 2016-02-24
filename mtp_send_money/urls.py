@@ -1,6 +1,8 @@
 from django.conf import settings
 from django.conf.urls import include, url
+from django.core.urlresolvers import reverse_lazy
 from django.views.generic import TemplateView
+from django.views.generic.base import RedirectView
 
 from moj_irat.views import HealthcheckView, PingJsonView
 
@@ -28,3 +30,5 @@ urlpatterns = [
 
 if not settings.HIDE_PAYMENT_PAGES:
     urlpatterns.append(url(r'^', include('send_money.urls', namespace='send_money',)))
+else:
+    urlpatterns.append(url(r'^$', RedirectView.as_view(url=reverse_lazy('submit_ticket'))))
