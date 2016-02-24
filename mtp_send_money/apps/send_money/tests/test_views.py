@@ -1,4 +1,5 @@
 import datetime
+from contextlib import contextmanager
 from decimal import Decimal
 from importlib import reload
 import json
@@ -426,22 +427,31 @@ class ConfirmationViewTestCase(BaseTestCase):
 
 class HidePaymentPagesTestCase(SimpleTestCase):
 
-    def reload_urls(self):
-        reload(sys.modules[settings.ROOT_URLCONF])
-        clear_url_caches()
-        set_urlconf(None)
+    @contextmanager
+    def hide_payment_pages(self):
+        def reload_urls():
+            reload(sys.modules[settings.ROOT_URLCONF])
+            clear_url_caches()
+            set_urlconf(None)
+
+        with self.settings(HIDE_PAYMENT_PAGES='True'):
+            reload_urls()
+            yield
+        reload_urls()
 
     def assert_url_inaccessible(self, url):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 404)
 
+    def test_root_page_redirects(self):
+        with self.hide_payment_pages():
+            response = self.client.get('/')
+            self.assertRedirects(response, reverse('submit_ticket'))
+
     def test_payment_pages_inaccessible(self):
-        with self.settings(HIDE_PAYMENT_PAGES='True'):
-            self.reload_urls()
-            self.assert_url_inaccessible('/')
+        with self.hide_payment_pages():
             self.assert_url_inaccessible('/check-details')
             self.assert_url_inaccessible('/clear-session')
             self.assert_url_inaccessible('/bank-transfer')
             self.assert_url_inaccessible('/debit-card')
             self.assert_url_inaccessible('/confirmation')
-        self.reload_urls()
