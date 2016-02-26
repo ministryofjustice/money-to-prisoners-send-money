@@ -230,6 +230,8 @@ ZENDESK_CUSTOM_FIELDS = {
     'contact_email': 30769508
 }
 
+CITIZEN_INFO_URL = 'sendmoneytoaprisoner.service.justice.gov.uk'
+
 # TODO: remove option once TD allows showing bank transfers
 HIDE_BANK_TRANSFER_OPTION = True
 
