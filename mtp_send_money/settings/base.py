@@ -226,7 +226,8 @@ ZENDESK_GROUP_ID = 26417927
 ZENDESK_CUSTOM_FIELDS = {
     'referer': 26047167,
     'username': 29241738,
-    'user_agent': 23791776
+    'user_agent': 23791776,
+    'contact_email': 30769508
 }
 
 # TODO: remove option once TD allows showing bank transfers
