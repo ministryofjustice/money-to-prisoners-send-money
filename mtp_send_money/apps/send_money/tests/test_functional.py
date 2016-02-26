@@ -180,6 +180,12 @@ class SendMoneyCheckDetailsPage(SendMoneyFunctionalTestCase):
         )
 
 
+class SendMoneyFeedbackReceivedPage(SendMoneyFunctionalTestCase):
+    def test_content(self):
+        self.driver.get(self.live_server_url + '/feedback/success')
+        self.assertIn('<h1>Thank you for your feedback</h1>', self.driver.page_source)
+
+
 @override_settings(GOVUK_PAY_URL='http://payment.gov.uk',
                    GOVUK_PAY_AUTH_TOKEN='15a21a56-817a-43d4-bf8d-f01f298298e8')
 class SendMoneyConfirmationPage(SendMoneyFunctionalTestCase):
