@@ -2,7 +2,33 @@
 {% load i18n %}
 
 {% block content %}
-  {% trans 'Send feedback' as form_title %}
-  {% trans 'Submit feedback' as submit_text %}
-  {% include 'forms/generic.html' %}
+
+<h1>{% trans 'Your feedback' %}</h1>
+
+<form action="" method="post" id="send-feedback">
+  <input type='hidden' name='csrfmiddlewaretoken' value='87lR5xjLkdqaFcmRlltvzdneRsiKunnt' />
+  <input id="id_referer" name="referer" type="hidden" />
+
+  <div class="form-group">
+    <label for="id_ticket_content" id="id_ticket_content-label" class="form-label">
+      {% trans 'Enter your feedback or any questions you have about this service.' %}
+    </label>
+    <textarea class="form-control" cols="40" id="id_ticket_content" name="ticket_content" rows="10"></textarea>
+  </div>
+
+  <h2>{% trans 'Do you want a reply?' %}</h2>
+  <p>{% trans 'Enter your email address if you’d like a reply. We won’t use it for anything else.' %}</p>
+
+  <div class="form-group">
+    <label for="id_contact_email" id="id_contact_email-label" class="form-label">
+      {% trans 'Your email address' %}
+    </label>
+    <input class="form-control" id="id_contact_email" name="contact_email" type="email" />
+  </div>
+
+  <div class="form-group">
+    <button type="submit" class="button" name="submit-feedback">{% trans 'Send feedback' %}</button>
+  </div>
+</form>
+
 {% endblock %}

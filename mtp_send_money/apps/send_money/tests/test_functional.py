@@ -180,9 +180,14 @@ class SendMoneyCheckDetailsPage(SendMoneyFunctionalTestCase):
         )
 
 
-class SendMoneyFeedbackReceivedPage(SendMoneyFunctionalTestCase):
-    def test_content(self):
-        self.driver.get(self.live_server_url + '/feedback/success')
+class SendMoneyFeedbackPages(SendMoneyFunctionalTestCase):
+    def test_feedback_page(self):
+        self.driver.get(self.live_server_url + '/feedback/')
+        self.assertIn('Enter your feedback or any questions you have about this service.',
+                      self.driver.page_source)
+
+    def test_feedback_received_page(self):
+        self.driver.get(self.live_server_url + '/feedback/success/')
         self.assertIn('<h1>Thank you for your feedback</h1>', self.driver.page_source)
 
 
