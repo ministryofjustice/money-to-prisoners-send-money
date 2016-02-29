@@ -18,7 +18,8 @@ class CitizenFeedbackForm(BaseTicketForm):
         extra_context = dict(extra_context, **{
             'user_agent': request.META.get('HTTP_USER_AGENT')
         })
-        if self.referer and settings.CITIZEN_INFO_URL in self.referer:
-            tags.append('citizen-info')
+        referer = self.cleaned_data.get('referer', None)
+        if referer and settings.CITIZEN_INFO_URL in referer:
+            tags += ['citizen-info']
         return super().submit_ticket(request, subject, tags,
                                      ticket_template_name, extra_context)
