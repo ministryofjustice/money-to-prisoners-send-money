@@ -14,7 +14,7 @@ urlpatterns = [
             'subject': 'MTP Send Money Feedback',
             'tags': ['feedback', 'mtp', 'send-money', settings.ENVIRONMENT]
         }, name='submit_ticket'),
-    url(r'^feedback/success$', views.success,
+    url(r'^feedback/success/$', views.success,
         {
             'template_name': 'feedback/success.html',
         }, name='feedback_success'),

@@ -6,7 +6,7 @@ from zendesk_tickets.forms import BaseTicketForm
 
 class CitizenFeedbackForm(BaseTicketForm):
     ticket_content = forms.CharField(
-        label=_('Tell us what you think about this service and help us improve.'),
+        label=_('Enter your feedback or any questions you have about this service.'),
         widget=forms.Textarea
     )
     contact_email = forms.EmailField(
