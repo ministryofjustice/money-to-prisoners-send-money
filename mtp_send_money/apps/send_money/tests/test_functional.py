@@ -239,9 +239,9 @@ class SendMoneyConfirmationPage(SendMoneyFunctionalTestCase):
 class SendMoneySupportPages(SendMoneyFunctionalTestCase):
     footer_links = [
         {
-            'link_name': 'privacy_policy',
-            'link_text': 'Privacy Policy',
-            'page_content': 'Privacy Policy',
+            'link_name': 'terms',
+            'link_text': 'Terms and conditions',
+            'page_content': 'Terms and conditions',
         },
         {
             'link_name': 'cookies',

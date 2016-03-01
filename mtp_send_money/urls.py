@@ -10,9 +10,9 @@ urlpatterns = [
     url(r'^', include('feedback.urls')),
 
     url(
-        r'^privacy-policy/$',
-        TemplateView.as_view(template_name='privacy-policy.html'),
-        name='privacy_policy',
+        r'^terms/$',
+        TemplateView.as_view(template_name='terms.html'),
+        name='terms',
     ),
     url(
         r'^cookies/$',

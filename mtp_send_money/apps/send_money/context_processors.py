@@ -6,8 +6,8 @@ def support_links(request):
     return {
         'support_links': [
             {
-                'url': reverse('privacy_policy'),
-                'title': _('Privacy Policy'),
+                'url': reverse('terms'),
+                'title': _('Terms and conditions'),
             },
             {
                 'url': reverse('cookies'),
