@@ -32,8 +32,8 @@
 
   <div class="panel-indent">
     <p>
-      {% url 'send_money:terms' as terms_url %}
-      {% blocktrans trimmed with terms_url=terms_url %}
+      {% url 'terms' as terms_url %}
+      {% blocktrans trimmed %}
         We don’t collect or store your personal information so this information can’t be used to identify who you are. For more information visit our <a href="{{ terms_url }}">Terms and conditions and privacy policy</a> page.
       {% endblocktrans %}
     </p>
