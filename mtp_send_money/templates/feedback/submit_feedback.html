@@ -23,7 +23,7 @@
   {% endif %}
 
   {{ form.referer }}
-
+  <fieldset>
   {% with field=form.ticket_content %}
     <div class="form-group {% if field.errors %}error{% endif %}">
       <label for="{{ field.id_for_label }}" id="{{ field.id_for_label }}-label" class="form-label">
@@ -36,8 +36,8 @@
     </div>
   {% endwith %}
 
-  <h2>{% trans 'Do you want a reply?' %}</h2>
-  <p>{% trans 'Enter your email address if you’d like a reply. We won’t use it for anything else.' %}</p>
+    <h2>{% trans 'Do you want a reply?' %}</h2>
+    <p>{% trans 'Enter your email address if you’d like a reply. We won’t use it for anything else.' %}</p>
 
   {% with field=form.contact_email %}
     <div class="form-group {% if field.errors %}error{% endif %}">
@@ -51,9 +51,10 @@
     </div>
   {% endwith %}
 
-  <div class="form-group">
-    <button type="submit" class="button" name="submit-feedback">{% trans 'Send feedback' %}</button>
-  </div>
+    <div class="form-group">
+      <button type="submit" class="button" name="submit-feedback">{% trans 'Send feedback' %}</button>
+    </div>
+  <fieldset>
 </form>
 
 {% endblock %}
