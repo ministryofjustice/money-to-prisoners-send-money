@@ -6,6 +6,8 @@ $images-dir: '/static/images/';
 
 // govuk_elements overrides
 
+h1 { margin: 30px 0 40px 0; }
+
 form .form-group.form-date {
   .form-date-day, .form-date-month, .form-date-year {
     display: inline-block;
@@ -29,6 +31,19 @@ form .form-group .form-hint {
   margin-top: 0;
 }
 
+.phase-banner {
+  font-size: 16px;
+  padding-bottom: 12px;
+  .phase-tag {
+    margin-top: 0;
+    letter-spacing: 1px;
+    padding: 4px 5px 2px 5px;
+  }
+  .phase-banner-message {
+    margin-top: 3px;
+    margin-left: 7px;
+  }
+}
 
 // Application-specific
 
