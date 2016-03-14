@@ -3,7 +3,7 @@
 
 {% block content %}
 <header class="ContentHeader">
-  <a href="" class="ContentHeader-back">{% trans 'Back' %}</a>
+  <a href="{{ return_to|default:'/' }}" class="ContentHeader-back">{% trans 'Back' %}</a>
   <h1>{% trans 'Thank you for your feedback' %}</h1>
 </header>
 {% endblock content %}
