@@ -3,7 +3,10 @@
 
 {% block content %}
 
-<h1>{% trans 'Your feedback' %}</h1>
+<header class="ContentHeader">
+  <a href="{{ return_to|default:'/' }}" class="ContentHeader-back">{% trans 'Back' %}</a>
+  <h1>{% trans 'Your feedback' %}</h1>
+</header>
 
 <form action="." method="post" id="send-feedback">
   {% csrf_token %}
@@ -54,7 +57,7 @@
     <div class="form-group">
       <button type="submit" class="button" name="submit-feedback">{% trans 'Send feedback' %}</button>
     </div>
-  <fieldset>
+  </fieldset>
 </form>
 
 {% endblock %}

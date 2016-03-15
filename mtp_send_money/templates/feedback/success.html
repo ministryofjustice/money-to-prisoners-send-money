@@ -2,5 +2,8 @@
 {% load i18n %}
 
 {% block content %}
-<h1>{% trans 'Thank you for your feedback' %}</h1>
+<header class="ContentHeader">
+  <a href="{{ return_to|default:'/' }}" class="ContentHeader-back">{% trans 'Back' %}</a>
+  <h1>{% trans 'Thank you for your feedback' %}</h1>
+</header>
 {% endblock content %}
