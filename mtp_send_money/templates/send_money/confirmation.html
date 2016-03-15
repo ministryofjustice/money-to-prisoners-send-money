@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load i18n %}
+{% load send_money %}
 
 {% block content %}
   <h1>{% trans 'Send money to a prisoner' %}</h1>
@@ -20,7 +21,7 @@
 
       <ul>
         <li>{% trans 'Payment to:' %} {{ prisoner_name }}</li>
-        <li>{% trans 'Payment amount:' %} {{ amount }}</li>
+        <li>{% trans 'Payment amount:' %} {{ amount|currency_format }}</li>
         <li>{% trans 'Date payment made:' %} {{ payment_created|date:'d/m/Y' }}</li>
       </ul>
     </div>
