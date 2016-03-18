@@ -1,14 +1,12 @@
 {% extends 'base.html' %}
 {% load i18n %}
-{% load moj_utils %}
+{% load mtp_utils %}
 {% load send_money %}
 
 {% block page_title %}{% trans 'Check details - Send money to a prisoner - GOV.UK' %}{% endblock %}
 
 {% block content %}
   <h1>{% trans 'Check details' %}</h1>
-
-
 
   <form class="mtp-confirm" method="post" action=".">
     {% csrf_token %}

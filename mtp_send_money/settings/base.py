@@ -35,7 +35,7 @@ INSTALLED_APPS = (
     'django.contrib.auth',
 )
 PROJECT_APPS = (
-    'moj_utils',
+    'mtp_utils',
     'send_money',
     'zendesk_tickets'
 )
@@ -103,8 +103,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'moj_utils.context_processors.analytics',
-                'moj_utils.context_processors.app_environment',
+                'mtp_utils.context_processors.analytics',
+                'mtp_utils.context_processors.app_environment',
                 'send_money.context_processors.support_links'
             ],
         },
@@ -166,6 +166,8 @@ if os.environ.get('SENTRY_DSN'):
     }
     LOGGING['root']['handlers'].append('sentry')
     LOGGING['loggers']['mtp']['handlers'].append('sentry')
+
+TEST_RUNNER = 'mtp_utils.test_utils.runner.TestRunner'
 
 # authentication
 SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
