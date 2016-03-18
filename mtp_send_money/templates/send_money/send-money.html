@@ -1,5 +1,7 @@
 {% extends 'base.html' %}
-{% load i18n send_money moj_utils %}
+{% load i18n %}
+{% load mtp_utils %}
+{% load send_money %}
 
 {% block content %}
   <h1>{% trans 'Who are you sending money to?' %}</h1>
@@ -10,13 +12,13 @@
     {% if form.non_field_errors %}
       <div class="error-summary" aria-labelledby="error-summary-heading" tabindex="-1" role="alert">
         {% for error in form.non_field_errors %}
-        {% if forloop.first %}
-        <h1 class="error-summary-heading heading-medium" id="error-summary-heading">
-          {{ error }}
-        </h1>
-        {% else %}
-        {{ error }}
-        {% endif %}
+          {% if forloop.first %}
+            <h1 class="error-summary-heading heading-medium" id="error-summary-heading">
+              {{ error }}
+            </h1>
+          {% else %}
+            {{ error }}
+          {% endif %}
         {% endfor %}
       </div>
     {% endif %}

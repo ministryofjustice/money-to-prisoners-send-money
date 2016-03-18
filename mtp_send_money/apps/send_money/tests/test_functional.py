@@ -1,70 +1,22 @@
 import datetime
-import glob
-import logging
-import os
-import socket
 import unittest
 from unittest import mock
-from urllib.parse import urlparse
 
 from django.conf import settings
-from django.test import LiveServerTestCase, override_settings
+from django.test import override_settings
+from mtp_utils.test_utils.functional_tests import FunctionalTestCase
 import responses
-from selenium import webdriver
 
 from send_money.forms import PaymentMethod
 from send_money.tests import split_prisoner_dob_for_post
 from send_money.utils import govuk_url
 
-logger = logging.getLogger('mtp')
 
-
-@unittest.skipUnless('RUN_FUNCTIONAL_TESTS' in os.environ, 'functional tests are disabled')
-class SendMoneyFunctionalTestCase(LiveServerTestCase):
-    @classmethod
-    def _databases_names(cls, include_mirrors=True):
-        # this app has no databases
-        return []
-
-    def setUp(self):
-        web_driver = os.environ.get('WEBDRIVER', 'phantomjs')
-        if web_driver == 'firefox':
-            fp = webdriver.FirefoxProfile()
-            fp.set_preference('browser.startup.homepage', 'about:blank')
-            fp.set_preference('startup.homepage_welcome_url', 'about:blank')
-            fp.set_preference('startup.homepage_welcome_url.additional', 'about:blank')
-            self.driver = webdriver.Firefox(firefox_profile=fp)
-        elif web_driver == 'chrome':
-            paths = glob.glob('node_modules/selenium-standalone/.selenium/chromedriver/*-chromedriver')
-            paths = filter(lambda path: os.path.isfile(path) and os.access(path, os.X_OK),
-                           paths)
-            try:
-                self.driver = webdriver.Chrome(executable_path=next(paths))
-            except StopIteration:
-                self.fail('Cannot find Chrome driver')
-        else:
-            path = './node_modules/phantomjs/lib/phantom/bin/phantomjs'
-            self.driver = webdriver.PhantomJS(executable_path=path)
-
-        self.driver.set_window_size(1000, 1000)
-
-    def tearDown(self):
-        self.driver.quit()
-
-    def load_test_data(self):
-        logger.info('Reloading test data')
-        try:
-            with socket.socket() as sock:
-                sock.connect((
-                    urlparse(settings.API_URL).netloc.split(':')[0],
-                    os.environ.get('CONTROLLER_PORT', 8800)
-                ))
-                sock.sendall(b'load_test_data')
-                response = sock.recv(1024).strip()
-                if response != b'done':
-                    logger.error('Test data not reloaded!')
-        except OSError:
-            logger.exception('Error communicating with test server controller socket')
+class SendMoneyFunctionalTestCase(FunctionalTestCase):
+    """
+    Base class for all send-money functional tests
+    """
+    accessibility_scope_selector = '#content'
 
     def fill_in_send_money_form(self, data, payment_method):
         for key in data:
@@ -90,7 +42,7 @@ class SendMoneyFlows(SendMoneyFunctionalTestCase):
         }), PaymentMethod.bank_transfer)
         self.driver.find_element_by_id('id_next_btn').click()
         self.driver.find_element_by_id('id_next_btn').click()
-        self.assertIn('<!-- bank_transfer -->', self.driver.page_source)
+        self.assertInSource('<!-- bank_transfer -->')
 
     @unittest.skip('gov.uk pay functional testing not implemented')
     def test_debit_card_flow(self):
@@ -158,15 +110,15 @@ class SendMoneyCheckDetailsPage(SendMoneyFunctionalTestCase):
             'amount': '34.50',
         }), PaymentMethod.bank_transfer)
         self.driver.find_element_by_id('id_next_btn').click()
-        self.assertEqual(self.driver.current_url, self.live_server_url + '/check-details/')
+        self.assertCurrentUrl('/check-details/')
         self.assertEqual(self.driver.title, 'Check details - Send money to a prisoner - GOV.UK')
 
     def test_content(self):
-        self.assertIn('Name: James Halls', self.driver.page_source)
-        self.assertIn('Date of birth: 21/01/1989', self.driver.page_source)
-        self.assertIn('Prisoner number: A1409AE', self.driver.page_source)
-        self.assertIn('Total to prisoner: £34.50', self.driver.page_source)
-        self.assertIn('value="Make payment"', self.driver.page_source)
+        self.assertInSource('Name: James Halls')
+        self.assertInSource('Date of birth: 21/01/1989')
+        self.assertInSource('Prisoner number: A1409AE')
+        self.assertInSource('Total to prisoner: £34.50')
+        self.assertInSource('value="Make payment"')
 
     def test_style(self):
         self.assertEqual('48px', self.driver.find_element_by_css_selector('h1').value_of_css_property('font-size'))
@@ -183,12 +135,11 @@ class SendMoneyCheckDetailsPage(SendMoneyFunctionalTestCase):
 class SendMoneyFeedbackPages(SendMoneyFunctionalTestCase):
     def test_feedback_page(self):
         self.driver.get(self.live_server_url + '/feedback/')
-        self.assertIn('Enter your feedback or any questions you have about this service.',
-                      self.driver.page_source)
+        self.assertInSource('Enter your feedback or any questions you have about this service.')
 
     def test_feedback_received_page(self):
         self.driver.get(self.live_server_url + '/feedback/success/')
-        self.assertIn('<h1>Thank you for your feedback</h1>', self.driver.page_source)
+        self.assertInSource('<h1>Thank you for your feedback</h1>')
 
 
 @override_settings(GOVUK_PAY_URL='http://payment.gov.uk',
@@ -209,13 +160,13 @@ class SendMoneyConfirmationPage(SendMoneyFunctionalTestCase):
             })
 
             self.driver.get(self.live_server_url + '/confirmation/?payment_ref=REF12345')
-            self.assertIn('<h1>Send money to a prisoner</h1>', self.driver.page_source)
-            self.assertIn('Payment was successful', self.driver.page_source)
-            self.assertIn('Your reference number is <strong>REF12345</strong>', self.driver.page_source)
-            self.assertIn('What happens next?', self.driver.page_source)
-            self.assertIn('James Bond', self.driver.page_source)
-            self.assertIn('20', self.driver.page_source)
-            self.assertIn('Print this page', self.driver.page_source)
+            self.assertInSource('<h1>Send money to a prisoner</h1>')
+            self.assertInSource('Payment was successful')
+            self.assertInSource('Your reference number is <strong>REF12345</strong>')
+            self.assertInSource('What happens next?')
+            self.assertInSource('James Bond')
+            self.assertInSource('20')
+            self.assertInSource('Print this page')
 
     @mock.patch('send_money.views.get_api_client')
     def test_failure_page(self, mocked_client):
@@ -232,8 +183,8 @@ class SendMoneyConfirmationPage(SendMoneyFunctionalTestCase):
             })
 
             self.driver.get(self.live_server_url + '/confirmation/?payment_ref=REF12345')
-            self.assertIn('We’re sorry, your payment could not be processed on this occasion', self.driver.page_source)
-            self.assertIn('Your reference number is <strong>REF12345</strong>', self.driver.page_source)
+            self.assertInSource('We’re sorry, your payment could not be processed on this occasion')
+            self.assertInSource('Your reference number is <strong>REF12345</strong>')
 
 
 class SendMoneySupportPages(SendMoneyFunctionalTestCase):
@@ -262,7 +213,7 @@ class SendMoneySupportPages(SendMoneyFunctionalTestCase):
             self.driver.get(self.live_server_url)
             link_element = self.driver.find_element_by_link_text(_footer_link['link_text'])
             link_element.click()
-            self.assertIn(_footer_link['page_content'], self.driver.page_source)
+            self.assertInSource(_footer_link['page_content'])
 
         return test
 
