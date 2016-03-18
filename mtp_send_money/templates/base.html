@@ -15,7 +15,7 @@
 
 {% block page_title %}{% trans 'Send money to a prisoner - GOV.UK' %}{% endblock %}
 
-{% block proposition %}<a href="/" class="proposition-name">{% trans 'Send money to a prisoner' %}</a>{% endblock %}
+{% block proposition %}<a href="{% if ENVIRONMENT == 'prod' %}http://sendmoneytoaprisoner.service.justice.gov.uk/{% else %}/{% endif %}" class="proposition-name">{% trans 'Send money to a prisoner' %}</a>{% endblock %}
 
 
   {% block phase_banner %}
