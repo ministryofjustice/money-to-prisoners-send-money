@@ -11,9 +11,11 @@
   <form class="mtp-confirm" method="post" action=".">
     {% csrf_token %}
     <p>{% trans 'Check and change any details that are incorrect.' %}</p>
-    <fieldset class="mtp-checkgroup">
+
+    <div class="mtp-checkgroup">
       <div class="mtp-confirm-fieldset">
-        <legend class="form-label-bold">{% trans 'Prisoner details' %}</legend>
+        <h2>{% trans 'Prisoner details' %}</h2>
+
         {% trans 'Name' %}: {{ form.prisoner_name.value }}<br>
         {% trans 'Date of birth' %}: {{ form.prisoner_dob.value|prepare_prisoner_dob|date:'d/m/Y' }}<br>
         {% trans 'Prisoner number' %}: {{ form.prisoner_number.value }}
@@ -21,11 +23,12 @@
       <div class="mtp-confirm-change">
         <a href="{% url 'send_money:send_money' %}?change&amp;focus=id_prisoner_name">{% trans 'Change this' %}</a>
       </div>
-    </fieldset>
+    </div>
 
-    <fieldset class="mtp-checkgroup">
+    <div class="mtp-checkgroup">
       <div class="mtp-confirm-fieldset">
-        <legend class="form-label-bold">{% trans 'Money you are sending' %}</legend>
+        <h2>{% trans 'Money you are sending' %}</h2>
+
         {% if service_charged %}
           {% trans 'Total to prisoner' %}: {{ form.amount.value|currency_format }}<br>
         {% endif %}
@@ -35,18 +38,18 @@
       <div class="mtp-confirm-change">
         <a href="{% url 'send_money:send_money' %}?change&amp;focus=id_amount">{% trans 'Change this' %}</a>
       </div>
-    </fieldset>
+    </div>
 
     {# hidden form to re-check prisoner location #}
     {{ form }}
 
-    <fieldset>
+    <div>
       <div class="mtp-confirm-fieldset">
         <input id="id_next_btn" class="button" type="submit" name="next" value="{% trans 'Make payment' %}">
       </div>
       <div class="mtp-confirm-change">
         <a href="{% url 'send_money:clear_session' %}">{% trans 'Cancel and delete all details' %}</a>
       </div>
-    </fieldset>
+    </div>
   </form>
 {% endblock %}

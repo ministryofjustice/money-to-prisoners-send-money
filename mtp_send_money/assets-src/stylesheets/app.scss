@@ -9,6 +9,7 @@ $images-dir: '/static/images/';
 h1 { margin: 30px 0 40px 0; }
 
 form .form-group.form-date {
+  p { margin-bottom: 0 }
   .form-date-day, .form-date-month, .form-date-year {
     display: inline-block;
     margin-right: 1em;
@@ -45,7 +46,15 @@ form .form-group .form-hint {
   }
 }
 
+.box-highlight {
+  background-color: #0c857b;
+}
+
 // Application-specific
+
+.mtp-hidden {
+  display: none;
+}
 
 .mtp-summary-line {
   p {
@@ -80,7 +89,7 @@ form .form-group .form-hint {
         width: 1.8em;
         text-align: center;
         border-right: 0;
-        color: $text-colour;
+        line-height: 1.16;
       }
       .mtp-charges-amount {
         width: 5em;
@@ -102,14 +111,18 @@ form .form-group .form-hint {
     text-align:right;
     width: 39%;
   }
-  fieldset div {
+  h2 {
+    margin: 0 0 .2em 0;
+    font-size: 1.26316em;
+  }
+  div div {
     display: inline-block;
     margin-top: 5em;
     &.mtp-confirm-fieldset {
       width: 60%;
     }
   }
-  fieldset.mtp-checkgroup {
+  .mtp-checkgroup {
     border-top: 2px solid $border-colour;
     margin-bottom: 1.5em;
     legend {

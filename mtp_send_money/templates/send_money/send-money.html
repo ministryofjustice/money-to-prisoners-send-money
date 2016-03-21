@@ -38,7 +38,7 @@
 
       {% with field=form.prisoner_dob %}
         <div class="form-group form-date {% if field.errors %}error{% endif %}">
-          <label class="form-label">{{ field.label }}</label>
+          <p>{{ field.label }}</p>
           {% for error in field.errors %}
             <span class="error-message">{{ error }}</span>
           {% endfor %}
@@ -75,21 +75,24 @@
     {% with field=form.amount %}
       <div class="mtp-amount">
         <fieldset>
-          <label id="{{ field.id_for_label }}-label" class="form-label-bold" for="{{ field.id_for_label }}">{% trans "How much are you sending?" %}</label>
+          <legend class="form-label-bold">{% trans "How much are you sending?" %}</legend>
+
+          <label id="{{ field.id_for_label }}-label" class="mtp-hidden" for="{{ field.id_for_label }}">{% trans "Please enter the amount in pounds" %}</label>
           <div class="form-group mtp-money-amount {% if field.errors %}error{% endif %}">
            {% for error in field.errors %}
              <div class="error-message">{{ error }}</div>
            {% endfor %}
            <div class="money-box">
-             <input class="form-control mtp-currency-sign" type="text" value="£"
-                    disabled=""/><input id="{{ field.id_for_label }}"
-                                        class="form-control mtp-charges-amount"
-                                        maxlength="10"
-                                        name="{{ field.html_name }}"
-                                        value="{{ field.value|default:'' }}"
-                                        type="text"
-                                        data-percentage-charge="{{ service_charge_percentage }}"
-                                        data-fixed-charge="{{ service_charge_fixed }}" />
+             <span class="form-control mtp-currency-sign" type="text">
+               £
+             </span><input id="{{ field.id_for_label }}"
+                    class="form-control mtp-charges-amount"
+                    maxlength="10"
+                    name="{{ field.html_name }}"
+                    value="{{ field.value|default:'' }}"
+                    type="text"
+                    data-percentage-charge="{{ service_charge_percentage }}"
+                    data-fixed-charge="{{ service_charge_fixed }}" />
            </div>
           </div>
         </fieldset>
@@ -97,10 +100,10 @@
         {% if service_charged %}
           <div class="form-group">
             <fieldset class="mtp-charges-js" style="display:none">
-              <p class="form-label">
+              <legend class="form-label">
                 {% trans "Service charge:" %}
                 <span class="mtp-charges-charges"></span>
-              </p>
+              </legend>
               <p class="form-hint">
                 {% blocktrans trimmed with charge_percentage=service_charge_percentage|format_percentage charge_fixed=service_charge_fixed|currency_format_pence %}
                   The service charge is {{ charge_percentage }} of the amount you’re sending, plus {{ charge_fixed }}. This fee is charged by your card provider.
@@ -111,7 +114,7 @@
                 <span></span>
               </p>
             </fieldset>
-            <fieldset class="mtp-charges-no-js">
+            <div class="mtp-charges-no-js">
               <p>
                 {% blocktrans trimmed with charge_percentage=service_charge_percentage|format_percentage charge_fixed=service_charge_fixed|currency_format_pence %}
                   The service charge is {{ charge_percentage }} of the amount you’re sending, plus {{ charge_fixed }}. This fee is charged by your card provider.
@@ -122,7 +125,7 @@
                   For instance, if you want to send {{ sample_amount }}, you will be charged {{ sample_amount_total_charge }}.
                 {% endblocktrans %}
               </p>
-            </fieldset>
+            </div>
           </div>
         {% endif %}
       </div>
