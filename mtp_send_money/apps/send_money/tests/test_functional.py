@@ -1,4 +1,5 @@
 import datetime
+import os
 import unittest
 from unittest import mock
 
@@ -142,6 +143,7 @@ class SendMoneyFeedbackPages(SendMoneyFunctionalTestCase):
         self.assertInSource('<h1>Thank you for your feedback</h1>')
 
 
+@unittest.skipIf('DJANGO_TEST_REMOTE_INTEGRATION_URL' in os.environ, 'test only runs locally')
 @override_settings(GOVUK_PAY_URL='http://payment.gov.uk',
                    GOVUK_PAY_AUTH_TOKEN='15a21a56-817a-43d4-bf8d-f01f298298e8')
 class SendMoneyConfirmationPage(SendMoneyFunctionalTestCase):
