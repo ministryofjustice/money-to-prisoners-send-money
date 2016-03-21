@@ -124,8 +124,8 @@ class SendMoneyCheckDetailsPage(SendMoneyFunctionalTestCase):
     def test_style(self):
         self.assertEqual('48px', self.driver.find_element_by_css_selector('h1').value_of_css_property('font-size'))
         self.assertEqual(
-            '0px',
-            self.driver.find_element_by_css_selector('legend').value_of_css_property('margin-bottom')
+            '4px',
+            self.driver.find_element_by_css_selector('h2').value_of_css_property('margin-bottom')
         )
         self.assertEqual(
             'right',
