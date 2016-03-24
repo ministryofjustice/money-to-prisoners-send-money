@@ -3,7 +3,7 @@
 
 {% block content %}
 <header class="ContentHeader">
-  <a href="{{ return_to|default:'/' }}" class="ContentHeader-back">{% trans 'Back' %}</a>
+  <a href="{% if ENVIRONMENT == 'prod' %}http://sendmoneytoaprisoner.service.justice.gov.uk/{% else %}{{ return_to|default:'/' }}{% endif %}" class="ContentHeader-back">{% trans 'Back' %}</a>
   <h1>{% trans 'Thank you for your feedback' %}</h1>
 </header>
 {% endblock content %}
