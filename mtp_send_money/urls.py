@@ -28,7 +28,7 @@ urlpatterns = [
     url(r'^healthcheck.json$', HealthcheckView.as_view(), name='healthcheck_json'),
 ]
 
-if not settings.HIDE_PAYMENT_PAGES:
+if settings.SHOW_DEBIT_CARD_OPTION or settings.SHOW_BANK_TRANSFER_OPTION:
     urlpatterns.append(url(r'^', include('send_money.urls', namespace='send_money',)))
 else:
     urlpatterns.append(url(r'^$', RedirectView.as_view(url=reverse_lazy('submit_ticket'))))

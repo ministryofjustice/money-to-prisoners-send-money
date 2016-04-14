@@ -210,7 +210,6 @@ LOGOUT_URL = 'logout'
 
 OAUTHLIB_INSECURE_TRANSPORT = True
 
-NOMS_HOLDING_ACCOUNT_NAME = os.environ.get('NOMS_HOLDING_ACCOUNT_NAME', 'NOMS')
 NOMS_HOLDING_ACCOUNT_NUMBER = os.environ.get('NOMS_HOLDING_ACCOUNT_NUMBER', '########')
 NOMS_HOLDING_ACCOUNT_SORT_CODE = os.environ.get('NOMS_HOLDING_ACCOUNT_SORT_CODE', '##-##-##')
 
@@ -237,10 +236,8 @@ ZENDESK_CUSTOM_FIELDS = {
 
 CITIZEN_INFO_URL = 'sendmoneytoaprisoner.service.justice.gov.uk'
 
-# TODO: remove option once TD allows showing bank transfers
-HIDE_BANK_TRANSFER_OPTION = True
-
-HIDE_PAYMENT_PAGES = os.environ.get('HIDE_PAYMENT_PAGES', False)
+SHOW_BANK_TRANSFER_OPTION = os.environ.get('SHOW_BANK_TRANSFER_OPTION', 'True') == 'True'
+SHOW_DEBIT_CARD_OPTION = os.environ.get('SHOW_DEBIT_CARD_OPTION', 'True') == 'True'
 
 GOVUK_PAY_URL = os.environ.get('GOVUK_PAY_URL', '')
 GOVUK_PAY_AUTH_TOKEN = os.environ.get('GOVUK_PAY_AUTH_TOKEN', '')

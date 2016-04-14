@@ -15,11 +15,7 @@ from send_money.utils import (
 )
 
 
-class SendMoneyForm(GARequestErrorReportingMixin, forms.Form):
-    prisoner_name = forms.CharField(
-        label=_('Prisoner name'),
-        max_length=250,
-    )
+class PrisonerDetailsForm(GARequestErrorReportingMixin, forms.Form):
     prisoner_number = forms.CharField(
         label=_('Prisoner number'),
         max_length=7,
@@ -28,36 +24,41 @@ class SendMoneyForm(GARequestErrorReportingMixin, forms.Form):
     prisoner_dob = SplitDateField(
         label=_('Prisoner date of birth'),
     )
-    amount = forms.DecimalField(
-        label=_('Amount you are sending'),
-        min_value=decimal.Decimal('0.01'),
-        max_value=decimal.Decimal('1000000'),
-        decimal_places=2,
-    )
-    payment_method = forms.ChoiceField(
-        label=_('Payment method'),
-        widget=forms.RadioSelect,
-        choices=PaymentMethod.django_choices(),
-        initial=PaymentMethod.debit_card,
-    )
 
     @classmethod
     def get_field_names(cls):
         return [field for field in cls.base_fields]
 
+    @classmethod
+    def session_contains_form_data(cls, session):
+        for required_key in cls.get_field_names():
+            if not session.get(required_key):
+                return False
+        return True
+
     def __init__(self, request, **kwargs):
         self.request = request
         super().__init__(**kwargs)
-
-    def switch_to_hidden(self):
-        for field in self.fields.values():
-            field.widget = field.hidden_widget()
 
     def clean_prisoner_number(self):
         prisoner_number = self.cleaned_data.get('prisoner_number')
         if prisoner_number:
             prisoner_number = prisoner_number.upper()
         return prisoner_number
+
+    def check_prisoner_validity(self, prisoner_number, prisoner_dob):
+        prisoner_dob = serialise_date(prisoner_dob)
+        client = get_api_client()
+        try:
+            prisoners = client.prisoner_validity().get(prisoner_number=prisoner_number,
+                                                       prisoner_dob=prisoner_dob)
+            assert prisoners['count'] == 1
+            prisoner = prisoners['results'][0]
+            return prisoner and prisoner['prisoner_number'] == prisoner_number \
+                and prisoner['prisoner_dob'] == prisoner_dob
+        except (HttpNotFoundError, KeyError, IndexError, AssertionError):
+            pass
+        return False
 
     def clean(self):
         prisoner_number = self.cleaned_data.get('prisoner_number')
@@ -77,19 +78,32 @@ class SendMoneyForm(GARequestErrorReportingMixin, forms.Form):
                 code='connection')
         return self.cleaned_data
 
-    def check_prisoner_validity(self, prisoner_number, prisoner_dob):
-        prisoner_dob = serialise_date(prisoner_dob)
-        client = get_api_client()
-        try:
-            prisoners = client.prisoner_validity().get(prisoner_number=prisoner_number,
-                                                       prisoner_dob=prisoner_dob)
-            assert prisoners['count'] == 1
-            prisoner = prisoners['results'][0]
-            return prisoner and prisoner['prisoner_number'] == prisoner_number \
-                and prisoner['prisoner_dob'] == prisoner_dob
-        except (HttpNotFoundError, KeyError, IndexError, AssertionError):
-            pass
-        return False
+    def save_form_data_in_session(self, session):
+        session['prisoner_dob'] = serialise_date(self.cleaned_data['prisoner_dob'])
+        session['prisoner_number'] = self.cleaned_data['prisoner_number']
+
+
+class SendMoneyForm(PrisonerDetailsForm):
+    prisoner_name = forms.CharField(
+        label=_('Prisoner name'),
+        max_length=250,
+    )
+    amount = forms.DecimalField(
+        label=_('Amount you are sending'),
+        min_value=decimal.Decimal('0.01'),
+        max_value=decimal.Decimal('1000000'),
+        decimal_places=2,
+    )
+    payment_method = forms.ChoiceField(
+        label=_('Payment method'),
+        widget=forms.RadioSelect,
+        choices=PaymentMethod.django_choices(),
+        initial=PaymentMethod.debit_card,
+    )
+
+    def switch_to_hidden(self):
+        for field in self.fields.values():
+            field.widget = field.hidden_widget()
 
     def save_form_data_in_session(self, session):
         form_data = self.cleaned_data
@@ -97,13 +111,6 @@ class SendMoneyForm(GARequestErrorReportingMixin, forms.Form):
             session[field] = form_data[field]
         session['prisoner_dob'] = serialise_date(session['prisoner_dob'])
         session['amount'] = serialise_amount(session['amount'])
-
-    @classmethod
-    def session_contains_form_data(cls, session):
-        for required_key in SendMoneyForm.get_field_names():
-            if not session.get(required_key):
-                return False
-        return True
 
     @classmethod
     def form_data_from_session(cls, session):
