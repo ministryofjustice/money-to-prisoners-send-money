@@ -4,6 +4,7 @@ import json
 from unittest import mock
 
 from django.conf import settings
+from django.core import mail
 from django.core.urlresolvers import reverse_lazy
 from django.test.testcases import SimpleTestCase
 from django.test.utils import override_settings
@@ -20,6 +21,7 @@ SAMPLE_FORM = {
     'prisoner_name': 'John Smith',
     'prisoner_number': 'A1231DE',
     'prisoner_dob': '1980-10-04',
+    'email': 'sender@outside.local',
     'amount': '10.00',
     'payment_method': str(PaymentMethod.debit_card),
 }
@@ -64,6 +66,7 @@ class BaseTestCase(SimpleTestCase):
                 'prisoner_name': SAMPLE_FORM['prisoner_name'],
                 'amount': SAMPLE_FORM['amount'],
                 'payment_method': SAMPLE_FORM['payment_method'],
+                'email': SAMPLE_FORM['email'],
             }
             data.update(prisoner_details)
         else:
@@ -116,6 +119,7 @@ class SendMoneyViewTestCase(BaseTestCase):
                 'prisoner_name': 'John Smith',
                 'prisoner_number': 'a1231a1',
                 'prisoner_dob': '1980-10-04',
+                'email': 'sender@outside.local',
                 'amount': '10.00',
                 'payment_method': PaymentMethod.debit_card,
             }))
@@ -130,6 +134,7 @@ class SendMoneyViewTestCase(BaseTestCase):
             response = self.client.post(self.url, data={
                 'prisoner_name': 'John Smith',
                 'prisoner_number': 'A1231DE',
+                'email': 'sender@outside.local',
                 'amount': '10.00',
                 'payment_method': PaymentMethod.debit_card,
             })
@@ -146,6 +151,7 @@ class SendMoneyViewTestCase(BaseTestCase):
                 'prisoner_name': 'John Smith',
                 'prisoner_number': 'A1231DE',
                 'prisoner_dob': '1980-10-04',
+                'email': 'sender@outside.local',
                 'amount': '10.00',
                 'payment_method': PaymentMethod.debit_card,
             }))
@@ -161,6 +167,7 @@ class SendMoneyViewTestCase(BaseTestCase):
                 'prisoner_name': 'John Smith',
                 'prisoner_number': 'A1231DE',
                 'prisoner_dob': '1980-10-04',
+                'email': 'sender@outside.local',
                 'amount': '10.00',
                 'payment_method': PaymentMethod.debit_card,
             }))
@@ -376,6 +383,7 @@ class ConfirmationViewTestCase(BaseTestCase):
                         'recipient_name': 'John',
                         'amount': 1000,
                         'created': datetime.datetime.now().isoformat() + 'Z',
+                        'email': 'sender@outside.local'
                     },
                     status=200,
                 )
@@ -399,6 +407,10 @@ class ConfirmationViewTestCase(BaseTestCase):
                 # check session is cleared
                 self.assertEqual(None, self.client.session.get('prisoner_number'))
                 self.assertEqual(None, self.client.session.get('amount'))
+
+                self.assertEqual('Payment confirmation', mail.outbox[0].subject)
+                self.assertTrue('WARGLE-B' in mail.outbox[0].body)
+                self.assertTrue('£10' in mail.outbox[0].body)
 
     def test_confirmation_handles_api_errors(self):
         with reload_payment_urls(self, show_debit_card=True):

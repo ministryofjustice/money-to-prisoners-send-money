@@ -101,6 +101,9 @@ class SendMoneyForm(PrisonerDetailsForm):
         choices=PaymentMethod.django_choices(),
         initial=PaymentMethod.debit_card,
     )
+    email = forms.EmailField(
+        label=_('Your email address'),
+    )
 
     def switch_to_hidden(self):
         for field in self.fields.values():

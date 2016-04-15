@@ -3,8 +3,10 @@ from functools import wraps
 import logging
 
 from django.conf import settings
+from django.core.mail import EmailMessage
 from django.core.urlresolvers import reverse, reverse_lazy
 from django.shortcuts import redirect, render
+from django.template import loader
 from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext as _
 from django.views.generic import FormView
@@ -196,6 +198,7 @@ def debit_card_view(request, context):
         'recipient_name': context['prisoner_name'],
         'prisoner_number': context['prisoner_number'],
         'prisoner_dob': context['prisoner_dob'].isoformat(),
+        'email': context['email']
     }
 
     client = get_api_client()
@@ -270,6 +273,16 @@ def confirmation_view(request):
                 'payment_created': datetime.datetime.strptime(api_response['created'],
                                                               '%Y-%m-%dT%H:%M:%S.%fZ'),
             })
+            if api_response.get('email'):
+                body = loader.get_template(
+                    'send_money/email/confirmation.txt').render(context)
+                email = EmailMessage(
+                    _('Payment confirmation'),
+                    body,
+                    settings.MAILGUN_FROM_ADDRESS,
+                    [api_response['email']]
+                )
+                email.send()
         else:
             logger.error(
                 'Failed to retrieve payment status from GOV.UK for payment %s' % payment_ref

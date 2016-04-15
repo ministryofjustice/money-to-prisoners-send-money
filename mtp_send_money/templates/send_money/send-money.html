@@ -54,6 +54,22 @@
       {% endwith %}
     </fieldset>
 
+    {% with field=form.email %}
+    <div class="mtp-details">
+      <fieldset>
+        <legend class="form-label-bold">{% trans "Your contact details" %}</legend>
+        <div class="form-group {% if field.errors %}error{% endif %}">
+          <label id="{{ field.id_for_label }}-label" class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+          {% for error in field.errors %}
+            <span class="error-message">{{ error }}</span>
+          {% endfor %}
+          <div class="form-hint">{% trans "We will send information about your payment here" %}</div>
+          <input class="form-control" id="{{ field.id_for_label }}" name="{{ field.html_name }}" value="{{ field.value|default:'' }}" type="text"  />
+        </div>
+      </fieldset>
+    </div>
+    {% endwith %}
+
     {% with field=form.amount %}
       <div class="mtp-amount">
         <fieldset>

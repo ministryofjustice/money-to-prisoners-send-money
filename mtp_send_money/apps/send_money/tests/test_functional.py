@@ -42,6 +42,7 @@ class SendMoneyFlows(SendMoneyFunctionalTestCase):
                 'prisoner_number': 'A1409AE',
                 'prisoner_dob': '21/01/1989',
                 'amount': '34.50',
+                'email': 'sender@outside.local',
             }), PaymentMethod.bank_transfer)
             self.driver.find_element_by_id('id_next_btn').click()
             self.driver.find_element_by_id('id_next_btn').click()
@@ -56,6 +57,7 @@ class SendMoneyFlows(SendMoneyFunctionalTestCase):
                 'prisoner_number': 'A1409AE',
                 'prisoner_dob': '21/01/1989',
                 'amount': '0.51',
+                'email': 'sender@outside.local',
             }), PaymentMethod.debit_card)
             self.driver.find_element_by_id('id_next_btn').click()
             # TODO: add gov.uk mock and test various responses
@@ -118,6 +120,7 @@ class SendMoneyCheckDetailsPage(SendMoneyFunctionalTestCase):
                 'prisoner_number': 'A1409AE',
                 'prisoner_dob': '21/01/1989',
                 'amount': '34.50',
+                'email': 'sender@outside.local',
             }), PaymentMethod.debit_card)
             self.driver.find_element_by_id('id_next_btn').click()
             self.assertCurrentUrl('/check-details/')

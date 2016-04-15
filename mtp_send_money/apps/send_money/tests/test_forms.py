@@ -32,6 +32,7 @@ valid_data_sets = [
         },
         'data': {
             'prisoner_name': 'John Smith',
+            'email': 'sender@outside.local',
             'amount': '120.45',
             'payment_method': PaymentMethod.debit_card,
         },
@@ -44,6 +45,7 @@ valid_data_sets = [
         },
         'data': {
             'prisoner_name': 'John Smith',
+            'email': 'sender@outside.local',
             'amount': '12000.00',
             'payment_method': PaymentMethod.debit_card,
         },
@@ -56,6 +58,7 @@ valid_data_sets = [
         },
         'data': {
             'prisoner_name': 'John Smith',
+            'email': 'sender@outside.local',
             'amount': '1000000.00',
             'payment_method': PaymentMethod.debit_card,
         },
@@ -68,6 +71,7 @@ valid_data_sets = [
         },
         'data': {
             'prisoner_name': 'John Smith',
+            'email': 'sender@outside.local',
             'amount': '10',
             'payment_method': PaymentMethod.bank_transfer,
         },
@@ -80,6 +84,7 @@ valid_data_sets = [
         },
         'data': {
             'prisoner_name': 'John Smith',
+            'email': 'sender@outside.local',
             'amount': '100',
             'payment_method': PaymentMethod.bank_transfer,
         },
@@ -136,6 +141,7 @@ invalid_data_sets = [
             'prisoner_dob': '1980-10-05',
         },
         'data': {
+            'email': 'sender@outside.local',
             'amount': '120.45',
             'payment_method': PaymentMethod.debit_card,
         },
@@ -148,6 +154,7 @@ invalid_data_sets = [
         },
         'data': {
             'prisoner_name': 'John Smith',
+            'email': 'sender@outside.local',
             'amount': '120.45',
             'payment_method': PaymentMethod.debit_card,
         },
@@ -160,6 +167,7 @@ invalid_data_sets = [
         },
         'data': {
             'prisoner_name': 'John Smith',
+            'email': 'sender@outside.local',
             'amount': '120.45',
             'payment_method': PaymentMethod.debit_card,
         },
@@ -172,6 +180,7 @@ invalid_data_sets = [
         },
         'data': {
             'prisoner_name': 'John Smith',
+            'email': 'sender@outside.local',
             'amount': '',
             'payment_method': PaymentMethod.debit_card,
         },
@@ -184,6 +193,7 @@ invalid_data_sets = [
         },
         'data': {
             'prisoner_name': 'John Smith',
+            'email': 'sender@outside.local',
             'amount': '120.45',
             'payment_method': '',
         },
@@ -196,6 +206,7 @@ invalid_data_sets = [
         },
         'data': {
             'prisoner_name': 'John Smith',
+            'email': 'sender@outside.local',
             'amount': '120.45',
             'payment_method': PaymentMethod.debit_card,
         },
@@ -208,6 +219,7 @@ invalid_data_sets = [
         },
         'data': {
             'prisoner_name': 'John Smith',
+            'email': 'sender@outside.local',
             'amount': '120.45',
             'payment_method': PaymentMethod.debit_card,
         },
@@ -220,6 +232,7 @@ invalid_data_sets = [
         },
         'data': {
             'prisoner_name': 'John Smith',
+            'email': 'sender@outside.local',
             'amount': '0',
             'payment_method': PaymentMethod.debit_card,
         },
@@ -232,6 +245,7 @@ invalid_data_sets = [
         },
         'data': {
             'prisoner_name': 'John Smith',
+            'email': 'sender@outside.local',
             'amount': '£10',
             'payment_method': PaymentMethod.debit_card,
         },
@@ -244,6 +258,7 @@ invalid_data_sets = [
         },
         'data': {
             'prisoner_name': 'John Smith',
+            'email': 'sender@outside.local',
             'amount': '100.456',
             'payment_method': PaymentMethod.debit_card,
         },
@@ -256,6 +271,7 @@ invalid_data_sets = [
         },
         'data': {
             'prisoner_name': 'John Smith',
+            'email': 'sender@outside.local',
             'amount': '-10',
             'payment_method': PaymentMethod.debit_card,
         },
@@ -268,6 +284,7 @@ invalid_data_sets = [
         },
         'data': {
             'prisoner_name': 'John Smith',
+            'email': 'sender@outside.local',
             'amount': '1000000.01',
             'payment_method': PaymentMethod.debit_card,
         },
@@ -280,6 +297,7 @@ invalid_data_sets = [
         },
         'data': {
             'prisoner_name': 'John Smith',
+            'email': 'sender@outside.local',
             'amount': '100.45',
             'payment_method': 'postal_order',
         },

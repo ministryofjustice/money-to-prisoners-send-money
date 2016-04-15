@@ -1,0 +1,14 @@
+{% load i18n %}
+{% load send_money %}
+
+{% blocktrans with formatted_ref=payment_ref|upper formatted_amount=amount|currency_format payment_date=payment_created|date:'d/m/Y' %}
+Your payment to a prisoner was successful.
+
+Your reference number is {{ formatted_ref }}.
+
+Payment to: {{ prisoner_name }}
+Payment amount: {{ formatted_amount }}
+Date payment made: {{ payment_date }}
+
+The money will arrive in the prisoner’s account in 3 working days.
+{% endblocktrans %}
