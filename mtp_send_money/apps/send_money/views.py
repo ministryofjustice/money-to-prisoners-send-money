@@ -11,47 +11,68 @@ from django.views.generic import FormView
 import requests
 from slumber.exceptions import SlumberHttpBaseException
 
-from send_money.forms import PaymentMethod, SendMoneyForm
+from send_money.forms import PaymentMethod, SendMoneyForm, PrisonerDetailsForm
 from send_money.utils import (
     unserialise_amount, unserialise_date, bank_transfer_reference,
     govuk_headers, govuk_url, get_api_client, site_url, get_link_by_rel,
-    get_total_charge, get_service_charge
+    get_service_charge
 )
 
 logger = logging.getLogger('mtp')
 
 
-def require_session_parameters(view):
+def require_session_parameters(form_class):
     """
     View decorator to require a session to include the serialised form
     @param view: the view callable
     """
 
-    @wraps(view)
-    def inner(request, *args, **kwargs):
-        if not SendMoneyForm.session_contains_form_data(request.session):
-            return redirect(reverse('send_money:send_money'))
-        return view(request, *args, **kwargs)
+    def wrapper(view):
+        @wraps(view)
+        def inner(request, *args, **kwargs):
+            if not form_class.session_contains_form_data(request.session):
+                return redirect(reverse('send_money:send_money'))
+            return view(request, *args, **kwargs)
+        return inner
 
-    return inner
+    return wrapper
 
 
-def make_context_from_session(view):
+def make_context_from_session(form_class):
     """
     View decorator that creates a template context from the serialised form
     in a session
     @param view: the view callable
     """
 
-    @wraps(view)
-    def inner(request, *args, **kwargs):
-        session = request.session
-        context = {field: session[field] for field in SendMoneyForm.get_field_names()}
-        context['prisoner_dob'] = unserialise_date(context['prisoner_dob'])
-        context['amount'] = unserialise_amount(context['amount'])
-        return view(request, context, *args, **kwargs)
+    def wrapper(view):
+        @wraps(view)
+        def inner(request, *args, **kwargs):
+            session = request.session
+            context = {field: session[field] for field in form_class.get_field_names()}
+            if 'prisoner_dob' in context:
+                context['prisoner_dob'] = unserialise_date(context['prisoner_dob'])
+            if 'amount' in context:
+                context['amount'] = unserialise_amount(context['amount'])
+            return view(request, context, *args, **kwargs)
+        return inner
 
-    return inner
+    return wrapper
+
+
+class SendMoneyBankTransferView(FormView):
+    form_class = PrisonerDetailsForm
+    template_name = 'send_money/bank-transfer-form.html'
+    success_url = reverse_lazy('send_money:bank_transfer')
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['request'] = self.request
+        return kwargs
+
+    def form_valid(self, form):
+        form.save_form_data_in_session(self.request.session)
+        return super().form_valid(form)
 
 
 class SendMoneyView(FormView):
@@ -81,7 +102,7 @@ class SendMoneyView(FormView):
         })
 
         # TODO: remove option once TD allows showing bank transfers
-        context_data['HIDE_BANK_TRANSFER_OPTION'] = settings.HIDE_BANK_TRANSFER_OPTION
+        context_data['SHOW_BANK_TRANSFER_OPTION'] = settings.SHOW_BANK_TRANSFER_OPTION
 
         return context_data
 
@@ -102,7 +123,7 @@ class CheckDetailsView(SendMoneyView):
     template_name = 'send_money/check-details.html'
     success_url = None
 
-    @method_decorator(require_session_parameters)
+    @method_decorator(require_session_parameters(SendMoneyForm))
     def dispatch(self, request, *args, **kwargs):
         return super().dispatch(request, *args, **kwargs)
 
@@ -138,8 +159,8 @@ class CheckDetailsView(SendMoneyView):
         return redirect(reverse('send_money:send_money') + '?change')
 
 
-@require_session_parameters
-@make_context_from_session
+@require_session_parameters(PrisonerDetailsForm)
+@make_context_from_session(PrisonerDetailsForm)
 def bank_transfer_view(request, context):
     """
     View displaying details of how to set up a bank transfer.
@@ -148,21 +169,19 @@ def bank_transfer_view(request, context):
     @param context: the template context
     """
     context.update({
-        'payable_to': settings.NOMS_HOLDING_ACCOUNT_NAME,
         'account_number': settings.NOMS_HOLDING_ACCOUNT_NUMBER,
         'sort_code': settings.NOMS_HOLDING_ACCOUNT_SORT_CODE,
         'bank_transfer_reference': bank_transfer_reference(
             context['prisoner_number'],
             context['prisoner_dob'],
         ),
-        'amount_to_pay': get_total_charge(request.session['amount']),
     })
     request.session.flush()
     return render(request, 'send_money/bank-transfer.html', context)
 
 
-@require_session_parameters
-@make_context_from_session
+@require_session_parameters(SendMoneyForm)
+@make_context_from_session(SendMoneyForm)
 def debit_card_view(request, context):
     """
     View that initiates the gov.uk payment process and displays error responses.

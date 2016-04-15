@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% load mtp_utils %}
+{% load send_money %}
+
+{% block content %}
+  <h1>{% trans 'Who are you sending money to?' %}</h1>
+
+  <form method="post" action=".">
+    {% csrf_token %}
+
+    {% if form.non_field_errors %}
+      <div class="error-summary" aria-labelledby="error-summary-heading" tabindex="-1" role="alert">
+        {% for error in form.non_field_errors %}
+          {% if forloop.first %}
+            <h1 class="error-summary-heading heading-medium" id="error-summary-heading">
+              {{ error }}
+            </h1>
+          {% else %}
+            {{ error }}
+          {% endif %}
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <p>
+    <fieldset>
+      <legend class="form-label-bold">{% trans "Prisoner details" %}</legend>
+
+      {% with field=form.prisoner_dob %}
+        <div class="form-group form-date {% if field.errors %}error{% endif %}">
+          <p>{{ field.label }}</p>
+          {% for error in field.errors %}
+            <span class="error-message">{{ error }}</span>
+          {% endfor %}
+          <div class="form-hint">{% trans "eg 28 04 1996" %}</div>
+          <div>
+             <div class="form-date-day {% if field.errors %}error{% endif %}">
+               <label id="{{ field.auto_id }}_0-label" class="form-label" for="{{ field.auto_id }}_0">{% trans "Day" %}</label>
+               <input class="form-control" id="{{ field.auto_id }}_0" name="{{ field.html_name }}_0" value="{{ field.value.0|default:'' }}" type="text"  />
+             </div>
+             <div class="form-date-month {% if field.errors %}error{% endif %}">
+               <label id="{{ field.auto_id }}_1-label" class="form-label" for="{{ field.auto_id }}_1">{% trans "Month" %}</label>
+               <input class="form-control" id="{{ field.auto_id }}_1" name="{{ field.html_name }}_1" value="{{ field.value.1|default:'' }}" type="text"  />
+             </div>
+             <div class="form-date-year {% if field.errors %}error{% endif %}">
+               <label id="{{ field.auto_id }}_2-label" class="form-label" for="{{ field.auto_id }}_2">{% trans "Year" %}</label>
+               <input class="form-control" id="{{ field.auto_id }}_2" name="{{ field.html_name }}_2" value="{{ field.value.2|default:'' }}" type="text"  />
+             </div>
+          </div>
+        </div>
+      {% endwith %}
+
+      {% with field=form.prisoner_number %}
+        <div class="form-group {% if field.errors %}error{% endif %}">
+          <label id="{{ field.id_for_label }}-label" class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+          {% for error in field.errors %}
+            <span class="error-message">{{ error }}</span>
+          {% endfor %}
+          <div class="form-hint">{% trans "eg A1234BC" %}</div>
+          <div>
+          <input class="form-control mtp-prisoner-number" id="{{ field.id_for_label }}" name="{{ field.html_name }}" value="{{ field.value|default:'' }}" type="text"  />
+          </div>
+        </div>
+      {% endwith %}
+    </fieldset>
+    </p>
+
+    <p>
+      <input id="id_next_btn" class="button" type="submit" value="{% trans 'Continue' %}">
+    </p>
+  </form>
+{% endblock %}
