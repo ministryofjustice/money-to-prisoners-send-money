@@ -6,18 +6,18 @@
   <h1>{% trans 'Send money by bank transfer' %}</h1>
 
   <p>
-    {% blocktrans %}
+    {% blocktrans trimmed %}
     You can send money to a prisoner by making a bank transfer to the prison
     service account and sort code, using a payment reference to identify the
     prisoner to whom you wish to send money.
     {% endblocktrans %}
   </p>
 
-  <h3>Payment reference</h3>
+  <h3>{% trans 'Payment reference' %}</h3>
   <p>{% trans 'The payment reference you must use when making the transfer is:' %}</p>
   <p><code><strong>{{ bank_transfer_reference }}</strong></code></p>
 
-  <h3>Bank details</h3>
+  <h3>{% trans 'Bank details' %}</h3>
   <p>
     {% blocktrans trimmed %}
       All public prisons in England and Wales use the same bank account to
@@ -28,10 +28,10 @@
   <p><code><strong>{{ account_number }}</strong></code></p>
   <p>{% trans 'The prison service sort code' %}</p>
   <p><code><strong>{{ sort_code }}</strong></code></p>
-  <p><strong>Remember to enter the payment reference provided above when setting up the transfer.</strong></p>
-  <p>The money should arrive in the prisoner's account in 1 working day<sup>*</sup>.</p>
-  <p>No money is processed at the weekends.</p>
-  <p>If you have any questions about how to make a payment you should contact your bank or building society.</p>
-  <p><sup>*</sup>Your bank may take longer to process payments (up to 3 working days).</p>
-  <p><a href="https://send-money.moneytoprisoners.dsd.io/terms/">Terms and conditions</a></p>
+  <p><strong>{% trans 'Remember to enter the payment reference provided above when setting up the transfer.' %}</strong></p>
+  <p>{% trans 'The money should arrive in the prisoner’s account in 1 working day' %}<sup>*</sup>.</p>
+  <p>{% trans 'No money is processed at the weekends.' %}</p>
+  <p>{% trans 'If you have any questions about how to make a payment you should contact your bank or building society.' %}</p>
+  <p><sup>*</sup>{% trans 'Your bank may take longer to process payments (up to 3 working days).' %}</p>
+  <p><a href="{% url 'terms' %}">{% trans 'Terms and conditions' %}</a></p>
 {% endblock %}

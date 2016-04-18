@@ -84,6 +84,7 @@ class PrisonerDetailsForm(GARequestErrorReportingMixin, forms.Form):
 
 
 class SendMoneyForm(PrisonerDetailsForm):
+    field_order = ('prisoner_name', 'prisoner_dob', 'prisoner_number', 'amount')
     prisoner_name = forms.CharField(
         label=_('Prisoner name'),
         max_length=250,
