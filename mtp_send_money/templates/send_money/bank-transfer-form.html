@@ -11,7 +11,6 @@
 
     {% include 'mtp_utils/forms/error-summary.html' with form=form only %}
 
-    <p>
     <fieldset>
       <legend class="form-label-bold">{% trans "Prisoner details" %}</legend>
 
@@ -48,7 +47,6 @@
         </div>
       {% endwith %}
     </fieldset>
-    </p>
 
     <p>
       <input id="id_next_btn" class="button" type="submit" value="{% trans 'Continue' %}">
