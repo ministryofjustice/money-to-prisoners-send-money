@@ -30,8 +30,12 @@ class PrisonerDetailsForm(GARequestErrorReportingMixin, forms.Form):
         return [field for field in cls.base_fields]
 
     @classmethod
+    def get_required_field_names(cls):
+        return [name for name, field in cls.base_fields.items() if field.required]
+
+    @classmethod
     def session_contains_form_data(cls, session):
-        for required_key in cls.get_field_names():
+        for required_key in cls.get_required_field_names():
             if not session.get(required_key):
                 return False
         return True
@@ -101,6 +105,10 @@ class SendMoneyForm(PrisonerDetailsForm):
         choices=PaymentMethod.django_choices(),
         initial=PaymentMethod.debit_card,
     )
+    email = forms.EmailField(
+        label=_('Your email address'),
+        required=False
+    )
 
     def switch_to_hidden(self):
         for field in self.fields.values():
@@ -117,7 +125,7 @@ class SendMoneyForm(PrisonerDetailsForm):
     def form_data_from_session(cls, session):
         try:
             data = {
-                field: session[field]
+                field: session.get(field)
                 for field in cls.get_field_names()
             }
             prisoner_dob = unserialise_date(data['prisoner_dob'])

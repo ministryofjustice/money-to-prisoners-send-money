@@ -14,13 +14,7 @@
     <fieldset>
       <legend class="form-label-bold">{% trans "Prisoner details" %}</legend>
 
-      {% with field=form.prisoner_name %}
-        <div class="form-group {% if field.errors %}error{% endif %}">
-          <label id="{{ field.id_for_label }}-label" class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
-          {% include 'mtp_utils/forms/field-errors.html' with field=field only %}
-          <input class="form-control" id="{{ field.id_for_label }}" name="{{ field.html_name }}" value="{{ field.value|default:'' }}" type="text"  />
-        </div>
-      {% endwith %}
+      {% include 'mtp_utils/forms/field.html' with field=form.prisoner_name only %}
 
       {% with field=form.prisoner_dob %}
         <div class="form-group form-date {% if field.errors %}error{% endif %}">
@@ -53,6 +47,13 @@
         </div>
       {% endwith %}
     </fieldset>
+
+    <div class="mtp-details">
+      <fieldset>
+        <legend class="form-label-bold">{% trans "Your contact details" %}</legend>
+        {% include 'mtp_utils/forms/field.html' with field=form.email only %}
+      </fieldset>
+    </div>
 
     {% with field=form.amount %}
       <div class="mtp-amount">

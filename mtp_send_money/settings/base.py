@@ -244,6 +244,11 @@ SHOW_DEBIT_CARD_OPTION = os.environ.get('SHOW_DEBIT_CARD_OPTION', 'True') == 'Tr
 GOVUK_PAY_URL = os.environ.get('GOVUK_PAY_URL', '')
 GOVUK_PAY_AUTH_TOKEN = os.environ.get('GOVUK_PAY_AUTH_TOKEN', '')
 
+EMAIL_BACKEND = 'django_mailgun.MailgunBackend'
+MAILGUN_ACCESS_KEY = os.environ.get('MAILGUN_ACCESS_KEY', '')
+MAILGUN_SERVER_NAME = os.environ.get('MAILGUN_SERVER_NAME', '')
+MAILGUN_FROM_ADDRESS = os.environ.get('MAILGUN_FROM_ADDRESS', '')
+
 
 try:
     from .local import *  # noqa
