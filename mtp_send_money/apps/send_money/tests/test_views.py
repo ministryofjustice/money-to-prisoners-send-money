@@ -112,6 +112,18 @@ class SendMoneyViewTestCase(BaseTestCase):
             response = self.submit_send_money_form(mocked_api_client, follow=True)
             self.assertOnPage(response, 'check_details')
 
+    @mock.patch('send_money.utils.api_client')
+    def test_send_money_page_proceeds_without_email(self, mocked_api_client):
+        with reload_payment_urls(self, show_debit_card=True):
+            response = self.submit_send_money_form(mocked_api_client, replace_data={
+                'prisoner_name': SAMPLE_FORM['prisoner_name'],
+                'prisoner_number': SAMPLE_FORM['prisoner_number'],
+                'prisoner_dob': SAMPLE_FORM['prisoner_dob'],
+                'amount': SAMPLE_FORM['amount'],
+                'payment_method': SAMPLE_FORM['payment_method'],
+            }, follow=True)
+            self.assertOnPage(response, 'check_details')
+
     @mock.patch('send_money.forms.PrisonerDetailsForm.check_prisoner_validity')
     def test_send_money_page_displays_errors_for_invalid_prisoner_number(self, mocked_check_prisoner_validity):
         with reload_payment_urls(self, show_debit_card=True):

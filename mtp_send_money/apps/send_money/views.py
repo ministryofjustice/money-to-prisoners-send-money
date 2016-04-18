@@ -198,8 +198,9 @@ def debit_card_view(request, context):
         'recipient_name': context['prisoner_name'],
         'prisoner_number': context['prisoner_number'],
         'prisoner_dob': context['prisoner_dob'].isoformat(),
-        'email': context['email']
     }
+    if context.get('email'):
+        new_payment['email'] = context['email']
 
     client = get_api_client()
     try:

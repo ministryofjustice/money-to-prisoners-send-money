@@ -64,6 +64,18 @@ valid_data_sets = [
         },
     },
     {
+        'name': 'debit_card_no_email',
+        'prisoner_details': {
+            'prisoner_number': 'A1234AB',
+            'prisoner_dob': '1980-10-05',
+        },
+        'data': {
+            'prisoner_name': 'John Smith',
+            'amount': '1000000.00',
+            'payment_method': PaymentMethod.debit_card,
+        },
+    },
+    {
         'name': 'bank_transfer_1',
         'prisoner_details': {
             'prisoner_number': 'A1234AB',
