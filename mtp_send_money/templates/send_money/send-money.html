@@ -121,8 +121,8 @@
           <fieldset>
             <legend class="form-label-bold">{{ field.label }}</legend>
             {% for option in field.field.choices %}
-              <label class="block-label {% if field.value|to_string == option.0 %}selected{% endif %}">
-                <input {% if field.value|to_string == option.0 %}checked="checked"{% endif %} name="{{ field.html_name }}" type="radio" value="{{ option.0 }}"/>
+              <label for="{{ field.html_name }}-{{ option.0 }}" class="block-label {% if field.value|to_string == option.0 %}selected{% endif %}">
+                <input id="{{ field.html_name }}-{{ option.0 }}" {% if field.value|to_string == option.0 %}checked="checked"{% endif %} name="{{ field.html_name }}" type="radio" value="{{ option.0 }}"/>
                 {{ option.1 }}
               </label>
             {% endfor %}
