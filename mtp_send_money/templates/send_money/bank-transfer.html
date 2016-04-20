@@ -10,8 +10,7 @@
     The system successfully matched the prisoner number and date of birth against a prisoner. You will now need to log into your online banking or mobile/tablet banking app and use the following details to send money to that person. 
     {% endblocktrans %}
   </p>
-  <p><strong>{% trans 'For the payment to work it is essential you use the reference we have generated for you.' %}</strong></p>
-
+ 
   <h3>{% trans 'Bank details and payment reference' %}</h3>
   <p>
     {% blocktrans trimmed %}
@@ -33,6 +32,7 @@
       <samp class="mtp-bank-details">{{ bank_transfer_reference }}</samp>
     </dd>
   </dl>
+  <p><strong>{% trans 'For the payment to work it is essential you use the reference we have generated for you.' %}</strong></p>
   
   <h3>{% trans 'When will the prisoner receive the money?' %}</h3>
   <p>{% trans 'The money should arrive in the prisoner’s account in 1 working day' %}<sup>*</sup>.</p>
