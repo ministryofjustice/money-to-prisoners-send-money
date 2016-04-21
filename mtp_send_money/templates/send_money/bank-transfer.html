@@ -10,29 +10,29 @@
     The system successfully matched the prisoner number and date of birth against a prisoner. You will now need to log into your online banking or mobile/tablet banking app and use the following details to send money to that person. You cannot make the payment in person at your bank branch.
     {% endblocktrans %}
   </p>
- 
+
   <h3>{% trans 'Bank details and payment reference' %}</h3>
   <p>
     {% blocktrans trimmed %}
       All public prisons in England and Wales use the same bank account to receive money sent to prisoners. Make a payment using these details:
     {% endblocktrans %}
   </p>
-  <dl>
+  <dl class="mtp-bank-details">
     <dt>{% trans 'Use this sort code' %}</dt>
     <dd>
-      <samp class="mtp-bank-details">{{ sort_code }}</samp>
+      <samp>{{ sort_code }}</samp>
     </dd>
     <dt>{% trans 'Use this account number' %}</dt>
     <dd>
-      <samp class="mtp-bank-details">{{ account_number }}</samp>
+      <samp>{{ account_number }}</samp>
     </dd>
     <dt>{% trans 'Use this reference' %}</dt>
     <dd>
-      <samp class="mtp-bank-details">{{ bank_transfer_reference }}</samp>
+      <samp>{{ bank_transfer_reference }}</samp>
     </dd>
   </dl>
   <p><strong>{% trans 'For the payment to work it is essential you use the reference we have generated for you.' %}</strong></p>
-  
+
   <h3>{% trans 'When will the prisoner receive the money?' %}</h3>
   <p>{% trans 'The money should arrive in the prisoner’s account in 1 working day' %}<sup>*</sup>.</p>
   <p>{% trans 'No money is processed at the weekends.' %}</p>
