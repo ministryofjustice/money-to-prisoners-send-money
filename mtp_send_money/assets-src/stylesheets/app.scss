@@ -70,6 +70,22 @@ form .form-group .form-hint {
   margin-top: 2em;
 }
 
+.mtp-bank-details {
+  dt {
+    margin-bottom: 0.6em;
+  }
+  dd {
+    margin: 0 0 1em 0;
+  }
+  samp {
+    border: $grey-1 solid 1px;
+    padding: 0.4em 0.8em;
+    font-size: 1.2em;
+    font-weight: bold;
+    background: $grey-4;
+  }
+}
+
 .mtp-amount {
   margin-top: 2em;
 

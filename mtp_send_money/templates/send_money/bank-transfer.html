@@ -7,28 +7,33 @@
 
   <p>
     {% blocktrans trimmed %}
-    You can send money to a prisoner by making a bank transfer to the prison
-    service account and sort code, using a payment reference to identify the
-    prisoner to whom you wish to send money.
+    The system successfully matched the prisoner number and date of birth against a prisoner. You will now need to log into your online banking or mobile/tablet banking app and use the following details to send money to that person. You cannot make the payment in person at your bank branch.
     {% endblocktrans %}
   </p>
 
-  <h3>{% trans 'Payment reference' %}</h3>
-  <p>{% trans 'The payment reference you must use when making the transfer is:' %}</p>
-  <p><code><strong>{{ bank_transfer_reference }}</strong></code></p>
-
-  <h3>{% trans 'Bank details' %}</h3>
+  <h3>{% trans 'Bank details and payment reference' %}</h3>
   <p>
     {% blocktrans trimmed %}
-      All public prisons in England and Wales use the same bank account to
-      receive money sent to prisoners. Make a payment using these details:
+      All public prisons in England and Wales use the same bank account to receive money sent to prisoners. Make a payment using these details:
     {% endblocktrans %}
   </p>
-  <p>{% trans 'The prison service account number' %}</p>
-  <p><code><strong>{{ account_number }}</strong></code></p>
-  <p>{% trans 'The prison service sort code' %}</p>
-  <p><code><strong>{{ sort_code }}</strong></code></p>
-  <p><strong>{% trans 'Remember to enter the payment reference provided above when setting up the transfer.' %}</strong></p>
+  <dl class="mtp-bank-details">
+    <dt>{% trans 'Use this sort code' %}</dt>
+    <dd>
+      <samp>{{ sort_code }}</samp>
+    </dd>
+    <dt>{% trans 'Use this account number' %}</dt>
+    <dd>
+      <samp>{{ account_number }}</samp>
+    </dd>
+    <dt>{% trans 'Use this reference' %}</dt>
+    <dd>
+      <samp>{{ bank_transfer_reference }}</samp>
+    </dd>
+  </dl>
+  <p><strong>{% trans 'For the payment to work it is essential you use the reference we have generated for you.' %}</strong></p>
+
+  <h3>{% trans 'When will the prisoner receive the money?' %}</h3>
   <p>{% trans 'The money should arrive in the prisoner’s account in 1 working day' %}<sup>*</sup>.</p>
   <p>{% trans 'No money is processed at the weekends.' %}</p>
   <p>{% trans 'If you have any questions about how to make a payment you should contact your bank or building society.' %}</p>
