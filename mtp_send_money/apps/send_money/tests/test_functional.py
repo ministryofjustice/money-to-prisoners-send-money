@@ -5,7 +5,7 @@ from unittest import mock
 
 from django.conf import settings
 from django.test import override_settings
-from mtp_utils.test_utils.functional_tests import FunctionalTestCase
+from mtp_common.test_utils.functional_tests import FunctionalTestCase
 import responses
 
 from send_money.forms import PaymentMethod

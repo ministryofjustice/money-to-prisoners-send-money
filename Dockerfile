@@ -24,7 +24,7 @@ RUN npm config set python python2.7
 
 # cache node modules, unless requirements change
 ADD ./package.json /app/package.json
-RUN npm install
+RUN npm set progress=false
 
 RUN pip3 install -U setuptools pip wheel virtualenv
 RUN virtualenv -p python3.4 venv
