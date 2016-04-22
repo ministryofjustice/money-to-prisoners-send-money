@@ -230,8 +230,8 @@ def debit_card_view(request, context):
             return redirect(get_link_by_rel(govuk_data, 'next_url')['href'])
         else:
             logger.error(
-                'Failed to create new GOV.UK payment for transaction %s'
-                % api_response['uuid']
+                'Failed to create new GOV.UK payment for transaction %s. Received: %s'
+                % (api_response['uuid'], govuk_response.content)
             )
     except SlumberHttpBaseException:
         logger.exception('Failed to create new payment')
@@ -278,7 +278,7 @@ def confirmation_view(request):
                 body = loader.get_template(
                     'send_money/email/confirmation.txt').render(context)
                 email = EmailMessage(
-                    _('Payment confirmation'),
+                    _('Your payment has been successful...'),
                     body,
                     settings.MAILGUN_FROM_ADDRESS,
                     [api_response['email']]
