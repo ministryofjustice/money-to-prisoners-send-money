@@ -14,9 +14,10 @@
   <h3>{% trans 'Bank details and payment reference' %}</h3>
   <p>
     {% blocktrans trimmed %}
-      All public prisons in England and Wales use the same bank account to receive money sent to prisoners. Make a payment using these details:
+      All public prisons in England and Wales use the same bank account to receive money sent to prisoners. Make a payment using the following details.
     {% endblocktrans %}
   </p>
+  <p>Log into your bank account now.</p>
   <dl class="mtp-bank-details">
     <dt>{% trans 'Use this sort code' %}</dt>
     <dd>
@@ -34,9 +35,7 @@
   <p><strong>{% trans 'For the payment to work it is essential you use the reference we have generated for you.' %}</strong></p>
 
   <h3>{% trans 'When will the prisoner receive the money?' %}</h3>
-  <p>{% trans 'The money should arrive in the prisoner’s account in 1 working day' %}<sup>*</sup>.</p>
-  <p>{% trans 'No money is processed at the weekends.' %}</p>
-  <p>{% trans 'If you have any questions about how to make a payment you should contact your bank or building society.' %}</p>
-  <p><sup>*</sup>{% trans 'Your bank may take longer to process payments (up to 3 working days).' %}</p>
-  <p><a href="{% url 'terms' %}">{% trans 'Terms and conditions' %}</a></p>
+  <p>{% trans 'The money should arrive in the prisoner's account in 1 working day. However, your bank may take longer to process payments (up to 3 working days).</p>
+  <p>{% trans 'No money is processed at weekends.</p>
+  <p>{% trans 'If you have any questions about how to make a payment, contact your bank or building society.' %}</p>
 {% endblock %}
