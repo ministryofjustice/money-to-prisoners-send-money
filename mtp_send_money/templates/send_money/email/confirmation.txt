@@ -7,7 +7,7 @@ Dear sender,
 Your payment has been successful.
 Your reference number is {{ formatted_ref }}.
 
-The money you sent will arrive in the prisoner's account in 3 working days.
+The money you sent will arrive in the prisoner's account in 1 working day.
 
 Payment made: {{ prisoner_name }}
 Amount paid: {{ formatted_amount }}
