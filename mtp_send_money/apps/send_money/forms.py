@@ -72,7 +72,7 @@ class PrisonerDetailsForm(GARequestErrorReportingMixin, forms.Form):
                     not self.check_prisoner_validity(prisoner_number, prisoner_dob):
                 raise ValidationError(
                     message=[_('No prisoner matches the details you’ve supplied.'),
-                             _('Check the prisoner number and date of birth.')],
+                             _('Please contact the prisoner to check your details are correct.')],
                     code='not_found'
                 )
         except (SlumberHttpBaseException, RequestException):
