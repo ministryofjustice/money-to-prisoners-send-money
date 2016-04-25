@@ -1,7 +1,7 @@
 {% load i18n %}
 {% load send_money %}
 
-{% blocktrans trimmed with formatted_ref=payment_ref|upper formatted_amount=amount|currency_format payment_date=payment_created|date:'d/m/Y' %}
+{% blocktrans with formatted_ref=payment_ref|upper formatted_amount=amount|currency_format payment_date=payment_created|date:'d/m/Y' %}
 Dear sender,
 
 Your payment has been successful.
