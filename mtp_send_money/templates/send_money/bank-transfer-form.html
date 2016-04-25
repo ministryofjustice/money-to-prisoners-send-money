@@ -6,6 +6,12 @@
 {% block content %}
   <h1>{% trans 'Who are you sending money to?' %}</h1>
 
+  <p>
+  {% blocktrans %}
+  This page will generate your personal bank transfer reference. You can then use this reference each time you send money to a prisoner.
+  {% endblocktrans %}
+  </p>
+
   <form method="post" action=".">
     {% csrf_token %}
 
@@ -47,7 +53,7 @@
         </div>
       {% endwith %}
     </fieldset>
-
+    <br/>
     <p>
       <input id="id_next_btn" class="button" type="submit" value="{% trans 'Continue' %}">
     </p>
