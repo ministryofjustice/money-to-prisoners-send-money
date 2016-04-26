@@ -32,3 +32,7 @@ if settings.SHOW_DEBIT_CARD_OPTION or settings.SHOW_BANK_TRANSFER_OPTION:
     urlpatterns.append(url(r'^', include('send_money.urls', namespace='send_money',)))
 else:
     urlpatterns.append(url(r'^$', RedirectView.as_view(url=reverse_lazy('submit_ticket'))))
+
+handler404 = 'mtp_common.views.page_not_found'
+handler500 = 'mtp_common.views.server_error'
+handler400 = 'mtp_common.views.bad_request'
