@@ -26,6 +26,8 @@ urlpatterns = [
         version_number_key='APP_BUILD_TAG',
     ), name='ping_json'),
     url(r'^healthcheck.json$', HealthcheckView.as_view(), name='healthcheck_json'),
+
+    url(r'^favicon.ico$', RedirectView.as_view(url=settings.STATIC_URL + 'images/favicon.ico', permanent=True)),
 ]
 
 if settings.SHOW_DEBIT_CARD_OPTION or settings.SHOW_BANK_TRANSFER_OPTION:
