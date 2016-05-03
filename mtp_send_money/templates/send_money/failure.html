@@ -2,7 +2,8 @@
 {% load i18n %}
 
 {% block content %}
-  <h1>{% trans 'Send money with a card payment' %}</h1>
+  <h1>{% trans 'Send money to a prisoner' %}</h1>
 
-  <p>{% trans 'Sorry, we are unable to take your payment.' %}</p>
+  <p>{% trans 'Sorry, your payment couldn’t be processed.' %}</p>
+  <p>{% trans 'Your reference number is'}: <strong>{{ payment_ref|upper }}</strong></p>
 {% endblock %}
