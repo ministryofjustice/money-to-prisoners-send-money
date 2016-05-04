@@ -71,18 +71,19 @@ form .form-group .form-hint {
 }
 
 .mtp-bank-details {
+  margin-bottom: 3.5em;
   dt {
     margin-bottom: 0.6em;
   }
   dd {
-    margin: 0 0 1em 0;
+    margin: 0 0 2.5em 0;
   }
   samp {
     border: $grey-1 solid 1px;
     padding: 0.4em 0.8em;
     font-size: 1.2em;
     font-weight: bold;
-    background: $grey-4;
+    background: $panel-colour;
   }
 }
 
@@ -150,3 +151,21 @@ form .form-group .form-hint {
   }
 }
 
+.mtp-bank-transfer {
+  section {
+    margin-left: 1em;
+    margin-bottom: 3em;
+  }
+  h2 {
+    margin-left: -1em;
+    margin-bottom: 1.3em;
+    font-size: 1em;
+  }
+  .mtp-bank-transfer-boxed {
+    padding:  .8em 2em 0.5em 1em;
+    border: 1px solid $text-colour;
+    ul {
+      margin-left: 1em;
+    }
+  }
+}

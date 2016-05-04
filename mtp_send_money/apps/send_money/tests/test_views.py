@@ -251,7 +251,7 @@ class BankTransferViewTestCase(BaseTestCase):
     def test_bank_transfer_page_renders_prisoner_reference(self, mocked_api_client):
         with reload_payment_urls(self, show_bank_transfer=True, show_debit_card=True):
             response = self.bank_transfer_flow(mocked_api_client)
-            bank_transfer_reference = 'A1231DE 04/10/1980'
+            bank_transfer_reference = 'A1231DE/04/10/1980'
             self.assertContains(response, bank_transfer_reference)
             self.assertEqual(response.context['bank_transfer_reference'],
                              bank_transfer_reference)
@@ -350,7 +350,7 @@ class DebitCardViewTestCase(BaseTestCase):
                     status=500,
                 )
                 response = self.client.get(self.url, follow=False)
-                self.assertContains(response, 'Sorry, we are unable to take your payment.')
+                self.assertContains(response, 'Sorry, your payment couldn’t be processed.')
 
     def test_debit_card_payment_handles_govuk_errors(self):
         with reload_payment_urls(self, show_debit_card=True):
@@ -369,7 +369,7 @@ class DebitCardViewTestCase(BaseTestCase):
                     status=500
                 )
                 response = self.client.get(self.url, follow=False)
-                self.assertContains(response, 'Sorry, we are unable to take your payment.')
+                self.assertContains(response, 'Sorry, your payment couldn’t be processed.')
 
 
 class ConfirmationViewTestCase(BaseTestCase):
