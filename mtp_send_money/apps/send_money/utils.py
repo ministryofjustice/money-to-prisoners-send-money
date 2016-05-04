@@ -127,7 +127,7 @@ def lenient_unserialise_date(date_text):
 
 
 def bank_transfer_reference(prisoner_number, prisoner_dob):
-    return '%s %s' % (prisoner_number, format_date(prisoner_dob, 'd/m/Y'))
+    return '%s/%s' % (prisoner_number, format_date(prisoner_dob, 'd/m/Y'))
 
 
 def govuk_headers():
