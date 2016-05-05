@@ -78,6 +78,7 @@ class SendMoneyDetailsPage(SendMoneyFunctionalTestCase):
             self.driver.get(self.live_server_url)
             self.assertEqual(self.driver.title, 'Send money to a prisoner - GOV.UK')
             self.assertEqual(self.driver.find_element_by_css_selector('h1').text, 'Who are you sending money to?')
+            self.assertInSource('So we can send you a receipt')
 
     def test_service_charge_js(self):
         with reload_payment_urls(self, show_debit_card=True):
