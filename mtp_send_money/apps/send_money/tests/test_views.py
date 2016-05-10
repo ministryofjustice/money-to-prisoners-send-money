@@ -350,7 +350,7 @@ class DebitCardViewTestCase(BaseTestCase):
                     status=500,
                 )
                 response = self.client.get(self.url, follow=False)
-                self.assertContains(response, 'Sorry, your payment couldn’t be processed.')
+                self.assertContains(response, 'We’re sorry, your payment could not be processed on this occasion')
 
     def test_debit_card_payment_handles_govuk_errors(self):
         with reload_payment_urls(self, show_debit_card=True):
@@ -369,7 +369,7 @@ class DebitCardViewTestCase(BaseTestCase):
                     status=500
                 )
                 response = self.client.get(self.url, follow=False)
-                self.assertContains(response, 'Sorry, your payment couldn’t be processed.')
+                self.assertContains(response, 'We’re sorry, your payment could not be processed on this occasion')
 
 
 class ConfirmationViewTestCase(BaseTestCase):
