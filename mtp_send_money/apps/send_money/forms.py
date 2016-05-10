@@ -71,14 +71,13 @@ class PrisonerDetailsForm(GARequestErrorReportingMixin, forms.Form):
             if not self.errors and \
                     not self.check_prisoner_validity(prisoner_number, prisoner_dob):
                 raise ValidationError(
-                    message=[_('No prisoner matches the details you’ve supplied.'),
-                             _('Please contact the prisoner to check your details are correct.')],
+                    message=[_('No prisoner matches the details you’ve supplied, '
+                               'please ask the prisoner to check your details are correct')],
                     code='not_found'
                 )
         except (SlumberHttpBaseException, RequestException):
             raise ValidationError(
-                message=[_('Could not connect to the service.'),
-                         _('Please try again later.')],
+                message=[_('This service is currently unavailable')],
                 code='connection')
         return self.cleaned_data
 
@@ -98,6 +97,11 @@ class SendMoneyForm(PrisonerDetailsForm):
         min_value=decimal.Decimal('0.01'),
         max_value=decimal.Decimal('1000000'),
         decimal_places=2,
+        error_messages={
+            'invalid': _('Enter as a number'),
+            'min_value': _('Amount should be 1p or more'),
+            'max_decimal_places': _('Only use 2 decimal places'),
+        }
     )
     payment_method = forms.ChoiceField(
         label=_('Payment method'),
