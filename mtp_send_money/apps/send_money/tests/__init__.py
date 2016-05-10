@@ -5,7 +5,7 @@ import sys
 from django.conf import settings
 from django.core.urlresolvers import clear_url_caches, set_urlconf
 from django.utils.crypto import get_random_string
-from moj_auth.api_client import REQUEST_TOKEN_URL
+from mtp_common.auth.api_client import REQUEST_TOKEN_URL
 
 from send_money.utils import lenient_unserialise_date
 

@@ -9,7 +9,7 @@ from django.utils.dateparse import parse_date
 from django.utils import formats
 from django.utils.encoding import force_text
 from django.utils.translation import ugettext as _
-from moj_auth import api_client, urljoin
+from mtp_common.auth import api_client, urljoin
 
 prisoner_number_re = re.compile(r'^[a-z]\d\d\d\d[a-z]{2}$', re.IGNORECASE)
 
