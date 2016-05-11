@@ -285,6 +285,7 @@ def confirmation_view(request):
             logger.error(
                 'Failed to retrieve payment status from GOV.UK for payment %s' % payment_ref
             )
+            return clear_session_view(request)
     except SlumberHttpBaseException:
             logger.exception(
                 'Failed to access payment %s' % payment_ref,
