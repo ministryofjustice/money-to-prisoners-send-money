@@ -1,4 +1,3 @@
-import datetime
 from functools import wraps
 import logging
 
@@ -271,8 +270,6 @@ def confirmation_view(request):
             client.payments(payment_ref).patch(payment_update)
             context.update({
                 'success': True,
-                'payment_created': datetime.datetime.strptime(api_response['created'],
-                                                              '%Y-%m-%dT%H:%M:%S.%fZ'),
             })
             if api_response.get('email'):
                 body = loader.get_template(
