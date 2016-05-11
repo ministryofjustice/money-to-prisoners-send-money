@@ -484,7 +484,7 @@ class ConfirmationViewTestCase(BaseTestCase):
                 response = self.client.get(
                     self.url, {'payment_ref': ref}, follow=False
                 )
-                self.assertContains(response, 'your payment could not be processed')
+                self.assertRedirects(response, reverse_lazy('send_money:send_money'))
 
 
 class PaymentOptionAvailabilityTestCase(SimpleTestCase):
