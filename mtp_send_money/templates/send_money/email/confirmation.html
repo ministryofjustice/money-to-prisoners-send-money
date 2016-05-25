@@ -1,0 +1,36 @@
+{% extends 'mtp_common/email_base.html' %}
+{% load i18n %}
+{% load send_money %}
+
+{% now 'd/m/Y' as payment_date %}
+{% block content %}
+  <p>{% trans 'Dear sender,' %}</p>
+
+  <p>
+    {% trans 'Your payment has been successful.' %}<br/>
+    {% blocktrans %}Your reference number is {{ payment_ref|upper }}.{% endblocktrans %}
+  <p>
+
+  <p>{% trans 'The money you sent will arrive in the prisoner’s account in 1 working day.' %}</p>
+
+  <table cellspacing="10">
+    <tr>
+      <th valign="top" align="left">{% trans 'Payment to' %}</th>
+      <td>{{ prisoner_name }}</td>
+    </tr>
+    <tr>
+      <th valign="top" align="left">{% trans 'Amount paid' %}</th>
+      <td>{{ amount|currency_format }}</td>
+    </tr>
+    <tr>
+      <th valign="top" align="left">{% trans 'Date payment made' %}</th>
+      <td>{{ payment_date }}</td>
+    </tr>
+  </table>
+
+  <p>
+    {% trans 'Thank you for using this service.' %}<br/>
+    {% trans 'Please let us know how you found it.' %}<br/>
+    {% trans 'Any feedback is welcome at https://send-money.moneytoprisoners.dsd.io/feedback/' %}
+  </p>
+{% endblock %}

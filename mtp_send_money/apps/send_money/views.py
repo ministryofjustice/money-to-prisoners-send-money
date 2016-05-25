@@ -2,14 +2,13 @@ from functools import wraps
 import logging
 
 from django.conf import settings
-from django.core.mail import EmailMessage
 from django.core.urlresolvers import reverse, reverse_lazy
 from django.shortcuts import redirect, render
-from django.template import loader
 from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext as _
 from django.views.generic import FormView
 import requests
+from mtp_common.email import send_email
 from slumber.exceptions import SlumberHttpBaseException
 
 from send_money.forms import PaymentMethod, SendMoneyForm, PrisonerDetailsForm
@@ -205,6 +204,7 @@ def debit_card_view(request, context):
     try:
         api_response = client.payments.post(new_payment)
         payment_ref = api_response['uuid']
+        context['payment_ref'] = payment_ref[:8]
 
         new_govuk_payment = {
             'amount': amount_pence + service_charge_pence,
@@ -272,15 +272,11 @@ def confirmation_view(request):
                 'success': True,
             })
             if api_response.get('email'):
-                body = loader.get_template(
-                    'send_money/email/confirmation.txt').render(context)
-                email = EmailMessage(
-                    _('Your payment has been successful...'),
-                    body,
-                    settings.MAILGUN_FROM_ADDRESS,
-                    [api_response['email']]
+                send_email(
+                    api_response['email'], 'send_money/email/confirmation.txt',
+                    _('Your payment has been successful...'), context=context,
+                    html_template='send_money/email/confirmation.html'
                 )
-                email.send()
         else:
             logger.error(
                 'Failed to retrieve payment status from GOV.UK for payment %s' % payment_ref
