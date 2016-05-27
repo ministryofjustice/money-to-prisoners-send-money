@@ -262,7 +262,7 @@ def confirmation_view(request):
         )
 
         if (govuk_response.status_code == 200 and
-                govuk_response.json()['status'] == 'SUCCEEDED'):
+                govuk_response.json()['state']['status'] == 'success'):
             payment_update = {
                 'status': 'taken'
             }

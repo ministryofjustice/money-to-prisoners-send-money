@@ -403,7 +403,7 @@ class ConfirmationViewTestCase(BaseTestCase):
                     rsps.GET,
                     govuk_url('/payments/%s/' % processor_id),
                     json={
-                        'status': 'SUCCEEDED'
+                        'state': {'status': 'success'}
                     },
                     status=200
                 )
@@ -445,7 +445,7 @@ class ConfirmationViewTestCase(BaseTestCase):
                     rsps.GET,
                     govuk_url('/payments/%s/' % processor_id),
                     json={
-                        'status': 'SUCCEEDED'
+                        'state': {'status': 'success'}
                     },
                     status=200
                 )
