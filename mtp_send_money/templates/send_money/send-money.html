@@ -19,8 +19,8 @@
       {% with field=form.prisoner_dob %}
         <div class="form-group form-date {% if field.errors %}error{% endif %}">
           <p>{{ field.label }}</p>
+          {% include 'mtp_common/forms/field-help-text.html' with field=field only %}
           {% include 'mtp_common/forms/field-errors.html' with field=field only %}
-          <div class="form-hint">{% trans "eg 28 04 1996" %}</div>
           <div>
              <div class="form-date-day {% if field.errors %}error{% endif %}">
                <label id="{{ field.auto_id }}_0-label" class="form-label" for="{{ field.auto_id }}_0">{% trans "Day" %}</label>
@@ -41,8 +41,8 @@
       {% with field=form.prisoner_number %}
         <div class="form-group {% if field.errors %}error{% endif %}">
           {% include 'mtp_common/forms/field-label.html' with field=field only %}
+          {% include 'mtp_common/forms/field-help-text.html' with field=field only %}
           {% include 'mtp_common/forms/field-errors.html' with field=field only %}
-          <div class="form-hint">{% trans "eg A1234BC" %}</div>
           <input class="form-control mtp-prisoner-number" id="{{ field.id_for_label }}" name="{{ field.html_name }}" value="{{ field.value|default:'' }}" type="text"  />
         </div>
       {% endwith %}
@@ -54,7 +54,7 @@
         {% with field=form.email %}
         <div class="form-group {% if field.errors %}error{% endif %}">
           <div class="screenreader-only">{% include 'mtp_common/forms/field-label.html' with field=field only %}</div>
-          <div class="form-hint">{% trans "So we can send you a receipt" %}</div>
+          {% include 'mtp_common/forms/field-help-text.html' with field=field only %}
           {% include 'mtp_common/forms/field-errors.html' with field=field only %}
           <input id="{{ field.id_for_label }}" class="form-control" name="{{ field.html_name }}" value="{{ field.value|default:'' }}" type="email" />
         </div>
