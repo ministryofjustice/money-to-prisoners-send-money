@@ -18,11 +18,13 @@ from send_money.utils import (
 class PrisonerDetailsForm(GARequestErrorReportingMixin, forms.Form):
     prisoner_number = forms.CharField(
         label=_('Prisoner number'),
+        help_text=_('eg A1234BC'),
         max_length=7,
         validators=[validate_prisoner_number],
     )
     prisoner_dob = SplitDateField(
         label=_('Prisoner date of birth'),
+        help_text=_('eg 28 04 1996'),
     )
 
     @classmethod
@@ -111,6 +113,7 @@ class SendMoneyForm(PrisonerDetailsForm):
     )
     email = forms.EmailField(
         label=_('Your email address'),
+        help_text=_('So we can send you a receipt'),
         required=False
     )
 
