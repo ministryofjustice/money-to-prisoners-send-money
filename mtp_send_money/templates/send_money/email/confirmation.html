@@ -2,13 +2,12 @@
 {% load i18n %}
 {% load send_money %}
 
-{% now 'd/m/Y' as payment_date %}
 {% block content %}
   <p>{% trans 'Dear sender,' %}</p>
 
   <p>
     {% trans 'Your payment has been successful.' %}<br/>
-    {% blocktrans %}Your reference number is {{ payment_ref|upper }}.{% endblocktrans %}
+    {% blocktrans with formatted_ref=payment_ref|upper %}Your reference number is {{ formatted_ref }}.{% endblocktrans %}
   <p>
 
   <p>{% trans 'The money you sent will arrive in the prisoner’s account in 1 working day.' %}</p>
@@ -24,7 +23,7 @@
     </tr>
     <tr>
       <th valign="top" align="left">{% trans 'Date payment made' %}</th>
-      <td>{{ payment_date }}</td>
+      <td>{% now 'd/m/Y' %}</td>
     </tr>
   </table>
 
