@@ -6,8 +6,7 @@
   <p>{% trans 'Dear sender,' %}</p>
 
   <p>
-    {% trans 'Your payment has been successful.' %}<br/>
-    {% blocktrans with formatted_ref=payment_ref|upper %}Your reference number is {{ formatted_ref }}.{% endblocktrans %}
+    {% blocktrans with formatted_ref=payment_ref|upper %}Your payment has been successful. Your reference number is <strong>{{ formatted_ref }}</strong>.{% endblocktrans %}
   <p>
 
   <p>{% trans 'The money you sent will arrive in the prisoner’s account in 1 working day.' %}</p>
@@ -28,7 +27,10 @@
   </table>
 
   <p>
-    {% trans 'Thank you for using this service.' %}<br/>
+    {% trans 'Thank you for using this service.' %}
+  </p>
+
+  <p>
     {% trans 'Please let us know how you found it.' %}<br/>
     {% trans 'Any feedback is welcome at https://send-money.moneytoprisoners.dsd.io/feedback/' %}
   </p>
