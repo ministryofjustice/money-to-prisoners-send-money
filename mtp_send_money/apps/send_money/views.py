@@ -274,7 +274,7 @@ def confirmation_view(request):
             if api_response.get('email'):
                 send_email(
                     api_response['email'], 'send_money/email/confirmation.txt',
-                    _('Your payment has been successful...'), context=context,
+                    _('Send money to a prisoner: your payment was successful'), context=context,
                     html_template='send_money/email/confirmation.html'
                 )
         else:

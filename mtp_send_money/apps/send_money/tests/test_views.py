@@ -420,7 +420,7 @@ class ConfirmationViewTestCase(BaseTestCase):
                 self.assertEqual(None, self.client.session.get('prisoner_number'))
                 self.assertEqual(None, self.client.session.get('amount'))
 
-                self.assertEqual('Your payment has been successful...', mail.outbox[0].subject)
+                self.assertEqual('Send money to a prisoner: your payment was successful', mail.outbox[0].subject)
                 self.assertTrue('WARGLE-B' in mail.outbox[0].body)
                 self.assertTrue('£10' in mail.outbox[0].body)
 

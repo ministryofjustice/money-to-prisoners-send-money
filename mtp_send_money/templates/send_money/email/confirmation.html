@@ -9,9 +9,9 @@
     {% blocktrans with formatted_ref=payment_ref|upper %}Your payment has been successful. Your reference number is <strong>{{ formatted_ref }}</strong>.{% endblocktrans %}
   </p>
 
-  <p>{% trans 'The money you sent will arrive in the prisoner’s account in 1 working day.' %}</p>
+  <p>{% trans 'The money you sent will reach the prisoner’s account in 1 working day.' %}</p>
 
-  <table cellspacing="10">
+  <table cellspacing="10" style="font-family: sans-serif;">
     <tr>
       <th valign="top" align="left">{% trans 'Payment to' %}</th>
       <td>{{ prisoner_name }}</td>
@@ -31,7 +31,6 @@
   </p>
 
   <p>
-    {% trans 'Please let us know how you found it.' %}<br/>
-    {% trans 'Any feedback is welcome at https://send-money.moneytoprisoners.dsd.io/feedback/' %}
+    {% trans 'Please let us know how you found it at https://send-money.moneytoprisoners.dsd.io/feedback/' %}
   </p>
 {% endblock %}
