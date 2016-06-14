@@ -5,10 +5,7 @@
 {% block content %}
 <div class="mtp-bank-transfer">
 
-  <h1>{% trans 'Send money to a prisoner' %}</h1>
-  <p>
-    {% trans 'How to send money to a prisoner by making a bank transfer using online, mobile or telephone banking.' %}
-  </p>
+  <h1>{% trans 'Send the money' %}</h1>
 
   <section>
     <h2>{% trans '1. Log in to your online banking or mobile banking app, or telephone your bank' %}</h2>
@@ -26,7 +23,7 @@
       <dd>
         <samp>{{ sort_code }}</samp>
       </dd>
-      <dt>{% trans 'Use your personal bank transfer reference' %}</dt>
+      <dt>{% trans 'Use your prisoner bank transfer reference' %}</dt>
       <dd>
         <samp>{{ bank_transfer_reference }}</samp>
       </dd>
@@ -35,8 +32,9 @@
     <div class="panel-indent panel-border-wide">
       <p>{% trans 'Please note that:' %}</p>
       <ul>
-        <li>{% trans 'If you’re asked for a ‘payee’, use the prisoner’s name as this is only for your own records and does not affect payment' %}</li>
-        <li>{% trans 'If you use the wrong reference, your money will be automatically refunded within four working days but if you try to make a payment in branch we’re unable to refund your money and you’ll have to follow it up yourself' %}</li>
+        <li>{% trans 'If you’re asked for a ‘payee’, use the prisoner’s name - this is only for your own records and doesn’t affect payment' %}</li>
+        <li>{% trans 'If you use the wrong reference, your money will be automatically refunded within 4 working days' %}</li>
+        <li>{% trans 'If you try to make a payment in-branch OR make an international payment, the money won’t reach the prisoner and it’s a lengthy process to claim it back' %}</li>
         <li>{% trans 'All public prisons in England and Wales use the same NatWest account to receive money sent to prisoners' %}</li>
       </ul>
     </div>

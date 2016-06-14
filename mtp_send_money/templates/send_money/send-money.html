@@ -4,7 +4,8 @@
 {% load send_money %}
 
 {% block content %}
-  <h1>{% trans 'Who are you sending money to?' %}</h1>
+  <h1>{% trans 'Generate a prisoner bank transfer reference' %}</h1>
+  <p>You can then use this reference each time you send money to the prisoner.</p>
 
   <form method="post" action=".">
     {% csrf_token %}
