@@ -153,7 +153,7 @@ class SendMoneyFeedbackPages(SendMoneyFunctionalTestCase):
 
     def test_feedback_received_page(self):
         self.driver.get(self.live_server_url + '/feedback/success/')
-        self.assertInSource('<h1>Thank you for your feedback</h1>')
+        self.assertInSource('<h1 class="heading-xlarge">Thank you for your feedback</h1>')
 
 
 @unittest.skipIf('DJANGO_TEST_REMOTE_INTEGRATION_URL' in os.environ, 'test only runs locally')
@@ -176,7 +176,7 @@ class SendMoneyConfirmationPage(SendMoneyFunctionalTestCase):
                 })
 
                 self.driver.get(self.live_server_url + '/confirmation/?payment_ref=REF12345')
-                self.assertInSource('<h1>Send money to a prisoner</h1>')
+                self.assertInSource('<h1 class="heading-xlarge">Send money to a prisoner</h1>')
                 self.assertInSource('Payment was successful')
                 self.assertInSource('Your reference number is <strong>REF12345</strong>')
                 self.assertInSource('What happens next?')

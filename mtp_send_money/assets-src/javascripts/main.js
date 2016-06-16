@@ -3,22 +3,9 @@
 (function() {
   'use strict';
 
-  var Mojular = require('mojular');
+  require('analytics').Analytics.init();
+  require('element-focus').ElementFocus.init();
 
-  Mojular
-    .use([
-      require('mojular-govuk-elements'),
-      require('mojular-moj-elements'),
-      require('dialog'),
-      require('messages'),
-      require('print'),
-      require('polyfills'),
-      require('unload'),
-      require('help-popup'),
-      require('element-focus'),
+  require('charges').Charges.init();
 
-      require('charges')
-    ])
-    .init();
-
-}());
+})();
