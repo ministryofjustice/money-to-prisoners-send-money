@@ -19,15 +19,25 @@
 
 
 {% block phase_banner %}
-  <div class="subheader-item phase-banner">
-    {% url 'submit_ticket' as ticket_url %}
-    {% if ENVIRONMENT == 'prod' %}
-      <div class="phase-tag phase-tag-alpha">{% trans "Alpha" %}</div>
-      <div class="phase-banner-message"><p>{% blocktrans %}This is a new service. If you need any help please <a href="{{ ticket_url }}">contact us</a>. This is a trial service for family and friends of prisoners at HMP Brixton, HMP Bullingdon, HMP Cardiff and HMP High Down only.{% endblocktrans %}</p></div>
-    {% else %}
-      <div class="phase-tag phase-tag-dev">{{ ENVIRONMENT }}</div>
-      <div class="phase-banner-message"><p>{% blocktrans %}This is a new service. If you need any help please <a href="{{ ticket_url }}">contact us</a>.{% endblocktrans %}</p></div>
-    {% endif %}
+  <div class="phase-banner-alpha">
+    <p>
+      {% url 'submit_ticket' as ticket_url %}
+      {% if ENVIRONMENT == 'prod' %}
+        <strong class="phase-tag">{% trans "Alpha" %}</strong>
+        <span>
+          {% blocktrans trimmed %}
+            This is a new service. If you need any help please <a href="{{ ticket_url }}">contact us</a>. This is a trial service for family and friends of prisoners at HMP Brixton, HMP Bullingdon, HMP Cardiff and HMP High Down only.
+          {% endblocktrans %}
+        </span>
+      {% else %}
+        <strong class="phase-tag phase-tag-dev" title="{{ APP }}-{{ ENVIRONMENT }}:{{ APP_GIT_COMMIT|default:'unknown'|truncatechars:7 }}{% if APP_BUILD_DATE %}, built {{ APP_BUILD_DATE }}{% endif %}">{{ ENVIRONMENT }}</strong>
+        <span>
+          {% blocktrans trimmed %}
+            This is a new service. If you need any help please <a href="{{ ticket_url }}">contact us</a>.
+          {% endblocktrans %}
+        </span>
+      {% endif %}
+    </p>
   </div>
 {% endblock %}
 
