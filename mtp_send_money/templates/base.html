@@ -42,15 +42,15 @@
 {% endblock %}
 
 {% block footer_support_links %}
-<ul>
-  <li><a href="/terms/">Terms and conditions</a></li>
-  <li><a href="/cookies/">Cookies</a></li>
-  <li><a href="/feedback/">Feedback</a></li>
-  <li>
-    Built by
-    <a href="https://mojdigital.blog.gov.uk/">
-      <abbr title="Ministry of Justice">MOJ</abbr> Digital
-    </a>
-  </li>
-</ul>
+  <ul>
+    <li><a href="/terms/">{% trans 'Terms and conditions' %}</a></li>
+    <li><a href="/cookies/">{% trans 'Cookies' %}</a></li>
+    <li><a href="/feedback/">{% trans 'Feedback' %}</a></li>
+    <li>
+      {% trans 'Built by' %}
+      <a href="https://mojdigital.blog.gov.uk/">
+        <abbr title="{% trans 'Ministry of Justice' %}">MOJ</abbr> Digital
+      </a>
+    </li>
+  </ul>
 {% endblock %}
