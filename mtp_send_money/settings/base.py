@@ -94,9 +94,8 @@ TEMPLATES = [
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
             get_project_dir('templates'),
-            get_project_dir('node_modules'),
-            get_project_dir('../node_modules/mojular-templates'),
-            get_project_dir('../node_modules/money-to-prisoners-common/templates')
+            get_project_dir('assets/templates'),
+            get_project_dir('node_modules')
         ],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -205,10 +204,6 @@ API_URL = os.environ.get('API_URL', find_api_url())
 
 SHARED_API_USERNAME = os.environ.get('SHARED_API_USERNAME', 'send-money')
 SHARED_API_PASSWORD = os.environ.get('SHARED_API_PASSWORD', 'send-money')
-
-LOGIN_URL = 'login'
-LOGIN_REDIRECT_URL = 'send_money:start'
-LOGOUT_URL = 'logout'
 
 OAUTHLIB_INSECURE_TRANSPORT = True
 

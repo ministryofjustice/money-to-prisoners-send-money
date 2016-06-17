@@ -380,6 +380,7 @@ class ConfirmationViewTestCase(BaseTestCase):
             response = self.client.get(self.url, follow=False)
             self.assertRedirects(response, self.send_money_url)
 
+    @override_settings(ENVIRONMENT='prod')  # because non-prod environments don't send to @outside.local
     def test_confirmation(self):
         with reload_payment_urls(self, show_debit_card=True):
             self.populate_session()

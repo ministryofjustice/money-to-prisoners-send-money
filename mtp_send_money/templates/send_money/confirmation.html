@@ -2,8 +2,8 @@
 {% load i18n %}
 {% load send_money %}
 
-{% block content %}
-  <h1>{% trans 'Send money to a prisoner' %}</h1>
+{% block inner_content %}
+  <h1 class="heading-xlarge">{% trans 'Send money to a prisoner' %}</h1>
 
   {% if success %}
   <div class="box-highlight">
@@ -11,15 +11,15 @@
     <p>{% trans 'Your reference number is' %} <strong>{{ payment_ref|upper }}</strong></p>
   </div>
   <div>
-    <h2>{% trans 'What happens next?' %}</h2>
+    <h2 class="heading-large">{% trans 'What happens next?' %}</h2>
 
     <p>{% trans 'The money will arrive in the prisoner’s account in 1 working day.' %} </p>
 
 
     <div>
-      <h3>{% trans 'Payment summary' %}</h3>
+      <h3 class="heading-medium">{% trans 'Payment summary' %}</h3>
 
-      <ul>
+      <ul class="list list-bullet">
         <li>{% trans 'Payment to:' %} {{ prisoner_name }}</li>
         <li>{% trans 'Payment amount:' %} {{ amount|currency_format }}</li>
         <li>{% trans 'Date payment made:' %} {% now 'd/m/Y' %}</li>

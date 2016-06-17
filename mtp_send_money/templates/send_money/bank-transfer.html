@@ -2,17 +2,17 @@
 {% load i18n %}
 {% load send_money %}
 
-{% block content %}
+{% block inner_content %}
 <div class="mtp-bank-transfer">
 
-  <h1>{% trans 'Send the money' %}</h1>
+  <h1 class="heading-xlarge">{% trans 'Send the money' %}</h1>
 
   <section>
-    <h2>{% trans '1. Log in to your online banking or mobile banking app, or telephone your bank' %}</h2>
+    <h2 class="heading-large">{% trans '1. Log in to your online banking or mobile banking app, or telephone your bank' %}</h2>
   </section>
 
   <section>
-    <h2>{% trans '2. Use the following bank details' %}</h2>
+    <h2 class="heading-large">{% trans '2. Use the following bank details' %}</h2>
 
     <dl class="mtp-bank-details">
       <dt>{% trans 'The prison service account number' %}</dt>
@@ -29,9 +29,9 @@
       </dd>
     </dl>
 
-    <div class="panel-indent panel-border-wide">
+    <div class="panel panel-border-wide">
       <p>{% trans 'Please note that:' %}</p>
-      <ul>
+      <ul class="list list-bullet">
         <li>{% trans 'If you’re asked for a ‘payee’, use the prisoner’s name - this is only for your own records and doesn’t affect payment' %}</li>
         <li>{% trans 'If you use the wrong reference, your money will be automatically refunded within 4 working days' %}</li>
         <li>{% trans 'If you try to make a payment in-branch OR make an international payment, the money won’t reach the prisoner and it’s a lengthy process to claim it back' %}</li>
@@ -41,7 +41,7 @@
   </section>
 
   <section>
-    <h2>{% trans '3. The money is paid into the prisoner’s account' %}</h2>
+    <h2 class="heading-large">{% trans '3. The money is paid into the prisoner’s account' %}</h2>
     <p>{% trans 'The money should arrive in the prisoner’s account in 1 working day. However, your bank may take longer to process payment (up to 3 working days).' %}</p>
     <p>{% trans 'No money is processed at weekends.' %}</p>
     <p>{% trans 'If you have any questions about how to make a payment, contact your bank or building society.' %}</p>

@@ -1,4 +1,4 @@
-{% extends 'mtp_common/mtp_base_public.html' %}
+{% extends 'mtp_common/mtp_base.html' %}
 {% load i18n %}
 {% load mtp_common %}
 
@@ -8,25 +8,49 @@
   {% sentry_js %}
 {% endblock %}
 
-{% block after_main_js %}
+{% block body_end %}
   {{ block.super }}
   <!-- {{ request.resolver_match.url_name }} -->
 {% endblock %}
 
 {% block page_title %}{% trans 'Send money to a prisoner - GOV.UK' %}{% endblock %}
 
-{% block proposition %}<a href="{% if ENVIRONMENT == 'prod' %}http://sendmoneytoaprisoner.service.justice.gov.uk/{% else %}/{% endif %}" class="proposition-name">{% trans 'Send money to a prisoner' %}</a>{% endblock %}
+{% block proposition %}{% trans 'Send money to a prisoner' %}{% endblock %}
 
 
 {% block phase_banner %}
-  <div class="subheader-item phase-banner">
-    {% url 'submit_ticket' as ticket_url %}
-    {% if ENVIRONMENT == 'prod' %}
-      <div class="phase-tag phase-tag-alpha">{% trans "Alpha" %}</div>
-      <div class="phase-banner-message"><p>{% blocktrans %}This is a new service. If you need any help please <a href="{{ ticket_url }}">contact us</a>. This is a trial service for family and friends of prisoners at HMP Brixton, HMP Bullingdon, HMP Cardiff and HMP High Down only.{% endblocktrans %}</p></div>
-    {% else %}
-      <div class="phase-tag phase-tag-dev">{{ ENVIRONMENT }}</div>
-      <div class="phase-banner-message"><p>{% blocktrans %}This is a new service. If you need any help please <a href="{{ ticket_url }}">contact us</a>.{% endblocktrans %}</p></div>
-    {% endif %}
+  <div class="phase-banner-alpha">
+    <p>
+      {% url 'submit_ticket' as ticket_url %}
+      {% if ENVIRONMENT == 'prod' %}
+        <strong class="phase-tag">{% trans "Alpha" %}</strong>
+        <span>
+          {% blocktrans trimmed %}
+            This is a new service. If you need any help please <a href="{{ ticket_url }}">contact us</a>. This is a trial service for family and friends of prisoners at HMP Brixton, HMP Bullingdon, HMP Cardiff and HMP High Down only.
+          {% endblocktrans %}
+        </span>
+      {% else %}
+        <strong class="phase-tag phase-tag-dev" title="{{ APP }}-{{ ENVIRONMENT }}:{{ APP_GIT_COMMIT|default:'unknown'|truncatechars:7 }}{% if APP_BUILD_DATE %}, built {{ APP_BUILD_DATE }}{% endif %}">{{ ENVIRONMENT }}</strong>
+        <span>
+          {% blocktrans trimmed %}
+            This is a new service. If you need any help please <a href="{{ ticket_url }}">contact us</a>.
+          {% endblocktrans %}
+        </span>
+      {% endif %}
+    </p>
   </div>
+{% endblock %}
+
+{% block footer_support_links %}
+  <ul>
+    <li><a href="/terms/">{% trans 'Terms and conditions' %}</a></li>
+    <li><a href="/cookies/">{% trans 'Cookies' %}</a></li>
+    <li><a href="/feedback/">{% trans 'Feedback' %}</a></li>
+    <li>
+      {% trans 'Built by' %}
+      <a href="https://mojdigital.blog.gov.uk/">
+        <abbr title="{% trans 'Ministry of Justice' %}">MOJ</abbr> Digital
+      </a>
+    </li>
+  </ul>
 {% endblock %}

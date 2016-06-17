@@ -38,10 +38,11 @@ COMMAND=$1
 APP=send_money
 VIRTUAL_ENV_DIR=venv
 NODE_MODULES=node_modules
+GOVUK_TEMPLATE_VERSION=0.17.3
 
 case "$COMMAND" in
     clean)
-        rm -rf $VIRTUAL_ENV_DIR $NODE_MODULES static mtp_$APP/assets
+        rm -rf $VIRTUAL_ENV_DIR $NODE_MODULES static mtp_$APP/assets mtp_$APP/templates/govuk_template
         ;;
     serve | watch | docker | update | build | test | start)
         PORT=8004
@@ -55,6 +56,7 @@ case "$COMMAND" in
             echo "Creating Python virtual environment"
             virtualenv --python=python3 $VIRTUAL_ENV_DIR >/dev/null
           fi
+          echo "Activating Python virtual environment"
           source $VIRTUAL_ENV_DIR/bin/activate >/dev/null
         fi
         PYTHON_BIN=$VIRTUAL_ENV/bin/
@@ -72,7 +74,7 @@ case "$COMMAND" in
         else
             echo "Common resources found at $PYTHON_LIBS"
         fi
-        echo "Installing front-end assets"
+        echo "Installing npm front-end assets"
         npm install >/dev/null
         npm install `cat $PYTHON_LIBS/mtp_common/npm_requirements.txt` >/dev/null
         mkdir -p $MTP_COMMON_NODE_MODULES
