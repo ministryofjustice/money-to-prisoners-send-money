@@ -4,10 +4,4 @@ $is-ie: true;
 $ie-version: 6;
 $mobile-ie6: false;
 
-$images-dir: '/static/images/';
-
-@import 'mtp';
-
-form .form-group .form-hint {
-  margin-top: 0;
-}
+@import 'app';

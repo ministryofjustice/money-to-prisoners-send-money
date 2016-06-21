@@ -3,10 +3,4 @@
 $is-ie: true;
 $ie-version: 8;
 
-$images-dir: '/static/images/';
-
-@import 'mtp';
-
-form .form-group .form-hint {
-  margin-top: 0;
-}
+@import 'app';
