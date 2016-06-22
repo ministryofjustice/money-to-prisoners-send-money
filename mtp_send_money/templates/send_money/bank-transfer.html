@@ -12,7 +12,7 @@
   </section>
 
   <section>
-    <h2 class="heading-large">{% trans '2. Use the following bank details' %}</h2>
+    <h2 class="heading-large">{% trans '2. Use the following bank details:' %}</h2>
 
     <dl class="mtp-bank-details">
       <dt>{% trans 'The prison service account number' %}</dt>
@@ -32,8 +32,8 @@
     <div class="panel panel-border-wide">
       <p>{% trans 'Please note that:' %}</p>
       <ul class="list list-bullet">
-        <li>{% trans 'If you’re asked for a ‘payee’, use the prisoner’s name - this is only for your own records and doesn’t affect payment' %}</li>
-        <li>{% trans 'If you use the wrong reference, your money will be automatically refunded within 4 working days' %}</li>
+        <li>{% trans 'If you’re asked for a ‘payee’, use the prisoner’s name - this is for your own records and doesn’t affect payment' %}</li>
+        <li>{% trans 'If you use the wrong reference, your money will be automatically refunded within 4 working days and will appear as NOMS AGENCY REFUND in the bank statement' %}</li>
         <li>{% trans 'If you try to make a payment in-branch OR make an international payment, the money won’t reach the prisoner and it’s a lengthy process to claim it back' %}</li>
         <li>{% trans 'All public prisons in England and Wales use the same NatWest account to receive money sent to prisoners' %}</li>
       </ul>
@@ -46,7 +46,6 @@
     <p>{% trans 'No money is processed at weekends.' %}</p>
     <p>{% trans 'If you have any questions about how to make a payment, contact your bank or building society.' %}</p>
     <p>{% trans 'Remember, you can only use this service to send money to prisoners in HMP Brixton, HMP Bullingdon, HMP Cardiff or HMP High Down.' %}</p>
-    <p>{% trans 'You can’t make a money transfer in person from a bank.' %}</p>
   </section>
 </div>
 {% endblock %}
