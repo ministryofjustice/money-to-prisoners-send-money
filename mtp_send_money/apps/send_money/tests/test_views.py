@@ -92,6 +92,11 @@ class SendMoneyViewTestCase(BaseTestCase):
             response = self.client.get(self.url)
             self.assertOnPage(response, 'send_money')
 
+    def test_request_user_is_anonymous(self):
+        response = self.client.get(self.url)
+        request = response.context['request']
+        self.assertTrue(request.user.is_anonymous())
+
     @override_settings(SERVICE_CHARGE_PERCENTAGE=Decimal('2.5'),
                        SERVICE_CHARGE_FIXED=Decimal('0.21'))
     def test_send_money_page_shows_service_charge(self):
