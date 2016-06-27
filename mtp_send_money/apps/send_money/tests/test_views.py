@@ -1,6 +1,8 @@
 import datetime
+from contextlib import contextmanager
 from decimal import Decimal
 import json
+import logging
 from unittest import mock
 
 from django.conf import settings
@@ -36,6 +38,14 @@ class BaseTestCase(SimpleTestCase):
     @property
     def check_details_url(self):
         return reverse_lazy('send_money:check_details')
+
+    @contextmanager
+    def silence_logger(self, name='mtp'):
+        logger = logging.getLogger(name)
+        level = logger.level
+        logger.setLevel(logging.CRITICAL)
+        yield
+        logger.setLevel(level)
 
     def assertOnPage(self, response, url_name):  # noqa
         self.assertContains(response, '<!-- %s -->' % url_name)
@@ -91,6 +101,11 @@ class SendMoneyViewTestCase(BaseTestCase):
         with reload_payment_urls(self, show_debit_card=True):
             response = self.client.get(self.url)
             self.assertOnPage(response, 'send_money')
+
+    def test_request_user_is_anonymous(self):
+        response = self.client.get(self.url)
+        request = response.context['request']
+        self.assertTrue(request.user.is_anonymous())
 
     @override_settings(SERVICE_CHARGE_PERCENTAGE=Decimal('2.5'),
                        SERVICE_CHARGE_FIXED=Decimal('0.21'))
@@ -349,7 +364,8 @@ class DebitCardViewTestCase(BaseTestCase):
                     api_url('/payments/'),
                     status=500,
                 )
-                response = self.client.get(self.url, follow=False)
+                with self.silence_logger():
+                    response = self.client.get(self.url, follow=False)
                 self.assertContains(response, 'We’re sorry, your payment could not be processed on this occasion')
 
     def test_debit_card_payment_handles_govuk_errors(self):
@@ -368,7 +384,8 @@ class DebitCardViewTestCase(BaseTestCase):
                     govuk_url('/payments/'),
                     status=500
                 )
-                response = self.client.get(self.url, follow=False)
+                with self.silence_logger():
+                    response = self.client.get(self.url, follow=False)
                 self.assertContains(response, 'We’re sorry, your payment could not be processed on this occasion')
 
 
@@ -455,9 +472,10 @@ class ConfirmationViewTestCase(BaseTestCase):
                     api_url('/payments/%s/' % ref),
                     status=500,
                 )
-                response = self.client.get(
-                    self.url, {'payment_ref': ref}, follow=False
-                )
+                with self.silence_logger():
+                    response = self.client.get(
+                        self.url, {'payment_ref': ref}, follow=False
+                    )
                 self.assertContains(response, 'your payment could not be processed')
 
     def test_confirmation_handles_govuk_errors(self):
@@ -482,9 +500,10 @@ class ConfirmationViewTestCase(BaseTestCase):
                     govuk_url('/payments/%s/' % processor_id),
                     status=500
                 )
-                response = self.client.get(
-                    self.url, {'payment_ref': ref}, follow=False
-                )
+                with self.silence_logger():
+                    response = self.client.get(
+                        self.url, {'payment_ref': ref}, follow=False
+                    )
                 self.assertRedirects(response, reverse_lazy('send_money:send_money'))
 
 
