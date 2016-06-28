@@ -62,7 +62,7 @@ def make_context_from_session(form_class):
 
 class SendMoneyBankTransferView(FormView):
     form_class = PrisonerDetailsForm
-    template_name = 'send_money/bank-transfer-form.html'
+    template_name = 'send_money/reference-generator.html'
     success_url = reverse_lazy('send_money:bank_transfer')
 
     def get_form_kwargs(self):
@@ -80,7 +80,7 @@ class SendMoneyView(FormView):
     The main form-filling view for sending payments
     """
     form_class = SendMoneyForm
-    template_name = 'send_money/send-money.html'
+    template_name = 'send_money/enter-details.html'
     success_url = reverse_lazy('send_money:check_details')
 
     def get_initial(self):
@@ -177,7 +177,7 @@ def bank_transfer_view(request, context):
         ),
     })
     request.session.flush()
-    return render(request, 'send_money/bank-transfer.html', context)
+    return render(request, 'send_money/transfer-instructions.html', context)
 
 
 @require_session_parameters(SendMoneyForm)
@@ -288,7 +288,7 @@ def confirmation_view(request):
             )
 
     request.session.flush()
-    return render(request, 'send_money/confirmation.html', context)
+    return render(request, 'send_money/success.html', context)
 
 
 def clear_session_view(request):
