@@ -34,6 +34,16 @@ class SendMoneyFunctionalTestCase(FunctionalTestCase):
 @unittest.skipIf('DJANGO_TEST_REMOTE_INTEGRATION_URL' in os.environ, 'test only runs locally')
 class SendMoneyFlows(SendMoneyFunctionalTestCase):
 
+    def test_bank_transfer_only_flow(self):
+        with reload_payment_urls(self, show_debit_card=False, show_bank_transfer=True):
+            self.driver.get(self.live_server_url)
+            self.fill_in_send_money_form(split_prisoner_dob_for_post({
+                'prisoner_number': 'A1409AE',
+                'prisoner_dob': '21/01/1989',
+            }), PaymentMethod.bank_transfer)
+            self.driver.find_element_by_id('id_next_btn').click()
+            self.assertInSource('<!-- bank_transfer -->')
+
     def test_bank_transfer_flow(self):
         with reload_payment_urls(self, show_debit_card=True, show_bank_transfer=True):
             self.driver.get(self.live_server_url)
