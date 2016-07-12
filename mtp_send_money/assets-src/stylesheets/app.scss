@@ -123,11 +123,11 @@ form .form-group .form-hint {
 }
 
 .mtp-confirm {
-  width: 70%;
   .mtp-confirm-change {
     vertical-align: top;
-    text-align:right;
-    width: 39%;
+    @include breakpoint(347px) {
+      width: 39%;
+    }
   }
   h2 {
     margin: 0 0 .2em 0;
@@ -135,9 +135,13 @@ form .form-group .form-hint {
   }
   div div {
     display: inline-block;
-    margin-top: 5em;
+    margin-top: 2em;
     &.mtp-confirm-fieldset {
-      width: 60%;
+      width: 100%;
+      @include breakpoint(347px) {
+        margin-right: 5%;
+        width: 55%;
+      }
     }
   }
   .mtp-checkgroup {
