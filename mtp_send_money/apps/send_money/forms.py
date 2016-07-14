@@ -4,10 +4,10 @@ from django import forms
 from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext_lazy as _
 from form_error_reporting import GARequestErrorReportingMixin
+from mtp_common.forms.fields import SplitDateField
 from requests.exceptions import RequestException
 from slumber.exceptions import HttpNotFoundError, SlumberHttpBaseException
 
-from send_money.fields import SplitDateField
 from send_money.models import PaymentMethod
 from send_money.utils import (
     serialise_date, unserialise_date, serialise_amount, unserialise_amount,
