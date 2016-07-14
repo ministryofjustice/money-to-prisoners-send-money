@@ -25,7 +25,7 @@ class SendMoneyFunctionalTestCase(FunctionalTestCase):
             field = self.driver.find_element_by_id('id_%s' % key)
             field.send_keys(data[key])
         # TODO: remove condition once TD allows showing bank transfers
-        if settings.SHOW_BANK_TRANSFER_OPTION:
+        if settings.SHOW_BANK_TRANSFER_OPTION and settings.SHOW_DEBIT_CARD_OPTION:
             field = self.driver.find_element_by_xpath('//div[@id="id_payment_method"]//input[@value="%s"]'
                                                       % payment_method)
             field.click()
@@ -150,10 +150,6 @@ class SendMoneyCheckDetailsPage(SendMoneyFunctionalTestCase):
             '4px',
             self.driver.find_element_by_css_selector('h2').value_of_css_property('margin-bottom')
         )
-        self.assertEqual(
-            'right',
-            self.driver.find_element_by_xpath('//a[text()="Change this"]').value_of_css_property('text-align')
-        )
 
 
 class SendMoneyFeedbackPages(SendMoneyFunctionalTestCase):
@@ -182,7 +178,7 @@ class SendMoneyConfirmationPage(SendMoneyFunctionalTestCase):
             }
             with responses.RequestsMock() as rsps:
                 rsps.add(rsps.GET, govuk_url('/payments/%s' % processor_id), json={
-                    'status': 'SUCCEEDED'
+                    'state': {'status': 'success'}
                 })
 
                 self.driver.get(self.live_server_url + '/confirmation/?payment_ref=REF12345')
@@ -206,7 +202,7 @@ class SendMoneyConfirmationPage(SendMoneyFunctionalTestCase):
             }
             with responses.RequestsMock() as rsps:
                 rsps.add(rsps.GET, govuk_url('/payments/%s' % processor_id), json={
-                    'status': 'FAILED'
+                    'state': {'status': 'failed'}
                 })
 
                 self.driver.get(self.live_server_url + '/confirmation/?payment_ref=REF12345')
