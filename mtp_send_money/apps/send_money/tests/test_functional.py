@@ -1,17 +1,18 @@
 import datetime
 import os
+import random
 import unittest
 from unittest import mock
 
 from django.conf import settings
 from django.test import override_settings
+from django.utils.timezone import now
 from mtp_common.test_utils.functional_tests import FunctionalTestCase
 import responses
 
 from send_money.forms import PaymentMethod
-from send_money.tests import split_prisoner_dob_for_post
+from send_money.tests import reload_payment_urls, split_prisoner_dob_for_post
 from send_money.utils import govuk_url
-from . import reload_payment_urls
 
 
 class SendMoneyFunctionalTestCase(FunctionalTestCase):
@@ -25,7 +26,7 @@ class SendMoneyFunctionalTestCase(FunctionalTestCase):
             field = self.driver.find_element_by_id('id_%s' % key)
             field.send_keys(data[key])
         # TODO: remove condition once TD allows showing bank transfers
-        if settings.SHOW_BANK_TRANSFER_OPTION:
+        if settings.SHOW_BANK_TRANSFER_OPTION and settings.SHOW_DEBIT_CARD_OPTION:
             field = self.driver.find_element_by_xpath('//div[@id="id_payment_method"]//input[@value="%s"]'
                                                       % payment_method)
             field.click()
@@ -75,14 +76,6 @@ class SendMoneyFlows(SendMoneyFunctionalTestCase):
 
 @unittest.skipIf('DJANGO_TEST_REMOTE_INTEGRATION_URL' in os.environ, 'test only runs locally')
 class SendMoneyDetailsPage(SendMoneyFunctionalTestCase):
-    def check_service_charge(self, amount, expected):
-        with reload_payment_urls(self, show_debit_card=True):
-            amount_field = self.driver.find_element_by_id('id_amount')
-            total_field = self.driver.find_element_by_css_selector('.mtp-charges-total span')
-            amount_field.clear()
-            amount_field.send_keys(amount)
-            self.assertEqual(total_field.text, expected)
-
     def test_page_contents(self):
         with reload_payment_urls(self, show_debit_card=True):
             self.driver.get(self.live_server_url)
@@ -90,34 +83,72 @@ class SendMoneyDetailsPage(SendMoneyFunctionalTestCase):
             self.assertEqual(self.driver.find_element_by_css_selector('h1').text, 'Who are you sending money to?')
             self.assertInSource('So we can send you a receipt')
 
+    def check_2_digit_entry(self):
+        entry_year = random.randrange(0, 99)
+        current_year = now().year
+        century = 100 * (current_year // 100)
+        era_boundary = int(str(current_year - 10)[-2:])
+        if entry_year > era_boundary:
+            expected_year = entry_year + century - 100
+        else:
+            expected_year = entry_year + century
+
+        self.driver.get(self.live_server_url)
+        year_field = self.driver.find_element_by_id('id_prisoner_dob_2')
+        year_field.send_keys(str(entry_year))
+        script = 'document.getElementById("id_prisoner_dob_2").focus();' \
+                 'document.getElementById("id_prisoner_dob_1").focus();' \
+                 'return document.getElementById("id_prisoner_dob_2").value;'
+        self.assertEqual(self.driver.execute_script(script), str(expected_year),
+                         msg='2-digit year %s did not format to expected %s' % (entry_year, expected_year))
+
+    def test_2_digit_year_entry_using_javascript_in_bank_transfer_flow(self):
+        with reload_payment_urls(self, show_bank_transfer=True, show_debit_card=False):
+            self.check_2_digit_entry()
+
+    def test_2_digit_year_entry_using_javascript_in_debit_card_flow(self):
+        with reload_payment_urls(self, show_bank_transfer=False, show_debit_card=True):
+            self.check_2_digit_entry()
+
+    def test_2_digit_year_entry_using_javascript_in_combined_flow(self):
+        with reload_payment_urls(self, show_bank_transfer=True, show_debit_card=True):
+            self.check_2_digit_entry()
+
     def test_service_charge_js(self):
+        def check_service_charge(amount, expected):
+            amount_field = self.driver.find_element_by_id('id_amount')
+            total_field = self.driver.find_element_by_css_selector('.mtp-charges-total span')
+            amount_field.clear()
+            amount_field.send_keys(amount)
+            self.assertEqual(total_field.text, expected)
+
         with reload_payment_urls(self, show_debit_card=True):
             self.driver.get(self.live_server_url)
-            self.check_service_charge('0', '£0.20')
-            self.check_service_charge('10', '£10.44')
-            self.check_service_charge('120.40', '£123.49')
-            self.check_service_charge('0.01', '£0.21')
-            self.check_service_charge('-12', '')
-            self.check_service_charge('1', '£1.23')
-            self.check_service_charge('17', '£17.61')
-            self.check_service_charge('3.14     ', '£3.42')
-            self.check_service_charge('a', '')
-            self.check_service_charge('3', '£3.28')
-            self.check_service_charge('-12', '')
-            self.check_service_charge('.12', '')
-            self.check_service_charge('32345', '£33,121.48')
-            self.check_service_charge('10000000', '£10,240,000.20')
-            self.check_service_charge('0.01', '£0.21')
-            self.check_service_charge('9999999999999999999999', '£10,239,999,999.18')
-            self.check_service_charge('three', '')
-            self.check_service_charge('  3.1415     ', '')
-            self.check_service_charge('0', '£0.20')
-            self.check_service_charge('0.01', '£0.21')
-            self.check_service_charge('0.1', '')
-            self.check_service_charge('0.10', '£0.31')
-            self.check_service_charge('0.87', '£1.09')
-            self.check_service_charge('0.001', '')
-            self.check_service_charge('0.005', '')
+            check_service_charge('0', '£0.20')
+            check_service_charge('10', '£10.44')
+            check_service_charge('120.40', '£123.49')
+            check_service_charge('0.01', '£0.21')
+            check_service_charge('-12', '')
+            check_service_charge('1', '£1.23')
+            check_service_charge('17', '£17.61')
+            check_service_charge('3.14     ', '£3.42')
+            check_service_charge('a', '')
+            check_service_charge('3', '£3.28')
+            check_service_charge('-12', '')
+            check_service_charge('.12', '')
+            check_service_charge('32345', '£33,121.48')
+            check_service_charge('10000000', '£10,240,000.20')
+            check_service_charge('0.01', '£0.21')
+            check_service_charge('9999999999999999999999', '£10,239,999,999.18')
+            check_service_charge('three', '')
+            check_service_charge('  3.1415     ', '')
+            check_service_charge('0', '£0.20')
+            check_service_charge('0.01', '£0.21')
+            check_service_charge('0.1', '')
+            check_service_charge('0.10', '£0.31')
+            check_service_charge('0.87', '£1.09')
+            check_service_charge('0.001', '')
+            check_service_charge('0.005', '')
 
 
 @unittest.skipIf('DJANGO_TEST_REMOTE_INTEGRATION_URL' in os.environ, 'test only runs locally')
@@ -150,10 +181,6 @@ class SendMoneyCheckDetailsPage(SendMoneyFunctionalTestCase):
             '4px',
             self.driver.find_element_by_css_selector('h2').value_of_css_property('margin-bottom')
         )
-        self.assertEqual(
-            'right',
-            self.driver.find_element_by_xpath('//a[text()="Change this"]').value_of_css_property('text-align')
-        )
 
 
 class SendMoneyFeedbackPages(SendMoneyFunctionalTestCase):
@@ -182,7 +209,7 @@ class SendMoneyConfirmationPage(SendMoneyFunctionalTestCase):
             }
             with responses.RequestsMock() as rsps:
                 rsps.add(rsps.GET, govuk_url('/payments/%s' % processor_id), json={
-                    'status': 'SUCCEEDED'
+                    'state': {'status': 'success'}
                 })
 
                 self.driver.get(self.live_server_url + '/confirmation/?payment_ref=REF12345')
@@ -206,7 +233,7 @@ class SendMoneyConfirmationPage(SendMoneyFunctionalTestCase):
             }
             with responses.RequestsMock() as rsps:
                 rsps.add(rsps.GET, govuk_url('/payments/%s' % processor_id), json={
-                    'status': 'FAILED'
+                    'state': {'status': 'failed'}
                 })
 
                 self.driver.get(self.live_server_url + '/confirmation/?payment_ref=REF12345')
