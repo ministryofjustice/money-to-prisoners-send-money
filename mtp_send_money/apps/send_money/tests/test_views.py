@@ -14,7 +14,7 @@ from django.utils.html import escape
 from requests import ConnectionError
 import responses
 
-from send_money.forms import PaymentMethod, SendMoneyForm
+from send_money.forms import SendMoneyForm
 from send_money.tests import mock_auth, split_prisoner_dob_for_post
 from send_money.utils import govuk_url, api_url
 from . import reload_payment_urls
@@ -25,15 +25,11 @@ SAMPLE_FORM = {
     'prisoner_dob': '1980-10-04',
     'email': 'sender@outside.local',
     'amount': '10.00',
-    'payment_method': str(PaymentMethod.debit_card),
 }
 
 
 class BaseTestCase(SimpleTestCase):
-
-    @property
-    def send_money_url(self):
-        return reverse_lazy('send_money:send_money')
+    start_url = reverse_lazy('send_money:send_money_debit')
 
     @property
     def check_details_url(self):
@@ -52,7 +48,14 @@ class BaseTestCase(SimpleTestCase):
 
     def assertPageNotDirectlyAccessible(self):  # noqa
         response = self.client.get(self.url)
-        self.assertRedirects(response, self.send_money_url)
+        if settings.SHOW_DEBIT_CARD_OPTION and settings.SHOW_BANK_TRANSFER_OPTION:
+            opening_url = reverse_lazy('send_money:choose_method')
+        elif settings.SHOW_DEBIT_CARD_OPTION:
+            opening_url = reverse_lazy('send_money:send_money_debit')
+        elif settings.SHOW_BANK_TRANSFER_OPTION:
+            opening_url = reverse_lazy('send_money:send_money_bank')
+
+        self.assertRedirects(response, opening_url)
 
     def populate_session(self, **kwargs):
         session = self.client.session
@@ -75,7 +78,6 @@ class BaseTestCase(SimpleTestCase):
             data = {
                 'prisoner_name': SAMPLE_FORM['prisoner_name'],
                 'amount': SAMPLE_FORM['amount'],
-                'payment_method': SAMPLE_FORM['payment_method'],
                 'email': SAMPLE_FORM['email'],
             }
             data.update(prisoner_details)
@@ -87,20 +89,20 @@ class BaseTestCase(SimpleTestCase):
 
     def submit_send_money_form(self, mocked_api_client, update_data=None, replace_data=None, follow=False):
         data = self._prepare_post_data(mocked_api_client, update_data=update_data, replace_data=replace_data)
-        return self.client.post(self.send_money_url, data=data, follow=follow)
+        return self.client.post(self.start_url, data=data, follow=follow)
 
     def submit_check_details_form(self, mocked_api_client, update_data=None, replace_data=None, follow=False):
         data = self._prepare_post_data(mocked_api_client, update_data=update_data, replace_data=replace_data)
         return self.client.post(self.check_details_url, data=data, follow=follow)
 
 
-class SendMoneyViewTestCase(BaseTestCase):
-    url = BaseTestCase.send_money_url
+class SendMoneyDebitViewTestCase(BaseTestCase):
+    url = reverse_lazy('send_money:send_money_debit')
 
     def test_send_money_page_loads(self):
         with reload_payment_urls(self, show_debit_card=True):
             response = self.client.get(self.url)
-            self.assertOnPage(response, 'send_money')
+            self.assertOnPage(response, 'send_money_debit')
 
     def test_request_user_is_anonymous(self):
         response = self.client.get(self.url)
@@ -135,7 +137,6 @@ class SendMoneyViewTestCase(BaseTestCase):
                 'prisoner_number': SAMPLE_FORM['prisoner_number'],
                 'prisoner_dob': SAMPLE_FORM['prisoner_dob'],
                 'amount': SAMPLE_FORM['amount'],
-                'payment_method': SAMPLE_FORM['payment_method'],
             }, follow=True)
             self.assertOnPage(response, 'check_details')
 
@@ -148,7 +149,6 @@ class SendMoneyViewTestCase(BaseTestCase):
                 'prisoner_dob': '1980-10-04',
                 'email': 'sender@outside.local',
                 'amount': '10.00',
-                'payment_method': PaymentMethod.debit_card,
             }))
             self.assertContains(response, 'Incorrect prisoner number format')
             form = response.context['form']
@@ -163,7 +163,6 @@ class SendMoneyViewTestCase(BaseTestCase):
                 'prisoner_number': 'A1231DE',
                 'email': 'sender@outside.local',
                 'amount': '10.00',
-                'payment_method': PaymentMethod.debit_card,
             })
             self.assertContains(response, 'This field is required')
             form = response.context['form']
@@ -180,7 +179,6 @@ class SendMoneyViewTestCase(BaseTestCase):
                 'prisoner_dob': '1980-10-04',
                 'email': 'sender@outside.local',
                 'amount': '10.00',
-                'payment_method': PaymentMethod.debit_card,
             }))
             self.assertContains(response, escape('No prisoner matches the details you’ve supplied'))
             form = response.context['form']
@@ -196,7 +194,6 @@ class SendMoneyViewTestCase(BaseTestCase):
                 'prisoner_dob': '1980-10-04',
                 'email': 'sender@outside.local',
                 'amount': '10.00',
-                'payment_method': PaymentMethod.debit_card,
             }))
             self.assertContains(response, 'This service is currently unavailable')
             form = response.context['form']
@@ -207,8 +204,8 @@ class SendMoneyViewTestCase(BaseTestCase):
         with reload_payment_urls(self, show_debit_card=True):
             response = self.submit_send_money_form(mocked_api_client, follow=True)
             self.assertOnPage(response, 'check_details')
-            response = self.client.get(self.send_money_url + '?change')
-            self.assertOnPage(response, 'send_money')
+            response = self.client.get(self.start_url + '?change')
+            self.assertOnPage(response, 'send_money_debit')
             self.assertContains(response, '"John Smith"')
             self.assertContains(response, '"A1231DE"')
             self.assertContains(response, '"4"')
@@ -227,36 +224,18 @@ class SendMoneyViewTestCase(BaseTestCase):
             self.assertRedirects(response, reverse_lazy('send_money:debit_card'),
                                  fetch_redirect_response=False)
 
-    @mock.patch('send_money.utils.api_client')
-    def test_send_money_page_can_proceed_to_bank_transfer(self, mocked_api_client):
-        with reload_payment_urls(self, show_bank_transfer=True, show_debit_card=True):
-            response = self.submit_send_money_form(mocked_api_client, update_data={
-                'payment_method': PaymentMethod.bank_transfer,
-            }, follow=True)
-            self.assertOnPage(response, 'check_details')
-            response = self.submit_check_details_form(mocked_api_client, update_data={
-                'payment_method': PaymentMethod.bank_transfer,
-                'next': '',
-            })
-            self.assertRedirects(response, reverse_lazy('send_money:bank_transfer'),
-                                 fetch_redirect_response=False)
-
 
 class BankTransferViewTestCase(BaseTestCase):
+    start_url = reverse_lazy('send_money:send_money_bank')
     url = reverse_lazy('send_money:bank_transfer')
 
     def bank_transfer_flow(self, mocked_api_client):
-        with reload_payment_urls(self, show_bank_transfer=True, show_debit_card=True):
-            response = self.submit_send_money_form(mocked_api_client, update_data={
-                'payment_method': PaymentMethod.bank_transfer,
-            }, follow=True)
-            self.assertOnPage(response, 'check_details')
-            response = self.submit_check_details_form(mocked_api_client, update_data={
-                'payment_method': PaymentMethod.bank_transfer,
-                'next': '',
-            }, follow=True)
-            self.assertOnPage(response, 'bank_transfer')
-            return response
+        return self.submit_send_money_form(
+            mocked_api_client, replace_data={
+                'prisoner_number': SAMPLE_FORM['prisoner_number'],
+                'prisoner_dob': SAMPLE_FORM['prisoner_dob'],
+            }, follow=True
+        )
 
     def test_bank_transfer_page_not_directly_accessible(self):
         with reload_payment_urls(self, show_bank_transfer=True, show_debit_card=True):
@@ -287,18 +266,6 @@ class BankTransferViewTestCase(BaseTestCase):
             self.bank_transfer_flow(mocked_api_client)
             for key in SendMoneyForm.get_field_names():
                 self.assertNotIn(key, self.client.session)
-
-
-class BankTransferOnlyTestCase(BankTransferViewTestCase):
-
-    def bank_transfer_flow(self, mocked_api_client):
-        with reload_payment_urls(self, show_bank_transfer=True):
-            return self.submit_send_money_form(
-                mocked_api_client, replace_data={
-                    'prisoner_number': SAMPLE_FORM['prisoner_number'],
-                    'prisoner_dob': SAMPLE_FORM['prisoner_dob'],
-                }, follow=True
-            )
 
 
 class DebitCardViewTestCase(BaseTestCase):
@@ -395,7 +362,7 @@ class ConfirmationViewTestCase(BaseTestCase):
     def test_confirmation_redirects_if_no_reference_param(self):
         with reload_payment_urls(self, show_debit_card=True):
             response = self.client.get(self.url, follow=False)
-            self.assertRedirects(response, self.send_money_url)
+            self.assertRedirects(response, self.start_url)
 
     @override_settings(ENVIRONMENT='prod')  # because non-prod environments don't send to @outside.local
     def test_confirmation(self):
@@ -504,7 +471,7 @@ class ConfirmationViewTestCase(BaseTestCase):
                     response = self.client.get(
                         self.url, {'payment_ref': ref}, follow=False
                     )
-                self.assertRedirects(response, reverse_lazy('send_money:send_money'))
+                self.assertRedirects(response, reverse_lazy('send_money:send_money_debit'))
 
 
 class PaymentOptionAvailabilityTestCase(SimpleTestCase):

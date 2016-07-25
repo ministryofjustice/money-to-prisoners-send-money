@@ -4,7 +4,7 @@ from unittest import mock
 from django.http import HttpRequest
 import responses
 
-from send_money.forms import PaymentMethod, SendMoneyForm
+from send_money.forms import SendMoneyForm
 from send_money.tests import mock_auth, normalise_prisoner_details, update_post_with_prisoner_details
 from send_money.utils import api_url
 
@@ -71,7 +71,6 @@ SendMoneyFormTestCase.make_valid_tests([
             'prisoner_name': 'John Smith',
             'email': 'sender@outside.local',
             'amount': '120.45',
-            'payment_method': PaymentMethod.debit_card,
         },
     },
     {
@@ -84,7 +83,6 @@ SendMoneyFormTestCase.make_valid_tests([
             'prisoner_name': 'John Smith',
             'email': 'sender@outside.local',
             'amount': '12000.00',
-            'payment_method': PaymentMethod.debit_card,
         },
     },
     {
@@ -97,7 +95,6 @@ SendMoneyFormTestCase.make_valid_tests([
             'prisoner_name': 'John Smith',
             'email': 'sender@outside.local',
             'amount': '1000000.00',
-            'payment_method': PaymentMethod.debit_card,
         },
     },
     {
@@ -109,7 +106,6 @@ SendMoneyFormTestCase.make_valid_tests([
         'data': {
             'prisoner_name': 'John Smith',
             'amount': '1000000.00',
-            'payment_method': PaymentMethod.debit_card,
         },
     },
     {
@@ -122,7 +118,6 @@ SendMoneyFormTestCase.make_valid_tests([
             'prisoner_name': 'John Smith',
             'email': 'sender@outside.local',
             'amount': '10',
-            'payment_method': PaymentMethod.bank_transfer,
         },
     },
     {
@@ -135,7 +130,6 @@ SendMoneyFormTestCase.make_valid_tests([
             'prisoner_name': 'John Smith',
             'email': 'sender@outside.local',
             'amount': '100',
-            'payment_method': PaymentMethod.bank_transfer,
         },
     },
     {
@@ -152,7 +146,6 @@ SendMoneyFormTestCase.make_valid_tests([
             'prisoner_dob_2': '80',
             'email': 'sender@outside.local',
             'amount': '100',
-            'payment_method': PaymentMethod.bank_transfer,
         },
     },
 ])
@@ -172,7 +165,6 @@ SendMoneyFormTestCase.make_invalid_tests([
         'data': {
             'email': 'sender@outside.local',
             'amount': '120.45',
-            'payment_method': PaymentMethod.debit_card,
         },
     },
     {
@@ -185,7 +177,6 @@ SendMoneyFormTestCase.make_invalid_tests([
             'prisoner_name': 'John Smith',
             'email': 'sender@outside.local',
             'amount': '120.45',
-            'payment_method': PaymentMethod.debit_card,
         },
     },
     {
@@ -198,7 +189,6 @@ SendMoneyFormTestCase.make_invalid_tests([
             'prisoner_name': 'John Smith',
             'email': 'sender@outside.local',
             'amount': '120.45',
-            'payment_method': PaymentMethod.debit_card,
         },
     },
     {
@@ -211,20 +201,6 @@ SendMoneyFormTestCase.make_invalid_tests([
             'prisoner_name': 'John Smith',
             'email': 'sender@outside.local',
             'amount': '',
-            'payment_method': PaymentMethod.debit_card,
-        },
-    },
-    {
-        'name': 'missing_payment_method',
-        'prisoner_details': {
-            'prisoner_number': 'A1234AB',
-            'prisoner_dob': '1980-10-05',
-        },
-        'data': {
-            'prisoner_name': 'John Smith',
-            'email': 'sender@outside.local',
-            'amount': '120.45',
-            'payment_method': '',
         },
     },
     {
@@ -237,7 +213,6 @@ SendMoneyFormTestCase.make_invalid_tests([
             'prisoner_name': 'John Smith',
             'email': 'sender@outside.local',
             'amount': '120.45',
-            'payment_method': PaymentMethod.debit_card,
         },
     },
     {
@@ -250,7 +225,6 @@ SendMoneyFormTestCase.make_invalid_tests([
             'prisoner_name': 'John Smith',
             'email': 'sender@outside.local',
             'amount': '120.45',
-            'payment_method': PaymentMethod.debit_card,
         },
     },
     {
@@ -263,7 +237,6 @@ SendMoneyFormTestCase.make_invalid_tests([
             'prisoner_name': 'John Smith',
             'email': 'sender@outside.local',
             'amount': '0',
-            'payment_method': PaymentMethod.debit_card,
         },
     },
     {
@@ -276,7 +249,6 @@ SendMoneyFormTestCase.make_invalid_tests([
             'prisoner_name': 'John Smith',
             'email': 'sender@outside.local',
             'amount': '£10',
-            'payment_method': PaymentMethod.debit_card,
         },
     },
     {
@@ -289,7 +261,6 @@ SendMoneyFormTestCase.make_invalid_tests([
             'prisoner_name': 'John Smith',
             'email': 'sender@outside.local',
             'amount': '100.456',
-            'payment_method': PaymentMethod.debit_card,
         },
     },
     {
@@ -302,7 +273,6 @@ SendMoneyFormTestCase.make_invalid_tests([
             'prisoner_name': 'John Smith',
             'email': 'sender@outside.local',
             'amount': '-10',
-            'payment_method': PaymentMethod.debit_card,
         },
     },
     {
@@ -315,20 +285,6 @@ SendMoneyFormTestCase.make_invalid_tests([
             'prisoner_name': 'John Smith',
             'email': 'sender@outside.local',
             'amount': '1000000.01',
-            'payment_method': PaymentMethod.debit_card,
-        },
-    },
-    {
-        'name': 'payment_method',
-        'prisoner_details': {
-            'prisoner_number': 'A1234AB',
-            'prisoner_dob': '1980-10-05',
-        },
-        'data': {
-            'prisoner_name': 'John Smith',
-            'email': 'sender@outside.local',
-            'amount': '100.45',
-            'payment_method': 'postal_order',
         },
     },
 ])

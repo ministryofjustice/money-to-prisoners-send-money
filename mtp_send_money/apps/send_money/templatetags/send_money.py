@@ -2,16 +2,11 @@ import datetime
 
 from django import template
 
-from send_money.models import PaymentMethod
-from send_money.utils import format_percentage, \
-    currency_format, currency_format_pence, get_total_charge
+from send_money.utils import (
+    format_percentage, currency_format, currency_format_pence, get_total_charge
+)
 
 register = template.Library()
-
-
-@register.filter
-def payment_method_description(payment_method):
-    return PaymentMethod.lookup_description(payment_method)
 
 
 @register.filter(name='currency_format')
