@@ -167,3 +167,55 @@ form .form-group .form-hint {
     font-size: 1em;
   }
 }
+
+.payment-method-options {
+  list-style-type: none;
+  padding: 0;
+
+  li {
+    margin-bottom: 10px;
+    padding: 0;
+    position: relative;
+    max-width: 600px;
+    background-color: $grey-3;
+  }
+}
+
+.payment-method-link {
+  display: block;
+  text-decoration: none;
+  color: black;
+  padding: 13px 60px 10px 25px;
+  border: 1px solid transparent;
+
+  &:before {
+    content: " ";
+    background: url(../images/icon-arrow-right.png) 95%/22px no-repeat;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 20px;
+    margin: auto;
+    width: 22px;
+    height: 22px;
+    opacity: .5;
+  }
+
+  &:hover,
+  &:active,
+  &:focus,
+  &:visited {
+    color: black;
+    border: 1px solid $grey-1;
+    background: inherit;
+  }
+
+  &:active {
+    background-color: white;
+  }
+
+  div {
+    font-size: .9em;
+    color: $grey-1;
+  }
+}

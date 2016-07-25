@@ -4,8 +4,20 @@
 {% block page_title %}{% trans 'Choose payment method - Send money to a prisoner - GOV.UK' %}{% endblock %}
 
 {% block inner_content %}
-<h1 class="heading-xlarge">{% trans 'Check details' %}</h1>
+<h1 class="heading-xlarge">{% trans 'Choose payment method' %}</h1>
 
-<p><a id="id_debit_card" href="{% url 'send_money:send_money_debit' %}">Debit card</a></p>
-<p><a id="id_bank_transfer" href="{% url 'send_money:send_money_bank' %}">Bank transfer</a></p>
+<ul class="payment-method-options">
+  <li>
+    <a id="id_debit_card" class="payment-method-link" href="{% url 'send_money:send_money_debit' %}">
+      <span>{% trans "Send by debit card" %}</span>
+      <div>{% trans "Use your debit card to send money to a prisoner" %}</div>
+    </a>
+  </li>
+  <li>
+    <a id="id_bank_transfer" class="payment-method-link" href="{% url 'send_money:send_money_bank' %}">
+      <span>{% trans "Send by bank transfer" %}</span>
+      <div>{% trans "Find out how to send money to a prisoner using online or telephone banking" %}</div>
+    </a>
+  </li>
+</ul>
 {% endblock %}
