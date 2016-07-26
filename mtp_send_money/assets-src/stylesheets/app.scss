@@ -184,7 +184,7 @@ form .form-group .form-hint {
 .payment-method-link {
   display: block;
   text-decoration: none;
-  color: black;
+  color: $text-colour;
   padding: 13px 60px 10px 25px;
   border: 1px solid transparent;
 
@@ -201,17 +201,21 @@ form .form-group .form-hint {
     opacity: .5;
   }
 
+  &:link {
+    color: $text-colour;
+  }
+
   &:hover,
   &:active,
   &:focus,
   &:visited {
-    color: black;
+    color: $text-colour;
     border: 1px solid $grey-1;
     background: inherit;
   }
 
   &:active {
-    background-color: white;
+    background-color: $page-colour;
   }
 
   div {
