@@ -10,7 +10,7 @@ from django.utils.timezone import now
 from mtp_common.test_utils.functional_tests import FunctionalTestCase
 import responses
 
-from send_money.forms import PaymentMethod
+from send_money.models import PaymentMethod
 from send_money.tests import reload_payment_urls, split_prisoner_dob_for_post
 from send_money.utils import govuk_url
 
@@ -22,14 +22,12 @@ class SendMoneyFunctionalTestCase(FunctionalTestCase):
     accessibility_scope_selector = '#content'
 
     def fill_in_send_money_form(self, data, payment_method):
+        if settings.SHOW_BANK_TRANSFER_OPTION and settings.SHOW_DEBIT_CARD_OPTION:
+            field = self.driver.find_element_by_xpath('//a[@id="id_%s"]' % payment_method)
+            field.click()
         for key in data:
             field = self.driver.find_element_by_id('id_%s' % key)
             field.send_keys(data[key])
-        # TODO: remove condition once TD allows showing bank transfers
-        if settings.SHOW_BANK_TRANSFER_OPTION and settings.SHOW_DEBIT_CARD_OPTION:
-            field = self.driver.find_element_by_xpath('//div[@id="id_payment_method"]//input[@value="%s"]'
-                                                      % payment_method)
-            field.click()
 
 
 @unittest.skipIf('DJANGO_TEST_REMOTE_INTEGRATION_URL' in os.environ, 'test only runs locally')
@@ -49,19 +47,15 @@ class SendMoneyFlows(SendMoneyFunctionalTestCase):
         with reload_payment_urls(self, show_debit_card=True, show_bank_transfer=True):
             self.driver.get(self.live_server_url)
             self.fill_in_send_money_form(split_prisoner_dob_for_post({
-                'prisoner_name': 'James Halls',
                 'prisoner_number': 'A1409AE',
                 'prisoner_dob': '21/01/1989',
-                'amount': '34.50',
-                'email': 'sender@outside.local',
             }), PaymentMethod.bank_transfer)
-            self.driver.find_element_by_id('id_next_btn').click()
             self.driver.find_element_by_id('id_next_btn').click()
             self.assertInSource('<!-- bank_transfer -->')
 
     @unittest.skip('gov.uk pay functional testing not implemented')
     def test_debit_card_flow(self):
-        with reload_payment_urls(self, show_debit_card=True):
+        with reload_payment_urls(self, show_debit_card=True, show_bank_transfer=True):
             self.driver.get(self.live_server_url)
             self.fill_in_send_money_form(split_prisoner_dob_for_post({
                 'prisoner_name': 'James Halls',
@@ -108,10 +102,6 @@ class SendMoneyDetailsPage(SendMoneyFunctionalTestCase):
 
     def test_2_digit_year_entry_using_javascript_in_debit_card_flow(self):
         with reload_payment_urls(self, show_bank_transfer=False, show_debit_card=True):
-            self.check_2_digit_entry()
-
-    def test_2_digit_year_entry_using_javascript_in_combined_flow(self):
-        with reload_payment_urls(self, show_bank_transfer=True, show_debit_card=True):
             self.check_2_digit_entry()
 
     def test_service_charge_js(self):
@@ -221,6 +211,7 @@ class SendMoneyConfirmationPage(SendMoneyFunctionalTestCase):
                 self.assertInSource('20')
                 self.assertInSource('Print this page')
 
+    @unittest.skip('error pages handled by gov.uk')
     @mock.patch('send_money.views.get_api_client')
     def test_failure_page(self, mocked_client):
         with reload_payment_urls(self, show_debit_card=True):

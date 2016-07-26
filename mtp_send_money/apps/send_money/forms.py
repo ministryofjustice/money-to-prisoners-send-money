@@ -8,7 +8,6 @@ from mtp_common.forms.fields import SplitDateField
 from requests.exceptions import RequestException
 from slumber.exceptions import HttpNotFoundError, SlumberHttpBaseException
 
-from send_money.models import PaymentMethod
 from send_money.utils import (
     serialise_date, unserialise_date, serialise_amount, unserialise_amount,
     validate_prisoner_number, get_api_client
@@ -104,12 +103,6 @@ class SendMoneyForm(PrisonerDetailsForm):
             'min_value': _('Amount should be 1p or more'),
             'max_decimal_places': _('Only use 2 decimal places'),
         }
-    )
-    payment_method = forms.ChoiceField(
-        label=_('Payment method'),
-        widget=forms.RadioSelect,
-        choices=PaymentMethod.django_choices(),
-        initial=PaymentMethod.debit_card,
     )
     email = forms.EmailField(
         label=_('Your email address'),

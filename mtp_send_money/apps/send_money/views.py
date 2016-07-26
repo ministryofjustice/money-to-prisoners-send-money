@@ -11,7 +11,7 @@ import requests
 from mtp_common.email import send_email
 from slumber.exceptions import SlumberHttpBaseException
 
-from send_money.forms import PaymentMethod, SendMoneyForm, PrisonerDetailsForm
+from send_money.forms import SendMoneyForm, PrisonerDetailsForm
 from send_money.utils import (
     unserialise_amount, unserialise_date, bank_transfer_reference,
     govuk_headers, govuk_url, get_api_client, site_url, get_link_by_rel,
@@ -31,7 +31,13 @@ def require_session_parameters(form_class):
         @wraps(view)
         def inner(request, *args, **kwargs):
             if not form_class.session_contains_form_data(request.session):
-                return redirect(reverse('send_money:send_money'))
+                if settings.SHOW_DEBIT_CARD_OPTION and settings.SHOW_BANK_TRANSFER_OPTION:
+                    start_url = reverse('send_money:choose_method')
+                elif settings.SHOW_DEBIT_CARD_OPTION:
+                    start_url = reverse('send_money:send_money_debit')
+                elif settings.SHOW_BANK_TRANSFER_OPTION:
+                    start_url = reverse('send_money:send_money_bank')
+                return redirect(start_url)
             return view(request, *args, **kwargs)
         return inner
 
@@ -101,9 +107,6 @@ class SendMoneyView(FormView):
             'sample_amount': sample_amount,
         })
 
-        # TODO: remove option once TD allows showing bank transfers
-        context_data['SHOW_BANK_TRANSFER_OPTION'] = settings.SHOW_BANK_TRANSFER_OPTION
-
         return context_data
 
     def get_form_kwargs(self):
@@ -121,7 +124,7 @@ class CheckDetailsView(SendMoneyView):
     The form-previewing view
     """
     template_name = 'send_money/check-details.html'
-    success_url = None
+    success_url = reverse_lazy('send_money:debit_card')
 
     @method_decorator(require_session_parameters(SendMoneyForm))
     def dispatch(self, request, *args, **kwargs):
@@ -150,13 +153,8 @@ class CheckDetailsView(SendMoneyView):
         # pressed continue
         return super().form_valid(form)
 
-    def get_success_url(self):
-        if self.request.session['payment_method'] == str(PaymentMethod.bank_transfer):
-            return reverse('send_money:bank_transfer')
-        return reverse('send_money:debit_card')
-
     def form_invalid(self, form):
-        return redirect(reverse('send_money:send_money') + '?change')
+        return redirect(reverse('send_money:send_money_debit') + '?change')
 
 
 @require_session_parameters(PrisonerDetailsForm)
@@ -246,7 +244,7 @@ def confirmation_view(request):
     """
     payment_ref = request.GET.get('payment_ref')
     if payment_ref is None:
-        return redirect(reverse('send_money:send_money'))
+        return redirect(reverse('send_money:send_money_debit'))
     context = {'success': False, 'payment_ref': payment_ref[:8]}
 
     try:
@@ -297,4 +295,4 @@ def clear_session_view(request):
     @param request: the HTTP request
     """
     request.session.flush()
-    return redirect('send_money:send_money')
+    return redirect('send_money:send_money_debit')
