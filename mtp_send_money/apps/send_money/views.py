@@ -7,6 +7,7 @@ from django.shortcuts import redirect, render
 from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext as _
 from django.views.generic import FormView
+from django.views.generic.base import TemplateView
 import requests
 from mtp_common.email import send_email
 from slumber.exceptions import SlumberHttpBaseException
@@ -79,6 +80,21 @@ class SendMoneyBankTransferView(FormView):
     def form_valid(self, form):
         form.save_form_data_in_session(self.request.session)
         return super().form_valid(form)
+
+
+class ChooseMethodView(TemplateView):
+    template_name = 'send_money/choose-method.html'
+
+    def get_context_data(self, **kwargs):
+        context_data = super().get_context_data(**kwargs)
+
+        context_data.update({
+            'service_charged': settings.SERVICE_CHARGED,
+            'service_charge_percentage': settings.SERVICE_CHARGE_PERCENTAGE,
+            'service_charge_fixed': settings.SERVICE_CHARGE_FIXED,
+        })
+
+        return context_data
 
 
 class SendMoneyView(FormView):

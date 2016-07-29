@@ -1,6 +1,5 @@
 from django.conf import settings
 from django.conf.urls import url
-from django.views.generic.base import TemplateView
 
 from send_money import views
 
@@ -8,7 +7,7 @@ app_name = 'send_money'
 
 if settings.SHOW_DEBIT_CARD_OPTION and settings.SHOW_BANK_TRANSFER_OPTION:
     urlpatterns = [
-        url(r'^$', TemplateView.as_view(template_name='send_money/choose-method.html'),
+        url(r'^$', views.ChooseMethodView.as_view(template_name='send_money/choose-method.html'),
             name='choose_method'),
         url(r'^start-payment/$', views.SendMoneyView.as_view(),
             name='send_money_debit'),
