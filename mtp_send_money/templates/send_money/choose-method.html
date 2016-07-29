@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load i18n %}
+{% load send_money %}
 
 {% block page_title %}{% trans 'Choose payment method - Send money to a prisoner - GOV.UK' %}{% endblock %}
 
@@ -9,14 +10,18 @@
 <ul class="payment-method-options">
   <li>
     <a id="id_debit_card" class="payment-method-link" href="{% url 'send_money:send_money_debit' %}">
-      <span>{% trans "Send by debit card" %}</span>
-      <div>{% trans "Use your debit card to send money to a prisoner" %}</div>
+      <span>{% trans "Use your debit card" %}</span>
+      <div>{% trans "You will receive confirmation of payment." %}</div>
+      {% if service_charged %}
+      <div>{% blocktrans trimmed with charge_percentage=service_charge_percentage|format_percentage charge_fixed=service_charge_fixed|currency_format_pence %}Your bank charges a {{ charge_percentage }} fee (plus {{ charge_fixed }}) for each transaction.{% endblocktrans %}</div>
+      {% endif %}
     </a>
   </li>
   <li>
     <a id="id_bank_transfer" class="payment-method-link" href="{% url 'send_money:send_money_bank' %}">
-      <span>{% trans "Send by bank transfer" %}</span>
-      <div>{% trans "Find out how to send money to a prisoner using online or telephone banking" %}</div>
+      <span>{% trans "Use online, mobile or telephone banking" %}</span>
+      <div>{% trans "You won’t receive confirmation of payment." %}</div>
+      <div>{% trans "You can generate a payment reference to use each time you make a bank transfer to this prisoner." %}</div>
     </a>
   </li>
 </ul>
