@@ -5,24 +5,10 @@
 {% block page_title %}{% trans 'Choose payment method - Send money to a prisoner - GOV.UK' %}{% endblock %}
 
 {% block inner_content %}
-<h1 class="heading-xlarge">{% trans 'Choose payment method' %}</h1>
+  <h1 class="heading-xlarge">{% trans 'Choose payment method' %}</h1>
 
-<ul class="payment-method-options">
-  <li>
-    <a id="id_debit_card" class="payment-method-link" href="{% url 'send_money:send_money_debit' %}">
-      <span>{% trans "Use your debit card" %}</span>
-      <div>{% trans "You will receive confirmation of payment." %}</div>
-      {% if service_charged %}
-      <div>{% blocktrans trimmed with charge_percentage=service_charge_percentage|format_percentage charge_fixed=service_charge_fixed|currency_format_pence %}Your bank charges a {{ charge_percentage }} fee (plus {{ charge_fixed }}) for each transaction.{% endblocktrans %}</div>
-      {% endif %}
-    </a>
-  </li>
-  <li>
-    <a id="id_bank_transfer" class="payment-method-link" href="{% url 'send_money:send_money_bank' %}">
-      <span>{% trans "Use online, mobile or telephone banking" %}</span>
-      <div>{% trans "You won’t receive confirmation of payment." %}</div>
-      <div>{% trans "You can generate a payment reference to use each time you make a bank transfer to this prisoner." %}</div>
-    </a>
-  </li>
-</ul>
+  <ul class="payment-method-options">
+    {% include 'send_money/choose-method-debit-card.html' %}
+    {% include 'send_money/choose-method-bank-transfer.html' %}
+  </ul>
 {% endblock %}
