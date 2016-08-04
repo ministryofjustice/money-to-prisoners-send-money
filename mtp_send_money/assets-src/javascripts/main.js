@@ -8,5 +8,6 @@
   require('year-field-completion').YearFieldCompletion.init();
 
   require('charges').Charges.init();
+  require('experiments').Experiments.init();
 
 })();

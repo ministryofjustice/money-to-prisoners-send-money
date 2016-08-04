@@ -1,9 +1,12 @@
+import datetime
 from functools import wraps
 import logging
+import random
 
 from django.conf import settings
 from django.core.urlresolvers import reverse, reverse_lazy
 from django.shortcuts import redirect, render
+from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext as _
 from django.views.generic import FormView
@@ -84,11 +87,49 @@ class SendMoneyBankTransferView(FormView):
 
 class ChooseMethodView(TemplateView):
     template_name = 'send_money/choose-method.html'
+    experiment_cookie_name = 'EXP-first-payment-choice'
+    experiment_variations = ['debit-card', 'bank-transfer']
+    experiment_lifetime = datetime.timedelta(days=300)
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.set_experiment_cookie = None
+
+    def get(self, request, *args, **kwargs):
+        response = super().get(request, *args, **kwargs)
+        if self.set_experiment_cookie is not None:
+            response.set_cookie(self.experiment_cookie_name, self.set_experiment_cookie,
+                                expires=timezone.now() + self.experiment_lifetime)
+        return response
+
+    def get_experiment(self):
+        experiment = {
+            'show_bank_transfer_first': False,
+        }
+        if not settings.ENABLE_PAYMENT_CHOICE_EXPERIMENT:
+            return experiment
+
+        variation = self.request.COOKIES.get(self.experiment_cookie_name)
+        if variation not in self.experiment_variations:
+            variation = random.choice(self.experiment_variations)
+            self.set_experiment_cookie = variation
+            experiment_context = 'pageview,/_experiments/display-payment-methods/%s/' % variation
+        else:
+            experiment_context = 'pageview,/_experiments/redisplay-payment-methods/%s/' % variation
+
+        experiment.update({
+            'show_bank_transfer_first': variation == 'bank-transfer',
+            'context': experiment_context,
+            'debit_card_conversion': 'pageview,/_experiments/payment-method-chosen/debit-card/',
+            'bank_transfer_conversion': 'pageview,/_experiments/payment-method-chosen/bank-transfer/',
+        })
+        return experiment
 
     def get_context_data(self, **kwargs):
         context_data = super().get_context_data(**kwargs)
 
         context_data.update({
+            'experiment': self.get_experiment(),
             'service_charged': settings.SERVICE_CHARGED,
             'service_charge_percentage': settings.SERVICE_CHARGE_PERCENTAGE,
             'service_charge_fixed': settings.SERVICE_CHARGE_FIXED,

@@ -1,14 +1,18 @@
 {% extends 'base.html' %}
 {% load i18n %}
-{% load send_money %}
 
 {% block page_title %}{% trans 'Choose payment method - Send money to a prisoner - GOV.UK' %}{% endblock %}
 
 {% block inner_content %}
   <h1 class="heading-xlarge">{% trans 'Choose payment method' %}</h1>
 
-  <ul class="payment-method-options">
-    {% include 'send_money/choose-method-debit-card.html' %}
-    {% include 'send_money/choose-method-bank-transfer.html' %}
+  <ul class="payment-method-options js-experiment-context" {% if experiment.context %}data-experiment-context="{{ experiment.context }}"{% endif %}>
+    {% if experiment.show_bank_transfer_first %}
+      {% include 'send_money/choose-method-bank-transfer.html' %}
+      {% include 'send_money/choose-method-debit-card.html' %}
+    {% else %}
+      {% include 'send_money/choose-method-debit-card.html' %}
+      {% include 'send_money/choose-method-bank-transfer.html' %}
+    {% endif %}
   </ul>
 {% endblock %}
