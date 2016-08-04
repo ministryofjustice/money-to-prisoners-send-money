@@ -22,6 +22,8 @@ elif settings.SHOW_BANK_TRANSFER_OPTION:
     urlpatterns = [
         url(r'^$', views.SendMoneyBankTransferView.as_view(), name='send_money_bank'),
     ]
+else:
+    urlpatterns = []
 
 if settings.SHOW_BANK_TRANSFER_OPTION:
     urlpatterns += [

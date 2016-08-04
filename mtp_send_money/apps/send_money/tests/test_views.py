@@ -3,11 +3,12 @@ from contextlib import contextmanager
 from decimal import Decimal
 import json
 import logging
+import unittest
 from unittest import mock
 
 from django.conf import settings
 from django.core import mail
-from django.core.urlresolvers import reverse_lazy
+from django.core.urlresolvers import reverse, reverse_lazy
 from django.test.testcases import SimpleTestCase
 from django.test.utils import override_settings
 from django.utils.html import escape
@@ -94,6 +95,36 @@ class BaseTestCase(SimpleTestCase):
     def submit_check_details_form(self, mocked_api_client, update_data=None, replace_data=None, follow=False):
         data = self._prepare_post_data(mocked_api_client, update_data=update_data, replace_data=replace_data)
         return self.client.post(self.check_details_url, data=data, follow=follow)
+
+
+@unittest.skipUnless(settings.SHOW_DEBIT_CARD_OPTION and settings.SHOW_BANK_TRANSFER_OPTION,
+                     'Both debit cards and bank transfers must be enabled to test method choice page')
+class ChooseMethodViewTestCase(BaseTestCase):
+    url = reverse_lazy('send_money:choose_method')
+
+    def test_both_choices_listed(self):
+        response = self.client.get(self.url)
+        self.assertContains(response, reverse('send_money:send_money_debit'))
+        self.assertContains(response, reverse('send_money:send_money_bank'))
+
+    def test_experiment_choice_cookie_and_ordering(self):
+        from send_money.views import ChooseMethodView
+
+        response = self.client.get(self.url)
+        variation = response.cookies.get(ChooseMethodView.experiment_cookie_name)
+        if variation:
+            variation = variation.value
+        self.assertTrue(variation, 'Cookie not saved')
+
+        content = response.content.decode(response.charset)
+        if variation == 'debit-card':
+            self.assertLess(content.find(reverse('send_money:send_money_debit')),
+                            content.find(reverse('send_money:send_money_bank')),
+                            'Debit card option should appear first according to experiment')
+        else:
+            self.assertLess(content.find(reverse('send_money:send_money_bank')),
+                            content.find(reverse('send_money:send_money_debit')),
+                            'Bank transfer option should appear first according to experiment')
 
 
 class SendMoneyDebitViewTestCase(BaseTestCase):
