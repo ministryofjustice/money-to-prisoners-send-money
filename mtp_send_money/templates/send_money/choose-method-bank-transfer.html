@@ -1,9 +1,9 @@
 {% load i18n %}
 
 <li>
-  <a href="{% url 'send_money:send_money_bank' %}" class="payment-method-link" {% if experiment.bank_transfer_conversion %}data-analytics="{{ experiment.bank_transfer_conversion }}"{% endif %}>
-    <span>{% trans 'Use online, mobile or telephone banking' %}</span>
-    <div>{% trans 'You won’t receive confirmation of payment.' %}</div>
-    <div>{% trans 'You can generate a payment reference to use each time you make a bank transfer to this prisoner.' %}</div>
+  <a href="{% url 'send_money:send_money_bank' %}" class="large-link-list--link" {% if experiment.bank_transfer_conversion %}data-analytics="{{ experiment.bank_transfer_conversion }}"{% endif %}>
+    {% trans 'Use online, mobile or telephone banking' %}
+    <span>{% trans 'You won’t receive confirmation of payment.' %}</span>
+    <span>{% trans 'You can generate a payment reference to use each time you make a bank transfer to this prisoner.' %}</span>
   </a>
 </li>

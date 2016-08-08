@@ -6,7 +6,7 @@
 {% block inner_content %}
   <h1 class="heading-xlarge">{% trans 'Choose payment method' %}</h1>
 
-  <ul class="payment-method-options js-experiment-context" {% if experiment.context %}data-experiment-context="{{ experiment.context }}"{% endif %}>
+  <ul class="large-link-list js-experiment-context" {% if experiment.context %}data-experiment-context="{{ experiment.context }}"{% endif %}>
     {% if experiment.show_bank_transfer_first %}
       {% include 'send_money/choose-method-bank-transfer.html' %}
       {% include 'send_money/choose-method-debit-card.html' %}

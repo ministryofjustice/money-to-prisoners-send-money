@@ -2,11 +2,11 @@
 {% load send_money %}
 
 <li>
-  <a href="{% url 'send_money:send_money_debit' %}" class="payment-method-link" {% if experiment.debit_card_conversion %}data-analytics="{{ experiment.debit_card_conversion }}"{% endif %}>
-    <span>{% trans 'Use your debit card' %}</span>
-    <div>{% trans 'You will receive confirmation of payment.' %}</div>
+  <a href="{% url 'send_money:send_money_debit' %}" class="large-link-list--link" {% if experiment.debit_card_conversion %}data-analytics="{{ experiment.debit_card_conversion }}"{% endif %}>
+    {% trans 'Use your debit card' %}
+    <span>{% trans 'You will receive confirmation of payment.' %}</span>
     {% if service_charged %}
-      <div>{% blocktrans trimmed with charge_percentage=service_charge_percentage|format_percentage charge_fixed=service_charge_fixed|currency_format_pence %}Your bank charges a {{ charge_percentage }} fee (plus {{ charge_fixed }}) for each transaction.{% endblocktrans %}</div>
+      <span>{% blocktrans trimmed with charge_percentage=service_charge_percentage|format_percentage charge_fixed=service_charge_fixed|currency_format_pence %}Your bank charges a {{ charge_percentage }} fee (plus {{ charge_fixed }}) for each transaction.{% endblocktrans %}</span>
     {% endif %}
   </a>
 </li>
