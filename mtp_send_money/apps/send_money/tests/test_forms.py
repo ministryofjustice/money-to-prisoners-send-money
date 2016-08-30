@@ -69,7 +69,6 @@ SendMoneyFormTestCase.make_valid_tests([
         },
         'data': {
             'prisoner_name': 'John Smith',
-            'email': 'sender@outside.local',
             'amount': '120.45',
         },
     },
@@ -81,7 +80,6 @@ SendMoneyFormTestCase.make_valid_tests([
         },
         'data': {
             'prisoner_name': 'John Smith',
-            'email': 'sender@outside.local',
             'amount': '12000.00',
         },
     },
@@ -93,7 +91,6 @@ SendMoneyFormTestCase.make_valid_tests([
         },
         'data': {
             'prisoner_name': 'John Smith',
-            'email': 'sender@outside.local',
             'amount': '1000000.00',
         },
     },
@@ -116,7 +113,6 @@ SendMoneyFormTestCase.make_valid_tests([
         },
         'data': {
             'prisoner_name': 'John Smith',
-            'email': 'sender@outside.local',
             'amount': '10',
         },
     },
@@ -128,7 +124,6 @@ SendMoneyFormTestCase.make_valid_tests([
         },
         'data': {
             'prisoner_name': 'John Smith',
-            'email': 'sender@outside.local',
             'amount': '100',
         },
     },
@@ -144,7 +139,6 @@ SendMoneyFormTestCase.make_valid_tests([
             'prisoner_dob_0': '5',
             'prisoner_dob_1': '10',
             'prisoner_dob_2': '80',
-            'email': 'sender@outside.local',
             'amount': '100',
         },
     },
@@ -163,7 +157,6 @@ SendMoneyFormTestCase.make_invalid_tests([
             'prisoner_dob': '1980-10-05',
         },
         'data': {
-            'email': 'sender@outside.local',
             'amount': '120.45',
         },
     },
@@ -175,7 +168,6 @@ SendMoneyFormTestCase.make_invalid_tests([
         },
         'data': {
             'prisoner_name': 'John Smith',
-            'email': 'sender@outside.local',
             'amount': '120.45',
         },
     },
@@ -187,7 +179,6 @@ SendMoneyFormTestCase.make_invalid_tests([
         },
         'data': {
             'prisoner_name': 'John Smith',
-            'email': 'sender@outside.local',
             'amount': '120.45',
         },
     },
@@ -199,7 +190,6 @@ SendMoneyFormTestCase.make_invalid_tests([
         },
         'data': {
             'prisoner_name': 'John Smith',
-            'email': 'sender@outside.local',
             'amount': '',
         },
     },
@@ -211,7 +201,6 @@ SendMoneyFormTestCase.make_invalid_tests([
         },
         'data': {
             'prisoner_name': 'John Smith',
-            'email': 'sender@outside.local',
             'amount': '120.45',
         },
     },
@@ -223,7 +212,6 @@ SendMoneyFormTestCase.make_invalid_tests([
         },
         'data': {
             'prisoner_name': 'John Smith',
-            'email': 'sender@outside.local',
             'amount': '120.45',
         },
     },
@@ -235,7 +223,6 @@ SendMoneyFormTestCase.make_invalid_tests([
         },
         'data': {
             'prisoner_name': 'John Smith',
-            'email': 'sender@outside.local',
             'amount': '0',
         },
     },
@@ -247,7 +234,6 @@ SendMoneyFormTestCase.make_invalid_tests([
         },
         'data': {
             'prisoner_name': 'John Smith',
-            'email': 'sender@outside.local',
             'amount': '£10',
         },
     },
@@ -259,7 +245,6 @@ SendMoneyFormTestCase.make_invalid_tests([
         },
         'data': {
             'prisoner_name': 'John Smith',
-            'email': 'sender@outside.local',
             'amount': '100.456',
         },
     },
@@ -271,7 +256,6 @@ SendMoneyFormTestCase.make_invalid_tests([
         },
         'data': {
             'prisoner_name': 'John Smith',
-            'email': 'sender@outside.local',
             'amount': '-10',
         },
     },
@@ -283,7 +267,6 @@ SendMoneyFormTestCase.make_invalid_tests([
         },
         'data': {
             'prisoner_name': 'John Smith',
-            'email': 'sender@outside.local',
             'amount': '1000000.01',
         },
     },
