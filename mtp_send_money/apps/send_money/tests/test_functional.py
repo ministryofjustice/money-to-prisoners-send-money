@@ -62,7 +62,6 @@ class SendMoneyFlows(SendMoneyFunctionalTestCase):
                 'prisoner_number': 'A1409AE',
                 'prisoner_dob': '21/01/1989',
                 'amount': '0.51',
-                'email': 'sender@outside.local',
             }), PaymentMethod.debit_card)
             self.driver.find_element_by_id('id_next_btn').click()
             # TODO: add gov.uk mock and test various responses
@@ -75,7 +74,6 @@ class SendMoneyDetailsPage(SendMoneyFunctionalTestCase):
             self.driver.get(self.live_server_url)
             self.assertEqual(self.driver.title, 'Send money to a prisoner - GOV.UK')
             self.assertEqual(self.driver.find_element_by_css_selector('h1').text, 'Who are you sending money to?')
-            self.assertInSource('So we can send you a receipt')
 
     def check_2_digit_entry(self):
         entry_year = random.randrange(0, 99)
@@ -152,7 +150,6 @@ class SendMoneyCheckDetailsPage(SendMoneyFunctionalTestCase):
                 'prisoner_number': 'A1409AE',
                 'prisoner_dob': '21/01/1989',
                 'amount': '34.50',
-                'email': 'sender@outside.local',
             }), PaymentMethod.debit_card)
             self.driver.find_element_by_id('id_next_btn').click()
             self.assertCurrentUrl('/check-details/')
@@ -199,7 +196,7 @@ class SendMoneyConfirmationPage(SendMoneyFunctionalTestCase):
             }
             with responses.RequestsMock() as rsps:
                 rsps.add(rsps.GET, govuk_url('/payments/%s' % processor_id), json={
-                    'state': {'status': 'success'}
+                    'state': {'status': 'success'}, 'email': 'sender@outside.local'
                 })
 
                 self.driver.get(self.live_server_url + '/confirmation/?payment_ref=REF12345')

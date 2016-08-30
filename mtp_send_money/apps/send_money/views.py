@@ -321,14 +321,17 @@ def confirmation_view(request):
             payment_update = {
                 'status': 'taken'
             }
+            email = govuk_response.json().get('email')
+            if email:
+                payment_update['email'] = email
 
             client.payments(payment_ref).patch(payment_update)
             context.update({
                 'success': True,
             })
-            if api_response.get('email'):
+            if email:
                 send_email(
-                    api_response['email'], 'send_money/email/confirmation.txt',
+                    email, 'send_money/email/confirmation.txt',
                     _('Send money to a prisoner: your payment was successful'), context=context,
                     html_template='send_money/email/confirmation.html'
                 )

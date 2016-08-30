@@ -24,7 +24,6 @@ SAMPLE_FORM = {
     'prisoner_name': 'John Smith',
     'prisoner_number': 'A1231DE',
     'prisoner_dob': '1980-10-04',
-    'email': 'sender@outside.local',
     'amount': '10.00',
 }
 
@@ -79,7 +78,6 @@ class BaseTestCase(SimpleTestCase):
             data = {
                 'prisoner_name': SAMPLE_FORM['prisoner_name'],
                 'amount': SAMPLE_FORM['amount'],
-                'email': SAMPLE_FORM['email'],
             }
             data.update(prisoner_details)
         else:
@@ -160,17 +158,6 @@ class SendMoneyDebitViewTestCase(BaseTestCase):
             response = self.submit_send_money_form(mocked_api_client, follow=True)
             self.assertOnPage(response, 'check_details')
 
-    @mock.patch('send_money.utils.api_client')
-    def test_send_money_page_proceeds_without_email(self, mocked_api_client):
-        with reload_payment_urls(self, show_debit_card=True):
-            response = self.submit_send_money_form(mocked_api_client, replace_data={
-                'prisoner_name': SAMPLE_FORM['prisoner_name'],
-                'prisoner_number': SAMPLE_FORM['prisoner_number'],
-                'prisoner_dob': SAMPLE_FORM['prisoner_dob'],
-                'amount': SAMPLE_FORM['amount'],
-            }, follow=True)
-            self.assertOnPage(response, 'check_details')
-
     @mock.patch('send_money.forms.PrisonerDetailsForm.check_prisoner_validity')
     def test_send_money_page_displays_errors_for_invalid_prisoner_number(self, mocked_check_prisoner_validity):
         with reload_payment_urls(self, show_debit_card=True):
@@ -178,7 +165,6 @@ class SendMoneyDebitViewTestCase(BaseTestCase):
                 'prisoner_name': 'John Smith',
                 'prisoner_number': 'a1231a1',
                 'prisoner_dob': '1980-10-04',
-                'email': 'sender@outside.local',
                 'amount': '10.00',
             }))
             self.assertContains(response, 'Incorrect prisoner number format')
@@ -192,7 +178,6 @@ class SendMoneyDebitViewTestCase(BaseTestCase):
             response = self.client.post(self.url, data={
                 'prisoner_name': 'John Smith',
                 'prisoner_number': 'A1231DE',
-                'email': 'sender@outside.local',
                 'amount': '10.00',
             })
             self.assertContains(response, 'This field is required')
@@ -208,7 +193,6 @@ class SendMoneyDebitViewTestCase(BaseTestCase):
                 'prisoner_name': 'John Smith',
                 'prisoner_number': 'A1231DE',
                 'prisoner_dob': '1980-10-04',
-                'email': 'sender@outside.local',
                 'amount': '10.00',
             }))
             self.assertContains(response, escape('No prisoner matches the details you’ve supplied'))
@@ -223,7 +207,6 @@ class SendMoneyDebitViewTestCase(BaseTestCase):
                 'prisoner_name': 'John Smith',
                 'prisoner_number': 'A1231DE',
                 'prisoner_dob': '1980-10-04',
-                'email': 'sender@outside.local',
                 'amount': '10.00',
             }))
             self.assertContains(response, 'This service is currently unavailable')
@@ -411,7 +394,6 @@ class ConfirmationViewTestCase(BaseTestCase):
                         'recipient_name': 'John',
                         'amount': 1000,
                         'created': datetime.datetime.now().isoformat() + 'Z',
-                        'email': 'sender@outside.local'
                     },
                     status=200,
                 )
@@ -419,7 +401,7 @@ class ConfirmationViewTestCase(BaseTestCase):
                     rsps.GET,
                     govuk_url('/payments/%s/' % processor_id),
                     json={
-                        'state': {'status': 'success'}
+                        'state': {'status': 'success'}, 'email': 'sender@outside.local'
                     },
                     status=200
                 )
@@ -461,7 +443,7 @@ class ConfirmationViewTestCase(BaseTestCase):
                     rsps.GET,
                     govuk_url('/payments/%s/' % processor_id),
                     json={
-                        'state': {'status': 'success'}
+                        'state': {'status': 'success'}, 'email': 'sender@outside.local'
                     },
                     status=200
                 )

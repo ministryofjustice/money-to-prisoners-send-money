@@ -104,11 +104,6 @@ class SendMoneyForm(PrisonerDetailsForm):
             'max_decimal_places': _('Only use 2 decimal places'),
         }
     )
-    email = forms.EmailField(
-        label=_('Your email address'),
-        help_text=_('So we can send you a receipt'),
-        required=False
-    )
 
     def switch_to_hidden(self):
         for field in self.fields.values():
