@@ -15,7 +15,9 @@ import requests
 from mtp_common.email import send_email
 from slumber.exceptions import SlumberHttpBaseException
 
-from send_money.forms import SendMoneyForm, PrisonerDetailsForm
+from send_money.forms import (
+    SendMoneyForm, PrisonerDetailsForm, StartPaymentPrisonerDetailsForm
+)
 from send_money.utils import (
     unserialise_amount, unserialise_date, bank_transfer_reference,
     govuk_headers, govuk_url, get_api_client, site_url, get_link_by_rel,
@@ -38,9 +40,9 @@ def require_session_parameters(form_class):
                 if settings.SHOW_DEBIT_CARD_OPTION and settings.SHOW_BANK_TRANSFER_OPTION:
                     start_url = reverse('send_money:choose_method')
                 elif settings.SHOW_DEBIT_CARD_OPTION:
-                    start_url = reverse('send_money:send_money_debit')
+                    start_url = reverse('send_money:prisoner_details_debit')
                 elif settings.SHOW_BANK_TRANSFER_OPTION:
-                    start_url = reverse('send_money:send_money_bank')
+                    start_url = reverse('send_money:prisoner_details_bank')
                 return redirect(start_url)
             return view(request, *args, **kwargs)
         return inner
@@ -70,7 +72,7 @@ def make_context_from_session(form_class):
     return wrapper
 
 
-class SendMoneyBankTransferView(FormView):
+class BankTransferPrisonerDetailsView(FormView):
     form_class = PrisonerDetailsForm
     template_name = 'send_money/bank-transfer-form.html'
     success_url = reverse_lazy('send_money:bank_transfer')
@@ -138,6 +140,28 @@ class ChooseMethodView(TemplateView):
         return context_data
 
 
+class DebitCardPrisonerDetailsView(FormView):
+    form_class = StartPaymentPrisonerDetailsForm
+    template_name = 'send_money/debit-card-form.html'
+    success_url = reverse_lazy('send_money:send_money_debit')
+
+    def get_initial(self):
+        initial = super().get_initial()
+        session = self.request.session
+        if 'change' in self.request.GET and StartPaymentPrisonerDetailsForm.session_contains_form_data(session):
+            initial.update(StartPaymentPrisonerDetailsForm.form_data_from_session(session))
+        return initial
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['request'] = self.request
+        return kwargs
+
+    def form_valid(self, form):
+        form.save_form_data_in_session(self.request.session)
+        return super().form_valid(form)
+
+
 class SendMoneyView(FormView):
     """
     The main form-filling view for sending payments
@@ -146,11 +170,14 @@ class SendMoneyView(FormView):
     template_name = 'send_money/send-money.html'
     success_url = reverse_lazy('send_money:check_details')
 
+    @method_decorator(require_session_parameters(StartPaymentPrisonerDetailsForm))
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
+
     def get_initial(self):
         initial = super().get_initial()
         session = self.request.session
-        if 'change' in self.request.GET and SendMoneyForm.session_contains_form_data(session):
-            initial.update(SendMoneyForm.form_data_from_session(session))
+        initial.update(StartPaymentPrisonerDetailsForm.form_data_from_session(session))
         return initial
 
     def get_context_data(self, **kwargs):
@@ -301,7 +328,7 @@ def confirmation_view(request):
     """
     payment_ref = request.GET.get('payment_ref')
     if payment_ref is None:
-        return redirect(reverse('send_money:send_money_debit'))
+        return redirect(reverse('send_money:prisoner_details_debit'))
     context = {'success': False, 'payment_ref': payment_ref[:8]}
 
     try:
@@ -355,4 +382,4 @@ def clear_session_view(request):
     @param request: the HTTP request
     """
     request.session.flush()
-    return redirect('send_money:send_money_debit')
+    return redirect('/')

@@ -29,11 +29,8 @@ SAMPLE_FORM = {
 
 
 class BaseTestCase(SimpleTestCase):
-    start_url = reverse_lazy('send_money:send_money_debit')
-
-    @property
-    def check_details_url(self):
-        return reverse_lazy('send_money:check_details')
+    start_url = reverse_lazy('send_money:prisoner_details_debit')
+    check_details_url = reverse_lazy('send_money:check_details')
 
     @contextmanager
     def silence_logger(self, name='mtp'):
@@ -51,9 +48,9 @@ class BaseTestCase(SimpleTestCase):
         if settings.SHOW_DEBIT_CARD_OPTION and settings.SHOW_BANK_TRANSFER_OPTION:
             opening_url = reverse_lazy('send_money:choose_method')
         elif settings.SHOW_DEBIT_CARD_OPTION:
-            opening_url = reverse_lazy('send_money:send_money_debit')
+            opening_url = reverse_lazy('send_money:prisoner_details_debit')
         elif settings.SHOW_BANK_TRANSFER_OPTION:
-            opening_url = reverse_lazy('send_money:send_money_bank')
+            opening_url = reverse_lazy('send_money:prisoner_details_bank')
 
         self.assertRedirects(response, opening_url)
 
@@ -86,9 +83,13 @@ class BaseTestCase(SimpleTestCase):
             data.update(update_data)
         return split_prisoner_dob_for_post(data)
 
-    def submit_send_money_form(self, mocked_api_client, update_data=None, replace_data=None, follow=False):
+    def submit_prisoner_details_form(self, mocked_api_client, update_data=None, replace_data=None, follow=False):
         data = self._prepare_post_data(mocked_api_client, update_data=update_data, replace_data=replace_data)
         return self.client.post(self.start_url, data=data, follow=follow)
+
+    def submit_send_money_form(self, mocked_api_client, update_data=None, replace_data=None, follow=False):
+        data = self._prepare_post_data(mocked_api_client, update_data=update_data, replace_data=replace_data)
+        return self.client.post(self.url, data=data, follow=follow)
 
     def submit_check_details_form(self, mocked_api_client, update_data=None, replace_data=None, follow=False):
         data = self._prepare_post_data(mocked_api_client, update_data=update_data, replace_data=replace_data)
@@ -102,8 +103,8 @@ class ChooseMethodViewTestCase(BaseTestCase):
 
     def test_both_choices_listed(self):
         response = self.client.get(self.url)
-        self.assertContains(response, reverse('send_money:send_money_debit'))
-        self.assertContains(response, reverse('send_money:send_money_bank'))
+        self.assertContains(response, reverse('send_money:prisoner_details_debit'))
+        self.assertContains(response, reverse('send_money:prisoner_details_bank'))
 
     def test_experiment_choice_cookie_and_ordering(self):
         from send_money.views import ChooseMethodView
@@ -116,88 +117,22 @@ class ChooseMethodViewTestCase(BaseTestCase):
 
         content = response.content.decode(response.charset)
         if variation == 'debit-card':
-            self.assertLess(content.find(reverse('send_money:send_money_debit')),
-                            content.find(reverse('send_money:send_money_bank')),
+            self.assertLess(content.find(reverse('send_money:prisoner_details_debit')),
+                            content.find(reverse('send_money:prisoner_details_bank')),
                             'Debit card option should appear first according to experiment')
         else:
-            self.assertLess(content.find(reverse('send_money:send_money_bank')),
-                            content.find(reverse('send_money:send_money_debit')),
+            self.assertLess(content.find(reverse('send_money:prisoner_details_bank')),
+                            content.find(reverse('send_money:prisoner_details_debit')),
                             'Bank transfer option should appear first according to experiment')
 
 
-class SendMoneyDebitViewTestCase(BaseTestCase):
-    url = reverse_lazy('send_money:send_money_debit')
+class PrisonerDetauksDebitViewTestCase(BaseTestCase):
+    url = reverse_lazy('send_money:prisoner_details_debit')
 
-    def test_send_money_page_loads(self):
+    def test_prisoner_details_page_loads(self):
         with reload_payment_urls(self, show_debit_card=True):
             response = self.client.get(self.url)
-            self.assertOnPage(response, 'send_money_debit')
-
-    def test_request_user_is_anonymous(self):
-        response = self.client.get(self.url)
-        request = response.context['request']
-        self.assertTrue(request.user.is_anonymous())
-
-    @override_settings(SERVICE_CHARGE_PERCENTAGE=Decimal('2.5'),
-                       SERVICE_CHARGE_FIXED=Decimal('0.21'))
-    def test_send_money_page_shows_service_charge(self):
-        with reload_payment_urls(self, show_debit_card=True):
-            response = self.client.get(self.url)
-            self.assertContains(response, '2.5%')
-            self.assertContains(response, '21p')
-
-    @override_settings(SERVICE_CHARGED=False)
-    def test_send_money_page_shows_no_service_charge(self):
-        with reload_payment_urls(self, show_debit_card=True):
-            response = self.client.get(self.url)
-            self.assertNotContains(response, 'service charge')
-
-    @mock.patch('send_money.utils.api_client')
-    def test_send_money_page_previews_form(self, mocked_api_client):
-        with reload_payment_urls(self, show_debit_card=True):
-            response = self.submit_send_money_form(mocked_api_client, follow=True)
-            self.assertOnPage(response, 'check_details')
-
-    @mock.patch('send_money.forms.PrisonerDetailsForm.check_prisoner_validity')
-    def test_send_money_page_displays_errors_for_invalid_prisoner_number(self, mocked_check_prisoner_validity):
-        with reload_payment_urls(self, show_debit_card=True):
-            response = self.client.post(self.url, data=split_prisoner_dob_for_post({
-                'prisoner_name': 'John Smith',
-                'prisoner_number': 'a1231a1',
-                'prisoner_dob': '1980-10-04',
-                'amount': '10.00',
-            }))
-            self.assertContains(response, 'Incorrect prisoner number format')
-            form = response.context['form']
-            self.assertTrue(form.errors)
-            self.assertEqual(mocked_check_prisoner_validity.call_count, 0)
-
-    @mock.patch('send_money.forms.PrisonerDetailsForm.check_prisoner_validity')
-    def test_send_money_page_displays_errors_for_invalid_prisoner_dob(self, mocked_check_prisoner_validity):
-        with reload_payment_urls(self, show_debit_card=True):
-            response = self.client.post(self.url, data={
-                'prisoner_name': 'John Smith',
-                'prisoner_number': 'A1231DE',
-                'amount': '10.00',
-            })
-            self.assertContains(response, 'This field is required')
-            form = response.context['form']
-            self.assertTrue(form.errors)
-            self.assertEqual(mocked_check_prisoner_validity.call_count, 0)
-
-    @mock.patch('send_money.forms.PrisonerDetailsForm.check_prisoner_validity')
-    def test_send_money_page_displays_errors_for_invalid_prisoner_details(self, mocked_check_prisoner_validity):
-        mocked_check_prisoner_validity.return_value = False
-        with reload_payment_urls(self, show_debit_card=True):
-            response = self.client.post(self.url, data=split_prisoner_dob_for_post({
-                'prisoner_name': 'John Smith',
-                'prisoner_number': 'A1231DE',
-                'prisoner_dob': '1980-10-04',
-                'amount': '10.00',
-            }))
-            self.assertContains(response, escape('No prisoner matches the details you’ve supplied'))
-            form = response.context['form']
-            self.assertTrue(form.errors)
+            self.assertOnPage(response, 'prisoner_details_debit')
 
     @mock.patch('send_money.forms.PrisonerDetailsForm.check_prisoner_validity')
     def test_send_money_page_displays_errors_for_dropped_api_connection(self, mocked_check_prisoner_validity):
@@ -207,29 +142,95 @@ class SendMoneyDebitViewTestCase(BaseTestCase):
                 'prisoner_name': 'John Smith',
                 'prisoner_number': 'A1231DE',
                 'prisoner_dob': '1980-10-04',
-                'amount': '10.00',
             }))
             self.assertContains(response, 'This service is currently unavailable')
             form = response.context['form']
             self.assertTrue(form.errors)
 
+    @mock.patch('send_money.forms.PrisonerDetailsForm.check_prisoner_validity')
+    def test_prisoner_details_page_displays_errors_for_invalid_prisoner_number(self, mocked_check_prisoner_validity):
+        with reload_payment_urls(self, show_debit_card=True):
+            response = self.client.post(self.url, data=split_prisoner_dob_for_post({
+                'prisoner_name': 'John Smith',
+                'prisoner_number': 'a1231a1',
+                'prisoner_dob': '1980-10-04',
+            }))
+            self.assertContains(response, 'Incorrect prisoner number format')
+            form = response.context['form']
+            self.assertTrue(form.errors)
+            self.assertEqual(mocked_check_prisoner_validity.call_count, 0)
+
+    @mock.patch('send_money.forms.PrisonerDetailsForm.check_prisoner_validity')
+    def test_prisoner_details_page_displays_errors_for_invalid_prisoner_dob(self, mocked_check_prisoner_validity):
+        with reload_payment_urls(self, show_debit_card=True):
+            response = self.client.post(self.url, data={
+                'prisoner_name': 'John Smith',
+                'prisoner_number': 'A1231DE',
+            })
+            self.assertContains(response, 'This field is required')
+            form = response.context['form']
+            self.assertTrue(form.errors)
+            self.assertEqual(mocked_check_prisoner_validity.call_count, 0)
+
+    @mock.patch('send_money.forms.PrisonerDetailsForm.check_prisoner_validity')
+    def test_prisoner_details_page_displays_errors_for_invalid_prisoner_details(self, mocked_check_prisoner_validity):
+        mocked_check_prisoner_validity.return_value = False
+        with reload_payment_urls(self, show_debit_card=True):
+            response = self.client.post(self.url, data=split_prisoner_dob_for_post({
+                'prisoner_name': 'John Smith',
+                'prisoner_number': 'A1231DE',
+                'prisoner_dob': '1980-10-04',
+            }))
+            self.assertContains(response, escape('No prisoner matches the details you’ve supplied'))
+            form = response.context['form']
+            self.assertTrue(form.errors)
+
+
+class SendMoneyDebitViewTestCase(BaseTestCase):
+    url = reverse_lazy('send_money:send_money_debit')
+
+    @mock.patch('send_money.utils.api_client')
+    @override_settings(SERVICE_CHARGE_PERCENTAGE=Decimal('2.5'),
+                       SERVICE_CHARGE_FIXED=Decimal('0.21'))
+    def test_send_money_page_shows_service_charge(self, mocked_api_client):
+        with reload_payment_urls(self, show_debit_card=True):
+            response = self.submit_prisoner_details_form(mocked_api_client, follow=True)
+            self.assertContains(response, '2.5%')
+            self.assertContains(response, '21p')
+
+    @mock.patch('send_money.utils.api_client')
+    @override_settings(SERVICE_CHARGED=False)
+    def test_send_money_page_shows_no_service_charge(self, mocked_api_client):
+        with reload_payment_urls(self, show_debit_card=True):
+            response = self.submit_prisoner_details_form(mocked_api_client, follow=True)
+            self.assertNotContains(response, 'service charge')
+
+    @mock.patch('send_money.utils.api_client')
+    def test_send_money_page_previews_form(self, mocked_api_client):
+        with reload_payment_urls(self, show_debit_card=True):
+            self.submit_prisoner_details_form(mocked_api_client, follow=True)
+            response = self.submit_send_money_form(mocked_api_client, follow=True)
+            self.assertOnPage(response, 'check_details')
+
     @mock.patch('send_money.utils.api_client')
     def test_send_money_page_allows_changing_form(self, mocked_api_client):
         with reload_payment_urls(self, show_debit_card=True):
+            self.submit_prisoner_details_form(mocked_api_client, follow=True)
             response = self.submit_send_money_form(mocked_api_client, follow=True)
             self.assertOnPage(response, 'check_details')
             response = self.client.get(self.start_url + '?change')
-            self.assertOnPage(response, 'send_money_debit')
+            self.assertOnPage(response, 'prisoner_details_debit')
             self.assertContains(response, '"John Smith"')
             self.assertContains(response, '"A1231DE"')
             self.assertContains(response, '"4"')
             self.assertContains(response, '"10"')
             self.assertContains(response, '"1980"')
-            self.assertContains(response, '"10.00"')
 
     @mock.patch('send_money.utils.api_client')
     def test_send_money_page_can_proceed_to_debit_card(self, mocked_api_client):
         with reload_payment_urls(self, show_debit_card=True):
+            response = self.submit_prisoner_details_form(mocked_api_client, follow=True)
+            self.assertOnPage(response, 'send_money_debit')
             response = self.submit_send_money_form(mocked_api_client, follow=True)
             self.assertOnPage(response, 'check_details')
             response = self.submit_check_details_form(mocked_api_client, update_data={
@@ -240,11 +241,11 @@ class SendMoneyDebitViewTestCase(BaseTestCase):
 
 
 class BankTransferViewTestCase(BaseTestCase):
-    start_url = reverse_lazy('send_money:send_money_bank')
+    start_url = reverse_lazy('send_money:prisoner_details_bank')
     url = reverse_lazy('send_money:bank_transfer')
 
     def bank_transfer_flow(self, mocked_api_client):
-        return self.submit_send_money_form(
+        return self.submit_prisoner_details_form(
             mocked_api_client, replace_data={
                 'prisoner_number': SAMPLE_FORM['prisoner_number'],
                 'prisoner_dob': SAMPLE_FORM['prisoner_dob'],
@@ -484,7 +485,7 @@ class ConfirmationViewTestCase(BaseTestCase):
                     response = self.client.get(
                         self.url, {'payment_ref': ref}, follow=False
                     )
-                self.assertRedirects(response, reverse_lazy('send_money:send_money_debit'))
+                self.assertRedirects(response, reverse_lazy('send_money:prisoner_details_debit'))
 
 
 class PaymentOptionAvailabilityTestCase(SimpleTestCase):

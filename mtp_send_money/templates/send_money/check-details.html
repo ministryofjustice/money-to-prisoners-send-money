@@ -21,7 +21,7 @@
         {% trans 'Prisoner number' %}: {{ form.prisoner_number.value }}
       </div>
       <div class="mtp-confirm-change">
-        <a href="{% url 'send_money:send_money_debit' %}?change&amp;focus=id_prisoner_name">{% trans 'Change this' %}</a>
+        <a href="{% url 'send_money:prisoner_details_debit' %}?change&amp;focus=id_prisoner_name">{% trans 'Change this' %}</a>
       </div>
     </div>
 

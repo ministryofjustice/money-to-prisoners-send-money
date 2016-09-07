@@ -4,12 +4,16 @@ from unittest import mock
 from django.http import HttpRequest
 import responses
 
-from send_money.forms import SendMoneyForm
+from send_money.forms import (
+    PrisonerDetailsForm, StartPaymentPrisonerDetailsForm, SendMoneyForm
+)
 from send_money.tests import mock_auth, normalise_prisoner_details, update_post_with_prisoner_details
 from send_money.utils import api_url
 
 
-class SendMoneyFormTestCase(unittest.TestCase):
+class FormTestCase(unittest.TestCase):
+    form_class = NotImplemented
+
     @classmethod
     def make_valid_tests(cls, data_sets):
         def make_method(name, prisoner_details, data):
@@ -26,7 +30,7 @@ class SendMoneyFormTestCase(unittest.TestCase):
                         status=200,
                     )
                     update_post_with_prisoner_details(data, prisoner_details)
-                    form = SendMoneyForm(request=HttpRequest(), data=data)
+                    form = self.form_class(request=HttpRequest(), data=data)
                     self.assertTrue(form.is_valid(), msg='\n\n%s' % form.errors.as_text())
 
             return test
@@ -40,7 +44,7 @@ class SendMoneyFormTestCase(unittest.TestCase):
             @mock.patch('send_money.utils.api_client')
             def test(self, mocked_api_client):
                 update_post_with_prisoner_details(data, prisoner_details)
-                form = SendMoneyForm(request=HttpRequest(), data=data)
+                form = self.form_class(request=HttpRequest(), data=data)
                 self.assertFormInvalid(form, mocked_api_client)
 
             return test
@@ -58,6 +62,150 @@ class SendMoneyFormTestCase(unittest.TestCase):
             self.assertEqual(mocked_api_client.get_authenticated_connection.call_count, 0,
                              'api_client.get_authenticated_connection called!')
         self.assertFalse(is_valid)
+
+
+class PrisonerDetailsFormTestCase(FormTestCase):
+    form_class = PrisonerDetailsForm
+
+
+PrisonerDetailsFormTestCase.make_valid_tests([
+    {
+        'name': 'bank_transfer_1',
+        'prisoner_details': {
+            'prisoner_number': 'A1234AB',
+            'prisoner_dob': '1980-10-05',
+        },
+        'data': {},
+    },
+    {
+        'name': 'bank_transfer_2',
+        'prisoner_details': {
+            'prisoner_number': 'a1234ab',
+            'prisoner_dob': '1980-10-05',
+        },
+        'data': {},
+    },
+    {
+        'name': 'bank_transfer_short_year',
+        'prisoner_details': {
+            'prisoner_number': 'A1234AB',
+            'prisoner_dob': '1980-10-05',
+        },
+        'data': {
+            'prisoner_number': 'A1234AB',
+            'prisoner_dob_0': '5',
+            'prisoner_dob_1': '10',
+            'prisoner_dob_2': '80',
+        },
+    },
+])
+
+
+PrisonerDetailsFormTestCase.make_invalid_tests([
+    {
+        'name': 'empty_form',
+        'prisoner_details': {},
+        'data': {},
+    },
+    {
+        'name': 'missing_prisoner_number',
+        'prisoner_details': {
+            'prisoner_number': '',
+            'prisoner_dob': '1980-10-05',
+        },
+        'data': {
+            'prisoner_name': 'John Smith',
+        },
+    },
+    {
+        'name': 'missing_prisoner_dob',
+        'prisoner_details': {
+            'prisoner_number': 'A1234AB',
+            'prisoner_dob': '',
+        },
+        'data': {
+            'prisoner_name': 'John Smith',
+        },
+    },
+    {
+        'name': 'prisoner_number',
+        'prisoner_details': {
+            'prisoner_number': 'A12346',
+            'prisoner_dob': '1980-10-05',
+        },
+        'data': {
+            'prisoner_name': 'John Smith',
+        },
+    },
+    {
+        'name': 'prisoner_dob',
+        'prisoner_details': {
+            'prisoner_number': 'A1234AB',
+            'prisoner_dob': '5 Oct 1988',
+        },
+        'data': {
+            'prisoner_name': 'John Smith',
+        },
+    },
+])
+
+
+class StartPaymentPrisonerDetailsFormTestCase(FormTestCase):
+    form_class = StartPaymentPrisonerDetailsForm
+
+
+StartPaymentPrisonerDetailsFormTestCase.make_valid_tests([
+    {
+        'name': 'start_payment_1',
+        'prisoner_details': {
+            'prisoner_number': 'A1234AB',
+            'prisoner_dob': '1980-10-05',
+        },
+        'data': {
+            'prisoner_name': 'John Smith',
+        },
+    },
+    {
+        'name': 'start_payment_2',
+        'prisoner_details': {
+            'prisoner_number': 'a1234ab',
+            'prisoner_dob': '1980-10-05',
+        },
+        'data': {
+            'prisoner_name': 'John Smith',
+        },
+    },
+    {
+        'name': 'start_payment_short_year',
+        'prisoner_details': {
+            'prisoner_number': 'A1234AB',
+            'prisoner_dob': '1980-10-05',
+        },
+        'data': {
+            'prisoner_name': 'John Smith',
+            'prisoner_number': 'A1234AB',
+            'prisoner_dob_0': '5',
+            'prisoner_dob_1': '10',
+            'prisoner_dob_2': '80',
+        },
+    },
+])
+
+
+StartPaymentPrisonerDetailsFormTestCase.make_invalid_tests([
+    {
+        'name': 'missing_name',
+        'prisoner_details': {
+            'prisoner_number': 'A1234AB',
+            'prisoner_dob': '1980-10-05',
+        },
+        'data': {},
+    },
+])
+
+
+class SendMoneyFormTestCase(FormTestCase):
+    form_class = SendMoneyForm
 
 
 SendMoneyFormTestCase.make_valid_tests([
@@ -94,124 +242,13 @@ SendMoneyFormTestCase.make_valid_tests([
             'amount': '1000000.00',
         },
     },
-    {
-        'name': 'debit_card_no_email',
-        'prisoner_details': {
-            'prisoner_number': 'A1234AB',
-            'prisoner_dob': '1980-10-05',
-        },
-        'data': {
-            'prisoner_name': 'John Smith',
-            'amount': '1000000.00',
-        },
-    },
-    {
-        'name': 'bank_transfer_1',
-        'prisoner_details': {
-            'prisoner_number': 'A1234AB',
-            'prisoner_dob': '1980-10-05',
-        },
-        'data': {
-            'prisoner_name': 'John Smith',
-            'amount': '10',
-        },
-    },
-    {
-        'name': 'bank_transfer_2',
-        'prisoner_details': {
-            'prisoner_number': 'a1234ab',
-            'prisoner_dob': '1980-10-05',
-        },
-        'data': {
-            'prisoner_name': 'John Smith',
-            'amount': '100',
-        },
-    },
-    {
-        'name': 'bank_transfer_short_year',
-        'prisoner_details': {
-            'prisoner_number': 'A1234AB',
-            'prisoner_dob': '1980-10-05',
-        },
-        'data': {
-            'prisoner_name': 'John Smith',
-            'prisoner_number': 'A1234AB',
-            'prisoner_dob_0': '5',
-            'prisoner_dob_1': '10',
-            'prisoner_dob_2': '80',
-            'amount': '100',
-        },
-    },
 ])
 
 SendMoneyFormTestCase.make_invalid_tests([
     {
-        'name': 'empty_form',
+        'name': 'missing_prisoner_details',
         'prisoner_details': {},
-        'data': {},
-    },
-    {
-        'name': 'missing_name',
-        'prisoner_details': {
-            'prisoner_number': 'A1234AB',
-            'prisoner_dob': '1980-10-05',
-        },
         'data': {
-            'amount': '120.45',
-        },
-    },
-    {
-        'name': 'missing_prisoner_number',
-        'prisoner_details': {
-            'prisoner_number': '',
-            'prisoner_dob': '1980-10-05',
-        },
-        'data': {
-            'prisoner_name': 'John Smith',
-            'amount': '120.45',
-        },
-    },
-    {
-        'name': 'missing_prisoner_dob',
-        'prisoner_details': {
-            'prisoner_number': 'A1234AB',
-            'prisoner_dob': '',
-        },
-        'data': {
-            'prisoner_name': 'John Smith',
-            'amount': '120.45',
-        },
-    },
-    {
-        'name': 'missing_amount',
-        'prisoner_details': {
-            'prisoner_number': 'A1234AB',
-            'prisoner_dob': '1980-10-05',
-        },
-        'data': {
-            'prisoner_name': 'John Smith',
-            'amount': '',
-        },
-    },
-    {
-        'name': 'prisoner_number',
-        'prisoner_details': {
-            'prisoner_number': 'A12346',
-            'prisoner_dob': '1980-10-05',
-        },
-        'data': {
-            'prisoner_name': 'John Smith',
-            'amount': '120.45',
-        },
-    },
-    {
-        'name': 'prisoner_dob',
-        'prisoner_details': {
-            'prisoner_number': 'A1234AB',
-            'prisoner_dob': '5 Oct 1988',
-        },
-        'data': {
-            'prisoner_name': 'John Smith',
             'amount': '120.45',
         },
     },

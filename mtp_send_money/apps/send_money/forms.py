@@ -87,12 +87,35 @@ class PrisonerDetailsForm(GARequestErrorReportingMixin, forms.Form):
         session['prisoner_number'] = self.cleaned_data['prisoner_number']
 
 
-class SendMoneyForm(PrisonerDetailsForm):
-    field_order = ('prisoner_name', 'prisoner_dob', 'prisoner_number', 'amount')
+class StartPaymentPrisonerDetailsForm(PrisonerDetailsForm):
+    field_order = ('prisoner_name', 'prisoner_dob', 'prisoner_number',)
     prisoner_name = forms.CharField(
         label=_('Prisoner name'),
         max_length=250,
     )
+
+    def save_form_data_in_session(self, session):
+        form_data = self.cleaned_data
+        for field in self.get_field_names():
+            session[field] = form_data[field]
+        session['prisoner_dob'] = serialise_date(session['prisoner_dob'])
+
+    @classmethod
+    def form_data_from_session(cls, session):
+        try:
+            data = {
+                field: session.get(field)
+                for field in cls.get_field_names()
+            }
+            prisoner_dob = unserialise_date(data['prisoner_dob'])
+            data['prisoner_dob'] = [prisoner_dob.day, prisoner_dob.month, prisoner_dob.year]
+            return data
+        except (KeyError, ValueError):
+            raise ValueError('Session does not have a valid form')
+
+
+class SendMoneyForm(StartPaymentPrisonerDetailsForm):
+    visible_fields = ('amount',)
     amount = forms.DecimalField(
         label=_('Amount you are sending'),
         min_value=decimal.Decimal('0.01'),
@@ -105,27 +128,22 @@ class SendMoneyForm(PrisonerDetailsForm):
         }
     )
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field_name, field in self.fields.items():
+            if field_name not in self.visible_fields:
+                field.widget = field.hidden_widget()
+
     def switch_to_hidden(self):
         for field in self.fields.values():
             field.widget = field.hidden_widget()
 
     def save_form_data_in_session(self, session):
-        form_data = self.cleaned_data
-        for field in self.get_field_names():
-            session[field] = form_data[field]
-        session['prisoner_dob'] = serialise_date(session['prisoner_dob'])
+        super().save_form_data_in_session(session)
         session['amount'] = serialise_amount(session['amount'])
 
     @classmethod
     def form_data_from_session(cls, session):
-        try:
-            data = {
-                field: session.get(field)
-                for field in cls.get_field_names()
-            }
-            prisoner_dob = unserialise_date(data['prisoner_dob'])
-            data['prisoner_dob'] = [prisoner_dob.day, prisoner_dob.month, prisoner_dob.year]
-            data['amount'] = unserialise_amount(data['amount'])
-            return data
-        except (KeyError, ValueError):
-            raise ValueError('Session does not have a valid form')
+        data = super().form_data_from_session(session)
+        data['amount'] = unserialise_amount(data['amount'])
+        return data
