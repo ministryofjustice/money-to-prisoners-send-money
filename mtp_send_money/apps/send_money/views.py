@@ -12,6 +12,7 @@ from django.utils.translation import ugettext as _
 from django.views.generic import FormView
 from django.views.generic.base import TemplateView
 import requests
+from requests.exceptions import Timeout
 from mtp_common.email import send_email
 from slumber.exceptions import SlumberHttpBaseException
 
@@ -299,7 +300,8 @@ def debit_card_view(request, context):
         }
 
         govuk_response = requests.post(
-            govuk_url('/payments'), headers=govuk_headers(), json=new_govuk_payment
+            govuk_url('/payments'), headers=govuk_headers(),
+            json=new_govuk_payment, timeout=15
         )
 
         if govuk_response.status_code == 201:
@@ -316,6 +318,10 @@ def debit_card_view(request, context):
             )
     except SlumberHttpBaseException:
         logger.exception('Failed to create new payment')
+    except Timeout:
+        logger.exception(
+            'GOV.UK Pay payment initiation timed out for %s' % payment_ref
+        )
 
     return render(request, 'send_money/failure.html', context)
 
@@ -340,7 +346,8 @@ def confirmation_view(request):
         govuk_id = api_response['processor_id']
 
         govuk_response = requests.get(
-            govuk_url('/payments/%s' % govuk_id), headers=govuk_headers()
+            govuk_url('/payments/%s' % govuk_id), headers=govuk_headers(),
+            timeout=15
         )
 
         if (govuk_response.status_code == 200 and
@@ -368,9 +375,13 @@ def confirmation_view(request):
             )
             return clear_session_view(request)
     except SlumberHttpBaseException:
-            logger.exception(
-                'Failed to access payment %s' % payment_ref,
-            )
+        logger.exception(
+            'Failed to access payment %s' % payment_ref
+        )
+    except Timeout:
+        logger.exception(
+            'GOV.UK Pay payment status update timed out for %s' % payment_ref
+        )
 
     request.session.flush()
     return render(request, 'send_money/confirmation.html', context)
