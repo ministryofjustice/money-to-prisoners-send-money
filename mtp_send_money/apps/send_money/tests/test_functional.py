@@ -21,10 +21,15 @@ class SendMoneyFunctionalTestCase(FunctionalTestCase):
     """
     accessibility_scope_selector = '#content'
 
-    def fill_in_send_money_form(self, data, payment_method):
+    def fill_in_prisoner_details_form(self, data, payment_method):
         if settings.SHOW_BANK_TRANSFER_OPTION and settings.SHOW_DEBIT_CARD_OPTION:
             field = self.driver.find_element_by_xpath('//a[@id="id_%s"]' % payment_method)
             field.click()
+        for key in data:
+            field = self.driver.find_element_by_id('id_%s' % key)
+            field.send_keys(data[key])
+
+    def fill_in_send_money_form(self, data):
         for key in data:
             field = self.driver.find_element_by_id('id_%s' % key)
             field.send_keys(data[key])
@@ -36,7 +41,7 @@ class SendMoneyFlows(SendMoneyFunctionalTestCase):
     def test_bank_transfer_only_flow(self):
         with reload_payment_urls(self, show_debit_card=False, show_bank_transfer=True):
             self.driver.get(self.live_server_url)
-            self.fill_in_send_money_form(split_prisoner_dob_for_post({
+            self.fill_in_prisoner_details_form(split_prisoner_dob_for_post({
                 'prisoner_number': 'A1409AE',
                 'prisoner_dob': '21/01/1989',
             }), PaymentMethod.bank_transfer)
@@ -46,7 +51,7 @@ class SendMoneyFlows(SendMoneyFunctionalTestCase):
     def test_bank_transfer_flow(self):
         with reload_payment_urls(self, show_debit_card=True, show_bank_transfer=True):
             self.driver.get(self.live_server_url)
-            self.fill_in_send_money_form(split_prisoner_dob_for_post({
+            self.fill_in_prisoner_details_form(split_prisoner_dob_for_post({
                 'prisoner_number': 'A1409AE',
                 'prisoner_dob': '21/01/1989',
             }), PaymentMethod.bank_transfer)
@@ -57,12 +62,15 @@ class SendMoneyFlows(SendMoneyFunctionalTestCase):
     def test_debit_card_flow(self):
         with reload_payment_urls(self, show_debit_card=True, show_bank_transfer=True):
             self.driver.get(self.live_server_url)
-            self.fill_in_send_money_form(split_prisoner_dob_for_post({
+            self.fill_in_prisoner_details_form(split_prisoner_dob_for_post({
                 'prisoner_name': 'James Halls',
                 'prisoner_number': 'A1409AE',
                 'prisoner_dob': '21/01/1989',
-                'amount': '0.51',
             }), PaymentMethod.debit_card)
+            self.driver.find_element_by_id('id_next_btn').click()
+            self.fill_in_send_money_form({
+                'amount': '0.51',
+            })
             self.driver.find_element_by_id('id_next_btn').click()
             # TODO: add gov.uk mock and test various responses
 
@@ -112,6 +120,12 @@ class SendMoneyDetailsPage(SendMoneyFunctionalTestCase):
 
         with reload_payment_urls(self, show_debit_card=True):
             self.driver.get(self.live_server_url)
+            self.fill_in_prisoner_details_form(split_prisoner_dob_for_post({
+                'prisoner_name': 'James Halls',
+                'prisoner_number': 'A1409AE',
+                'prisoner_dob': '21/01/1989',
+            }), PaymentMethod.debit_card)
+            self.driver.find_element_by_id('id_next_btn').click()
             check_service_charge('0', '£0.20')
             check_service_charge('10', '£10.44')
             check_service_charge('120.40', '£123.49')
@@ -145,12 +159,15 @@ class SendMoneyCheckDetailsPage(SendMoneyFunctionalTestCase):
         with reload_payment_urls(self, show_debit_card=True):
             super().setUp()
             self.driver.get(self.live_server_url)
-            self.fill_in_send_money_form(split_prisoner_dob_for_post({
+            self.fill_in_prisoner_details_form(split_prisoner_dob_for_post({
                 'prisoner_name': 'James Halls',
                 'prisoner_number': 'A1409AE',
                 'prisoner_dob': '21/01/1989',
-                'amount': '34.50',
             }), PaymentMethod.debit_card)
+            self.driver.find_element_by_id('id_next_btn').click()
+            self.fill_in_send_money_form({
+                'amount': '34.50',
+            })
             self.driver.find_element_by_id('id_next_btn').click()
             self.assertCurrentUrl('/check-details/')
             self.assertEqual(self.driver.title, 'Check details - Send money to a prisoner - GOV.UK')

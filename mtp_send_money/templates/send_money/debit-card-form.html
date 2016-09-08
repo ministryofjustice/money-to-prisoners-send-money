@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% load mtp_common %}
+{% load send_money %}
+
+{% block inner_content %}
+  <h1 class="heading-xlarge">{% trans 'Who are you sending money to?' %}</h1>
+
+  <form method="post" action=".{% if request.GET.change %}?change=1{% endif %}">
+    {% csrf_token %}
+
+    {% include 'mtp_common/forms/error-summary.html' with form=form only %}
+
+    <fieldset>
+      <legend class="form-label-bold">{% trans "Prisoner details" %}</legend>
+
+      {% include 'mtp_common/forms/field.html' with field=form.prisoner_name only %}
+
+      {% with field=form.prisoner_dob %}
+        <div class="form-group form-date {% if field.errors %}error{% endif %}">
+          <p>{{ field.label }}</p>
+          {% include 'mtp_common/forms/field-help-text.html' with field=field only %}
+          {% include 'mtp_common/forms/field-errors.html' with field=field only %}
+          <div>
+             <div class="form-date-day {% if field.errors %}error{% endif %}">
+               <label id="{{ field.auto_id }}_0-label" class="form-label" for="{{ field.auto_id }}_0">{% trans "Day" %}</label>
+               <input class="form-control" id="{{ field.auto_id }}_0" name="{{ field.html_name }}_0" value="{{ field.value.0|default:'' }}" type="number" />
+             </div>
+             <div class="form-date-month {% if field.errors %}error{% endif %}">
+               <label id="{{ field.auto_id }}_1-label" class="form-label" for="{{ field.auto_id }}_1">{% trans "Month" %}</label>
+               <input class="form-control" id="{{ field.auto_id }}_1" name="{{ field.html_name }}_1" value="{{ field.value.1|default:'' }}" type="number" />
+             </div>
+             <div class="form-date-year {% if field.errors %}error{% endif %}">
+               <label id="{{ field.auto_id }}_2-label" class="form-label" for="{{ field.auto_id }}_2">{% trans "Year" %}</label>
+               <input class="form-control form-year-field" id="{{ field.auto_id }}_2" name="{{ field.html_name }}_2" value="{{ field.value.2|default:'' }}" type="number" data-era-boundary="{{ field.field.fields.2.era_boundary }}" />
+             </div>
+          </div>
+        </div>
+      {% endwith %}
+
+      {% with field=form.prisoner_number %}
+        <div class="form-group {% if field.errors %}error{% endif %}">
+          {% include 'mtp_common/forms/field-label.html' with field=field only %}
+          {% include 'mtp_common/forms/field-help-text.html' with field=field only %}
+          {% include 'mtp_common/forms/field-errors.html' with field=field only %}
+          <input class="form-control mtp-prisoner-number" id="{{ field.id_for_label }}" name="{{ field.html_name }}" value="{{ field.value|default:'' }}" type="text"  />
+        </div>
+      {% endwith %}
+    </fieldset>
+
+    <p>
+      <input id="id_next_btn" class="button" type="submit" value="{% trans 'Continue' %}">
+    </p>
+  </form>
+{% endblock %}
