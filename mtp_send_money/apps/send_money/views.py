@@ -162,6 +162,12 @@ class DebitCardPrisonerDetailsView(FormView):
         form.save_form_data_in_session(self.request.session)
         return super().form_valid(form)
 
+    def get_success_url(self):
+        success_url = super().get_success_url()
+        if 'change' in self.request.GET:
+            success_url += '?change=1'
+        return success_url
+
 
 class SendMoneyView(FormView):
     """
@@ -178,7 +184,10 @@ class SendMoneyView(FormView):
     def get_initial(self):
         initial = super().get_initial()
         session = self.request.session
-        initial.update(StartPaymentPrisonerDetailsForm.form_data_from_session(session))
+        if 'change' in self.request.GET and SendMoneyForm.session_contains_form_data(session):
+            initial.update(SendMoneyForm.form_data_from_session(session))
+        else:
+            initial.update(StartPaymentPrisonerDetailsForm.form_data_from_session(session))
         return initial
 
     def get_context_data(self, **kwargs):

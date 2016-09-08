@@ -21,7 +21,7 @@
         {% trans 'Prisoner number' %}: {{ form.prisoner_number.value }}
       </div>
       <div class="mtp-confirm-change">
-        <a href="{% url 'send_money:prisoner_details_debit' %}?change&amp;focus=id_prisoner_name">{% trans 'Change this' %}</a>
+        <a href="{% url 'send_money:prisoner_details_debit' %}?change=1&amp;focus=id_prisoner_name">{% trans 'Change this' %}</a>
       </div>
     </div>
 
@@ -35,7 +35,7 @@
         {% trans 'Total to be taken from your account' %}: {{ form.amount.value|add_service_charge|currency_format }}<br>
       </div>
       <div class="mtp-confirm-change">
-        <a href="{% url 'send_money:send_money_debit' %}?change&amp;focus=id_amount">{% trans 'Change this' %}</a>
+        <a href="{% url 'send_money:send_money_debit' %}?change=1&amp;focus=id_amount">{% trans 'Change this' %}</a>
       </div>
     </div>
 

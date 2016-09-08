@@ -126,7 +126,7 @@ class ChooseMethodViewTestCase(BaseTestCase):
                             'Bank transfer option should appear first according to experiment')
 
 
-class PrisonerDetauksDebitViewTestCase(BaseTestCase):
+class PrisonerDetailsDebitViewTestCase(BaseTestCase):
     url = reverse_lazy('send_money:prisoner_details_debit')
 
     def test_prisoner_details_page_loads(self):
@@ -213,18 +213,21 @@ class SendMoneyDebitViewTestCase(BaseTestCase):
             self.assertOnPage(response, 'check_details')
 
     @mock.patch('send_money.utils.api_client')
-    def test_send_money_page_allows_changing_form(self, mocked_api_client):
+    def test_prisoner_details_page_allows_changing_form(self, mocked_api_client):
         with reload_payment_urls(self, show_debit_card=True):
             self.submit_prisoner_details_form(mocked_api_client, follow=True)
             response = self.submit_send_money_form(mocked_api_client, follow=True)
             self.assertOnPage(response, 'check_details')
-            response = self.client.get(self.start_url + '?change')
+            response = self.client.get(self.start_url + '?change=1')
             self.assertOnPage(response, 'prisoner_details_debit')
             self.assertContains(response, '"John Smith"')
             self.assertContains(response, '"A1231DE"')
             self.assertContains(response, '"4"')
             self.assertContains(response, '"10"')
             self.assertContains(response, '"1980"')
+            response = self.client.get(self.url + '?change=1')
+            self.assertOnPage(response, 'send_money_debit')
+            self.assertContains(response, '"10.00"')
 
     @mock.patch('send_money.utils.api_client')
     def test_send_money_page_can_proceed_to_debit_card(self, mocked_api_client):

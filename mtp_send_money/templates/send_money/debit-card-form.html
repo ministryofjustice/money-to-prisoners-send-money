@@ -6,7 +6,7 @@
 {% block inner_content %}
   <h1 class="heading-xlarge">{% trans 'Who are you sending money to?' %}</h1>
 
-  <form method="post" action=".">
+  <form method="post" action=".{% if request.GET.change %}?change=1{% endif %}">
     {% csrf_token %}
 
     {% include 'mtp_common/forms/error-summary.html' with form=form only %}
