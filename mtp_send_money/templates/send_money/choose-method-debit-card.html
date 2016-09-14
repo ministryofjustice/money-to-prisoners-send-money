@@ -1,12 +1,8 @@
 {% load i18n %}
 {% load send_money %}
 
-<li>
-  <a id="id_debit_card" href="{% url 'send_money:prisoner_details_debit' %}" class="large-link-list--link" {% if experiment.debit_card_conversion %}data-analytics="{{ experiment.debit_card_conversion }}"{% endif %}>
-    {% trans 'Use your debit card' %}
-    <span>{% trans 'You will receive confirmation of payment.' %}</span>
-    {% if service_charged %}
-      <span>{% blocktrans trimmed with charge_percentage=service_charge_percentage|format_percentage charge_fixed=service_charge_fixed|currency_format_pence %}Your bank charges a {{ charge_percentage }} fee (plus {{ charge_fixed }}) for each transaction.{% endblocktrans %}</span>
-    {% endif %}
-  </a>
-</li>
+
+<label class="block-label" for="radio-1">
+  <input id="radio-1" type="radio" name="radio-group" value="Pay now by debit card">
+  Pay now by debit card
+</label>
