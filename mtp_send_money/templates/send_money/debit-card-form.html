@@ -4,7 +4,10 @@
 {% load send_money %}
 
 {% block inner_content %}
-  <h1 class="heading-xlarge">{% trans 'Who are you sending money to?' %}</h1>
+  <h1 class="heading-xlarge">
+    <span class="heading-secondary">{% trans 'Pay now by debit card' %}</span>
+    {% trans 'Enter prisoner details' %}
+  </h1>
 
   <form method="post" action=".{% if request.GET.change %}?change=1{% endif %}">
     {% csrf_token %}
@@ -12,7 +15,7 @@
     {% include 'mtp_common/forms/error-summary.html' with form=form only %}
 
     <fieldset>
-      <legend class="form-label-bold">{% trans "Prisoner details" %}</legend>
+      <legend class="visuallyhidden">{% trans "Prisoner details" %}</legend>
 
       {% include 'mtp_common/forms/field.html' with field=form.prisoner_name only %}
 
@@ -49,7 +52,7 @@
     </fieldset>
 
     <p>
-      <input id="id_next_btn" class="button" type="submit" value="{% trans 'Continue' %}">
+      <input id="id_next_btn" class="button" type="submit" value="{% trans 'Enter amount' %}">
     </p>
   </form>
 {% endblock %}
