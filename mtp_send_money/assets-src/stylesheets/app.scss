@@ -46,11 +46,20 @@ form .form-group .form-hint {
   }
 }
 
+.heading-small {
+  padding-top: 10px;
+  padding-bottom: 15px;
+}
+
 // mtp-common overrides
 
 .help-box-title {
-  margin-top: 16px;
+  margin-top: 25px;
   margin-bottom: 30px;
+}
+
+.help-box-contents {
+  padding-left: 30px;
 }
 
 // Application-specific
