@@ -1,51 +1,43 @@
 {% extends 'base.html' %}
 {% load i18n %}
 {% load send_money %}
+{% load static %}
+
 
 {% block inner_content %}
 <div class="mtp-bank-transfer">
 
-  <h1 class="heading-xlarge">{% trans 'Send the money' %}</h1>
+  <div class="govuk-box-highlight">
+    <h1 class="heading-large">{% trans 'Prisoner bank transfer reference' %}</h1>
+    <p>{% trans 'Keep this for future transfers to this prisoner' %}</p>
+    <strong>{{ bank_transfer_reference }}</strong>
+  </div>
+
+  <div class="mtp-print">
+    <img src="{% static 'images/icon-file-download.png' %}"
+         srcset="{% static 'images/icon-file-download-2x.png' %} 2x"
+         alt="{% trans 'Print this page' %}"></img>
+    <a class="mtp-print-reference" href="#">{% trans 'Print this page' %}</a>
+  </div>
 
   <section>
-    <h2 class="heading-large">{% trans '1. Log in to your online banking or mobile banking app, or telephone your bank' %}</h2>
+    <h2 class="heading-medium">{% trans 'How to use this reference to make your bank transfer' %}</h2>
+    <ol class="list list-number">
+      <li>{% trans 'Log into your mobile banking app or online banking, or phone your bank. You can’t go into a branch to transfer money to a prisoner.' %}</li>
+      <li>{% trans 'Give your bank the prisoner bank transfer reference above. This is so the prison service knows who to pay the money to.' %}</li>
+      <li>{% trans 'Give your bank these details:' %}</li>
+        <div class="mtp-account panel panel-border-wide">
+          <ul>
+            <li>{% trans 'Account number: ' %} {{ account_number }}</li>
+            <li>{% trans 'Sort code: '%} {{ sort_code }}</li>
+            <li>{% trans 'Reference:' %} {{ bank_transfer_reference }}</li>
+          </ul>
+        </div>
+        <p>{% trans 'If the bank asks for ‘payee’ details, just enter the prisoner’s name.' %}</p>
+        <li>{% trans 'Money takes up to 3 working days to reach a prisoner’s account. No money is processed at weekends.' %}</li>
+        <li>{% trans 'Print this page for the next time you make a payment to this prisoner.' %}</li>
+    </ol>
   </section>
 
-  <section>
-    <h2 class="heading-large">{% trans '2. Use the following bank details:' %}</h2>
-
-    <dl class="mtp-bank-details">
-      <dt>{% trans 'The prison service account number' %}</dt>
-      <dd>
-        <samp>{{ account_number }}</samp>
-      </dd>
-      <dt>{% trans 'The prison service sort code' %}</dt>
-      <dd>
-        <samp>{{ sort_code }}</samp>
-      </dd>
-      <dt>{% trans 'Use your prisoner bank transfer reference' %}</dt>
-      <dd>
-        <samp>{{ bank_transfer_reference }}</samp>
-      </dd>
-    </dl>
-
-    <div class="panel panel-border-wide">
-      <p>{% trans 'Please note that:' %}</p>
-      <ul class="list list-bullet">
-        <li>{% trans 'If you’re asked for a ‘payee’, use the prisoner’s name - this is for your own records and doesn’t affect payment' %}</li>
-        <li>{% trans 'If you use the wrong reference, your money will be automatically refunded within 4 working days and will appear as NOMS AGENCY REFUND in the bank statement' %}</li>
-        <li>{% trans 'If you try to make a payment in-branch OR make an international payment, the money won’t reach the prisoner and it’s a lengthy process to claim it back' %}</li>
-        <li>{% trans 'All public prisons in England and Wales use the same NatWest account to receive money sent to prisoners' %}</li>
-      </ul>
-    </div>
-  </section>
-
-  <section>
-    <h2 class="heading-large">{% trans '3. The money is paid into the prisoner’s account' %}</h2>
-    <p>{% trans 'The money should arrive in the prisoner’s account in 1 working day. However, your bank may take longer to process payment (up to 3 working days).' %}</p>
-    <p>{% trans 'No money is processed at weekends.' %}</p>
-    <p>{% trans 'If you have any questions about how to make a payment, contact your bank or building society.' %}</p>
-    <p>{% trans 'Remember, you can only use this service to send money to prisoners in HMP Brixton, HMP Bullingdon, HMP Cardiff or HMP High Down.' %}</p>
-  </section>
 </div>
 {% endblock %}

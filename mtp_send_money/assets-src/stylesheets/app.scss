@@ -3,7 +3,6 @@
 $images-dir: '/static/images/';
 
 @import 'mtp';
-
 // govuk_elements overrides
 
 h1 { margin: 30px 0 40px 0; }
@@ -32,6 +31,10 @@ form .form-group .form-hint {
   margin-top: 0;
 }
 
+img {
+  padding: 10px;
+}
+
 .phase-banner {
   font-size: 16px;
   padding-bottom: 12px;
@@ -51,6 +54,10 @@ form .form-group .form-hint {
   padding-bottom: 15px;
 }
 
+.govuk-box-highlight {
+  padding: 0.1em 0 1em;
+}
+
 // mtp-common overrides
 
 .help-box-title {
@@ -63,6 +70,10 @@ form .form-group .form-hint {
 }
 
 // Application-specific
+
+.mtp-account {
+  font-weight: bold;
+}
 
 .mtp-hidden {
   display: none;
