@@ -8,7 +8,7 @@
 
   <form class="js-experiment-context" {% if experiment.context %}data-experiment-context="{{ experiment.context }}"{% endif %}>
     <fieldset>
-      <legend class="visuallyhidden">How do you want to send money?</legend>
+      <legend class="visuallyhidden">{% trans 'How do you want to send money?' %}</legend>
       {% if experiment.show_bank_transfer_first %}
         {% include 'send_money/choose-method-bank-transfer.html' %}
         <p class="form-block">or</p>
@@ -22,7 +22,7 @@
   </form>
 
   <div class="help-box print-hidden help-box-collapsed">
-    <div class="help-box-title" aria-controls="help-box-contents" aria-expanded="true" role="heading">
+    <div class="help-box-title" aria-controls="help-box-contents" aria-expanded="false" role="heading">
       <div></div><a href="#">{% trans 'Which is right for me?' %}</a>
     </div>
     <div class="panel panel-border-narrow help-box-contents" id="help-box-contents">

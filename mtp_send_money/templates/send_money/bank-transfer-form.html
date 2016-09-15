@@ -4,10 +4,11 @@
 {% load send_money %}
 
 {% block inner_content %}
-  <h1 class="heading-xlarge">{% trans 'Enter prisoner details' %}</h1>
-
-  <p>{% trans 'To make a bank transfer online, you need to generate a prisoner bank transfer number.' %}</p>
-  <p>{% trans 'To do this, we need these details: ' %}</p>
+<h1 class="heading-xlarge">
+    <span class="heading-secondary">{% trans 'Generate a prisoner bank transfer reference' %}</span>
+    {% trans 'Enter prisoner details' %}
+</h1>
+  <p>{% trans 'To make a bank transfer online, you need to generate a prisoner bank transfer number. To do this, we need these details: ' %}</p>
 
   <form method="post" action=".">
     {% csrf_token %}
@@ -15,7 +16,7 @@
     {% include 'mtp_common/forms/error-summary.html' with form=form only %}
 
     <fieldset>
-      <legend class="form-label-bold">{% trans "Prisoner details" %}</legend>
+      <legend class="visuallyhidden">{% trans "Prisoner details" %}</legend>
 
       {% with field=form.prisoner_dob %}
         <div class="form-group form-date {% if field.errors %}error{% endif %}">
@@ -52,7 +53,7 @@
     </fieldset>
     <br/>
     <p>
-      <input id="id_next_btn" class="button" type="submit" value="{% trans 'Continue' %}">
+      <input id="id_next_btn" class="button" type="submit" value="{% trans 'Get reference' %}">
     </p>
   </form>
 {% endblock %}
