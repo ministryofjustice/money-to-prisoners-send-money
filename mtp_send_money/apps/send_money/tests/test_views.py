@@ -51,7 +51,8 @@ class BaseTestCase(SimpleTestCase):
             opening_url = reverse_lazy('send_money:prisoner_details_debit')
         elif settings.SHOW_BANK_TRANSFER_OPTION:
             opening_url = reverse_lazy('send_money:prisoner_details_bank')
-
+        else:
+            self.fail('Unexpected condition')
         self.assertRedirects(response, opening_url)
 
     def populate_session(self, **kwargs):

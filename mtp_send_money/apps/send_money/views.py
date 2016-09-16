@@ -10,9 +10,9 @@ from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext as _
 from django.views.generic import FormView
+from mtp_common.email import send_email
 import requests
 from requests.exceptions import Timeout
-from mtp_common.email import send_email
 from slumber.exceptions import SlumberHttpBaseException
 
 from send_money.forms import (
@@ -30,7 +30,7 @@ logger = logging.getLogger('mtp')
 def require_session_parameters(form_class):
     """
     View decorator to require a session to include the serialised form
-    @param view: the view callable
+    @param form_class: the form defining required fields
     """
 
     def wrapper(view):
@@ -43,6 +43,8 @@ def require_session_parameters(form_class):
                     start_url = reverse('send_money:prisoner_details_debit')
                 elif settings.SHOW_BANK_TRANSFER_OPTION:
                     start_url = reverse('send_money:prisoner_details_bank')
+                else:
+                    start_url = '/'
                 return redirect(start_url)
             return view(request, *args, **kwargs)
         return inner
@@ -54,7 +56,7 @@ def make_context_from_session(form_class):
     """
     View decorator that creates a template context from the serialised form
     in a session
-    @param view: the view callable
+    @param form_class: the form defining fields
     """
 
     def wrapper(view):
@@ -300,6 +302,7 @@ def debit_card_view(request, context):
         new_payment['email'] = context['email']
 
     client = get_api_client()
+    payment_ref = None
     try:
         api_response = client.payments.post(new_payment)
         payment_ref = api_response['uuid']
