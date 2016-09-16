@@ -8,10 +8,28 @@ from mtp_common.forms.fields import SplitDateField
 from requests.exceptions import RequestException
 from slumber.exceptions import HttpNotFoundError, SlumberHttpBaseException
 
+from send_money.models import PaymentMethod
 from send_money.utils import (
     serialise_date, unserialise_date, serialise_amount, unserialise_amount,
     validate_prisoner_number, get_api_client
 )
+
+
+class PaymentMethodForm(GARequestErrorReportingMixin, forms.Form):
+    payment_method = forms.ChoiceField(error_messages={
+        'required': _('Please choose how you want to send money')
+    }, choices=PaymentMethod.django_choices())
+
+    def __init__(self, show_bank_transfer_first, **kwargs):
+        super().__init__(**kwargs)
+        if show_bank_transfer_first:
+            self['payment_method'].field.choices = reversed(self['payment_method'].field.choices)
+
+    @property
+    def chosen_view_name(self):
+        if self.cleaned_data['payment_method'] == PaymentMethod.bank_transfer.name:
+            return 'send_money:prisoner_details_bank'
+        return 'send_money:prisoner_details_debit'
 
 
 class PrisonerDetailsForm(GARequestErrorReportingMixin, forms.Form):

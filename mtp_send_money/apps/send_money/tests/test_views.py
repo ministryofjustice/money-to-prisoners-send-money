@@ -8,7 +8,7 @@ from unittest import mock
 
 from django.conf import settings
 from django.core import mail
-from django.core.urlresolvers import reverse, reverse_lazy
+from django.core.urlresolvers import reverse_lazy
 from django.test.testcases import SimpleTestCase
 from django.test.utils import override_settings
 from django.utils.html import escape
@@ -103,8 +103,8 @@ class ChooseMethodViewTestCase(BaseTestCase):
 
     def test_both_choices_listed(self):
         response = self.client.get(self.url)
-        self.assertContains(response, reverse('send_money:prisoner_details_debit'))
-        self.assertContains(response, reverse('send_money:prisoner_details_bank'))
+        self.assertContains(response, 'id_debit_card')
+        self.assertContains(response, 'id_bank_transfer')
 
     def test_experiment_choice_cookie_and_ordering(self):
         from send_money.views import ChooseMethodView
@@ -117,13 +117,18 @@ class ChooseMethodViewTestCase(BaseTestCase):
 
         content = response.content.decode(response.charset)
         if variation == 'debit-card':
-            self.assertLess(content.find(reverse('send_money:prisoner_details_debit')),
-                            content.find(reverse('send_money:prisoner_details_bank')),
+            self.assertLess(content.find('id_debit_card'),
+                            content.find('id_bank_transfer'),
                             'Debit card option should appear first according to experiment')
         else:
-            self.assertLess(content.find(reverse('send_money:prisoner_details_bank')),
-                            content.find(reverse('send_money:prisoner_details_debit')),
+            self.assertLess(content.find('id_bank_transfer'),
+                            content.find('id_debit_card'),
                             'Bank transfer option should appear first according to experiment')
+
+    def test_choice_must_be_made_before_proceeding(self):
+        response = self.client.post(self.url)
+        self.assertContains(response, 'error-summary')
+        self.assertOnPage(response, 'choose_method')
 
 
 class PrisonerDetailsDebitViewTestCase(BaseTestCase):

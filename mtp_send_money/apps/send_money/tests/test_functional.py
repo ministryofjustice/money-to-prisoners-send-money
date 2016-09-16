@@ -4,7 +4,6 @@ import random
 import unittest
 from unittest import mock
 
-from django.conf import settings
 from django.test import override_settings
 from django.utils.timezone import now
 from mtp_common.test_utils.functional_tests import FunctionalTestCase
@@ -21,10 +20,12 @@ class SendMoneyFunctionalTestCase(FunctionalTestCase):
     """
     accessibility_scope_selector = '#content'
 
-    def fill_in_prisoner_details_form(self, data, payment_method):
-        if settings.SHOW_BANK_TRANSFER_OPTION and settings.SHOW_DEBIT_CARD_OPTION:
-            field = self.driver.find_element_by_xpath('//a[@id="id_%s"]' % payment_method)
-            field.click()
+    def make_payment_method_choice(self, payment_method):
+        field = self.driver.find_element_by_id('id_%s' % payment_method)
+        field.click()
+        self.click_on_text('Continue')
+
+    def fill_in_prisoner_details_form(self, data):
         for key in data:
             field = self.driver.find_element_by_id('id_%s' % key)
             field.send_keys(data[key])
@@ -44,17 +45,18 @@ class SendMoneyFlows(SendMoneyFunctionalTestCase):
             self.fill_in_prisoner_details_form(split_prisoner_dob_for_post({
                 'prisoner_number': 'A1409AE',
                 'prisoner_dob': '21/01/1989',
-            }), PaymentMethod.bank_transfer)
+            }))
             self.driver.find_element_by_id('id_next_btn').click()
             self.assertInSource('<!-- bank_transfer -->')
 
     def test_bank_transfer_flow(self):
         with reload_payment_urls(self, show_debit_card=True, show_bank_transfer=True):
             self.driver.get(self.live_server_url)
+            self.make_payment_method_choice(PaymentMethod.bank_transfer)
             self.fill_in_prisoner_details_form(split_prisoner_dob_for_post({
                 'prisoner_number': 'A1409AE',
                 'prisoner_dob': '21/01/1989',
-            }), PaymentMethod.bank_transfer)
+            }))
             self.driver.find_element_by_id('id_next_btn').click()
             self.assertInSource('<!-- bank_transfer -->')
 
@@ -62,11 +64,12 @@ class SendMoneyFlows(SendMoneyFunctionalTestCase):
     def test_debit_card_flow(self):
         with reload_payment_urls(self, show_debit_card=True, show_bank_transfer=True):
             self.driver.get(self.live_server_url)
+            self.make_payment_method_choice(PaymentMethod.debit_card)
             self.fill_in_prisoner_details_form(split_prisoner_dob_for_post({
                 'prisoner_name': 'James Halls',
                 'prisoner_number': 'A1409AE',
                 'prisoner_dob': '21/01/1989',
-            }), PaymentMethod.debit_card)
+            }))
             self.driver.find_element_by_id('id_next_btn').click()
             self.fill_in_send_money_form({
                 'amount': '0.51',
@@ -81,7 +84,7 @@ class SendMoneyDetailsPage(SendMoneyFunctionalTestCase):
         with reload_payment_urls(self, show_debit_card=True):
             self.driver.get(self.live_server_url)
             self.assertEqual(self.driver.title, 'Send money to a prisoner - GOV.UK')
-            self.assertEqual(self.driver.find_element_by_css_selector('h1').text, 'Who are you sending money to?')
+            self.assertIn('Enter prisoner details', self.driver.find_element_by_css_selector('h1').text)
 
     def check_2_digit_entry(self):
         entry_year = random.randrange(0, 99)
@@ -124,7 +127,7 @@ class SendMoneyDetailsPage(SendMoneyFunctionalTestCase):
                 'prisoner_name': 'James Halls',
                 'prisoner_number': 'A1409AE',
                 'prisoner_dob': '21/01/1989',
-            }), PaymentMethod.debit_card)
+            }))
             self.driver.find_element_by_id('id_next_btn').click()
             check_service_charge('0', '£0.20')
             check_service_charge('10', '£10.44')
@@ -163,7 +166,7 @@ class SendMoneyCheckDetailsPage(SendMoneyFunctionalTestCase):
                 'prisoner_name': 'James Halls',
                 'prisoner_number': 'A1409AE',
                 'prisoner_dob': '21/01/1989',
-            }), PaymentMethod.debit_card)
+            }))
             self.driver.find_element_by_id('id_next_btn').click()
             self.fill_in_send_money_form({
                 'amount': '34.50',
@@ -177,7 +180,7 @@ class SendMoneyCheckDetailsPage(SendMoneyFunctionalTestCase):
         self.assertInSource('Date of birth: 21/01/1989')
         self.assertInSource('Prisoner number: A1409AE')
         self.assertInSource('Total to prisoner: £34.50')
-        self.assertInSource('value="Make payment"')
+        self.assertInSource('value="Enter card details"')
 
     def test_style(self):
         self.assertEqual('48px', self.driver.find_element_by_css_selector('h1').value_of_css_property('font-size'))
