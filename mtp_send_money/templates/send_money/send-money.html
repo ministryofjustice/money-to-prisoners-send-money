@@ -22,7 +22,7 @@
       <div class="mtp-amount">
         <fieldset>
           <legend class="form-label">{% trans 'Amount' %}</legend>
-          <span class="mtp-label-secondary">{% trans 'You’ll receive a refund if prisoner details are incorrect' %}</span>
+          <p class="form-hint">{% trans 'You’ll receive a refund if prisoner details are incorrect' %}</p>
 
           <label id="{{ field.id_for_label }}-label" class="mtp-hidden" for="{{ field.id_for_label }}">{% trans "Please enter the amount in pounds" %}</label>
           <div class="form-group mtp-money-amount {% if field.errors %}error{% endif %}">
