@@ -32,7 +32,11 @@ form .form-group .form-hint {
 }
 
 img {
-  padding: 10px;
+  padding: 10px 10px 0px 0px;
+}
+
+ol > li {
+  padding-bottom: 10px;
 }
 
 .phase-banner {
@@ -71,10 +75,13 @@ img {
 
 // Application-specific
 
+.mtp-instructions {
+  width: 65%;
+}
+
 .mtp-label-secondary {
   color: $secondary-text-colour;
 }
-
 
 .mtp-account {
   font-weight: bold;
@@ -189,6 +196,7 @@ img {
 }
 
 .mtp-bank-transfer {
+  // width: 65%;
   section {
     margin-left: 1em;
     margin-bottom: 3em;

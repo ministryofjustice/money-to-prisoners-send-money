@@ -8,7 +8,7 @@
     <span class="heading-secondary">{% trans 'Generate a prisoner bank transfer reference' %}</span>
     {% trans 'Enter prisoner details' %}
 </h1>
-  <p>{% trans 'To make a bank transfer online, you need to generate a prisoner bank transfer number. To do this, we need these details: ' %}</p>
+  <p class="mtp-instructions">{% trans 'To make a bank transfer online, you need to generate a prisoner bank transfer number. To do this, we need these details: ' %}</p>
 
   <form method="post" action=".">
     {% csrf_token %}
