@@ -403,6 +403,7 @@ class ConfirmationViewTestCase(BaseTestCase):
                         'processor_id': processor_id,
                         'recipient_name': 'John',
                         'amount': 1000,
+                        'status': 'pending',
                         'created': datetime.datetime.now().isoformat() + 'Z',
                     },
                     status=200,
@@ -445,6 +446,7 @@ class ConfirmationViewTestCase(BaseTestCase):
                         'processor_id': processor_id,
                         'recipient_name': 'John',
                         'amount': 1000,
+                        'status': 'pending',
                         'created': datetime.datetime.now().isoformat() + 'Z',
                     },
                     status=200,
@@ -481,6 +483,7 @@ class ConfirmationViewTestCase(BaseTestCase):
                         'processor_id': processor_id,
                         'recipient_name': 'John',
                         'amount': 1000,
+                        'status': 'pending',
                         'created': datetime.datetime.now().isoformat() + 'Z',
                     },
                     status=200,
@@ -495,6 +498,30 @@ class ConfirmationViewTestCase(BaseTestCase):
                         self.url, {'payment_ref': ref}, follow=False
                     )
                 self.assertRedirects(response, reverse_lazy('send_money:prisoner_details_debit'))
+
+    def test_confirmation_redirects_for_completed_payments(self):
+        with reload_payment_urls(self, show_debit_card=True):
+            with responses.RequestsMock() as rsps, self.settings(GOVUK_PAY_URL='http://payment.gov.uk'):
+                ref = 'wargle-blargle'
+                processor_id = '3'
+                mock_auth(rsps)
+                rsps.add(
+                    rsps.GET,
+                    api_url('/payments/%s/' % ref),
+                    json={
+                        'processor_id': processor_id,
+                        'recipient_name': 'John',
+                        'amount': 1000,
+                        'status': 'taken',
+                        'created': datetime.datetime.now().isoformat() + 'Z',
+                    },
+                    status=200,
+                )
+                with self.silence_logger():
+                    response = self.client.get(
+                        self.url, {'payment_ref': ref}, follow=False
+                    )
+                self.assertRedirects(response, '/')
 
 
 class PaymentOptionAvailabilityTestCase(SimpleTestCase):

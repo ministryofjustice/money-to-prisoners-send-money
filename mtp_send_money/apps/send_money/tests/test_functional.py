@@ -212,6 +212,7 @@ class SendMoneyConfirmationPage(SendMoneyFunctionalTestCase):
                 'processor_id': processor_id,
                 'recipient_name': 'James Bond',
                 'amount': 2000,
+                'status': 'pending',
                 'created': datetime.datetime.now().isoformat() + 'Z',
             }
             with responses.RequestsMock() as rsps:
@@ -237,6 +238,7 @@ class SendMoneyConfirmationPage(SendMoneyFunctionalTestCase):
                 'processor_id': processor_id,
                 'recipient_name': 'James Bond',
                 'amount': 2000,
+                'status': 'pending',
                 'created': datetime.datetime.now().isoformat() + 'Z',
             }
             with responses.RequestsMock() as rsps:
