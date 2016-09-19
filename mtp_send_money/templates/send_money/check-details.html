@@ -13,7 +13,7 @@
 
   <form class="mtp-confirm" method="post" action=".">
     {% csrf_token %}
-    <p>{% trans 'Check and change any details that are incorrect.' %}</p>
+    <p>{% trans 'Check and change any incorrect details.' %}</p>
 
     <div class="mtp-checkgroup">
       <div class="mtp-confirm-fieldset">
@@ -30,12 +30,12 @@
 
     <div class="mtp-checkgroup">
       <div class="mtp-confirm-fieldset">
-        <h2 class="heading-large">{% trans 'Money you are sending' %}</h2>
+        <h2 class="heading-large">{% trans 'Money you’re sending' %}</h2>
 
         {% if service_charged %}
           {% trans 'Total to prisoner' %}: {{ form.amount.value|currency_format }}<br>
         {% endif %}
-        {% trans 'Total to be taken from your account' %}: {{ form.amount.value|add_service_charge|currency_format }}<br>
+        {% trans 'Amount to be taken from your account' %}: {{ form.amount.value|add_service_charge|currency_format }}<br>
       </div>
       <div class="mtp-confirm-change">
         <a href="{% url 'send_money:send_money_debit' %}?change=1&amp;focus=id_amount">{% trans 'Change this' %}</a>

@@ -311,7 +311,7 @@ def debit_card_view(request, context):
         new_govuk_payment = {
             'amount': amount_pence + service_charge_pence,
             'reference': payment_ref,
-            'description': _('Payment to prisoner %(prisoner_number)s'
+            'description': _('To this prisoner: %(prisoner_number)s'
                              % {'prisoner_number': context['prisoner_number']}),
             'return_url': site_url(
                 reverse('send_money:confirmation') + '?payment_ref=' + payment_ref
