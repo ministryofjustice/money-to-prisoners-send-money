@@ -10,14 +10,13 @@ from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext as _
 from django.views.generic import FormView
-from django.views.generic.base import TemplateView
+from mtp_common.email import send_email
 import requests
 from requests.exceptions import Timeout
-from mtp_common.email import send_email
 from slumber.exceptions import SlumberHttpBaseException
 
 from send_money.forms import (
-    SendMoneyForm, PrisonerDetailsForm, StartPaymentPrisonerDetailsForm
+    PaymentMethodForm, SendMoneyForm, PrisonerDetailsForm, StartPaymentPrisonerDetailsForm
 )
 from send_money.utils import (
     unserialise_amount, unserialise_date, bank_transfer_reference,
@@ -31,7 +30,7 @@ logger = logging.getLogger('mtp')
 def require_session_parameters(form_class):
     """
     View decorator to require a session to include the serialised form
-    @param view: the view callable
+    @param form_class: the form defining required fields
     """
 
     def wrapper(view):
@@ -44,6 +43,8 @@ def require_session_parameters(form_class):
                     start_url = reverse('send_money:prisoner_details_debit')
                 elif settings.SHOW_BANK_TRANSFER_OPTION:
                     start_url = reverse('send_money:prisoner_details_bank')
+                else:
+                    start_url = '/'
                 return redirect(start_url)
             return view(request, *args, **kwargs)
         return inner
@@ -55,7 +56,7 @@ def make_context_from_session(form_class):
     """
     View decorator that creates a template context from the serialised form
     in a session
-    @param view: the view callable
+    @param form_class: the form defining fields
     """
 
     def wrapper(view):
@@ -88,18 +89,20 @@ class BankTransferPrisonerDetailsView(FormView):
         return super().form_valid(form)
 
 
-class ChooseMethodView(TemplateView):
+class ChooseMethodView(FormView):
     template_name = 'send_money/choose-method.html'
+    form_class = PaymentMethodForm
     experiment_cookie_name = 'EXP-first-payment-choice'
     experiment_variations = ['debit-card', 'bank-transfer']
     experiment_lifetime = datetime.timedelta(days=300)
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        self.show_bank_transfer_first = False
         self.set_experiment_cookie = None
 
-    def get(self, request, *args, **kwargs):
-        response = super().get(request, *args, **kwargs)
+    def dispatch(self, request, *args, **kwargs):
+        response = super().dispatch(request, *args, **kwargs)
         if self.set_experiment_cookie is not None:
             response.set_cookie(self.experiment_cookie_name, self.set_experiment_cookie,
                                 expires=timezone.now() + self.experiment_lifetime)
@@ -107,7 +110,7 @@ class ChooseMethodView(TemplateView):
 
     def get_experiment(self):
         experiment = {
-            'show_bank_transfer_first': False,
+            'show_bank_transfer_first': self.show_bank_transfer_first,
         }
         if not settings.ENABLE_PAYMENT_CHOICE_EXPERIMENT:
             return experiment
@@ -116,29 +119,35 @@ class ChooseMethodView(TemplateView):
         if variation not in self.experiment_variations:
             variation = random.choice(self.experiment_variations)
             self.set_experiment_cookie = variation
-            experiment_context = 'pageview,/_experiments/display-payment-methods/%s/' % variation
+            context = 'pageview,/_experiments/display-payment-methods/%s/' % variation
         else:
-            experiment_context = 'pageview,/_experiments/redisplay-payment-methods/%s/' % variation
+            context = 'pageview,/_experiments/redisplay-payment-methods/%s/' % variation
+        self.show_bank_transfer_first = variation == 'bank-transfer'
 
         experiment.update({
-            'show_bank_transfer_first': variation == 'bank-transfer',
-            'context': experiment_context,
-            'debit_card_conversion': 'pageview,/_experiments/payment-method-chosen/debit-card/',
-            'bank_transfer_conversion': 'pageview,/_experiments/payment-method-chosen/bank-transfer/',
+            'show_bank_transfer_first': self.show_bank_transfer_first,
+            'context': context,
         })
         return experiment
 
     def get_context_data(self, **kwargs):
+        experiment = self.get_experiment()
         context_data = super().get_context_data(**kwargs)
-
         context_data.update({
-            'experiment': self.get_experiment(),
+            'experiment': experiment,
             'service_charged': settings.SERVICE_CHARGED,
             'service_charge_percentage': settings.SERVICE_CHARGE_PERCENTAGE,
             'service_charge_fixed': settings.SERVICE_CHARGE_FIXED,
         })
-
         return context_data
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['show_bank_transfer_first'] = self.show_bank_transfer_first
+        return kwargs
+
+    def form_valid(self, form):
+        return redirect(form.chosen_view_name)
 
 
 class DebitCardPrisonerDetailsView(FormView):
@@ -293,6 +302,7 @@ def debit_card_view(request, context):
         new_payment['email'] = context['email']
 
     client = get_api_client()
+    payment_ref = None
     try:
         api_response = client.payments.post(new_payment)
         payment_ref = api_response['uuid']
@@ -301,7 +311,7 @@ def debit_card_view(request, context):
         new_govuk_payment = {
             'amount': amount_pence + service_charge_pence,
             'reference': payment_ref,
-            'description': _('Payment to prisoner %(prisoner_number)s'
+            'description': _('To this prisoner: %(prisoner_number)s'
                              % {'prisoner_number': context['prisoner_number']}),
             'return_url': site_url(
                 reverse('send_money:confirmation') + '?payment_ref=' + payment_ref

@@ -4,8 +4,8 @@ from django.utils.translation import ugettext_lazy as _
 
 
 class PaymentMethod(Enum):
-    debit_card = _('Debit card through this website')
-    bank_transfer = _('Bank transfer')
+    debit_card = _('Pay now by debit card')
+    bank_transfer = _('Generate a prisoner reference to make a bank transfer')
 
     def __str__(self):
         return self.name

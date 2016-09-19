@@ -4,7 +4,10 @@
 {% load send_money %}
 
 {% block inner_content %}
-  <h1 class="heading-xlarge">{% trans 'How much money do you want to send?' %}</h1>
+  <h1 class="heading-xlarge">
+    <span class="heading-secondary">{% trans 'Pay now by debit card' %}</span>
+    {% trans 'Enter amount to send' %}
+  </h1>
 
   <form method="post" action=".">
     {% csrf_token %}
@@ -18,7 +21,7 @@
     {% with field=form.amount %}
       <div class="mtp-amount">
         <fieldset>
-          <legend class="form-label-bold">{% trans "How much are you sending?" %}</legend>
+          <legend class="form-label">{% trans 'Amount' %}</legend>
 
           <label id="{{ field.id_for_label }}-label" class="mtp-hidden" for="{{ field.id_for_label }}">{% trans "Please enter the amount in pounds" %}</label>
           <div class="form-group mtp-money-amount {% if field.errors %}error{% endif %}">
@@ -74,7 +77,7 @@
     {% endwith %}
 
     <p>
-      <input id="id_next_btn" class="button" type="submit" value="{% trans 'Continue' %}">
+      <input id="id_next_btn" class="button" type="submit" value="{% trans 'Check details' %}">
     </p>
   </form>
 {% endblock %}

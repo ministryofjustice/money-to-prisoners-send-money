@@ -6,11 +6,14 @@
 {% block page_title %}{% trans 'Check details - Send money to a prisoner - GOV.UK' %}{% endblock %}
 
 {% block inner_content %}
-  <h1 class="heading-xlarge">{% trans 'Check details' %}</h1>
+  <h1 class="heading-xlarge">
+    <span class="heading-secondary">{% trans 'Pay now by debit card' %}</span>
+    {% trans 'Check details' %}
+  </h1>
 
   <form class="mtp-confirm" method="post" action=".">
     {% csrf_token %}
-    <p>{% trans 'Check and change any details that are incorrect.' %}</p>
+    <p>{% trans 'Check and change any incorrect details.' %}</p>
 
     <div class="mtp-checkgroup">
       <div class="mtp-confirm-fieldset">
@@ -27,12 +30,12 @@
 
     <div class="mtp-checkgroup">
       <div class="mtp-confirm-fieldset">
-        <h2 class="heading-large">{% trans 'Money you are sending' %}</h2>
+        <h2 class="heading-large">{% trans 'Money you’re sending' %}</h2>
 
         {% if service_charged %}
           {% trans 'Total to prisoner' %}: {{ form.amount.value|currency_format }}<br>
         {% endif %}
-        {% trans 'Total to be taken from your account' %}: {{ form.amount.value|add_service_charge|currency_format }}<br>
+        {% trans 'Amount to be taken from your account' %}: {{ form.amount.value|add_service_charge|currency_format }}<br>
       </div>
       <div class="mtp-confirm-change">
         <a href="{% url 'send_money:send_money_debit' %}?change=1&amp;focus=id_amount">{% trans 'Change this' %}</a>
@@ -44,7 +47,7 @@
 
     <div>
       <div class="mtp-confirm-fieldset">
-        <input id="id_next_btn" class="button" type="submit" name="next" value="{% trans 'Make payment' %}">
+        <input id="id_next_btn" class="button" type="submit" name="next" value="{% trans 'Enter card details' %}">
       </div>
       <div class="mtp-confirm-change">
         <a href="{% url 'send_money:clear_session' %}">{% trans 'Cancel and delete all details' %}</a>

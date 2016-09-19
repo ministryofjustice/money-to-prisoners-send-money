@@ -4,15 +4,51 @@
 {% block page_title %}{% trans 'Choose payment method - Send money to a prisoner - GOV.UK' %}{% endblock %}
 
 {% block inner_content %}
-  <h1 class="heading-xlarge">{% trans 'Choose payment method' %}</h1>
+  <h1 class="heading-xlarge">{% trans 'How do you want to send money?' %}</h1>
 
-  <ul class="large-link-list js-experiment-context" {% if experiment.context %}data-experiment-context="{{ experiment.context }}"{% endif %}>
-    {% if experiment.show_bank_transfer_first %}
-      {% include 'send_money/choose-method-bank-transfer.html' %}
-      {% include 'send_money/choose-method-debit-card.html' %}
-    {% else %}
-      {% include 'send_money/choose-method-debit-card.html' %}
-      {% include 'send_money/choose-method-bank-transfer.html' %}
-    {% endif %}
-  </ul>
+  <form method="post" class="js-experiment-context" {% if experiment.context %}data-experiment-context="{{ experiment.context }}"{% endif %}>
+    {% csrf_token %}
+    {% include 'mtp_common/forms/error-summary.html' with form=form only %}
+
+    <fieldset>
+      <legend class="visuallyhidden">{% trans 'How do you want to send money?' %}</legend>
+
+      {% for payment_method in form.payment_method.field.choices %}
+        <label class="block-label" for="id_{{ payment_method.0 }}">
+          <input id="id_{{ payment_method.0 }}" type="radio" name="{{ form.payment_method.html_name }}" value="{{ payment_method.0 }}">
+          {{ payment_method.1 }}
+        </label>
+
+        {% if not forloop.last %}
+          <p class="form-block">{% trans 'or' %}</p>
+        {% endif %}
+      {% endfor %}
+    </fieldset>
+
+    <div class="help-box print-hidden help-box-collapsed">
+      <div class="help-box-title" aria-controls="help-box-contents" aria-expanded="false" role="heading">
+        <div></div><a href="#">{% trans 'Which is right for me?' %}</a>
+      </div>
+      <div class="panel panel-border-narrow help-box-contents" id="help-box-contents">
+        <h2 class="heading-small">{% trans 'Pay now by debit card' %}</h2>
+        <ol class="list list-number">
+          <li>{% trans 'You can pay now using this service' %}</li>
+          <li>{% trans 'Money should take 1 working day to reach the prisoner' %}</li>
+          <li>{% trans 'You’ll get email confirmation of payment' %}</li>
+        </ol>
+        <h2 class="heading-small">{% trans 'Generate a prisoner reference to make a bank transfer' %}</h2>
+        <ol class="list list-number">
+          <li>{% trans 'You’ll get a reference you can use to make regular bank transfers to this prisoner' %}</li>
+          <li>{% trans 'You’ll need to complete the transfer using your app, over the phone, or online' %}</li>
+          <li>{% trans 'Money takes 1-3 working days to reach the prisoner' %}</li>
+          <li>{% trans 'You won’t receive email confirmation of payment' %}</li>
+        </ol>
+        <strong>{% trans 'You can’t transfer money from a bank branch using this service' %}</strong>
+      </div>
+    </div>
+
+    <p>
+      <input id="id_next_btn" class="button" type="submit" value="{% trans 'Continue' %}">
+    </p>
+  </form>
 {% endblock %}

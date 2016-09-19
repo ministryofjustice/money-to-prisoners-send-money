@@ -13,7 +13,7 @@
   <div>
     <h2 class="heading-large">{% trans 'What happens next?' %}</h2>
 
-    <p>{% trans 'The money will arrive in the prisoner’s account in 1 working day.' %} </p>
+    <p>{% trans 'The money will arrive in the prisoner’s account the next working day.' %} </p>
 
 
     <div>
@@ -30,6 +30,8 @@
   <p><a href="{% url 'send_money:send_money_debit' %}" class="button" role="button">{% trans "Back to start" %}</a></p>
 
   <p><a href="javascript:window.print()">{% trans 'Print this page' %}</a></p>
+
+  <a href=# url="">{% trans 'Refunds' %}</a>
 
   {% else %}
   <p>{% trans 'We’re sorry, your payment could not be processed on this occasion' %}</p>
