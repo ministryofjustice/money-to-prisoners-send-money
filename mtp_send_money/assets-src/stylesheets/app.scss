@@ -39,7 +39,6 @@ ol > li {
   padding-bottom: 10px;
 }
 
-
 .phase-banner {
   font-size: 16px;
   padding-bottom: 12px;
@@ -114,40 +113,9 @@ body {
   display: none;
 }
 
-.mtp-summary-line {
-  p {
-    display: inline-block;
-    width: 10em;
-  }
-  strong {
-    display: inline-block;
-  }
-}
-
 .mtp-prisoner-number {
   width: 12em;
   text-transform: uppercase;
-}
-
-.mtp-details {
-  margin-top: 2em;
-}
-
-.mtp-bank-details {
-  margin-bottom: 3.5em;
-  dt {
-    margin-bottom: 0.6em;
-  }
-  dd {
-    margin: 0 0 2.5em 0;
-  }
-  samp {
-    border: $grey-1 solid 1px;
-    padding: 0.4em 0.8em;
-    font-size: 1.2em;
-    font-weight: bold;
-    background: $panel-colour;
-  }
 }
 
 .mtp-amount {
@@ -219,7 +187,6 @@ body {
 }
 
 .mtp-bank-transfer {
-  // width: 65%;
   section {
     margin-left: 1em;
     margin-bottom: 3em;
