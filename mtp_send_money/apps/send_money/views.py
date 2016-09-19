@@ -353,7 +353,7 @@ def confirmation_view(request):
     """
     payment_ref = request.GET.get('payment_ref')
     if payment_ref is None:
-        return redirect(reverse('send_money:prisoner_details_debit'))
+        return clear_session_view(request)
     context = {'success': False, 'payment_ref': payment_ref[:8]}
 
     try:
@@ -361,6 +361,9 @@ def confirmation_view(request):
         api_response = client.payments(payment_ref).get()
         context['prisoner_name'] = api_response['recipient_name']
         context['amount'] = api_response['amount'] / 100
+
+        if api_response['status'] != 'pending':
+            return clear_session_view(request)
 
         govuk_id = api_response['processor_id']
 
@@ -379,14 +382,12 @@ def confirmation_view(request):
                 payment_update['email'] = email
 
             client.payments(payment_ref).patch(payment_update)
-            context.update({
-                'success': True,
-            })
+            context['success'] = True
             if email:
                 send_email(
                     email, 'send_money/email/confirmation.txt',
-                    _('Send money to a prisoner: your payment was successful'), context=context,
-                    html_template='send_money/email/confirmation.html'
+                    _('Send money to a prisoner: your payment was successful'),
+                    context=context, html_template='send_money/email/confirmation.html'
                 )
         else:
             logger.error(

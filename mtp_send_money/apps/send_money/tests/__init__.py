@@ -1,4 +1,4 @@
-from contextlib import contextmanager
+from functools import wraps
 from importlib import reload
 import sys
 
@@ -66,19 +66,23 @@ def update_post_with_prisoner_details(data, prisoner_details):
     data.update(split_prisoner_dob_for_post(prisoner_details))
 
 
-@contextmanager
-def reload_payment_urls(test_case, show_bank_transfer=False, show_debit_card=False):
-    def reload_urls():
-        try:
-            reload(sys.modules['send_money.urls'])
-            reload(sys.modules[settings.ROOT_URLCONF])
-        except KeyError:
-            pass
-        clear_url_caches()
-        set_urlconf(None)
+def reload_payment_urls(show_bank_transfer=False, show_debit_card=False):
+    def inner(test_func):
+        @wraps(test_func)
+        def wrapper(self, *args, **kwargs):
+            def reload_urls():
+                try:
+                    reload(sys.modules['send_money.urls'])
+                    reload(sys.modules[settings.ROOT_URLCONF])
+                except KeyError:
+                    pass
+                clear_url_caches()
+                set_urlconf(None)
 
-    with test_case.settings(SHOW_BANK_TRANSFER_OPTION=show_bank_transfer,
-                            SHOW_DEBIT_CARD_OPTION=show_debit_card):
-        reload_urls()
-        yield
-    reload_urls()
+            with self.settings(SHOW_BANK_TRANSFER_OPTION=show_bank_transfer,
+                               SHOW_DEBIT_CARD_OPTION=show_debit_card):
+                reload_urls()
+                test_func(self, *args, **kwargs)
+            reload_urls()
+        return wrapper
+    return inner

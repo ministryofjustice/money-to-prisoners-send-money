@@ -39,52 +39,53 @@ class SendMoneyFunctionalTestCase(FunctionalTestCase):
 @unittest.skipIf('DJANGO_TEST_REMOTE_INTEGRATION_URL' in os.environ, 'test only runs locally')
 class SendMoneyFlows(SendMoneyFunctionalTestCase):
 
+    @reload_payment_urls(show_bank_transfer=True)
     def test_bank_transfer_only_flow(self):
-        with reload_payment_urls(self, show_debit_card=False, show_bank_transfer=True):
-            self.driver.get(self.live_server_url)
-            self.fill_in_prisoner_details_form(split_prisoner_dob_for_post({
-                'prisoner_number': 'A1409AE',
-                'prisoner_dob': '21/01/1989',
-            }))
-            self.driver.find_element_by_id('id_next_btn').click()
-            self.assertInSource('<!-- bank_transfer -->')
+        self.driver.get(self.live_server_url)
+        self.fill_in_prisoner_details_form(split_prisoner_dob_for_post({
+            'prisoner_number': 'A1409AE',
+            'prisoner_dob': '21/01/1989',
+        }))
+        self.driver.find_element_by_id('id_next_btn').click()
+        self.assertInSource('<!-- bank_transfer -->')
 
+    @reload_payment_urls(show_bank_transfer=True, show_debit_card=True)
     def test_bank_transfer_flow(self):
-        with reload_payment_urls(self, show_debit_card=True, show_bank_transfer=True):
-            self.driver.get(self.live_server_url)
-            self.make_payment_method_choice(PaymentMethod.bank_transfer)
-            self.fill_in_prisoner_details_form(split_prisoner_dob_for_post({
-                'prisoner_number': 'A1409AE',
-                'prisoner_dob': '21/01/1989',
-            }))
-            self.driver.find_element_by_id('id_next_btn').click()
-            self.assertInSource('<!-- bank_transfer -->')
+        self.driver.get(self.live_server_url)
+        self.make_payment_method_choice(PaymentMethod.bank_transfer)
+        self.fill_in_prisoner_details_form(split_prisoner_dob_for_post({
+            'prisoner_number': 'A1409AE',
+            'prisoner_dob': '21/01/1989',
+        }))
+        self.driver.find_element_by_id('id_next_btn').click()
+        self.assertInSource('<!-- bank_transfer -->')
 
+    @reload_payment_urls(show_bank_transfer=True, show_debit_card=True)
     @unittest.skip('gov.uk pay functional testing not implemented')
     def test_debit_card_flow(self):
-        with reload_payment_urls(self, show_debit_card=True, show_bank_transfer=True):
-            self.driver.get(self.live_server_url)
-            self.make_payment_method_choice(PaymentMethod.debit_card)
-            self.fill_in_prisoner_details_form(split_prisoner_dob_for_post({
-                'prisoner_name': 'James Halls',
-                'prisoner_number': 'A1409AE',
-                'prisoner_dob': '21/01/1989',
-            }))
-            self.driver.find_element_by_id('id_next_btn').click()
-            self.fill_in_send_money_form({
-                'amount': '0.51',
-            })
-            self.driver.find_element_by_id('id_next_btn').click()
-            # TODO: add gov.uk mock and test various responses
+        self.driver.get(self.live_server_url)
+        self.make_payment_method_choice(PaymentMethod.debit_card)
+        self.fill_in_prisoner_details_form(split_prisoner_dob_for_post({
+            'prisoner_name': 'James Halls',
+            'prisoner_number': 'A1409AE',
+            'prisoner_dob': '21/01/1989',
+        }))
+        self.driver.find_element_by_id('id_next_btn').click()
+        self.fill_in_send_money_form({
+            'amount': '0.51',
+        })
+        self.driver.find_element_by_id('id_next_btn').click()
+        # TODO: add gov.uk mock and test various responses
 
 
 @unittest.skipIf('DJANGO_TEST_REMOTE_INTEGRATION_URL' in os.environ, 'test only runs locally')
 class SendMoneyDetailsPage(SendMoneyFunctionalTestCase):
+
+    @reload_payment_urls(show_debit_card=True)
     def test_page_contents(self):
-        with reload_payment_urls(self, show_debit_card=True):
-            self.driver.get(self.live_server_url)
-            self.assertEqual(self.driver.title, 'Send money to a prisoner - GOV.UK')
-            self.assertIn('Enter prisoner details', self.driver.find_element_by_css_selector('h1').text)
+        self.driver.get(self.live_server_url)
+        self.assertEqual(self.driver.title, 'Send money to a prisoner - GOV.UK')
+        self.assertIn('Enter prisoner details', self.driver.find_element_by_css_selector('h1').text)
 
     def check_2_digit_entry(self):
         entry_year = random.randrange(0, 99)
@@ -105,14 +106,15 @@ class SendMoneyDetailsPage(SendMoneyFunctionalTestCase):
         self.assertEqual(self.driver.execute_script(script), str(expected_year),
                          msg='2-digit year %s did not format to expected %s' % (entry_year, expected_year))
 
+    @reload_payment_urls(show_bank_transfer=True)
     def test_2_digit_year_entry_using_javascript_in_bank_transfer_flow(self):
-        with reload_payment_urls(self, show_bank_transfer=True, show_debit_card=False):
-            self.check_2_digit_entry()
+        self.check_2_digit_entry()
 
+    @reload_payment_urls(show_debit_card=True)
     def test_2_digit_year_entry_using_javascript_in_debit_card_flow(self):
-        with reload_payment_urls(self, show_bank_transfer=False, show_debit_card=True):
-            self.check_2_digit_entry()
+        self.check_2_digit_entry()
 
+    @reload_payment_urls(show_debit_card=True)
     def test_service_charge_js(self):
         def check_service_charge(amount, expected):
             amount_field = self.driver.find_element_by_id('id_amount')
@@ -121,59 +123,59 @@ class SendMoneyDetailsPage(SendMoneyFunctionalTestCase):
             amount_field.send_keys(amount)
             self.assertEqual(total_field.text, expected)
 
-        with reload_payment_urls(self, show_debit_card=True):
-            self.driver.get(self.live_server_url)
-            self.fill_in_prisoner_details_form(split_prisoner_dob_for_post({
-                'prisoner_name': 'James Halls',
-                'prisoner_number': 'A1409AE',
-                'prisoner_dob': '21/01/1989',
-            }))
-            self.driver.find_element_by_id('id_next_btn').click()
-            check_service_charge('0', '£0.20')
-            check_service_charge('10', '£10.44')
-            check_service_charge('120.40', '£123.49')
-            check_service_charge('0.01', '£0.21')
-            check_service_charge('-12', '')
-            check_service_charge('1', '£1.23')
-            check_service_charge('17', '£17.61')
-            check_service_charge('3.14     ', '£3.42')
-            check_service_charge('a', '')
-            check_service_charge('3', '£3.28')
-            check_service_charge('-12', '')
-            check_service_charge('.12', '')
-            check_service_charge('32345', '£33,121.48')
-            check_service_charge('10000000', '£10,240,000.20')
-            check_service_charge('0.01', '£0.21')
-            check_service_charge('9999999999999999999999', '£10,239,999,999.18')
-            check_service_charge('three', '')
-            check_service_charge('  3.1415     ', '')
-            check_service_charge('0', '£0.20')
-            check_service_charge('0.01', '£0.21')
-            check_service_charge('0.1', '')
-            check_service_charge('0.10', '£0.31')
-            check_service_charge('0.87', '£1.09')
-            check_service_charge('0.001', '')
-            check_service_charge('0.005', '')
+        self.driver.get(self.live_server_url)
+        self.fill_in_prisoner_details_form(split_prisoner_dob_for_post({
+            'prisoner_name': 'James Halls',
+            'prisoner_number': 'A1409AE',
+            'prisoner_dob': '21/01/1989',
+        }))
+        self.driver.find_element_by_id('id_next_btn').click()
+        check_service_charge('0', '£0.20')
+        check_service_charge('10', '£10.44')
+        check_service_charge('120.40', '£123.49')
+        check_service_charge('0.01', '£0.21')
+        check_service_charge('-12', '')
+        check_service_charge('1', '£1.23')
+        check_service_charge('17', '£17.61')
+        check_service_charge('3.14     ', '£3.42')
+        check_service_charge('a', '')
+        check_service_charge('3', '£3.28')
+        check_service_charge('-12', '')
+        check_service_charge('.12', '')
+        check_service_charge('32345', '£33,121.48')
+        check_service_charge('10000000', '£10,240,000.20')
+        check_service_charge('0.01', '£0.21')
+        check_service_charge('9999999999999999999999', '£10,239,999,999.18')
+        check_service_charge('three', '')
+        check_service_charge('  3.1415     ', '')
+        check_service_charge('0', '£0.20')
+        check_service_charge('0.01', '£0.21')
+        check_service_charge('0.1', '')
+        check_service_charge('0.10', '£0.31')
+        check_service_charge('0.87', '£1.09')
+        check_service_charge('0.001', '')
+        check_service_charge('0.005', '')
 
 
 @unittest.skipIf('DJANGO_TEST_REMOTE_INTEGRATION_URL' in os.environ, 'test only runs locally')
 class SendMoneyCheckDetailsPage(SendMoneyFunctionalTestCase):
+
+    @reload_payment_urls(show_debit_card=True)
     def setUp(self):
-        with reload_payment_urls(self, show_debit_card=True):
-            super().setUp()
-            self.driver.get(self.live_server_url)
-            self.fill_in_prisoner_details_form(split_prisoner_dob_for_post({
-                'prisoner_name': 'James Halls',
-                'prisoner_number': 'A1409AE',
-                'prisoner_dob': '21/01/1989',
-            }))
-            self.driver.find_element_by_id('id_next_btn').click()
-            self.fill_in_send_money_form({
-                'amount': '34.50',
-            })
-            self.driver.find_element_by_id('id_next_btn').click()
-            self.assertCurrentUrl('/check-details/')
-            self.assertEqual(self.driver.title, 'Check details - Send money to a prisoner - GOV.UK')
+        super().setUp()
+        self.driver.get(self.live_server_url)
+        self.fill_in_prisoner_details_form(split_prisoner_dob_for_post({
+            'prisoner_name': 'James Halls',
+            'prisoner_number': 'A1409AE',
+            'prisoner_dob': '21/01/1989',
+        }))
+        self.driver.find_element_by_id('id_next_btn').click()
+        self.fill_in_send_money_form({
+            'amount': '34.50',
+        })
+        self.driver.find_element_by_id('id_next_btn').click()
+        self.assertCurrentUrl('/check-details/')
+        self.assertEqual(self.driver.title, 'Check details - Send money to a prisoner - GOV.UK')
 
     def test_content(self):
         self.assertInSource('Name: James Halls')
@@ -204,49 +206,52 @@ class SendMoneyFeedbackPages(SendMoneyFunctionalTestCase):
 @override_settings(GOVUK_PAY_URL='http://payment.gov.uk',
                    GOVUK_PAY_AUTH_TOKEN='15a21a56-817a-43d4-bf8d-f01f298298e8')
 class SendMoneyConfirmationPage(SendMoneyFunctionalTestCase):
+
+    @reload_payment_urls(show_debit_card=True)
     @mock.patch('send_money.views.get_api_client')
     def test_success_page(self, mocked_client):
-        with reload_payment_urls(self, show_debit_card=True):
-            processor_id = '3'
-            mocked_client().payments().get.return_value = {
-                'processor_id': processor_id,
-                'recipient_name': 'James Bond',
-                'amount': 2000,
-                'created': datetime.datetime.now().isoformat() + 'Z',
-            }
-            with responses.RequestsMock() as rsps:
-                rsps.add(rsps.GET, govuk_url('/payments/%s' % processor_id), json={
-                    'state': {'status': 'success'}, 'email': 'sender@outside.local'
-                })
+        processor_id = '3'
+        mocked_client().payments().get.return_value = {
+            'processor_id': processor_id,
+            'recipient_name': 'James Bond',
+            'amount': 2000,
+            'status': 'pending',
+            'created': datetime.datetime.now().isoformat() + 'Z',
+        }
+        with responses.RequestsMock() as rsps:
+            rsps.add(rsps.GET, govuk_url('/payments/%s' % processor_id), json={
+                'state': {'status': 'success'}, 'email': 'sender@outside.local'
+            })
 
-                self.driver.get(self.live_server_url + '/confirmation/?payment_ref=REF12345')
-                self.assertInSource('<h1 class="heading-xlarge">Send money to a prisoner</h1>')
-                self.assertInSource('Payment was successful')
-                self.assertInSource('Your reference number is <strong>REF12345</strong>')
-                self.assertInSource('What happens next?')
-                self.assertInSource('James Bond')
-                self.assertInSource('20')
-                self.assertInSource('Print this page')
+            self.driver.get(self.live_server_url + '/confirmation/?payment_ref=REF12345')
+            self.assertInSource('<h1 class="heading-xlarge">Send money to a prisoner</h1>')
+            self.assertInSource('Payment was successful')
+            self.assertInSource('Your reference number is <strong>REF12345</strong>')
+            self.assertInSource('What happens next?')
+            self.assertInSource('James Bond')
+            self.assertInSource('20')
+            self.assertInSource('Print this page')
 
+    @reload_payment_urls(show_debit_card=True)
     @unittest.skip('error pages handled by gov.uk')
     @mock.patch('send_money.views.get_api_client')
     def test_failure_page(self, mocked_client):
-        with reload_payment_urls(self, show_debit_card=True):
-            processor_id = '3'
-            mocked_client().payments().get.return_value = {
-                'processor_id': processor_id,
-                'recipient_name': 'James Bond',
-                'amount': 2000,
-                'created': datetime.datetime.now().isoformat() + 'Z',
-            }
-            with responses.RequestsMock() as rsps:
-                rsps.add(rsps.GET, govuk_url('/payments/%s' % processor_id), json={
-                    'state': {'status': 'failed'}
-                })
+        processor_id = '3'
+        mocked_client().payments().get.return_value = {
+            'processor_id': processor_id,
+            'recipient_name': 'James Bond',
+            'amount': 2000,
+            'status': 'pending',
+            'created': datetime.datetime.now().isoformat() + 'Z',
+        }
+        with responses.RequestsMock() as rsps:
+            rsps.add(rsps.GET, govuk_url('/payments/%s' % processor_id), json={
+                'state': {'status': 'failed'}
+            })
 
-                self.driver.get(self.live_server_url + '/confirmation/?payment_ref=REF12345')
-                self.assertInSource('We’re sorry, your payment could not be processed on this occasion')
-                self.assertInSource('Your reference number is <strong>REF12345</strong>')
+            self.driver.get(self.live_server_url + '/confirmation/?payment_ref=REF12345')
+            self.assertInSource('We’re sorry, your payment could not be processed on this occasion')
+            self.assertInSource('Your reference number is <strong>REF12345</strong>')
 
 
 class SendMoneySupportPages(SendMoneyFunctionalTestCase):
@@ -271,12 +276,12 @@ class SendMoneySupportPages(SendMoneyFunctionalTestCase):
 
     @classmethod
     def make_test_method(cls, _footer_link):
+        @reload_payment_urls(show_debit_card=True)
         def test(self):
-            with reload_payment_urls(self, show_debit_card=True):
-                self.driver.get(self.live_server_url)
-                link_element = self.driver.find_element_by_link_text(_footer_link['link_text'])
-                link_element.click()
-                self.assertInSource(_footer_link['page_content'])
+            self.driver.get(self.live_server_url)
+            link_element = self.driver.find_element_by_link_text(_footer_link['link_text'])
+            link_element.click()
+            self.assertInSource(_footer_link['page_content'])
 
         return test
 
