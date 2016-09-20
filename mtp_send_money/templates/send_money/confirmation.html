@@ -3,6 +3,8 @@
 {% load send_money %}
 
 {% block inner_content %}
+{% if success %}
+
 <div class="govuk-box-highlight">
   <h1 class="heading-large">{% trans '✓ Payment was successful' %}</h2>
   <p>{% trans 'Your reference number is' %} <strong>{{ payment_ref|upper }}</strong></p>
