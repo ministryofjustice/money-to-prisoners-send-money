@@ -3,18 +3,16 @@
 {% load send_money %}
 
 {% block inner_content %}
-  <h1 class="heading-xlarge">{% trans 'Send money to a prisoner' %}</h1>
+{% if success %}
 
-  {% if success %}
-  <div class="govuk-box-highlight">
-    <h2 class="bold-large">{% trans '✓ Payment was successful' %}</h2>
-    <p>{% trans 'Your reference number is' %} <strong>{{ payment_ref|upper }}</strong></p>
-  </div>
-  <div>
-    <h2 class="heading-large">{% trans 'What happens next?' %}</h2>
+<div class="govuk-box-highlight">
+  <h1 class="heading-large">{% trans '✓ Payment was successful' %}</h2>
+  <p>{% trans 'Your reference number is' %} <strong>{{ payment_ref|upper }}</strong></p>
+</div>
+<div>
+  <h2 class="heading-large">{% trans 'What happens next?' %}</h2>
 
-    <p>{% trans 'The money will arrive in the prisoner’s account the next working day.' %} </p>
-
+  <p>{% trans 'The money will arrive in the prisoner’s account the next working day.' %} </p>
 
     <div>
       <h3 class="heading-medium">{% trans 'Payment summary' %}</h3>
