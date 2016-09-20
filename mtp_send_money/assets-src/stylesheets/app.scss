@@ -39,6 +39,10 @@ ol > li {
   padding-bottom: 10px;
 }
 
+.list {
+  padding-left: 35px;
+}
+
 .phase-banner {
   font-size: 16px;
   padding-bottom: 12px;
@@ -75,19 +79,6 @@ ol > li {
 
 // Application-specific
 
-body {
-  counter-reset: mycounter;
-}
-
-.mtp-split {
-  list-style: none;
-}
-
-.mtp-split li:before {
-  counter-increment: mycounter;
-  content: counter(mycounter) ". ";
-}
-
 .mtp-print-reference {
   display: block;
   line-height: 40px;
@@ -107,6 +98,7 @@ body {
 
 .mtp-account {
   font-weight: bold;
+  margin-top: 10px;
 }
 
 .mtp-hidden {

@@ -18,25 +18,24 @@
 
   <section>
     <h2 class="heading-medium">{% trans 'How to use this reference to make your bank transfer' %}</h2>
-    <ol class="mtp-split list">
+    <ol class="list list-number">
       <li>{% trans 'Log into your online banking or mobile app, or telephone your bank.' %}</li>
-      <li>{% trans 'Give your bank:' %}</li>
-    </ol>
-    <div class="mtp-account panel panel-border-wide">
-      <ul>
-        <li>{% trans 'Account number:' %} {{ account_number }}</li>
-        <li>{% trans 'Sort code:'%} {{ sort_code }}</li>
-        <li>{% trans 'Your prisoner reference:' %} {{ bank_transfer_reference }}</li>
-      </ul>
-    </div>
-    <p>{% trans 'If the bank asks for ‘payee’ details, just enter the prisoner’s name.' %}</p>
-    <ol class="mtp-split list">
+      <li>{% trans 'Give your bank:' %}
+        <div class="mtp-account panel panel-border-wide">
+          <ul>
+            <li>{% trans 'Account number:' %} {{ account_number }}</li>
+            <li>{% trans 'Sort code:'%} {{ sort_code }}</li>
+            <li>{% trans 'Your prisoner reference:' %} {{ bank_transfer_reference }}</li>
+          </ul>
+        </div>
+        <p>{% trans 'If the bank asks for ‘payee’ details, just enter the prisoner’s name.' %}</p>
+      </li>
       <li>{% trans 'Your money should reach the prisoner’s account in 1 working day, but your bank can take up to 3 working days to process payment. No money is processed at weekends.' %}</li>
       <li>{% trans 'Print this page to make a bank transfer to this prisoner next time.' %}</li>
     </ol>
 
     <strong>{% trans 'Please note:' %}</strong>
-    <p>{% trans 'You can’t go into a bank branch to transfer money to a prisoner.' %}</p>
+    <p>{% trans 'You can’t go into a bank branch to transfer money to a prisoner and you must use a UK bank account.' %}</p>
     <p>{% trans 'All public prisons in England and Wales use the same NatWest account to receive money sent to prisoners.' %}</p>
 
     <p><a href="{% url 'send_money:help' %}">{% trans 'Find out more about refunds' %}</a></p>

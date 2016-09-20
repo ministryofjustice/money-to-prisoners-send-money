@@ -52,6 +52,8 @@
       {% endwith %}
     </fieldset>
     <br/>
+    <p>{% trans 'You must use a UK bank account to make a bank transfer.' %}</p>
+    <p>{% trans 'You can’t transfer money from a bank branch using this service.' %}</p>
     <p>
       <input id="id_next_btn" class="button" type="submit" value="{% trans 'Get reference' %}">
     </p>
