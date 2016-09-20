@@ -24,8 +24,8 @@
     </ol>
     <div class="mtp-account panel panel-border-wide">
       <ul>
-        <li>{% trans 'Account number: ' %} {{ account_number }}</li>
-        <li>{% trans 'Sort code: '%} {{ sort_code }}</li>
+        <li>{% trans 'Account number:' %} {{ account_number }}</li>
+        <li>{% trans 'Sort code:'%} {{ sort_code }}</li>
         <li>{% trans 'Your prisoner reference:' %} {{ bank_transfer_reference }}</li>
       </ul>
     </div>
@@ -39,7 +39,7 @@
     <p>{% trans 'You can’t go into a bank branch to transfer money to a prisoner.' %}</p>
     <p>{% trans 'All public prisons in England and Wales use the same NatWest account to receive money sent to prisoners.' %}</p>
 
-    <a href=# url="">{% trans 'Refunds' %}</a>
+    <p><a href="{% url 'send_money:help' %}">{% trans 'Find out more about refunds' %}</a></p>
   </section>
 
 </div>

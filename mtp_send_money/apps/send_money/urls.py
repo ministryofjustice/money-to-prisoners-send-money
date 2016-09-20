@@ -38,3 +38,5 @@ if settings.SHOW_DEBIT_CARD_OPTION:
         url(r'^card-payment/$', views.debit_card_view, name='debit_card'),
         url(r'^confirmation/$', views.confirmation_view, name='confirmation'),
     ]
+
+urlpatterns.append(url(r'^help/$', views.help_view, name='help'))
