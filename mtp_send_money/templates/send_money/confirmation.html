@@ -3,36 +3,38 @@
 {% load send_money %}
 
 {% block inner_content %}
-{% if success %}
+  {% if success %}
 
-<div class="govuk-box-highlight">
-  <h1 class="heading-large">{% trans '✓ Payment was successful' %}</h2>
-  <p>{% trans 'Your reference number is' %} <strong>{{ payment_ref|upper }}</strong></p>
-</div>
-<div>
-  <h2 class="heading-large">{% trans 'What happens next?' %}</h2>
-
-  <p>{% trans 'The money will arrive in the prisoner’s account the next working day.' %} </p>
-
-    <div>
-      <h3 class="heading-medium">{% trans 'Payment summary' %}</h3>
-
-      <ul class="list list-bullet">
-        <li>{% trans 'Payment to:' %} {{ prisoner_name }}</li>
-        <li>{% trans 'Payment amount:' %} {{ amount|currency_format }}</li>
-        <li>{% trans 'Date payment made:' %} {% now 'd/m/Y' %}</li>
-      </ul>
+    <div class="govuk-box-highlight">
+      <h1 class="heading-large">{% trans '✓ Payment was successful' %}</h1>
+      <p>{% trans 'Your reference number is' %} <strong>{{ payment_ref|upper }}</strong></p>
     </div>
-  </div>
+    <div>
+      <h2 class="heading-large">{% trans 'What happens next?' %}</h2>
 
-  <p><a href="{% url 'send_money:send_money_debit' %}" class="button" role="button">{% trans "Back to start" %}</a></p>
+      <p>{% trans 'The money will arrive in the prisoner’s account the next working day.' %} </p>
 
-  <p><a href="javascript:window.print()">{% trans 'Print this page' %}</a></p>
+      <div>
+        <h3 class="heading-medium">{% trans 'Payment summary' %}</h3>
 
-  <a href=# url="">{% trans 'Refunds' %}</a>
+        <ul class="list list-bullet">
+          <li>{% trans 'Payment to:' %} {{ prisoner_name }}</li>
+          <li>{% trans 'Payment amount:' %} {{ amount|currency_format }}</li>
+          <li>{% trans 'Date payment made:' %} {% now 'd/m/Y' %}</li>
+        </ul>
+      </div>
+    </div>
+
+    <p><a href="{% url 'send_money:send_money_debit' %}" class="button" role="button">{% trans "Back to start" %}</a></p>
+
+    <p><a href="javascript:window.print()">{% trans 'Print this page' %}</a></p>
+
+    <a href=# url="">{% trans 'Refunds' %}</a>
 
   {% else %}
-  <p>{% trans 'We’re sorry, your payment could not be processed on this occasion' %}</p>
-  <p>{% trans 'Your reference number is' %} <strong>{{ payment_ref|upper }}</strong></p>
+
+    <p>{% trans 'We’re sorry, your payment could not be processed on this occasion' %}</p>
+    <p>{% trans 'Your reference number is' %} <strong>{{ payment_ref|upper }}</strong></p>
+
   {% endif %}
 {% endblock %}
