@@ -14,10 +14,6 @@
 
     {% include 'mtp_common/forms/error-summary.html' with form=form only %}
 
-    {{ form.prisoner_name }}
-    {{ form.prisoner_dob }}
-    {{ form.prisoner_number }}
-
     {% with field=form.amount %}
       <div class="mtp-amount">
         <fieldset>

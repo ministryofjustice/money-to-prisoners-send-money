@@ -9,15 +9,15 @@
     {% trans 'Before you continue' %}
   </h1>
 
-  <strong>Please note</strong>
+  <strong>{% trans 'Please note' %}</strong>
   <div class="mtp-info">
     <ul class="list list-bullet">
-      <li>{% trans 'You can’t go into a bank branch to transfer money - only transfers done online, using an app or over the phone will reach the prisoner' %}</li>
+      <li>{% trans 'You can’t go into a bank branch to transfer money – only transfers done online, using an app or over the phone will reach the prisoner' %}</li>
       <li>{% trans 'You can’t transfer money from an international bank account or if you’re outside the UK' %}</li>
     </ul>
   </div>
 
   <p>
-    <a id="id_next_btn" class="button" href="{% url 'send_money:prisoner_details_bank' %}">{% trans 'I understand' %}</a>
+    <a id="id_next_btn" class="button" href="{{ view.get_success_url }}">{% trans 'I understand' %}</a>
   </p>
 {% endblock %}

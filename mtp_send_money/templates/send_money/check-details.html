@@ -11,30 +11,28 @@
     {% trans 'Check details' %}
   </h1>
 
-  <form class="mtp-confirm" method="post" action=".">
-    {% csrf_token %}
-
+  <div class="mtp-confirm">
     <div class="mtp-checkgroup">
       <div class="mtp-confirm-fieldset">
         <h2 class="heading-large">{% trans 'Prisoner details' %}</h2>
         <table class="mtp-table">
           <tr>
             <td>{% trans 'Name' %}:</td>
-            <td>{{ form.prisoner_name.value }}</td>
+            <td>{{ prisoner_name }}</td>
           </tr>
           <tr>
             <td>{% trans 'Date of birth' %}:</td>
-            <td>{{ form.prisoner_dob.value|prepare_prisoner_dob|date:'d/m/Y' }}</td>
+            <td>{{ prisoner_dob|prepare_prisoner_dob|date:'d/m/Y' }}</td>
           </tr>
           <tr>
             <td>{% trans 'Prisoner number' %}:</td>
-            <td>{{ form.prisoner_number.value }}</td>
+            <td>{{ prisoner_number }}</td>
           </tr>
         </table>
       </div>
 
       <div class="mtp-confirm-change">
-        <a href="{% url 'send_money:prisoner_details_debit' %}?change=1&amp;focus=id_prisoner_name">{% trans 'Change' %}</a><br>
+        <a href="{{ view.get_prisoner_details_url }}?focus=id_prisoner_name">{% trans 'Change' %}</a><br>
       </div>
     </div>
 
@@ -42,31 +40,41 @@
       <div class="mtp-confirm-fieldset">
         <h2 class="heading-large">{% trans 'Amount' %}</h2>
         <table class="mtp-table">
-          <tr>
-            <td>{% trans 'Total' %}:</td>
-            <td>{% if service_charged %}
-              {{ form.amount.value|currency_format }}<br>
-              {% endif %}
-              {{ form.amount.value|add_service_charge|currency_format }}<br>
-            </td>
-          </tr>
+          {% if service_charged %}
+            <tr>
+              <td>{% trans 'Total to prisoner' %}:</td>
+              <td>
+                {{ amount|currency_format }}
+              </td>
+            </tr>
+            <tr>
+              <td>{% trans 'Amount to be taken from your account' %}:</td>
+              <td>
+                {{ amount|add_service_charge|currency_format }}
+              </td>
+            </tr>
+          {% else %}
+            <tr>
+              <td>{% trans 'Total' %}:</td>
+              <td>
+                {{ amount|currency_format }}
+              </td>
+            </tr>
+          {% endif %}
         </table>
       </div>
       <div class="mtp-confirm-change">
-        <a href="{% url 'send_money:send_money_debit' %}?change=1&amp;focus=id_amount">{% trans 'Change' %}</a>
+        <a href="{{ view.get_amount_url }}?focus=id_amount">{% trans 'Change' %}</a>
       </div>
     </div>
 
-    {# hidden form to re-check prisoner location #}
-    {{ form }}
-
     <div>
       <div class="mtp-confirm-change">
-        <input id="id_next_btn" class="button" type="submit" name="next" value="{% trans 'Enter card details' %}">
+        <a id="id_next_btn" class="button" href="{{ view.get_success_url }}">{% trans 'Enter card details' %}</a>
       </div>
       <div class="mtp-confirm-change">
         <a href="{% url 'send_money:clear_session' %}">{% trans 'Cancel and delete all details' %}</a>
       </div>
     </div>
-  </form>
+  </div>
 {% endblock %}

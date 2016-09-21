@@ -1,12 +1,13 @@
 from django.conf import settings
 from django.conf.urls import include, url
-from django.core.urlresolvers import reverse_lazy
 from django.views.generic import TemplateView
 from django.views.generic.base import RedirectView
 
 from moj_irat.views import HealthcheckView, PingJsonView
 
 urlpatterns = [
+    url(r'^', include('send_money.urls', namespace='send_money',)),
+
     url(r'^', include('feedback.urls')),
 
     url(
@@ -29,11 +30,6 @@ urlpatterns = [
 
     url(r'^favicon.ico$', RedirectView.as_view(url=settings.STATIC_URL + 'images/favicon.ico', permanent=True)),
 ]
-
-if settings.SHOW_DEBIT_CARD_OPTION or settings.SHOW_BANK_TRANSFER_OPTION:
-    urlpatterns.append(url(r'^', include('send_money.urls', namespace='send_money',)))
-else:
-    urlpatterns.append(url(r'^$', RedirectView.as_view(url=reverse_lazy('submit_ticket'))))
 
 handler404 = 'mtp_common.views.page_not_found'
 handler500 = 'mtp_common.views.server_error'

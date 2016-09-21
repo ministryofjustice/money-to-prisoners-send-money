@@ -2,7 +2,7 @@
 {% load send_money %}
 
 {% now 'd/m/Y' as payment_date %}
-{% blocktrans with formatted_ref=payment_ref|upper formatted_amount=amount|currency_format %}
+{% blocktrans trimmed with formatted_ref=short_payment_ref|upper formatted_amount=amount|currency_format %}
 GOV.UK - Send money to a prisoner
 
 
