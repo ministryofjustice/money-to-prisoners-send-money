@@ -310,6 +310,44 @@ class BankTransferPrisonerDetailsTestCase(BankTransferFlowTestCase):
         form = response.context['form']
         self.assertTrue(form.errors)
 
+    @mock.patch('send_money.forms.get_api_client')
+    def test_search_not_limited_to_specific_prisons(self, mocked_api_client):
+        self.choose_bank_transfer_payment_method()
+
+        mocked_api_call = mocked_api_client().prisoner_validity().get
+        mocked_api_call.return_value = {
+            'count': 0,
+            'results': []
+        }
+        self.client.post(self.url, data={
+            'prisoner_number': 'A1231DE',
+            'prisoner_dob_0': '4',
+            'prisoner_dob_1': '10',
+            'prisoner_dob_2': '1980',
+        }, follow=True)
+        self.assertEqual(mocked_api_call.call_count, 1)
+        mocked_api_call.assert_called_with(prisoner_number='A1231DE', prisoner_dob='1980-10-04')
+
+    @override_settings(BANK_TRANSFER_PRISONS='DEF,ABC')
+    @mock.patch('send_money.forms.get_api_client')
+    def test_can_limit_search_to_specific_prisons(self, mocked_api_client):
+        self.choose_bank_transfer_payment_method()
+
+        mocked_api_call = mocked_api_client().prisoner_validity().get
+        mocked_api_call.return_value = {
+            'count': 0,
+            'results': []
+        }
+        self.client.post(self.url, data={
+            'prisoner_number': 'A1231DE',
+            'prisoner_dob_0': '4',
+            'prisoner_dob_1': '10',
+            'prisoner_dob_2': '1980',
+        }, follow=True)
+        self.assertEqual(mocked_api_call.call_count, 1)
+        mocked_api_call.assert_called_with(prisoner_number='A1231DE', prisoner_dob='1980-10-04',
+                                           prisons='ABC,DEF')
+
 
 class BankTransferReferenceTestCase(BankTransferFlowTestCase):
     url = '/bank-transfer/reference/'
@@ -502,6 +540,46 @@ class DebitCardPrisonerDetailsTestCase(DebitCardFlowTestCase):
         form = response.context['form']
         self.assertTrue(form.errors)
         self.assertEqual(mocked_is_prisoner_known.call_count, 0)
+
+    @mock.patch('send_money.forms.get_api_client')
+    def test_search_not_limited_to_specific_prisons(self, mocked_api_client):
+        self.choose_debit_card_payment_method()
+
+        mocked_api_call = mocked_api_client().prisoner_validity().get
+        mocked_api_call.return_value = {
+            'count': 0,
+            'results': []
+        }
+        self.client.post(self.url, data={
+            'prisoner_name': 'john smith',
+            'prisoner_number': 'A1231DE',
+            'prisoner_dob_0': '4',
+            'prisoner_dob_1': '10',
+            'prisoner_dob_2': '1980',
+        }, follow=True)
+        self.assertEqual(mocked_api_call.call_count, 1)
+        mocked_api_call.assert_called_with(prisoner_number='A1231DE', prisoner_dob='1980-10-04')
+
+    @override_settings(DEBIT_CARD_PRISONS='DEF,ABC,ZZZ')
+    @mock.patch('send_money.forms.get_api_client')
+    def test_can_limit_search_to_specific_prisons(self, mocked_api_client):
+        self.choose_debit_card_payment_method()
+
+        mocked_api_call = mocked_api_client().prisoner_validity().get
+        mocked_api_call.return_value = {
+            'count': 0,
+            'results': []
+        }
+        self.client.post(self.url, data={
+            'prisoner_name': 'john smith',
+            'prisoner_number': 'A1231DE',
+            'prisoner_dob_0': '4',
+            'prisoner_dob_1': '10',
+            'prisoner_dob_2': '1980',
+        }, follow=True)
+        self.assertEqual(mocked_api_call.call_count, 1)
+        mocked_api_call.assert_called_with(prisoner_number='A1231DE', prisoner_dob='1980-10-04',
+                                           prisons='ABC,DEF,ZZZ')
 
 
 class DebitCardAmountTestCase(DebitCardFlowTestCase):

@@ -3,6 +3,7 @@ import decimal
 import logging
 
 from django import forms
+from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext_lazy as _
 from form_error_reporting import GARequestErrorReportingMixin
@@ -71,6 +72,10 @@ class PrisonerDetailsForm(SendMoneyForm):
     serialise_prisoner_dob = serialise_date
     unserialise_prisoner_dob = unserialise_date
 
+    @classmethod
+    def get_prison_set(cls):
+        return set()
+
     def __init__(self, **kwargs):
         if isinstance(kwargs.get('data', {}).get('prisoner_dob'), datetime.date):
             prisoner_dob = kwargs['data'].pop('prisoner_dob')
@@ -92,8 +97,14 @@ class PrisonerDetailsForm(SendMoneyForm):
         prisoner_dob = serialise_date(self.cleaned_data['prisoner_dob'])
         try:
             client = get_api_client()
-            prisoners = client.prisoner_validity().get(prisoner_number=prisoner_number,
-                                                       prisoner_dob=prisoner_dob)
+            filters = {
+                'prisoner_number': prisoner_number,
+                'prisoner_dob': prisoner_dob,
+            }
+            prison_set = self.get_prison_set()
+            if prison_set:
+                filters['prisons'] = ','.join(sorted(prison_set))
+            prisoners = client.prisoner_validity().get(**filters)
             assert prisoners['count'] == len(prisoners['results']) == 1
             prisoner = prisoners['results'][0]
             return prisoner and prisoner['prisoner_number'] == prisoner_number \
@@ -119,7 +130,9 @@ class PrisonerDetailsForm(SendMoneyForm):
 
 
 class BankTransferPrisonerDetailsForm(PrisonerDetailsForm):
-    pass
+    @classmethod
+    def get_prison_set(cls):
+        return set(filter(None, settings.BANK_TRANSFER_PRISONS.split(',')))
 
 
 class DebitCardPrisonerDetailsForm(PrisonerDetailsForm):
@@ -128,6 +141,10 @@ class DebitCardPrisonerDetailsForm(PrisonerDetailsForm):
         label=_('Prisoner name'),
         max_length=250,
     )
+
+    @classmethod
+    def get_prison_set(cls):
+        return set(filter(None, settings.DEBIT_CARD_PRISONS.split(',')))
 
 
 class DebitCardAmountForm(SendMoneyForm):
