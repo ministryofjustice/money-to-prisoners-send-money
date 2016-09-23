@@ -5,10 +5,11 @@
 
 
 {% block inner_content %}
+
 <div class="mtp-bank-transfer">
   <div class="govuk-box-highlight">
-    <h1 class="heading-large">{% trans 'Prisoner bank transfer reference' %}</h1>
-    <p>{% trans 'Use this each time you transfer money to this prisoner' %}</p>
+    <h1 class="heading-large">{% trans 'Your prisoner reference' %}</h1>
+    <p>{% trans 'Keep this for future transfers to this prisoner' %}</p>
     <strong>{{ bank_transfer_reference }}</strong>
   </div>
 
@@ -16,11 +17,11 @@
     <a class="mtp-print-reference" href="#">{% trans 'Print this page' %}</a>
   </div>
 
-  <section>
+  <section class="mtp-steps">
     <h2 class="heading-medium">{% trans 'How to use this reference to make your bank transfer' %}</h2>
     <ol class="list list-number">
-      <li>{% trans 'Log into your online banking or mobile app, or telephone your bank.' %}</li>
-      <li>{% trans 'Give your bank:' %}
+      <li>{% trans 'Log into your online banking or mobile app, or phone your bank. Remember, you can’t go in branch and you must use a UK bank account.' %}</li>
+      <li>{% trans 'Use these details:' %}
         <div class="mtp-account panel panel-border-wide">
           <ul>
             <li>{% trans 'Account number:' %} {{ account_number }}</li>
@@ -28,17 +29,14 @@
             <li>{% trans 'Your prisoner reference:' %} {{ bank_transfer_reference }}</li>
           </ul>
         </div>
-        <p>{% trans 'If the bank asks for ‘payee’ details, just enter the prisoner’s name.' %}</p>
+        <p>{% trans 'Under ‘payee’ enter the prisoner’s name, if required.' %}</p>
       </li>
-      <li>{% trans 'Your money should reach the prisoner’s account in 1 working day, but your bank can take up to 3 working days to process payment. No money is processed at weekends.' %}</li>
-      <li>{% trans 'Print this page to make a bank transfer to this prisoner next time.' %}</li>
+      <li>{% trans 'Money should reach the prisoner’s account in 1 working day, but your bank can take up to 3 working days to process the payment. No money is processed at weekends.' %}</li>
     </ol>
 
-    <strong>{% trans 'Please note:' %}</strong>
-    <p>{% trans 'You can’t go into a bank branch to transfer money to a prisoner and you must use a UK bank account.' %}</p>
-    <p>{% trans 'All public prisons in England and Wales use the same NatWest account to receive money sent to prisoners.' %}</p>
+    <strong>{% trans 'Print this page for next time you make a payment to this prisoner.' %}</strong>
 
-    <p><a href="{% url 'send_money:help' %}">{% trans 'Find out more about refunds' %}</a></p>
+    <p>To find out more about refunds visit: <a href="{% url 'send_money:help' %}">{% trans 'Help sending money to a prisoner' %}</a></p>
   </section>
 
 </div>

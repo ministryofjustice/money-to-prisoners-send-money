@@ -151,6 +151,10 @@ class ChooseMethodView(FormView):
         return redirect(form.chosen_view_name)
 
 
+def bank_transfer_info_view(request):
+    return render(request, 'send_money/bank-transfer-info.html')
+
+
 class DebitCardPrisonerDetailsView(FormView):
     form_class = StartPaymentPrisonerDetailsForm
     template_name = 'send_money/debit-card-form.html'

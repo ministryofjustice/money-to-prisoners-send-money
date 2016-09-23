@@ -64,6 +64,9 @@ ol > li {
 
 .govuk-box-highlight {
   padding: 0.1em 0 1em;
+  p {
+    margin-bottom: 2px;
+  }
 }
 
 // mtp-common overrides
@@ -78,6 +81,11 @@ ol > li {
 }
 
 // Application-specific
+.mtp-steps {
+  p {
+    margin-top: 20px;
+  }
+}
 
 .mtp-print-reference {
   display: block;
@@ -93,7 +101,13 @@ ol > li {
 }
 
 .mtp-instructions {
-  width: 65%;
+  width: 55%;
+}
+
+.mtp-info {
+  padding-top: 10px;
+  padding-bottom: 15px;
+  width: 60%;
 }
 
 .mtp-account {
@@ -112,6 +126,7 @@ ol > li {
 
 .mtp-amount {
   margin-top: 2em;
+  margin-bottom: 2em;
 
   .mtp-money-amount {
     margin-bottom: 1em;
@@ -145,7 +160,9 @@ ol > li {
 }
 
 .mtp-confirm {
+  width: 65%;
   .mtp-confirm-change {
+    width: 39%;
     vertical-align: top;
     @include breakpoint(347px) {
       width: 39%;
@@ -166,6 +183,7 @@ ol > li {
       }
     }
   }
+
   .mtp-checkgroup {
     border-top: 2px solid $border-colour;
     margin-bottom: 1.5em;
@@ -187,5 +205,15 @@ ol > li {
     margin-left: -1em;
     margin-bottom: 1.3em;
     font-size: 1em;
+  }
+}
+
+.mtp-table{
+  td {
+    border-bottom: none;
+    padding-bottom: 0px;
+    padding-top: 0px;
+    padding-left: 0px;
+    width: 180px;
   }
 }

@@ -5,10 +5,10 @@
 
 {% block inner_content %}
 <h1 class="heading-xlarge">
-    <span class="heading-secondary">{% trans 'Generate a prisoner bank transfer reference' %}</span>
+    <span class="heading-secondary">{% trans 'Get a prisoner reference to use in a UK bank transfer' %}</span>
     {% trans 'Enter prisoner details' %}
 </h1>
-  <p class="mtp-instructions">{% trans 'To make a bank transfer online, you need to generate a prisoner reference. To do this, we need these details: ' %}</p>
+  <p class="mtp-instructions">{% trans 'To make a bank transfer online, you need a prisoner reference number. To provide this, we need these details: ' %}</p>
 
   <form method="post" action=".">
     {% csrf_token %}
@@ -51,11 +51,8 @@
         </div>
       {% endwith %}
     </fieldset>
-    <br/>
-    <p>{% trans 'You must use a UK bank account to make a bank transfer.' %}</p>
-    <p>{% trans 'You can’t transfer money from a bank branch using this service.' %}</p>
     <p>
-      <input id="id_next_btn" class="button" type="submit" value="{% trans 'Get reference' %}">
+      <input id="id_next_btn" class="button" type="submit" value="{% trans 'Next: Get reference' %}">
     </p>
   </form>
 {% endblock %}

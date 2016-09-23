@@ -27,6 +27,7 @@ else:
 
 if settings.SHOW_BANK_TRANSFER_OPTION:
     urlpatterns += [
+        url(r'^bank-transfer-info/$', views.bank_transfer_info_view, name='bank_transfer_info'),
         url(r'^bank-transfer/$', views.bank_transfer_view, name='bank_transfer'),
     ]
 
