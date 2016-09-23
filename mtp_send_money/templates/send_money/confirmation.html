@@ -24,7 +24,7 @@
           </tr>
           <tr>
             <td>{% trans 'Payment amount' %}:</td>
-            <td></td>
+            <td>{{ amount|currency_format }}</td>
           </tr>
           <tr>
             <td>{% trans 'Date payment made' %}:</td>
@@ -41,13 +41,12 @@
 
       <ol class="list list-number">
         <li>{% trans 'You’ll get email confirmation of payment' %}</li>
-        <li>{% trans 'The money will arrive in the prisoner’s account the next working day.' %} </li>
+        <li>{% trans 'The money will arrive in the prisoner’s account the next working day.' %}</li>
       </ol>
 
     </div>
 
     <p>To find out more about refunds visit: <a href="{% url 'send_money:help' %}">{% trans 'Help sending money to a prisoner' %}</a></p>
-
 
   {% else %}
 
