@@ -4,11 +4,12 @@
 {% load send_money %}
 
 {% block inner_content %}
-<h1 class="heading-xlarge">
-    <span class="heading-secondary">{% trans 'Generate a prisoner bank transfer reference' %}</span>
+  <h1 class="heading-xlarge">
+    <span class="heading-secondary">{% trans 'Get a prisoner reference to use in a UK bank transfer' %}</span>
     {% trans 'Enter prisoner details' %}
-</h1>
-  <p class="mtp-instructions">{% trans 'To make a bank transfer online, you need to generate a prisoner reference. To do this, we need these details: ' %}</p>
+  </h1>
+
+  <p class="mtp-instructions">{% trans 'To make a bank transfer online, you need a prisoner reference number. To provide this, we need these details: ' %}</p>
 
   <form method="post" action=".">
     {% csrf_token %}
@@ -24,18 +25,18 @@
           {% include 'mtp_common/forms/field-help-text.html' with field=field only %}
           {% include 'mtp_common/forms/field-errors.html' with field=field only %}
           <div>
-             <div class="form-date-day {% if field.errors %}error{% endif %}">
-               <label id="{{ field.auto_id }}_0-label" class="form-label" for="{{ field.auto_id }}_0">{% trans "Day" %}</label>
-               <input class="form-control" id="{{ field.auto_id }}_0" name="{{ field.html_name }}_0" value="{{ field.value.0|default:'' }}" type="number" />
-             </div>
-             <div class="form-date-month {% if field.errors %}error{% endif %}">
-               <label id="{{ field.auto_id }}_1-label" class="form-label" for="{{ field.auto_id }}_1">{% trans "Month" %}</label>
-               <input class="form-control" id="{{ field.auto_id }}_1" name="{{ field.html_name }}_1" value="{{ field.value.1|default:'' }}" type="number" />
-             </div>
-             <div class="form-date-year {% if field.errors %}error{% endif %}">
-               <label id="{{ field.auto_id }}_2-label" class="form-label" for="{{ field.auto_id }}_2">{% trans "Year" %}</label>
-               <input class="form-control form-year-field" id="{{ field.auto_id }}_2" name="{{ field.html_name }}_2" value="{{ field.value.2|default:'' }}" type="number" data-era-boundary="{{ field.field.fields.2.era_boundary }}" />
-             </div>
+            <div class="form-date-day {% if field.errors %}error{% endif %}">
+              <label id="{{ field.auto_id }}_0-label" class="form-label" for="{{ field.auto_id }}_0">{% trans "Day" %}</label>
+              <input class="form-control" id="{{ field.auto_id }}_0" name="{{ field.html_name }}_0" value="{{ field.value.0|default:'' }}" type="number" />
+            </div>
+            <div class="form-date-month {% if field.errors %}error{% endif %}">
+              <label id="{{ field.auto_id }}_1-label" class="form-label" for="{{ field.auto_id }}_1">{% trans "Month" %}</label>
+              <input class="form-control" id="{{ field.auto_id }}_1" name="{{ field.html_name }}_1" value="{{ field.value.1|default:'' }}" type="number" />
+            </div>
+            <div class="form-date-year {% if field.errors %}error{% endif %}">
+              <label id="{{ field.auto_id }}_2-label" class="form-label" for="{{ field.auto_id }}_2">{% trans "Year" %}</label>
+              <input class="form-control form-year-field" id="{{ field.auto_id }}_2" name="{{ field.html_name }}_2" value="{{ field.value.2|default:'' }}" type="number" data-era-boundary="{{ field.field.fields.2.era_boundary }}" />
+            </div>
           </div>
         </div>
       {% endwith %}
@@ -51,7 +52,6 @@
         </div>
       {% endwith %}
     </fieldset>
-    <br/>
     <p>
       <input id="id_next_btn" class="button" type="submit" value="{% trans 'Get reference' %}">
     </p>

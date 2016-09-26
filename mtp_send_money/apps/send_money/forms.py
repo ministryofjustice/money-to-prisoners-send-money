@@ -28,7 +28,7 @@ class PaymentMethodForm(GARequestErrorReportingMixin, forms.Form):
     @property
     def chosen_view_name(self):
         if self.cleaned_data['payment_method'] == PaymentMethod.bank_transfer.name:
-            return 'send_money:prisoner_details_bank'
+            return 'send_money:bank_transfer_info'
         return 'send_money:prisoner_details_debit'
 
 

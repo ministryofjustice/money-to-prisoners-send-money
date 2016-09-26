@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block inner_content %}
+
+  {% if return_to %}
+    <a class="ContentHeader-back ContentHeader-arrow" href="{{ return_to }}">{% trans 'Back' %}</a>
+  {% endif %}
+
+  <h1 class="heading-xlarge">
+    <span class="heading-secondary">{% trans 'Help on sending money to a prisoner' %}</span>
+    {% trans 'How to get a refund' %}
+  </h1>
+
+  <h2 class="heading-medium">{% trans 'If you use the wrong reference' %}</h2>
+  <ul class="list list-bullet">
+    <li>{% trans 'your money will be automatically refunded within 4 working days' %}</li>
+    <li>{% trans 'it will appear as ‘GBS RE NOMS’ on your bank statement' %}</li>
+  </ul>
+
+  <h2 class="heading-medium">{% trans 'If you make a cash transfer in-branch OR an international payment' %}</h2>
+  <p>
+    {% blocktrans trimmed with contact_url='https://www.justice.gov.uk/contacts/prison-finder' %}
+      <a href="{{ contact_url }}" target="_blank">Telephone the prison business hub</a> to tell them your in-branch cash transfer hasn’t got to the prisoner.
+    {% endblocktrans %}
+  </p>
+  <p>
+    {% trans 'You’ll be told to write to the prison to confirm these details:' %}
+  </p>
+  <ul class="list list-bullet">
+    <li>{% trans 'sender’s name (to whom the cheque will be made payable to)' %}</li>
+    <li>{% trans 'sender’s address' %}</li>
+    <li>{% trans 'prisoner’s name' %}</li>
+    <li>{% trans 'prisoner number' %}</li>
+    <li>{% trans 'amount and date' %}</li>
+    <li>{% trans 'bank branch payment was made at (if made in person)' %}</li>
+  </ul>
+  <p>
+    {% trans 'When the prison business hub receives your letter, they’ll post you a cheque for the amount.' %}
+  </p>
+
+{% endblock %}

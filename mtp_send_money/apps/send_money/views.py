@@ -8,6 +8,7 @@ from django.core.urlresolvers import reverse, reverse_lazy
 from django.shortcuts import redirect, render
 from django.utils import timezone
 from django.utils.decorators import method_decorator
+from django.utils.http import is_safe_url
 from django.utils.translation import ugettext as _
 from django.views.generic import FormView
 from mtp_common.email import send_email
@@ -148,6 +149,10 @@ class ChooseMethodView(FormView):
 
     def form_valid(self, form):
         return redirect(form.chosen_view_name)
+
+
+def bank_transfer_info_view(request):
+    return render(request, 'send_money/bank-transfer-info.html')
 
 
 class DebitCardPrisonerDetailsView(FormView):
@@ -414,3 +419,15 @@ def clear_session_view(request):
     """
     request.session.flush()
     return redirect('/')
+
+
+def help_view(request):
+    """
+    FAQ section
+    @param request: the HTTP request
+    """
+    context = {}
+    return_to = request.META.get('HTTP_REFERER')
+    if is_safe_url(url=return_to, host=request.get_host()):
+        context['return_to'] = return_to
+    return render(request, 'send_money/help.html', context=context)

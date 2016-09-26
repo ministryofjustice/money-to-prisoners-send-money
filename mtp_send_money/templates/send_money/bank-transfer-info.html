@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% load mtp_common %}
+{% load send_money %}
+
+{% block inner_content %}
+  <h1 class="heading-xlarge">
+    <span class="heading-secondary">{% trans 'Get a prisoner reference to use in a UK bank transfer' %}</span>
+    {% trans 'Before you continue' %}
+  </h1>
+
+  <strong>Please note</strong>
+  <div class="mtp-info">
+    <ul class="list list-bullet">
+      <li>{% trans 'You can’t go into a bank branch to transfer money - only transfers done online, using an app or over the phone will reach the prisoner' %}</li>
+      <li>{% trans 'You can’t transfer money from an international bank account or if you’re outside the UK' %}</li>
+    </ul>
+  </div>
+
+  <p>
+    <a id="id_next_btn" class="button" href="{% url 'send_money:prisoner_details_bank' %}">{% trans 'I understand' %}</a>
+  </p>
+{% endblock %}
