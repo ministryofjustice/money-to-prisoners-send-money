@@ -3,20 +3,40 @@
 $images-dir: '/static/images/';
 
 @import 'mtp';
+
 // govuk_elements overrides
 
-h1 { margin: 30px 0 40px 0; }
+h1 {
+  margin: 30px 0 40px;
+}
 
-form .form-group.form-date {
-  p { margin-bottom: 0 }
-  .form-date-day, .form-date-month, .form-date-year {
-    display: inline-block;
-    margin-right: 1em;
+.form-date {
+  p {
+    margin-bottom: 0;
   }
-  input { min-width: 3em; }
-  .form-date-day input { width: 3em; }
-  .form-date-month input { width: 3em; }
-  .form-date-year input { width: 5em; }
+
+  input {
+    min-width: 3em;
+  }
+}
+
+.form-date-day,
+.form-date-month,
+.form-date-year {
+  display: inline-block;
+  margin-right: 1em;
+}
+
+.form-date-day input {
+  width: 3em;
+}
+
+.form-date-month input {
+  width: 3em;
+}
+
+.form-date-year input {
+  width: 5em;
 }
 
 .form-label {
@@ -42,24 +62,27 @@ ol > li {
 .phase-banner {
   font-size: 16px;
   padding-bottom: 12px;
-  .phase-tag {
-    margin-top: 0;
-    letter-spacing: 1px;
-    padding: 4px 5px 2px 5px;
-  }
-  .phase-banner-message {
-    margin-top: 3px;
-    margin-left: 7px;
-  }
+}
+
+.phase-tag {
+  letter-spacing: 1px;
+  margin-top: 0;
+  padding: 4px 5px 2px;
+}
+
+.phase-banner-message {
+  margin-left: 7px;
+  margin-top: 3px;
 }
 
 .heading-small {
-  padding-top: 10px;
   padding-bottom: 15px;
+  padding-top: 10px;
 }
 
 .govuk-box-highlight {
-  padding: 0.1em 0 1em;
+  padding: .1em 0 1em;
+
   p {
     margin-bottom: 2px;
   }
@@ -68,8 +91,8 @@ ol > li {
 // mtp-common overrides
 
 .help-box-title {
-  margin-top: 25px;
   margin-bottom: 30px;
+  margin-top: 25px;
 }
 
 .help-box-contents {
@@ -77,23 +100,18 @@ ol > li {
 }
 
 // Application-specific
-.mtp-steps {
-  p {
-    margin-top: 20px;
-  }
-}
 
 .mtp-print-reference {
+  background: url('/static/images/icon-file-download.png') no-repeat scroll 0 0;
   display: block;
   line-height: 40px;
-    min-height: 2.5em;
-    padding-left: 2.5em;
-    background: url(/static/images/icon-file-download.png) no-repeat scroll 0 0;
+  min-height: 2.5em;
+  padding-left: 2.5em;
 
-    @media only screen and (-webkit-min-device-pixel-ratio: 2), only screen and (min-device-pixel-ratio: 2) {
-      background-image: url(/static/images/icon-file-download-2x.png);
-      background-size: 30px 39px;
-    }
+  @media only screen and (-webkit-min-device-pixel-ratio: 2), only screen and (min-device-pixel-ratio: 2) {
+    background-image: url('/static/images/icon-file-download-2x.png');
+    background-size: 30px 39px;
+  }
 }
 
 .mtp-instructions {
@@ -101,8 +119,8 @@ ol > li {
 }
 
 .mtp-info {
-  padding-top: 10px;
   padding-bottom: 15px;
+  padding-top: 10px;
   width: 60%;
 }
 
@@ -116,63 +134,64 @@ ol > li {
 }
 
 .mtp-prisoner-number {
-  width: 12em;
   text-transform: uppercase;
+  width: 12em;
 }
 
 .mtp-amount {
-  margin-top: 2em;
   margin-bottom: 2em;
+  margin-top: 2em;
+}
 
-  .mtp-money-amount {
-    margin-bottom: 1em;
+.mtp-currency-sign {
+  background-color: $highlight-colour;
+  border-right: 0;
+  font-weight: 900;
+  line-height: 1.16;
+  min-width: 1.8em;
+  text-align: center;
+  width: 1.8em;
+}
 
-    .money-box {
-      * {
-        height: 34px;
-        display: inline-block;
-        vertical-align: bottom;
-      }
-      .mtp-currency-sign {
-        background-color: $highlight-colour;
-        font-weight: 900;
-        min-width: 1.8em;
-        width: 1.8em;
-        text-align: center;
-        border-right: 0;
-        line-height: 1.16;
-      }
-      .mtp-charges-amount {
-        width: 5em;
-      }
-    }
+.mtp-charges-amount {
+  width: 5em;
+}
+
+.mtp-money-box {
+  * {
+    display: inline-block;
+    height: 34px;
+    vertical-align: bottom;
   }
+}
+
+.mtp-money-amount {
+  margin-bottom: 1em;
+
   > .form-group {
     margin-bottom: 4em;
   }
-  .mtp-charges-total {
-    margin-top: 1em;
-  }
+}
+
+.mtp-charges-total {
+  margin-top: 1em;
 }
 
 .mtp-confirm {
   width: 65%;
-  .mtp-confirm-change {
-    width: 39%;
-    vertical-align: top;
-    @include breakpoint(347px) {
-      width: 39%;
-    }
-  }
+
   h2 {
-    margin: 0 0 .2em 0;
     font-size: 1.26316em;
+    margin: 0 0 .2em;
   }
+
   div div {
     display: inline-block;
     margin-top: 2em;
+
     &.mtp-confirm-fieldset {
       width: 100%;
+
       @include breakpoint(347px) {
         margin-right: 5%;
         width: 55%;
@@ -183,33 +202,45 @@ ol > li {
   .mtp-checkgroup {
     border-top: 2px solid $border-colour;
     margin-bottom: 1.5em;
+
     legend {
       margin-bottom: 0;
     }
+
     div {
       margin-top: .7em;
     }
   }
 }
 
-.mtp-bank-transfer {
-  section {
-    margin-left: 1em;
-    margin-bottom: 3em;
-  }
-  h2 {
-    margin-left: -1em;
-    margin-bottom: 1.3em;
-    font-size: 1em;
+.mtp-confirm-change {
+  vertical-align: top;
+  width: 39%;
+
+  @include breakpoint(347px) {
+    width: 39%;
   }
 }
 
-.mtp-table{
+.mtp-steps {
+  margin-bottom: 3em;
+  margin-left: 1em;
+
+  p {
+    margin-top: 20px;
+  }
+
+  h2 {
+    font-size: 1em;
+    margin-bottom: 1.3em;
+    margin-left: -1em;
+  }
+}
+
+.mtp-table {
   td {
-    border-bottom: none;
-    padding-bottom: 0px;
-    padding-top: 0px;
-    padding-left: 0px;
+    border-bottom: 0;
+    padding: 0;
     width: 180px;
   }
 }
