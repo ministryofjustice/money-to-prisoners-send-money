@@ -1,0 +1,46 @@
+// View-specific styles
+
+.mtp-confirm {
+  width: 65%;
+
+  h2 {
+    font-size: 1.26316em;
+    margin: 0 0 .2em;
+  }
+
+  div div {
+    display: inline-block;
+    margin-top: 2em;
+
+    &.mtp-confirm-fieldset {
+      width: 100%;
+
+      @include breakpoint(347px) {
+        margin-right: 5%;
+        width: 55%;
+      }
+    }
+  }
+
+  .mtp-checkgroup {
+    border-top: 2px solid $border-colour;
+    margin-bottom: 1.5em;
+
+    legend {
+      margin-bottom: 0;
+    }
+
+    div {
+      margin-top: .7em;
+    }
+  }
+}
+
+.mtp-confirm-change {
+  vertical-align: top;
+  width: 39%;
+
+  @include breakpoint(347px) {
+    width: 39%;
+  }
+}

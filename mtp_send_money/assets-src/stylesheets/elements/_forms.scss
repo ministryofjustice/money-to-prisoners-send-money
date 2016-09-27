@@ -1,0 +1,42 @@
+// govuk_elements overrides
+
+.form-date {
+  p {
+    margin-bottom: 0;
+  }
+
+  input {
+    min-width: 3em;
+  }
+}
+
+.form-date-day,
+.form-date-month,
+.form-date-year {
+  display: inline-block;
+  margin-right: 1em;
+}
+
+.form-date-day input {
+  width: 3em;
+}
+
+.form-date-month input {
+  width: 3em;
+}
+
+.form-date-year input {
+  width: 5em;
+}
+
+.form-label {
+  margin-bottom: 0;
+}
+
+form fieldset legend {
+  margin-bottom: .5em;
+}
+
+form .form-group .form-hint {
+  margin-top: 0;
+}

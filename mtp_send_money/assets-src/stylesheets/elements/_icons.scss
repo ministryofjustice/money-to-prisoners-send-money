@@ -1,0 +1,14 @@
+// Application-specific
+
+.mtp-print-reference {
+  background: url('/static/images/icon-file-download.png') no-repeat scroll 0 0;
+  display: block;
+  line-height: 40px;
+  min-height: 2.5em;
+  padding-left: 2.5em;
+
+  @media only screen and (-webkit-min-device-pixel-ratio: 2), only screen and (min-device-pixel-ratio: 2) {
+    background-image: url('/static/images/icon-file-download-2x.png');
+    background-size: 30px 39px;
+  }
+}
