@@ -14,10 +14,6 @@
 
     {% include 'mtp_common/forms/error-summary.html' with form=form only %}
 
-    {{ form.prisoner_name }}
-    {{ form.prisoner_dob }}
-    {{ form.prisoner_number }}
-
     {% with field=form.amount %}
       <div class="mtp-amount">
         <fieldset>
@@ -27,7 +23,7 @@
           <div class="form-group mtp-money-amount {% if field.errors %}error{% endif %}">
             {% include 'mtp_common/forms/field-errors.html' with field=field only %}
             <div class="mtp-money-box">
-              <span class="form-control mtp-currency-sign" type="text">
+              <span class="form-control mtp-currency-sign">
                 £
               </span><input id="{{ field.id_for_label }}"
                     class="form-control mtp-charges-amount"

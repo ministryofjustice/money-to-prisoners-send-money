@@ -1,43 +1,37 @@
-from django.conf import settings
 from django.conf.urls import url
 
-from send_money import views
+from send_money.views import (
+    clear_session_view, help_view,
+    PaymentMethodChoiceView,
+    BankTransferWarningView, BankTransferPrisonerDetailsView, BankTransferReferenceView,
+    DebitCardPrisonerDetailsView, DebitCardAmountView, DebitCardCheckView,
+    DebitCardPaymentView, DebitCardConfirmationView
+)
 
 app_name = 'send_money'
+urlpatterns = [
+    url(r'^$', PaymentMethodChoiceView.as_view(),
+        name=PaymentMethodChoiceView.url_name),
 
-if settings.SHOW_DEBIT_CARD_OPTION and settings.SHOW_BANK_TRANSFER_OPTION:
-    urlpatterns = [
-        url(r'^$', views.ChooseMethodView.as_view(template_name='send_money/choose-method.html'),
-            name='choose_method'),
-        url(r'^start-payment/$', views.DebitCardPrisonerDetailsView.as_view(),
-            name='prisoner_details_debit'),
-        url(r'^prisoner-details/$', views.BankTransferPrisonerDetailsView.as_view(),
-            name='prisoner_details_bank'),
-    ]
-elif settings.SHOW_DEBIT_CARD_OPTION:
-    urlpatterns = [
-        url(r'^$', views.DebitCardPrisonerDetailsView.as_view(), name='prisoner_details_debit'),
-    ]
-elif settings.SHOW_BANK_TRANSFER_OPTION:
-    urlpatterns = [
-        url(r'^$', views.BankTransferPrisonerDetailsView.as_view(), name='prisoner_details_bank'),
-    ]
-else:
-    urlpatterns = []
+    url(r'^bank-transfer/warning/$', BankTransferWarningView.as_view(),
+        name=BankTransferWarningView.url_name),
+    url(r'^bank-transfer/details/$', BankTransferPrisonerDetailsView.as_view(),
+        name=BankTransferPrisonerDetailsView.url_name),
+    url(r'^bank-transfer/reference/$', BankTransferReferenceView.as_view(),
+        name=BankTransferReferenceView.url_name),
 
-if settings.SHOW_BANK_TRANSFER_OPTION:
-    urlpatterns += [
-        url(r'^bank-transfer-info/$', views.bank_transfer_info_view, name='bank_transfer_info'),
-        url(r'^bank-transfer/$', views.bank_transfer_view, name='bank_transfer'),
-    ]
+    url(r'^debit-card/details/$', DebitCardPrisonerDetailsView.as_view(),
+        name=DebitCardPrisonerDetailsView.url_name),
+    url(r'^debit-card/amount/$', DebitCardAmountView.as_view(),
+        name=DebitCardAmountView.url_name),
+    url(r'^debit-card/check/$', DebitCardCheckView.as_view(),
+        name=DebitCardCheckView.url_name),
+    url(r'^debit-card/payment/$', DebitCardPaymentView.as_view(),
+        name=DebitCardPaymentView.url_name),
+    url(r'^debit-card/confirmation/$', DebitCardConfirmationView.as_view(),
+        name=DebitCardConfirmationView.url_name),
 
-if settings.SHOW_DEBIT_CARD_OPTION:
-    urlpatterns += [
-        url(r'^send-money/$', views.SendMoneyView.as_view(), name='send_money_debit'),
-        url(r'^check-details/$', views.CheckDetailsView.as_view(), name='check_details'),
-        url(r'^clear-session/$', views.clear_session_view, name='clear_session'),
-        url(r'^card-payment/$', views.debit_card_view, name='debit_card'),
-        url(r'^confirmation/$', views.confirmation_view, name='confirmation'),
-    ]
+    url(r'^help/$', help_view, name='help'),
 
-urlpatterns.append(url(r'^help/$', views.help_view, name='help'))
+    url(r'^clear-session/$', clear_session_view, name='clear_session'),
+]

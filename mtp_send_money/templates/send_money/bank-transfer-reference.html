@@ -35,7 +35,10 @@
 
     <strong>{% trans 'Print this page for next time you make a payment to this prisoner.' %}</strong>
 
-    <p>To find out more about refunds visit: <a href="{% url 'send_money:help' %}">{% trans 'Help sending money to a prisoner' %}</a></p>
+    <p>
+      {% trans 'To find out more about refunds visit:' %}
+      <a href="{% url 'send_money:help' %}">{% trans 'Help sending money to a prisoner' %}</a>
+    </p>
   </section>
 
 {% endblock %}
