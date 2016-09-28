@@ -408,7 +408,7 @@ class DebitCardConfirmationView(DebitCardFlow, TemplateView):
                 if email:
                     send_email(
                         email, 'send_money/email/debit-card-confirmation.txt',
-                        _('Send money to a prisoner: your payment was successful'),
+                        gettext('Send money to a prisoner: your payment was successful'),
                         context=context_data, html_template='send_money/email/debit-card-confirmation.html'
                     )
             except (KeyError, ValueError):
