@@ -1,0 +1,26 @@
+// govuk_elements overrides
+
+h1 {
+  margin: 30px 0 40px;
+}
+
+.heading-small {
+  padding-bottom: 15px;
+  padding-top: 10px;
+}
+
+ol > li {
+  padding-bottom: 10px;
+}
+
+.list {
+  padding-left: 35px;
+}
+
+.govuk-box-highlight {
+  padding: .1em 0 1em;
+
+  p {
+    margin-bottom: 2px;
+  }
+}

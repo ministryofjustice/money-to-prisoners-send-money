@@ -26,7 +26,7 @@
           <label id="{{ field.id_for_label }}-label" class="mtp-hidden" for="{{ field.id_for_label }}">{% trans "Please enter the amount in pounds" %}</label>
           <div class="form-group mtp-money-amount {% if field.errors %}error{% endif %}">
             {% include 'mtp_common/forms/field-errors.html' with field=field only %}
-            <div class="money-box">
+            <div class="mtp-money-box">
               <span class="form-control mtp-currency-sign" type="text">
                 £
               </span><input id="{{ field.id_for_label }}"
