@@ -28,7 +28,7 @@
           {% blocktrans trimmed %}
             This is a new service. If you need any help please <a href="{{ ticket_url }}">contact us</a>.
           {% endblocktrans %}
-          {% trans 'This is a trial service for family and friends of prisoners at HMP Brixton, HMP Bullingdon, HMP Cardiff and HMP High Down only.' %}
+          {% trans 'This is a pilot service for family and friends of prisoners at HMP Brixton, HMP Bullingdon, HMP Cardiff and HMP High Down only.' %}
         </span>
       {% else %}
         <strong class="phase-tag phase-tag-dev" title="{{ APP }}-{{ ENVIRONMENT }}:{{ APP_GIT_COMMIT|default:'unknown'|truncatechars:7 }}{% if APP_BUILD_DATE %}, built {{ APP_BUILD_DATE }}{% endif %}">{{ ENVIRONMENT }}</strong>
