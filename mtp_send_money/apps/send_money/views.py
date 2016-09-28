@@ -98,7 +98,7 @@ class SendMoneyFormView(SendMoneyView, FormView):
 
 class PaymentMethodChoiceView(SendMoneyFormView):
     url_name = 'choose_method'
-    template_name = 'send_money/choose-method.html'
+    template_name = 'send_money/payment-method.html'
     form_class = send_money_forms.PaymentMethodChoiceForm
     experiment_cookie_name = 'EXP-first-payment-choice'
     experiment_variations = ['debit-card', 'bank-transfer']
@@ -194,7 +194,7 @@ class BankTransferWarningView(BankTransferFlow, TemplateView):
 class BankTransferPrisonerDetailsView(BankTransferFlow, SendMoneyFormView):
     url_name = 'prisoner_details_bank'
     previous_view = BankTransferWarningView
-    template_name = 'send_money/bank-transfer-form.html'
+    template_name = 'send_money/bank-transfer-prisoner-details.html'
     form_class = send_money_forms.BankTransferPrisonerDetailsForm
 
     def get_success_url(self):
@@ -204,7 +204,7 @@ class BankTransferPrisonerDetailsView(BankTransferFlow, SendMoneyFormView):
 class BankTransferReferenceView(BankTransferFlow, TemplateView):
     url_name = 'bank_transfer'
     previous_view = BankTransferPrisonerDetailsView
-    template_name = 'send_money/bank-transfer.html'
+    template_name = 'send_money/bank-transfer-reference.html'
 
     def get(self, request, *args, **kwargs):
         prisoner_details = self.valid_form_data[BankTransferPrisonerDetailsView.url_name]
@@ -238,7 +238,7 @@ class DebitCardFlow(SendMoneyView):
 class DebitCardPrisonerDetailsView(DebitCardFlow, SendMoneyFormView):
     url_name = 'prisoner_details_debit'
     previous_view = PaymentMethodChoiceView
-    template_name = 'send_money/debit-card-form.html'
+    template_name = 'send_money/debit-card-prisoner-details.html'
     form_class = send_money_forms.DebitCardPrisonerDetailsForm
 
     def get_success_url(self):
@@ -248,7 +248,7 @@ class DebitCardPrisonerDetailsView(DebitCardFlow, SendMoneyFormView):
 class DebitCardAmountView(DebitCardFlow, SendMoneyFormView):
     url_name = 'send_money_debit'
     previous_view = DebitCardPrisonerDetailsView
-    template_name = 'send_money/send-money.html'
+    template_name = 'send_money/debit-card-amount.html'
     form_class = send_money_forms.DebitCardAmountForm
 
     def get_context_data(self, **kwargs):
@@ -267,7 +267,7 @@ class DebitCardAmountView(DebitCardFlow, SendMoneyFormView):
 class DebitCardCheckView(DebitCardFlow, TemplateView):
     url_name = 'check_details'
     previous_view = DebitCardAmountView
-    template_name = 'send_money/check-details.html'
+    template_name = 'send_money/debit-card-check.html'
 
     def get_context_data(self, **kwargs):
         prisoner_details = self.valid_form_data[DebitCardPrisonerDetailsView.url_name]
@@ -349,7 +349,7 @@ class DebitCardPaymentView(DebitCardFlow):
                 'GOV.UK Pay payment initiation timed out for %s' % payment_ref
             )
 
-        return render(request, 'send_money/failure.html', failure_context)
+        return render(request, 'send_money/debit-card-failure.html', failure_context)
 
 
 class DebitCardConfirmationView(DebitCardFlow, TemplateView):
@@ -362,8 +362,8 @@ class DebitCardConfirmationView(DebitCardFlow, TemplateView):
 
     def get_template_names(self):
         if self.success:
-            return ['send_money/confirmation.html']
-        return ['send_money/failure.html']
+            return ['send_money/debit-card-confirmation.html']
+        return ['send_money/debit-card-failure.html']
 
     def check_payment(self, payment_ref, context_data):
         # NB: can bail out and clear session by raising DebitCardFlowException,
@@ -407,9 +407,9 @@ class DebitCardConfirmationView(DebitCardFlow, TemplateView):
                 self.success = True
                 if email:
                     send_email(
-                        email, 'send_money/email/confirmation.txt',
+                        email, 'send_money/email/debit-card-confirmation.txt',
                         _('Send money to a prisoner: your payment was successful'),
-                        context=context_data, html_template='send_money/email/confirmation.html'
+                        context=context_data, html_template='send_money/email/debit-card-confirmation.html'
                     )
             except (KeyError, ValueError):
                 logger.exception(
