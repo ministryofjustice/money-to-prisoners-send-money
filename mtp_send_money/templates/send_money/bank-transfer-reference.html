@@ -3,7 +3,6 @@
 {% load send_money %}
 {% load static %}
 
-
 {% block inner_content %}
 
   <div class="govuk-box-highlight">
@@ -12,7 +11,7 @@
     <strong>{{ bank_transfer_reference }}</strong>
   </div>
 
-  <div class="mtp-print">
+  <div class="mtp-print print-hidden">
     <a class="mtp-print-reference" href="#">{% trans 'Print this page' %}</a>
   </div>
 

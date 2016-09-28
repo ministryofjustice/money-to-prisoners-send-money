@@ -23,4 +23,12 @@ ol > li {
   p {
     margin-bottom: 2px;
   }
+
+  @media print {
+    & {
+      background: none;
+      border: 2px solid $border-color;
+      color: $text-colour;
+    }
+  }
 }

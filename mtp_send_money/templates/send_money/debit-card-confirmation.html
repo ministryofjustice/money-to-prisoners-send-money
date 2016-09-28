@@ -3,45 +3,47 @@
 {% load send_money %}
 
 {% block inner_content %}
-    <div class="govuk-box-highlight">
-      <h1 class="heading-large">{% trans 'Payment successful' %}</h1>
-      <p>{% trans 'Your payment reference is' %}<p>
-      <strong>{{ short_payment_ref|upper }}</strong>
-    </div>
 
-    <div class="mtp-print">
-      <a class="mtp-print-reference" href="#">{% trans 'Print this page' %}</a>
-    </div>
+  <div class="govuk-box-highlight">
+    <h1 class="heading-large">{% trans 'Payment successful' %}</h1>
+    <p>{% trans 'Your payment reference is' %}<p>
+    <strong>{{ short_payment_ref|upper }}</strong>
+  </div>
 
-    <h2 class="heading-medium">{% trans 'Payment summary' %}</h2>
-    <table class="mtp-table">
-      <tr>
-        <td>{% trans 'Payment to' %}:</td>
-        <td>{{ prisoner_name }}</td>
-      </tr>
-      <tr>
-        <td>{% trans 'Payment amount' %}:</td>
-        <td>{{ amount|currency_format }}</td>
-      </tr>
-      <tr>
-        <td>{% trans 'Date payment made' %}:</td>
-        <td>{% now 'd/m/Y' %}</td>
-      </tr>
-      <tr>
-        <td>{% trans 'Payment reference' %}:</td>
-        <td>{{ short_payment_ref|upper }}</td>
-      </tr>
-    </table>
+  <div class="mtp-print print-hidden">
+    <a class="mtp-print-reference" href="#">{% trans 'Print this page' %}</a>
+  </div>
 
-    <h2 class="heading-medium">{% trans 'What happens next' %}</h2>
+  <h2 class="heading-medium">{% trans 'Payment summary' %}</h2>
+  <table class="mtp-table">
+    <tr>
+      <td>{% trans 'Payment to' %}:</td>
+      <td>{{ prisoner_name }}</td>
+    </tr>
+    <tr>
+      <td>{% trans 'Payment amount' %}:</td>
+      <td>{{ amount|currency_format }}</td>
+    </tr>
+    <tr>
+      <td>{% trans 'Date payment made' %}:</td>
+      <td>{% now 'd/m/Y' %}</td>
+    </tr>
+    <tr>
+      <td>{% trans 'Payment reference' %}:</td>
+      <td>{{ short_payment_ref|upper }}</td>
+    </tr>
+  </table>
 
-    <ol class="list list-number">
-      <li>{% trans 'You’ll get email confirmation of payment' %}</li>
-      <li>{% trans 'The money will arrive in the prisoner’s account the next working day.' %}</li>
-    </ol>
+  <h2 class="heading-medium">{% trans 'What happens next' %}</h2>
 
-    <p>
-      {% trans 'To find out more about refunds visit:' %}
-      <a href="{% url 'send_money:help' %}">{% trans 'Help sending money to a prisoner' %}</a>
-    </p>
+  <ol class="list list-number">
+    <li>{% trans 'You’ll get email confirmation of payment' %}</li>
+    <li>{% trans 'The money will arrive in the prisoner’s account the next working day.' %}</li>
+  </ol>
+
+  <p>
+    {% trans 'To find out more about refunds visit:' %}
+    <a href="{% url 'send_money:help' %}">{% trans 'Help sending money to a prisoner' %}</a>
+  </p>
+
 {% endblock %}
