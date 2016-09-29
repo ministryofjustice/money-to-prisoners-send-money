@@ -7,7 +7,7 @@
   <div class="govuk-box-highlight">
     <h1 class="heading-large">{% trans 'Payment successful' %}</h1>
     <p>{% trans 'Your payment reference is' %}<p>
-    <strong>{{ short_payment_ref|upper }}</strong>
+    <strong>{{ short_payment_ref }}</strong>
   </div>
 
   <div class="mtp-print print-hidden">
@@ -30,14 +30,16 @@
     </tr>
     <tr>
       <td>{% trans 'Payment reference' %}:</td>
-      <td>{{ short_payment_ref|upper }}</td>
+      <td>{{ short_payment_ref }}</td>
     </tr>
   </table>
 
   <h2 class="heading-medium">{% trans 'What happens next' %}</h2>
 
   <ol class="list list-number">
-    <li>{% trans 'You’ll get email confirmation of payment' %}</li>
+    {% if email_sent %}
+      <li>{% trans 'You’ll get email confirmation of payment' %}</li>
+    {% endif %}
     <li>{% trans 'The money will arrive in the prisoner’s account the next working day.' %}</li>
   </ol>
 

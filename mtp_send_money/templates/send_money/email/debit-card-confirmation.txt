@@ -2,13 +2,13 @@
 {% load send_money %}
 
 {% now 'd/m/Y' as payment_date %}
-{% blocktrans trimmed with formatted_ref=short_payment_ref|upper formatted_amount=amount|currency_format %}
+{% blocktrans trimmed with formatted_amount=amount|currency_format %}
 GOV.UK - Send money to a prisoner
 
 
 Dear sender,
 
-Your payment has been successful. Your reference number is {{ formatted_ref }}.
+Your payment has been successful. Your reference number is {{ short_payment_ref }}.
 
 The money you sent will reach the prisoner’s account in 1 working day.
 
