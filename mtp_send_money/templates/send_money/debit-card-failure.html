@@ -6,8 +6,8 @@
 
   <p>{% trans 'We’re sorry, your payment could not be processed on this occasion' %}</p>
   <p>
-    {% blocktrans trimmed with formatted_ref=short_payment_ref|upper %}
-      Your reference number is <strong>{{ formatted_ref }}</strong>
+    {% blocktrans trimmed %}
+      Your reference number is <strong>{{ short_payment_ref }}</strong>
     {% endblocktrans %}
   </p>
 {% endblock %}

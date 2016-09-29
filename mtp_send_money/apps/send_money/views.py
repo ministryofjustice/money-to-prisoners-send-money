@@ -1,19 +1,23 @@
 import datetime
+import decimal
 import logging
 import random
 
 from django.conf import settings
+from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
+from django.core.validators import validate_email
 from django.http import Http404
 from django.shortcuts import redirect, render
 from django.utils import timezone
+from django.utils.functional import cached_property
 from django.utils.http import is_safe_url
 from django.utils.translation import gettext, gettext_lazy as _
 from django.views.generic import FormView, TemplateView, View
 from mtp_common.email import send_email
 from oauthlib.oauth2 import OAuth2Error
 import requests
-from requests.exceptions import Timeout as RequestsTimeout
+from requests.exceptions import RequestException, Timeout as RequestsTimeout
 from slumber.exceptions import SlumberHttpBaseException
 
 from send_money import forms as send_money_forms
@@ -360,85 +364,114 @@ class DebitCardConfirmationView(DebitCardFlow, TemplateView):
         super().__init__(**kwargs)
         self.success = False
 
+    @cached_property
+    def client(self):
+        return get_api_client()
+
     def get_template_names(self):
         if self.success:
             return ['send_money/debit-card-confirmation.html']
         return ['send_money/debit-card-failure.html']
 
-    def check_payment(self, payment_ref, context_data):
-        # NB: can bail out and clear session by raising DebitCardFlowException,
-        # otherwise simply sets self.success to True if it worked
-
-        context_data.update({
-            'short_payment_ref': payment_ref[:8],
-        })
+    def get_payment(self, payment_ref):
+        from slumber.exceptions import HttpNotFoundError
         try:
-            client = get_api_client()
-            api_response = client.payments(payment_ref).get()
-            if api_response['status'] != 'pending':
-                raise DebitCardFlowException
+            if payment_ref:
+                return self.client.payments(payment_ref).get()
+        except HttpNotFoundError:
+            pass
 
-            context_data.update({
-                'prisoner_name': api_response['recipient_name'],
-                'amount': api_response['amount'] / 100,
-            })
+    def update_payment(self, payment_ref, email):
+        payment_update = {
+            'status': 'taken'
+        }
+        if email:
+            payment_update['email'] = email
+        self.client.payments(payment_ref).patch(payment_update)
 
-            govuk_id = api_response['processor_id']
-            govuk_response = requests.get(
-                govuk_url('/payments/%s' % govuk_id), headers=govuk_headers(),
-                timeout=15
-            )
-
+    def get_govuk_payment(self, govuk_id):
+        response = requests.get(
+            govuk_url('/payments/%s' % govuk_id),
+            headers=govuk_headers(),
+            timeout=15
+        )
+        if response.status_code != 200:
+            raise RequestException('Status code not 200', response=response)
+        try:
+            data = response.json()
+            status = data['state']['status']
+            if status not in ('success', 'cancelled', 'failed'):
+                raise RequestException('Unexpected status %s' % status, response=response)
             try:
-                if govuk_response.status_code != 200:
-                    raise ValueError('Status code not 200')
-                govuk_data = govuk_response.json()
-                if govuk_data['state']['status'] != 'success':
-                    raise ValueError('Status message is not "success"')
+                validate_email(data.get('email'))
+            except ValidationError:
+                data['email'] = None
+            return data
+        except (ValueError, KeyError):
+            raise RequestException('Cannot parse response', response=response)
 
-                email = govuk_data.get('email')
-                payment_update = {
-                    'status': 'taken'
-                }
-                if email:
-                    payment_update['email'] = email
-                client.payments(payment_ref).patch(payment_update)
-
-                self.success = True
-                if email:
-                    send_email(
-                        email, 'send_money/email/debit-card-confirmation.txt',
-                        gettext('Send money to a prisoner: your payment was successful'),
-                        context=context_data, html_template='send_money/email/debit-card-confirmation.html'
-                    )
-            except (KeyError, ValueError):
-                logger.exception(
-                    'Failed to retrieve payment status from GOV.UK for payment %s. Received: %s'
-                    % (payment_ref, govuk_response.content)
-                )
-        except OAuth2Error:
-            logger.exception('Authentication error')
-        except SlumberHttpBaseException:
-            logger.exception(
-                'Failed to access payment %s' % payment_ref
+    def send_notification(self, email, kwargs):
+        from smtplib import SMTPException
+        if not email:
+            return False
+        try:
+            send_email(
+                email, 'send_money/email/debit-card-confirmation.txt',
+                gettext('Send money to a prisoner: your payment was successful'),
+                context=kwargs, html_template='send_money/email/debit-card-confirmation.html'
             )
-        except RequestsTimeout:
-            logger.exception(
-                'GOV.UK Pay payment status update timed out for %s' % payment_ref
-            )
+            return True
+        except SMTPException:
+            logger.exception('Could not send successful payment notification')
 
     def get(self, request, *args, **kwargs):
+        payment_ref = self.request.GET.get('payment_ref')
         try:
-            payment_ref = self.request.GET.get('payment_ref')
-            if not payment_ref:
-                raise DebitCardFlowException
+            # check payment status
+            payment = self.get_payment(payment_ref)
+            if not payment or payment['status'] != 'pending':
+                # bail out if accessed without specifying a payment in pending state
+                return clear_session_view(request)
 
-            context_data = self.get_context_data(**kwargs)
+            kwargs.update({
+                'short_payment_ref': payment_ref[:8].upper(),
+                'prisoner_name': payment['recipient_name'],
+                'amount': decimal.Decimal(payment['amount']) / 100,
+                'email_sent': False,
+            })
 
-            self.check_payment(payment_ref, context_data)
+            # check gov.uk payment status
+            govuk_id = payment['processor_id']
+            govuk_payment = self.get_govuk_payment(govuk_id)
+            govuk_status = govuk_payment['state']['status']
+            email = govuk_payment['email']
 
-            response = self.render_to_response(context_data)
-            request.session.flush()
-            return response
-        except DebitCardFlowException:
-            return clear_session_view(request)
+            if govuk_status == 'success':
+                # update payment status if processed successfully
+                self.update_payment(payment_ref, email)
+            else:
+                # cancelled or failed payments should allow users to retry from check-details
+                return redirect(self.build_view_url(DebitCardCheckView.url_name))
+
+            # notify sender if email known, but still show success page if it fails
+            kwargs['email_sent'] = self.send_notification(email, kwargs)
+
+            self.success = True
+        except OAuth2Error:
+            logger.exception('Authentication error while processing %s' % payment_ref)
+        except SlumberHttpBaseException as error:
+            error_message = 'Error while processing %s' % payment_ref
+            if hasattr(error, 'content'):
+                error_message += '\nReceived: %s' % error.content
+            logger.exception(error_message)
+        except RequestsTimeout:
+            logger.exception('GOV.UK Pay payment check timed out for %s' % payment_ref)
+        except RequestException as error:
+            error_message = 'GOV.UK Pay payment check failed for %s' % payment_ref
+            if hasattr(error, 'response') and hasattr(error.response, 'content'):
+                error_message += '\nReceived: %s' % error.response.content
+            logger.exception(error_message)
+
+        response = super().get(request, *args, **kwargs)
+        request.session.flush()
+        return response

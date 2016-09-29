@@ -793,7 +793,7 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
                 json={
                     'processor_id': processor_id,
                     'recipient_name': 'John',
-                    'amount': 1000,
+                    'amount': 1700,
                     'status': 'pending',
                     'created': datetime.datetime.now().isoformat() + 'Z',
                 },
@@ -820,14 +820,12 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
             self.assertContains(response, 'success')
 
             # check session is cleared
-            self.assertEqual(None, self.client.session.get('prisoner_number'))
-            self.assertEqual(None, self.client.session.get('amount'))
             for key in self.complete_session_keys:
                 self.assertNotIn(key, self.client.session)
 
             self.assertEqual('Send money to a prisoner: your payment was successful', mail.outbox[0].subject)
             self.assertTrue('WARGLE-B' in mail.outbox[0].body)
-            self.assertTrue('£10' in mail.outbox[0].body)
+            self.assertTrue('£17' in mail.outbox[0].body)
 
             with self.patch_prisoner_details_check():
                 response = self.client.get(
@@ -850,7 +848,7 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
                 json={
                     'processor_id': processor_id,
                     'recipient_name': 'John',
-                    'amount': 1000,
+                    'amount': 1700,
                     'status': 'pending',
                     'created': datetime.datetime.now().isoformat() + 'Z',
                 },
@@ -876,6 +874,10 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
             self.assertContains(response, 'your payment could not be processed')
             self.assertContains(response, ref[:8].upper())
 
+            # check session is cleared
+            for key in self.complete_session_keys:
+                self.assertNotIn(key, self.client.session)
+
     def test_confirmation_handles_govuk_errors(self):
         self.choose_debit_card_payment_method()
         self.fill_in_prisoner_details()
@@ -891,7 +893,7 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
                 json={
                     'processor_id': processor_id,
                     'recipient_name': 'John',
-                    'amount': 1000,
+                    'amount': 1700,
                     'status': 'pending',
                     'created': datetime.datetime.now().isoformat() + 'Z',
                 },
@@ -909,6 +911,50 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
             self.assertContains(response, 'your payment could not be processed')
             self.assertContains(response, ref[:8].upper())
 
+            # check session is cleared
+            for key in self.complete_session_keys:
+                self.assertNotIn(key, self.client.session)
+
+    def test_confirmation_handles_rejected_card(self):
+        self.choose_debit_card_payment_method()
+        self.fill_in_prisoner_details()
+        self.fill_in_amount()
+
+        with responses.RequestsMock() as rsps:
+            ref = 'wargle-blargle'
+            processor_id = '3'
+            mock_auth(rsps)
+            rsps.add(
+                rsps.GET,
+                api_url('/payments/%s/' % ref),
+                json={
+                    'processor_id': processor_id,
+                    'recipient_name': 'John',
+                    'amount': 1700,
+                    'status': 'pending',
+                    'created': datetime.datetime.now().isoformat() + 'Z',
+                },
+                status=200,
+            )
+            rsps.add(
+                rsps.GET,
+                govuk_url('/payments/%s/' % processor_id),
+                json={
+                    'state': {'status': 'failed'},
+                    'email': 'sender@outside.local',
+                },
+                status=200
+            )
+            with self.patch_prisoner_details_check(), self.silence_logger():
+                response = self.client.get(
+                    self.url, {'payment_ref': ref}, follow=True
+                )
+            self.assertOnPage(response, 'check_details')
+
+            # check session is kept
+            for key in self.complete_session_keys:
+                self.assertIn(key, self.client.session)
+
     def test_confirmation_redirects_for_completed_payments(self):
         self.choose_debit_card_payment_method()
         self.fill_in_prisoner_details()
@@ -924,7 +970,7 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
                 json={
                     'processor_id': processor_id,
                     'recipient_name': 'John',
-                    'amount': 1000,
+                    'amount': 1700,
                     'status': 'taken',
                     'created': datetime.datetime.now().isoformat() + 'Z',
                 },
