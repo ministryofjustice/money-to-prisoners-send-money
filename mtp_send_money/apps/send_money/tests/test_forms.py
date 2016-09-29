@@ -10,7 +10,7 @@ from send_money.forms import (
     DebitCardPrisonerDetailsForm, DebitCardAmountForm,
 )
 from send_money.models import PaymentMethod
-from send_money.tests import mock_auth
+from send_money.tests import mock_auth, patch_gov_uk_pay_availability_check
 from send_money.utils import api_url
 
 
@@ -21,8 +21,9 @@ class FormTestCase(unittest.TestCase):
     def make_valid_tests(cls, data_sets):
         def make_method(input_data):
             def test(self):
-                form = self.form_class(data=input_data)
-                self.assertFormValid(form)
+                with patch_gov_uk_pay_availability_check():
+                    form = self.form_class(data=input_data)
+                    self.assertFormValid(form)
 
             return test
 
@@ -33,8 +34,9 @@ class FormTestCase(unittest.TestCase):
     def make_invalid_tests(cls, data_sets):
         def make_method(input_data):
             def test(self):
-                form = self.form_class(data=input_data)
-                self.assertFormInvalid(form)
+                with patch_gov_uk_pay_availability_check():
+                    form = self.form_class(data=input_data)
+                    self.assertFormInvalid(form)
 
             return test
 

@@ -15,7 +15,7 @@
 
       {% for payment_method in form.payment_method.field.choices %}
         <label class="block-label" for="id_{{ payment_method.0 }}">
-          <input id="id_{{ payment_method.0 }}" type="radio" name="{{ form.payment_method.html_name }}" value="{{ payment_method.0 }}" {% if form.payment_method.value == payment_method.0 %}checked{% endif %}>
+          <input id="id_{{ payment_method.0 }}" type="radio" name="{{ form.payment_method.html_name }}" value="{{ payment_method.0 }}" {% if form.payment_method.value == payment_method.0 %}checked{% endif %} {%if form.payment_method.field.disabled %}disabled{% endif %}>
           {{ payment_method.1 }}
         </label>
 
