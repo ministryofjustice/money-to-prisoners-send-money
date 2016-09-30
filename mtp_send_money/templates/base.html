@@ -8,13 +8,14 @@
   {% sentry_js %}
 {% endblock %}
 
+
 {% block body_end %}
   {{ block.super }}
   <!-- {{ request.resolver_match.url_name }} -->
 {% endblock %}
 
-{% block page_title %}{% trans 'Send money to a prisoner - GOV.UK' %}{% endblock %}
 
+{% block page_title %}{% trans 'Send money to a prisoner - GOV.UK' %}{% endblock %}
 {% block proposition %}{% trans 'Send money to a prisoner' %}{% endblock %}
 
 
@@ -43,11 +44,12 @@
   </div>
 {% endblock %}
 
+
 {% block footer_support_links %}
   <ul>
-    <li><a href="/terms/">{% trans 'Terms and conditions' %}</a></li>
-    <li><a href="/cookies/">{% trans 'Cookies' %}</a></li>
-    <li><a href="/feedback/">{% trans 'Feedback' %}</a></li>
+    <li><a href="{% url 'terms' %}">{% trans 'Terms and conditions' %}</a></li>
+    <li><a href="{% url 'cookies' %}">{% trans 'Cookies' %}</a></li>
+    <li><a href="{% url 'submit_ticket' %}">{% trans 'Feedback' %}</a></li>
     <li>
       {% trans 'Built by' %}
       <a href="https://mojdigital.blog.gov.uk/">
