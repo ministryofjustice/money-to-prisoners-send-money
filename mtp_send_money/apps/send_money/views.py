@@ -400,7 +400,7 @@ class DebitCardConfirmationView(DebitCardFlow, TemplateView):
         try:
             data = response.json()
             status = data['state']['status']
-            if status not in ('success', 'cancelled', 'failed'):
+            if status not in ('success', 'cancelled', 'failed', 'error'):
                 raise RequestException('Unexpected status %s' % status, response=response)
             try:
                 validate_email(data.get('email'))
@@ -450,7 +450,11 @@ class DebitCardConfirmationView(DebitCardFlow, TemplateView):
                 # update payment status if processed successfully
                 self.update_payment(payment_ref, email)
             else:
-                # cancelled or failed payments should allow users to retry from check-details
+                if govuk_status == 'error':
+                    logger.error('GOV.UK Pay returned an error: %(code)s %(msg)s' %
+                                 {'code': govuk_payment['state']['code'],
+                                  'msg': govuk_payment['state']['message']})
+                # cancelled, failed, or error payments should allow users to retry from check-details
                 return redirect(self.build_view_url(DebitCardCheckView.url_name))
 
             # notify sender if email known, but still show success page if it fails
