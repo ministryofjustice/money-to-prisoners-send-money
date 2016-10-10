@@ -13,6 +13,7 @@ $images-dir: '/static/images/';
 @import 'elements/typography';
 
 // View-specific styles
+@import 'views/payment-method';
 @import 'views/bank-transfer';
 @import 'views/bank-transfer-form';
 @import 'views/bank-transfer-info';

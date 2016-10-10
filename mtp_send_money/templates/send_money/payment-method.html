@@ -10,6 +10,17 @@
     {% csrf_token %}
     {% include 'mtp_common/forms/error-summary.html' with form=form only %}
 
+    {%if form.payment_method.field.disabled %}
+      <div class="error-summary" role="alert" aria-labelledby="error-summary-heading" tabindex="-1">
+
+        <h1 class="heading-medium error-summary-heading" id="error-summary-heading-example-1">
+          {% trans 'Due to a technical issue, pay by debit card is temporarily unavailable.' %}
+        </h1>
+        <p>{% trans 'Please send money using a bank transfer or come back later.' %}</p>
+
+      </div>
+    {% endif %}
+
     <fieldset>
       <legend class="visuallyhidden">{% trans 'How do you want to send money?' %}</legend>
 
@@ -35,6 +46,10 @@
             {% trans 'Pay now by debit card' %}
           {% else %}
             {% trans 'Pay now by debit card (currently HMP Bullingdon and HMP Cardiff only)' %}
+          {% endif %}
+          {%if form.payment_method.field.disabled %}
+            <br />
+            <span class="heading-small mtp-error-message">{% trans 'Temporarily unavailable due to a technical issue' %}</span>
           {% endif %}
         </h2>
         <ol class="list list-number">
