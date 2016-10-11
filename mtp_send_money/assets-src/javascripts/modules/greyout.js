@@ -10,8 +10,8 @@ exports.Greyout = {
       var $blockLabel = $('.block-label:first');
       var $debitCardHeader = $('.mtp-debit-header');
 
-      $blockLabel.addClass('mtp-grey-out');
-      $debitCardHeader.addClass('mtp-grey-out');
+      $blockLabel.addClass('mtp-grey-choice');
+      $debitCardHeader.addClass('mtp-grey-text');
     }
   }
 };

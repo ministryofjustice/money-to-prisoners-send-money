@@ -1,7 +1,18 @@
 // View-specific styles
 
-.mtp-grey-out {
-  opacity: .5;
+.mtp-grey-choice {
+  background: #e8e9eb;
+  border-color: #e8e9eb;
+  color: #696969;
+  cursor: default;
+
+  &:hover {
+    border-color: #e8e9eb;
+  }
+}
+
+.mtp-grey-text {
+  color: #696969;;
 
   &.mtp-debit-header {
     padding-bottom: 0;
