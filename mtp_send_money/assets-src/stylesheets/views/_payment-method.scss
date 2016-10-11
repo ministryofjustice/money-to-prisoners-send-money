@@ -1,3 +1,15 @@
-.mtp-error-message {
+// View-specific styles
+
+.mtp-grey-out {
+  opacity: .5;
+
+  &.mtp-debit-header {
+    padding-bottom: 0;
+  }
+}
+
+.mtp-debit-unavailable {
   color: #b10e1e;
+  margin-top: 0;
+  padding-top: 0;
 }
