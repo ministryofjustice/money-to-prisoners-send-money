@@ -5,12 +5,16 @@ import unittest
 
 from django.core.exceptions import ValidationError
 from django.test.utils import override_settings
+from requests.exceptions import Timeout
 
-from send_money.utils import serialise_amount, unserialise_amount, \
-    serialise_date, unserialise_date, lenient_unserialise_date, \
-    format_percentage, currency_format, currency_format_pence, \
-    clamp_amount, get_service_charge, get_total_charge, \
-    validate_prisoner_number, bank_transfer_reference
+from send_money.utils import (
+    serialise_amount, unserialise_amount,
+    serialise_date, unserialise_date, lenient_unserialise_date,
+    format_percentage, currency_format, currency_format_pence,
+    clamp_amount, get_service_charge, get_total_charge,
+    validate_prisoner_number, bank_transfer_reference,
+    check_payment_service_available
+)
 
 
 class BaseEqualityTestCase(unittest.TestCase):
@@ -303,3 +307,29 @@ class BankTransferReference(unittest.TestCase):
             bank_transfer_reference('AB1234AB', datetime.date(1980, 1, 4)),
             'AB1234AB/04/01/1980',
         )
+
+
+@unittest.mock.patch('send_money.utils.requests')
+class PaymentServiceAvailabilityTestCase(unittest.TestCase):
+    def test_passed_healthcheck_returns_true(self, mock_requests):
+        mock_requests.get.return_value.status_code = 200
+        self.assertTrue(check_payment_service_available())
+
+    def test_healthcheck_timeout_returns_true(self, mock_requests):
+        mock_requests.get.side_effect = Timeout()
+        self.assertTrue(check_payment_service_available())
+
+    def test_failed_healthcheck_with_service_up_returns_true(self, mock_requests):
+        mock_requests.get.return_value.status_code = 500
+        mock_requests.get.return_value.json.return_value = {'gov_uk_pay': {'status': True}}
+        self.assertTrue(check_payment_service_available())
+
+    def test_failed_healthcheck_with_service_unspecified_returns_true(self, mock_requests):
+        mock_requests.get.return_value.status_code = 500
+        mock_requests.get.return_value.json.return_value = {}
+        self.assertTrue(check_payment_service_available())
+
+    def test_failed_healthcheck_with_service_down_returns_false(self, mock_requests):
+        mock_requests.get.return_value.status_code = 500
+        mock_requests.get.return_value.json.return_value = {'gov_uk_pay': {'status': False}}
+        self.assertFalse(check_payment_service_available())

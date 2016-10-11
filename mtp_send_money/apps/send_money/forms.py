@@ -15,7 +15,7 @@ from slumber.exceptions import HttpNotFoundError, SlumberHttpBaseException
 from send_money.models import PaymentMethod
 from send_money.utils import (
     serialise_amount, unserialise_amount, serialise_date, unserialise_date,
-    get_api_client, validate_prisoner_number
+    get_api_client, validate_prisoner_number, check_payment_service_available
 )
 
 logger = logging.getLogger('mtp')
@@ -56,6 +56,9 @@ class PaymentMethodChoiceForm(SendMoneyForm):
         super().__init__(**kwargs)
         if show_bank_transfer_first:
             self['payment_method'].field.choices = reversed(self['payment_method'].field.choices)
+        if not check_payment_service_available():
+            self.fields['payment_method'].initial = PaymentMethod.bank_transfer.name
+            self.fields['payment_method'].disabled = True
 
 
 class PrisonerDetailsForm(SendMoneyForm):

@@ -10,6 +10,8 @@ from django.utils import formats
 from django.utils.encoding import force_text
 from django.utils.translation import ugettext as _
 from mtp_common.auth import api_client, urljoin
+import requests
+from requests.exceptions import Timeout
 
 prisoner_number_re = re.compile(r'^[a-z]\d\d\d\d[a-z]{2}$', re.IGNORECASE)
 
@@ -19,6 +21,17 @@ def get_api_client():
         settings.SHARED_API_USERNAME,
         settings.SHARED_API_PASSWORD
     )
+
+
+def check_payment_service_available():
+    try:
+        response = requests.get('%s/healthcheck.json' % settings.API_URL, timeout=5)
+        if response.status_code == 500:
+            gov_uk_status = response.json().get('gov_uk_pay')
+            return gov_uk_status is None or gov_uk_status.get('status', True)
+    except Timeout:
+        pass
+    return True
 
 
 def validate_prisoner_number(value):

@@ -3,7 +3,6 @@
 (function() {
   'use strict';
 
-  require('selection-buttons').SelectionButtons.init();
 
   require('analytics').Analytics.init();
   require('element-focus').ElementFocus.init();
@@ -14,4 +13,7 @@
   require('charges').Charges.init();
   require('experiments').Experiments.init();
   require('reference').Reference.init();
+  require('greyout.js').Greyout.init();
+  require('selection-buttons').SelectionButtons.init();
+  
 })();

@@ -53,6 +53,7 @@ def help_view(request):
 
 class SendMoneyView(View):
     previous_view = None
+    payment_method = None
 
     @classmethod
     def get_previous_views(cls, view):
@@ -77,6 +78,11 @@ class SendMoneyView(View):
                 self.valid_form_data[view.url_name] = form.cleaned_data
             else:
                 return redirect(self.build_view_url(view.url_name))
+        # if choose method form has been used and we are in the wrong flow, redirect
+        method_choice = self.valid_form_data.get(PaymentMethodChoiceView.url_name)
+        if (method_choice and self.payment_method and
+                method_choice['payment_method'] != self.payment_method.name):
+            return redirect(self.build_view_url(PaymentMethodChoiceView.url_name))
         return super().dispatch(request, *args, **kwargs)
 
 
@@ -180,6 +186,8 @@ class PaymentMethodChoiceView(SendMoneyFormView):
 
 
 class BankTransferFlow(SendMoneyView):
+    payment_method = PaymentMethod.bank_transfer
+
     def dispatch(self, request, *args, **kwargs):
         if not settings.SHOW_BANK_TRANSFER_OPTION:
             raise Http404('Bank transfers are not available')
@@ -233,6 +241,8 @@ class DebitCardFlowException(Exception):
 
 
 class DebitCardFlow(SendMoneyView):
+    payment_method = PaymentMethod.debit_card
+
     def dispatch(self, request, *args, **kwargs):
         if not settings.SHOW_DEBIT_CARD_OPTION:
             raise Http404('Debit cards are not available')
