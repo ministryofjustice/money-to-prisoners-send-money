@@ -20,12 +20,12 @@ class BaseTestCase(SimpleTestCase):
     root_url = '/'
 
     @contextmanager
-    def silence_logger(self, name='mtp'):
+    def silence_logger(self, name='mtp', level=logging.CRITICAL):
         logger = logging.getLogger(name)
-        level = logger.level
-        logger.setLevel(logging.CRITICAL)
-        yield
+        old_level = logger.level
         logger.setLevel(level)
+        yield
+        logger.setLevel(old_level)
 
     def assertOnPage(self, response, url_name):  # noqa
         self.assertContains(response, '<!-- %s -->' % url_name)
