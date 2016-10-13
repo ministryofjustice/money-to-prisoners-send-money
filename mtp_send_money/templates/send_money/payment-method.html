@@ -42,17 +42,13 @@
       </div>
       <div class="panel panel-border-narrow help-box-contents" id="help-box-contents">
         <h2 class="heading-small mtp-debit-header">
-          {% if ENVIRONMENT == 'test' %}
-            {% trans 'Pay now by debit card' %}
-          {% else %}
-            {% trans 'Pay now by debit card (currently HMP Bullingdon and HMP Cardiff only)' %}
-          {% endif %}
+          {% trans 'Pay now by debit card (not currently available in HMP Brixton)' %}
         </h2>
 
         {%if form.payment_method.field.disabled %}
           <h2 class="heading-small mtp-debit-unavailable">{% trans 'Temporarily unavailable due to a technical issue' %}</h2>
         {% endif %}
-        
+
         <ol class="list list-number">
           <li>{% trans 'You can complete your payment here' %}</li>
           <li>{% trans 'Money takes 1 working day to reach the prisoner' %}</li>
