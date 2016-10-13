@@ -1,14 +1,10 @@
 from enum import Enum
 
-from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
 
 
 class PaymentMethod(Enum):
-    if settings.ENVIRONMENT == 'test':
-        debit_card = _('Pay now by debit card')
-    else:
-        debit_card = _('Pay now by debit card (not currently available in HMP Brixton)')
+    debit_card = _('Pay now by debit card (not currently available in HMP Brixton)')
     bank_transfer = _('Get a prisoner reference to use in a UK bank transfer')
 
     def __str__(self):
