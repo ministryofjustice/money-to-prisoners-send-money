@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.conf.urls import include, url
+from django.http import HttpResponse
 from django.views.generic import TemplateView
 from django.views.generic.base import RedirectView
 
@@ -30,6 +31,11 @@ urlpatterns = [
 
     url(r'^favicon.ico$', RedirectView.as_view(url=settings.STATIC_URL + 'images/favicon.ico', permanent=True)),
 ]
+
+if settings.ENVIRONMENT != 'prod':
+    urlpatterns += [
+        url(r'^robots.txt$', lambda request: HttpResponse('User-agent: *\nDisallow: /', content_type='text/plain')),
+    ]
 
 handler404 = 'mtp_common.views.page_not_found'
 handler500 = 'mtp_common.views.server_error'
