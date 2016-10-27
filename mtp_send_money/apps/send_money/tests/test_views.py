@@ -993,6 +993,11 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
                 },
                 status=200
             )
+            rsps.add(
+                rsps.PATCH,
+                api_url('/payments/%s/' % ref),
+                status=200,
+            )
             with self.patch_prisoner_details_check(), self.silence_logger():
                 response = self.client.get(
                     self.url, {'payment_ref': ref}, follow=True
