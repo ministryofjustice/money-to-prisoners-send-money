@@ -183,4 +183,4 @@ def site_url(path):
 
 def get_link_by_rel(data, rel):
     if rel in data['_links']:
-        return data['_links'][rel]
+        return data['_links'][rel]['href']

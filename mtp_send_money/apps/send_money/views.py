@@ -332,7 +332,7 @@ class DebitCardPaymentView(DebitCardFlow):
             }
             govuk_payment = payment_client.create_govuk_payment(payment_ref, new_govuk_payment)
             if govuk_payment:
-                return redirect(get_link_by_rel(govuk_payment, 'next_url')['href'])
+                return redirect(get_link_by_rel(govuk_payment, 'next_url'))
         except OAuth2Error:
             logger.exception('Authentication error')
         except SlumberHttpBaseException:

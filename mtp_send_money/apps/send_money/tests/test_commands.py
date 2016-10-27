@@ -13,8 +13,7 @@ from send_money.utils import api_url, govuk_url
 class UpdateIncompletePaymentsTestCase(SimpleTestCase):
 
     @override_settings(ENVIRONMENT='prod')  # because non-prod environments don't send to @outside.local
-    def test_confirmation(self):
-
+    def test_update_incomplete_payments(self):
         with responses.RequestsMock() as rsps:
             mock_auth(rsps)
             rsps.add(
@@ -29,7 +28,7 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
                             'recipient_name': 'John',
                             'amount': 1700,
                             'status': 'pending',
-                            'created': datetime.now().isoformat() + 'Z',
+                            'created': datetime.now().isoformat() + 'Z'
                         },
                         {
                             'uuid': 'wargle-2222',
@@ -37,7 +36,7 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
                             'recipient_name': 'Tom',
                             'amount': 2000,
                             'status': 'pending',
-                            'created': datetime.now().isoformat() + 'Z',
+                            'created': datetime.now().isoformat() + 'Z'
                         },
                         {
                             'uuid': 'wargle-3333',
@@ -45,7 +44,7 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
                             'recipient_name': 'Harry',
                             'amount': 500,
                             'status': 'pending',
-                            'created': datetime.now().isoformat() + 'Z',
+                            'created': datetime.now().isoformat() + 'Z'
                         },
                     ]
                 },
@@ -57,8 +56,32 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
                 json={
                     'state': {'status': 'success'},
                     'email': 'success_sender@outside.local',
+                    '_links': {
+                        'events': {
+                            'method': 'GET',
+                            'href': govuk_url('/payments/%s/events' % 1),
+                        }
+                    }
                 },
                 status=200
+            )
+            rsps.add(
+                rsps.GET,
+                govuk_url('/payments/%s/events' % 1),
+                json={
+                    'events': [
+                        {
+                            'state': {'status': 'success'},
+                            'updated': '2016-10-27T15:11:05.768Z'
+                        }
+                    ]
+                },
+                status=200
+            )
+            rsps.add(
+                rsps.PATCH,
+                api_url('/payments/%s/' % 'wargle-1111'),
+                status=200,
             )
             rsps.add(
                 rsps.GET,
@@ -77,11 +100,6 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
                     'email': 'failed_sender@outside.local',
                 },
                 status=200
-            )
-            rsps.add(
-                rsps.PATCH,
-                api_url('/payments/%s/' % 'wargle-1111'),
-                status=200,
             )
             rsps.add(
                 rsps.PATCH,
