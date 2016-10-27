@@ -3,7 +3,7 @@
 (function() {
   'use strict';
 
-
+  require('proposition-header').PropositionHeader.init();
   require('analytics').Analytics.init();
   require('element-focus').ElementFocus.init();
   require('year-field-completion').YearFieldCompletion.init();
@@ -15,5 +15,5 @@
   require('reference').Reference.init();
   require('greyout.js').Greyout.init();
   require('selection-buttons').SelectionButtons.init();
-  
+
 })();
