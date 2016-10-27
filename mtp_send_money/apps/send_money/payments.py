@@ -1,35 +1,20 @@
+from datetime import timedelta
 import logging
 
 from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
+from django.utils import timezone
 from django.utils.functional import cached_property
-from django.utils.translation import gettext
-from mtp_common.email import send_email
 from mtp_common.api import retrieve_all_pages
 import requests
 from requests.exceptions import RequestException
 
+from send_money.exceptions import GovUkPaymentStatusException
 from send_money.utils import (
-    get_api_client, govuk_headers, govuk_url
+    get_api_client, govuk_headers, govuk_url, send_notification
 )
 
-
 logger = logging.getLogger('mtp')
-
-
-def send_notification(email, context):
-    from smtplib import SMTPException
-    if not email:
-        return False
-    try:
-        send_email(
-            email, 'send_money/email/debit-card-confirmation.txt',
-            gettext('Send money to a prisoner: your payment was successful'),
-            context=context, html_template='send_money/email/debit-card-confirmation.html'
-        )
-        return True
-    except SMTPException:
-        logger.exception('Could not send successful payment notification')
 
 
 class PaymentClient:
@@ -42,8 +27,11 @@ class PaymentClient:
         api_response = self.client.payments.post(new_payment)
         return api_response['uuid']
 
-    def get_all_pending_payments(self):
-        return retrieve_all_pages(self.client.payments.get)
+    def get_incomplete_payments(self):
+        an_hour_ago = timezone.now() - timedelta(hours=1)
+        return retrieve_all_pages(
+            self.client.payments.get, modified__lt=an_hour_ago.isoformat()
+        )
 
     def get_payment(self, payment_ref):
         from slumber.exceptions import HttpNotFoundError
@@ -66,11 +54,12 @@ class PaymentClient:
         success = False
         if govuk_status == 'success':
             success = True
-        else:
-            if govuk_status == 'error':
-                logger.error('GOV.UK Pay returned an error: %(code)s %(msg)s' %
-                             {'code': govuk_payment['state']['code'],
-                              'msg': govuk_payment['state']['message']})
+        elif govuk_status == 'error':
+            logger.error('GOV.UK Pay returned an error: %(code)s %(msg)s' %
+                         {'code': govuk_payment['state']['code'],
+                          'msg': govuk_payment['state']['message']})
+        elif govuk_status not in ('cancelled', 'failed'):
+            raise GovUkPaymentStatusException('Incomplete status: %s' % govuk_status)
 
         payment_update = {
             'status': 'taken' if success else 'failed'
@@ -95,9 +84,6 @@ class PaymentClient:
             raise RequestException('Status code not 200', response=response)
         try:
             data = response.json()
-            status = data['state']['status']
-            if status not in ('success', 'cancelled', 'failed', 'error'):
-                raise RequestException('Unexpected status %s' % status, response=response)
             try:
                 validate_email(data.get('email'))
             except ValidationError:

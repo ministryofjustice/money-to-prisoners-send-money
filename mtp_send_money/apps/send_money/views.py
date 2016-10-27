@@ -16,6 +16,7 @@ from requests.exceptions import RequestException, Timeout as RequestsTimeout
 from slumber.exceptions import SlumberHttpBaseException
 
 from send_money import forms as send_money_forms
+from send_money.exceptions import GovUkPaymentStatusException
 from send_money.models import PaymentMethod
 from send_money.payments import PaymentClient
 from send_money.utils import (
@@ -395,6 +396,8 @@ class DebitCardConfirmationView(DebitCardFlow, TemplateView):
             if hasattr(error, 'response') and hasattr(error.response, 'content'):
                 error_message += '\nReceived: %s' % error.response.content
             logger.exception(error_message)
+        except GovUkPaymentStatusException:
+            logger.exception('GOV.UK Pay payment status incomplete for %s' % payment_ref)
 
         response = super().get(request, *args, **kwargs)
         request.session.flush()
