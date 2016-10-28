@@ -4,27 +4,23 @@ import logging
 import random
 
 from django.conf import settings
-from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
-from django.core.validators import validate_email
 from django.http import Http404
 from django.shortcuts import redirect, render
 from django.utils import timezone
-from django.utils.functional import cached_property
 from django.utils.http import is_safe_url
 from django.utils.translation import gettext, gettext_lazy as _
 from django.views.generic import FormView, TemplateView, View
-from mtp_common.email import send_email
 from oauthlib.oauth2 import OAuth2Error
-import requests
 from requests.exceptions import RequestException, Timeout as RequestsTimeout
 from slumber.exceptions import SlumberHttpBaseException
 
 from send_money import forms as send_money_forms
+from send_money.exceptions import GovUkPaymentStatusException
 from send_money.models import PaymentMethod
+from send_money.payments import PaymentClient
 from send_money.utils import (
-    bank_transfer_reference, get_service_charge,
-    get_api_client, get_link_by_rel, govuk_headers, govuk_url, site_url
+    bank_transfer_reference, get_service_charge, get_link_by_rel, site_url
 )
 
 logger = logging.getLogger('mtp')
@@ -315,7 +311,7 @@ class DebitCardPaymentView(DebitCardFlow):
             'short_payment_ref': _('Not known')
         }
         try:
-            client = get_api_client()
+            payment_client = PaymentClient()
             new_payment = {
                 'amount': amount_pence,
                 'service_charge': service_charge_pence,
@@ -323,8 +319,7 @@ class DebitCardPaymentView(DebitCardFlow):
                 'prisoner_number': prisoner_details['prisoner_number'],
                 'prisoner_dob': prisoner_details['prisoner_dob'].isoformat(),
             }
-            api_response = client.payments.post(new_payment)
-            payment_ref = api_response['uuid']
+            payment_ref = payment_client.create_payment(new_payment)
             failure_context['short_payment_ref'] = payment_ref[:8]
 
             new_govuk_payment = {
@@ -335,25 +330,9 @@ class DebitCardPaymentView(DebitCardFlow):
                     self.build_view_url(DebitCardConfirmationView.url_name) + '?payment_ref=' + payment_ref
                 ),
             }
-            govuk_response = requests.post(
-                govuk_url('/payments'), headers=govuk_headers(),
-                json=new_govuk_payment, timeout=15
-            )
-
-            try:
-                if govuk_response.status_code != 201:
-                    raise ValueError('Status code not 201')
-                govuk_data = govuk_response.json()
-                update_payment = {
-                    'processor_id': govuk_data['payment_id']
-                }
-                client.payments(payment_ref).patch(update_payment)
-                return redirect(get_link_by_rel(govuk_data, 'next_url')['href'])
-            except (KeyError, ValueError):
-                logger.exception(
-                    'Failed to create new GOV.UK payment for MTP payment %s. Received: %s'
-                    % (payment_ref, govuk_response.content)
-                )
+            govuk_payment = payment_client.create_govuk_payment(payment_ref, new_govuk_payment)
+            if govuk_payment:
+                return redirect(get_link_by_rel(govuk_payment, 'next_url'))
         except OAuth2Error:
             logger.exception('Authentication error')
         except SlumberHttpBaseException:
@@ -374,71 +353,17 @@ class DebitCardConfirmationView(DebitCardFlow, TemplateView):
         super().__init__(**kwargs)
         self.success = False
 
-    @cached_property
-    def client(self):
-        return get_api_client()
-
     def get_template_names(self):
         if self.success:
             return ['send_money/debit-card-confirmation.html']
         return ['send_money/debit-card-failure.html']
 
-    def get_payment(self, payment_ref):
-        from slumber.exceptions import HttpNotFoundError
-        try:
-            if payment_ref:
-                return self.client.payments(payment_ref).get()
-        except HttpNotFoundError:
-            pass
-
-    def update_payment(self, payment_ref, email):
-        payment_update = {
-            'status': 'taken'
-        }
-        if email:
-            payment_update['email'] = email
-        self.client.payments(payment_ref).patch(payment_update)
-
-    def get_govuk_payment(self, govuk_id):
-        response = requests.get(
-            govuk_url('/payments/%s' % govuk_id),
-            headers=govuk_headers(),
-            timeout=15
-        )
-        if response.status_code != 200:
-            raise RequestException('Status code not 200', response=response)
-        try:
-            data = response.json()
-            status = data['state']['status']
-            if status not in ('success', 'cancelled', 'failed', 'error'):
-                raise RequestException('Unexpected status %s' % status, response=response)
-            try:
-                validate_email(data.get('email'))
-            except ValidationError:
-                data['email'] = None
-            return data
-        except (ValueError, KeyError):
-            raise RequestException('Cannot parse response', response=response)
-
-    def send_notification(self, email, kwargs):
-        from smtplib import SMTPException
-        if not email:
-            return False
-        try:
-            send_email(
-                email, 'send_money/email/debit-card-confirmation.txt',
-                gettext('Send money to a prisoner: your payment was successful'),
-                context=kwargs, html_template='send_money/email/debit-card-confirmation.html'
-            )
-            return True
-        except SMTPException:
-            logger.exception('Could not send successful payment notification')
-
     def get(self, request, *args, **kwargs):
         payment_ref = self.request.GET.get('payment_ref')
         try:
             # check payment status
-            payment = self.get_payment(payment_ref)
+            payment_client = PaymentClient()
+            payment = payment_client.get_payment(payment_ref)
             if not payment or payment['status'] != 'pending':
                 # bail out if accessed without specifying a payment in pending state
                 return clear_session_view(request)
@@ -452,25 +377,11 @@ class DebitCardConfirmationView(DebitCardFlow, TemplateView):
 
             # check gov.uk payment status
             govuk_id = payment['processor_id']
-            govuk_payment = self.get_govuk_payment(govuk_id)
-            govuk_status = govuk_payment['state']['status']
-            email = govuk_payment['email']
-
-            if govuk_status == 'success':
-                # update payment status if processed successfully
-                self.update_payment(payment_ref, email)
-            else:
-                if govuk_status == 'error':
-                    logger.error('GOV.UK Pay returned an error: %(code)s %(msg)s' %
-                                 {'code': govuk_payment['state']['code'],
-                                  'msg': govuk_payment['state']['message']})
-                # cancelled, failed, or error payments should allow users to retry from check-details
+            self.success, kwargs = payment_client.check_govuk_payment_status(
+                payment_ref, govuk_id, kwargs
+            )
+            if not self.success:
                 return redirect(self.build_view_url(DebitCardCheckView.url_name))
-
-            # notify sender if email known, but still show success page if it fails
-            kwargs['email_sent'] = self.send_notification(email, kwargs)
-
-            self.success = True
         except OAuth2Error:
             logger.exception('Authentication error while processing %s' % payment_ref)
         except SlumberHttpBaseException as error:
@@ -485,6 +396,8 @@ class DebitCardConfirmationView(DebitCardFlow, TemplateView):
             if hasattr(error, 'response') and hasattr(error.response, 'content'):
                 error_message += '\nReceived: %s' % error.response.content
             logger.exception(error_message)
+        except GovUkPaymentStatusException:
+            logger.exception('GOV.UK Pay payment status incomplete for %s' % payment_ref)
 
         response = super().get(request, *args, **kwargs)
         request.session.flush()

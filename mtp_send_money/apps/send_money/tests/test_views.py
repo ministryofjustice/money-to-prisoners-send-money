@@ -853,6 +853,25 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
                 json={
                     'state': {'status': 'success'},
                     'email': 'sender@outside.local',
+                    '_links': {
+                        'events': {
+                            'method': 'GET',
+                            'href': govuk_url('/payments/%s/events' % 1),
+                        }
+                    }
+                },
+                status=200
+            )
+            rsps.add(
+                rsps.GET,
+                govuk_url('/payments/%s/events' % 1),
+                json={
+                    'events': [
+                        {
+                            'state': {'status': 'success'},
+                            'updated': '2016-10-27T15:11:05.768Z'
+                        }
+                    ]
                 },
                 status=200
             )
@@ -906,7 +925,27 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
                 rsps.GET,
                 govuk_url('/payments/%s/' % processor_id),
                 json={
-                    'state': {'status': 'success'}, 'email': 'sender@outside.local'
+                    'state': {'status': 'success'},
+                    'email': 'sender@outside.local',
+                    '_links': {
+                        'events': {
+                            'method': 'GET',
+                            'href': govuk_url('/payments/%s/events' % 1),
+                        }
+                    }
+                },
+                status=200
+            )
+            rsps.add(
+                rsps.GET,
+                govuk_url('/payments/%s/events' % 1),
+                json={
+                    'events': [
+                        {
+                            'state': {'status': 'success'},
+                            'updated': '2016-10-27T15:11:05.768Z'
+                        }
+                    ]
                 },
                 status=200
             )
@@ -992,6 +1031,11 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
                     'email': 'sender@outside.local',
                 },
                 status=200
+            )
+            rsps.add(
+                rsps.PATCH,
+                api_url('/payments/%s/' % ref),
+                status=200,
             )
             with self.patch_prisoner_details_check(), self.silence_logger():
                 response = self.client.get(

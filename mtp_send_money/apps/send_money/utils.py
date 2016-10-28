@@ -1,5 +1,6 @@
 import datetime
 from decimal import Decimal, ROUND_DOWN, ROUND_UP
+import logging
 import re
 
 from django.conf import settings
@@ -8,11 +9,13 @@ from django.utils.dateformat import format as format_date
 from django.utils.dateparse import parse_date
 from django.utils import formats
 from django.utils.encoding import force_text
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext, ugettext as _
 from mtp_common.auth import api_client, urljoin
+from mtp_common.email import send_email
 import requests
 from requests.exceptions import Timeout
 
+logger = logging.getLogger('mtp')
 prisoner_number_re = re.compile(r'^[a-z]\d\d\d\d[a-z]{2}$', re.IGNORECASE)
 
 
@@ -32,6 +35,21 @@ def check_payment_service_available():
     except Timeout:
         pass
     return True
+
+
+def send_notification(email, context):
+    from smtplib import SMTPException
+    if not email:
+        return False
+    try:
+        send_email(
+            email, 'send_money/email/debit-card-confirmation.txt',
+            gettext('Send money to a prisoner: your payment was successful'),
+            context=context, html_template='send_money/email/debit-card-confirmation.html'
+        )
+        return True
+    except SMTPException:
+        logger.exception('Could not send successful payment notification')
 
 
 def validate_prisoner_number(value):
@@ -165,4 +183,4 @@ def site_url(path):
 
 def get_link_by_rel(data, rel):
     if rel in data['_links']:
-        return data['_links'][rel]
+        return data['_links'][rel]['href']
