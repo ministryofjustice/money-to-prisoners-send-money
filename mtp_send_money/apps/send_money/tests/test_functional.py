@@ -201,7 +201,7 @@ class SendMoneyFeedbackPages(SendMoneyFunctionalTestCase):
 
     def test_feedback_received_page(self):
         self.driver.get(self.live_server_url + '/feedback/success/')
-        self.assertInSource('Thank you for your feedback')
+        self.assertInSource('Thank you')
 
 
 @unittest.skipIf('DJANGO_TEST_REMOTE_INTEGRATION_URL' in os.environ, 'test only runs locally')
