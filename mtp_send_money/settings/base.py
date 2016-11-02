@@ -253,6 +253,7 @@ MAILGUN_ACCESS_KEY = os.environ.get('MAILGUN_ACCESS_KEY', '')
 MAILGUN_SERVER_NAME = os.environ.get('MAILGUN_SERVER_NAME', '')
 MAILGUN_FROM_ADDRESS = os.environ.get('MAILGUN_FROM_ADDRESS', '')
 
+RUN_CLEANUP_TASKS = os.environ.get('RUN_CLEANUP_TASKS', 'False') == 'True'
 
 try:
     from .local import *  # noqa
