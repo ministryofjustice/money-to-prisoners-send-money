@@ -10,6 +10,7 @@ from send_money.utils import api_url, govuk_url
 
 
 @override_settings(GOVUK_PAY_URL='https://pay.gov.local/v1')
+@override_settings(RUN_CLEANUP_TASKS=True)
 class UpdateIncompletePaymentsTestCase(SimpleTestCase):
 
     @override_settings(ENVIRONMENT='prod')  # because non-prod environments don't send to @outside.local
