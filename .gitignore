@@ -1,4 +1,6 @@
-*.pyc
+*.py[cod]
+*.mo
+*.pot
 include/
 lib/
 /static/
@@ -34,5 +36,6 @@ mtp_send_money/assets/
 # failed test screenshots
 test/errorshots/
 
-# ghostdriver
+# selenium
+geckodriver.log
 ghostdriver.log

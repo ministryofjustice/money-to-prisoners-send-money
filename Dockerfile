@@ -12,7 +12,7 @@ RUN add-apt-repository -y ppa:chris-lea/node.js
 RUN apt-get update && \
     apt-get install -y \
         build-essential git python3-all python3-all-dev python3-setuptools \
-        curl libpq-dev ntp libpcre3-dev nodejs python3-pip python-pip
+        curl libpq-dev ntp gettext libpcre3-dev nodejs python3-pip python-pip
 
 RUN update-alternatives --install /usr/bin/python python /usr/bin/python3 10
 
@@ -36,6 +36,7 @@ RUN venv/bin/pip install -r requirements/docker.txt
 
 ADD . /app
 RUN make build python_requirements=requirements/docker.txt
+RUN cd mtp_send_money && ../venv/bin/python ../manage.py compilemessages && cd ..
 
 EXPOSE 8080
 CMD make uwsgi python_requirements=requirements/docker.txt

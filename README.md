@@ -46,6 +46,13 @@ make test
 
 Runs all the application tests.
 
+### Translating
+
+Update translation files with `cd mtp_send_money; ../manage.py makemessages --all --keep-pot --no-wrap`.
+
+Pull updates from Transifex with `tx pull`. You'll need to update translation files afterwards.
+
+Push latest English to Transifex with `tx push -s`. NB: always pull updates before pushing to merge correctly.
 
 ## Deploying
 

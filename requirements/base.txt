@@ -5,6 +5,7 @@ django-mailgun>=0.8,<0.9
 pytz>=2016.4
 requests>=2.8,<2.9
 slumber>=0.7,<0.8
+transifex-client>=0.12
 
 django-form-error-reporting>=0.3
 git+git://github.com/ministryofjustice/django-moj-irat.git
