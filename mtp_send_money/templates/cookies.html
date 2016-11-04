@@ -63,7 +63,10 @@
   </p>
 
   <h3 class="heading-medium">{% trans 'Our introductory message' %}</h3>
-  <p>{% trans 'You may see a pop-up welcome message when you first visit GOV.UK. We’ll store a cookie so that your computer knows you’ve seen it and knows not to show it again.' %}</p>
+  <p>
+    {% trans 'You may see a pop-up welcome message when you first visit GOV.UK.' %}
+    {% trans 'We’ll store a cookie so that your computer knows you’ve seen it and knows not to show it again.' %}
+  </p>
   <table>
     <thead>
       <tr>
@@ -82,7 +85,10 @@
   </table>
 
   <h3 class="heading-medium">{% trans 'Your progress when using the service' %}</h3>
-  <p>{% trans 'When you use the “Send money to a prisoner” service, we’ll set a cookie to remember your progress through the forms. These cookies don’t store your personal data and are deleted once you’ve completed the transaction.' %}</p>
+  <p>
+    {% trans 'When you use the “Send money to a prisoner” service, we’ll set a cookie to remember your progress through the forms.' %}
+    {% trans 'These cookies don’t store your personal data and are deleted once you’ve completed the transaction.' %}
+  </p>
   <table>
     <thead>
       <tr>

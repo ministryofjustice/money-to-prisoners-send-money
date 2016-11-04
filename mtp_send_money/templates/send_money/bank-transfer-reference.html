@@ -18,8 +18,12 @@
   <section class="mtp-steps">
     <h2 class="heading-medium">{% trans 'How to use this reference to make your bank transfer' %}</h2>
     <ol class="list list-number">
-      <li>{% trans 'Log into your online banking or mobile app, or phone your bank. Remember, you can’t go in branch and you must use a UK bank account.' %}</li>
-      <li>{% trans 'Use these details:' %}
+      <li>
+        {% trans 'Log into your online banking or mobile app, or phone your bank.' %}
+        {% trans 'Remember, you can’t go in branch and you must use a UK bank account.' %}
+      </li>
+      <li>
+        {% trans 'Use these details:' %}
         <div class="mtp-account panel panel-border-wide">
           <ul>
             <li>{% trans 'Account number:' %} {{ account_number }}</li>
@@ -29,7 +33,10 @@
         </div>
         <p>{% trans 'Under ‘payee’ enter the prisoner’s name, if required.' %}</p>
       </li>
-      <li>{% trans 'Money should reach the prisoner’s account in 1 working day, but your bank can take up to 3 working days to process the payment. No money is processed at weekends or bank holidays.' %}</li>
+      <li>
+        {% trans 'Money should reach the prisoner’s account in 1 working day, but your bank can take up to 3 working days to process the payment.' %}
+        {% trans 'No money is processed at weekends or bank holidays.' %}
+      </li>
     </ol>
 
     <strong>{% trans 'Print this page for next time you make a payment to this prisoner.' %}</strong>

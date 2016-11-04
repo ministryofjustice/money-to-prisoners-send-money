@@ -1,24 +1,18 @@
 {% load i18n %}
 {% load send_money %}
+GOV.UK - {% trans 'Send money to a prisoner' %}
 
-{% now 'd/m/Y' as payment_date %}
-{% blocktrans trimmed with formatted_amount=amount|currency_format %}
-GOV.UK - Send money to a prisoner
+{% trans 'Dear sender,' %}
 
+{% trans 'Your payment has been successful.' %} {% blocktrans trimmed %}Your reference number is <strong>{{ short_payment_ref }}</strong>.{% endblocktrans %}
 
-Dear sender,
+{% trans 'The money you sent will reach the prisoner’s account in 1 working day.' %}
 
-Your payment has been successful. Your reference number is {{ short_payment_ref }}.
-
-The money you sent will reach the prisoner’s account in 1 working day.
-
-Payment to: {{ prisoner_name }}
-Amount paid: {{ formatted_amount }}
-Date payment made: {{ payment_date }}
+{% trans 'Payment to' %}: {{ prisoner_name }}
+{% trans 'Amount paid' %}: {{ amount|currency_format }}
+{% trans 'Date payment made' %}: {% now 'd/m/Y' %}
 
 
-Thank you for using this service.
+{% trans 'Thank you for using this service.' %}
 
-Please let us know how you found it at
-https://send-money.moneytoprisoners.dsd.io/feedback/
-{% endblocktrans %}
+{% trans 'Please let us know how you found it at https://send-money.moneytoprisoners.dsd.io/feedback/' %}
