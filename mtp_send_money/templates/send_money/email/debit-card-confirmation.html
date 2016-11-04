@@ -6,8 +6,9 @@
   <p>{% trans 'Dear sender,' %}</p>
 
   <p>
+    {% trans 'Your payment has been successful.' %}
     {% blocktrans trimmed %}
-      Your payment has been successful. Your reference number is <strong>{{ short_payment_ref }}</strong>.
+      Your reference number is <strong>{{ short_payment_ref }}</strong>.
     {% endblocktrans %}
   </p>
 
