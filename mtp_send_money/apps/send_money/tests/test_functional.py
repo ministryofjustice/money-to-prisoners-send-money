@@ -42,7 +42,7 @@ class SendMoneyFlows(SendMoneyFunctionalTestCase):
     @override_settings(SHOW_BANK_TRANSFER_OPTION=True,
                        SHOW_DEBIT_CARD_OPTION=False)
     def test_bank_transfer_only_flow(self):
-        self.driver.get(self.live_server_url)
+        self.driver.get(self.live_server_url + '/en-gb/')
         self.driver.find_element_by_id('id_next_btn').click()
         self.fill_in_form({
             'prisoner_number': 'A1409AE',
@@ -56,7 +56,7 @@ class SendMoneyFlows(SendMoneyFunctionalTestCase):
     @override_settings(SHOW_BANK_TRANSFER_OPTION=True,
                        SHOW_DEBIT_CARD_OPTION=True)
     def test_bank_transfer_flow(self):
-        self.driver.get(self.live_server_url)
+        self.driver.get(self.live_server_url + '/en-gb/')
         self.make_payment_method_choice(PaymentMethod.bank_transfer)
         self.driver.find_element_by_id('id_next_btn').click()
         self.fill_in_form({
@@ -72,7 +72,7 @@ class SendMoneyFlows(SendMoneyFunctionalTestCase):
                        SHOW_DEBIT_CARD_OPTION=True)
     @unittest.skip('gov.uk pay functional testing not implemented')
     def test_debit_card_flow(self):
-        self.driver.get(self.live_server_url)
+        self.driver.get(self.live_server_url + '/en-gb/')
         self.make_payment_method_choice(PaymentMethod.debit_card)
         self.fill_in_form({
             'prisoner_name': 'James Halls',
@@ -112,14 +112,14 @@ class SendMoneyDetailsPage(SendMoneyFunctionalTestCase):
     @override_settings(SHOW_BANK_TRANSFER_OPTION=True,
                        SHOW_DEBIT_CARD_OPTION=False)
     def test_2_digit_year_entry_using_javascript_in_bank_transfer_flow(self):
-        self.driver.get(self.live_server_url)
+        self.driver.get(self.live_server_url + '/en-gb/')
         self.driver.find_element_by_id('id_next_btn').click()
         self.check_2_digit_entry()
 
     @override_settings(SHOW_BANK_TRANSFER_OPTION=False,
                        SHOW_DEBIT_CARD_OPTION=True)
     def test_2_digit_year_entry_using_javascript_in_debit_card_flow(self):
-        self.driver.get(self.live_server_url)
+        self.driver.get(self.live_server_url + '/en-gb/')
         self.check_2_digit_entry()
 
     @override_settings(SHOW_BANK_TRANSFER_OPTION=False,
@@ -132,7 +132,7 @@ class SendMoneyDetailsPage(SendMoneyFunctionalTestCase):
             amount_field.send_keys(amount)
             self.assertEqual(total_field.text, expected)
 
-        self.driver.get(self.live_server_url)
+        self.driver.get(self.live_server_url + '/en-gb/')
         self.fill_in_form({
             'prisoner_name': 'James Halls',
             'prisoner_number': 'A1409AE',
@@ -173,7 +173,7 @@ class SendMoneyCheckDetailsPage(SendMoneyFunctionalTestCase):
     @override_settings(SHOW_BANK_TRANSFER_OPTION=False,
                        SHOW_DEBIT_CARD_OPTION=True)
     def test_content(self):
-        self.driver.get(self.live_server_url)
+        self.driver.get(self.live_server_url + '/en-gb/')
         self.fill_in_form({
             'prisoner_name': 'James Halls',
             'prisoner_number': 'A1409AE',
@@ -186,7 +186,7 @@ class SendMoneyCheckDetailsPage(SendMoneyFunctionalTestCase):
             'amount': '34.50',
         })
         self.driver.find_element_by_id('id_next_btn').click()
-        self.assertCurrentUrl('/debit-card/check/')
+        self.assertCurrentUrl('/en-gb/debit-card/check/')
         self.assertIn('Check details', self.driver.title)
         self.assertInSource('James Halls')
         self.assertInSource('21/01/1989')
@@ -196,11 +196,11 @@ class SendMoneyCheckDetailsPage(SendMoneyFunctionalTestCase):
 
 class SendMoneyFeedbackPages(SendMoneyFunctionalTestCase):
     def test_feedback_page(self):
-        self.driver.get(self.live_server_url + '/feedback/')
+        self.driver.get(self.live_server_url + '/en-gb/feedback/')
         self.assertInSource('Enter your feedback or any questions you have about this service.')
 
     def test_feedback_received_page(self):
-        self.driver.get(self.live_server_url + '/feedback/success/')
+        self.driver.get(self.live_server_url + '/en-gb/feedback/success/')
         self.assertInSource('Thank you')
 
 
@@ -225,7 +225,7 @@ class SendMoneyConfirmationPage(SendMoneyFunctionalTestCase):
                 'state': {'status': 'success'}, 'email': 'sender@outside.local'
             })
 
-            self.driver.get(self.live_server_url + '/debit-card/confirmation/?payment_ref=REF12345')
+            self.driver.get(self.live_server_url + '/en-gb/debit-card/confirmation/?payment_ref=REF12345')
         self.assertInSource('Payment successful')
         self.assertInSource('<strong>REF12345</strong>')
         self.assertInSource('James Bond')
@@ -248,7 +248,7 @@ class SendMoneyConfirmationPage(SendMoneyFunctionalTestCase):
                 'state': {'status': 'failed'}
             })
 
-            self.driver.get(self.live_server_url + '/confirmation/?payment_ref=REF12345')
+            self.driver.get(self.live_server_url + '/en-gb/debit-card/confirmation/?payment_ref=REF12345')
             self.assertInSource('We’re sorry, your payment could not be processed on this occasion')
             self.assertInSource('Your reference number is <strong>REF12345</strong>')
 
@@ -278,7 +278,7 @@ class SendMoneySupportPages(SendMoneyFunctionalTestCase):
         @override_settings(SHOW_BANK_TRANSFER_OPTION=False,
                            SHOW_DEBIT_CARD_OPTION=False)
         def test(self):
-            self.driver.get(self.live_server_url)
+            self.driver.get(self.live_server_url + '/en-gb/')
             link_element = self.driver.find_element_by_link_text(_footer_link['link_text'])
             link_element.click()
             self.assertInSource(_footer_link['page_content'])

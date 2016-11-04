@@ -5,6 +5,7 @@ import logging
 from decimal import Decimal
 from unittest import mock
 
+from django.conf import settings
 from django.core import mail
 from django.test import override_settings
 from django.test.testcases import SimpleTestCase
@@ -17,7 +18,7 @@ from send_money.utils import api_url, govuk_url
 
 
 class BaseTestCase(SimpleTestCase):
-    root_url = '/'
+    root_url = '/en-gb/'
 
     @contextmanager
     def silence_logger(self, name='mtp', level=logging.CRITICAL):
@@ -40,16 +41,16 @@ class PaymentOptionAvailabilityTestCase(BaseTestCase):
                        SHOW_DEBIT_CARD_OPTION=False)
     def test_payment_pages_inaccessible_when_no_options_enabled(self):
         with self.silence_logger('django.request'):
-            self.assertPageNotFound('/bank-transfer/')
-            self.assertPageNotFound('/bank-transfer/warning/')
-            self.assertPageNotFound('/bank-transfer/details/')
-            self.assertPageNotFound('/bank-transfer/reference/')
-            self.assertPageNotFound('/debit-card/')
-            self.assertPageNotFound('/debit-card/details/')
-            self.assertPageNotFound('/debit-card/amount/')
-            self.assertPageNotFound('/debit-card/check/')
-            self.assertPageNotFound('/debit-card/payment/')
-            self.assertPageNotFound('/debit-card/confirmation/')
+            urls = [
+                '/bank-transfer/', '/bank-transfer/warning/', '/bank-transfer/details/', '/bank-transfer/reference/',
+                '/debit-card/', '/debit-card/details/', '/debit-card/amount/', '/debit-card/check/',
+                '/debit-card/payment/', '/debit-card/confirmation/',
+            ]
+            for url_prefix in [lang_code for lang_code, lang_name in settings.LANGUAGES]:
+                for url in urls:
+                    if url_prefix:
+                        url = '/%s/%s' % (url_prefix, url)
+                    self.assertPageNotFound(url)
 
     @override_settings(SHOW_BANK_TRANSFER_OPTION=False,
                        SHOW_DEBIT_CARD_OPTION=False)
@@ -85,7 +86,7 @@ class PaymentOptionAvailabilityTestCase(BaseTestCase):
 
 @patch_gov_uk_pay_availability_check()
 class ChooseMethodViewTestCase(BaseTestCase):
-    url = '/'
+    url = '/en-gb/'
 
     @override_settings(SHOW_BANK_TRANSFER_OPTION=False,
                        SHOW_DEBIT_CARD_OPTION=False)
@@ -178,7 +179,7 @@ class ChooseMethodViewTestCase(BaseTestCase):
 
 @mock.patch('send_money.forms.check_payment_service_available', mock.Mock(return_value=False))
 class PaymentServiceUnavailableChooseMethodViewTestCase(BaseTestCase):
-    url = '/'
+    url = '/en-gb/'
 
     @override_settings(SHOW_BANK_TRANSFER_OPTION=True,
                        SHOW_DEBIT_CARD_OPTION=True)
@@ -238,7 +239,7 @@ class BankTransferFlowTestCase(BaseTestCase):
 
 @patch_gov_uk_pay_availability_check()
 class BankTransferWarningTestCase(BankTransferFlowTestCase):
-    url = '/bank-transfer/warning/'
+    url = '/en-gb/bank-transfer/warning/'
 
     def test_cannot_access_directly(self):
         response = self.client.get(self.url, follow=True)
@@ -258,7 +259,7 @@ class BankTransferWarningTestCase(BankTransferFlowTestCase):
 
 @patch_gov_uk_pay_availability_check()
 class BankTransferPrisonerDetailsTestCase(BankTransferFlowTestCase):
-    url = '/bank-transfer/details/'
+    url = '/en-gb/bank-transfer/details/'
 
     def test_cannot_access_directly(self):
         response = self.client.get(self.url, follow=True)
@@ -386,7 +387,7 @@ class BankTransferPrisonerDetailsTestCase(BankTransferFlowTestCase):
 
 @patch_gov_uk_pay_availability_check()
 class BankTransferReferenceTestCase(BankTransferFlowTestCase):
-    url = '/bank-transfer/reference/'
+    url = '/en-gb/bank-transfer/reference/'
 
     def test_cannot_access_directly(self):
         response = self.client.get(self.url, follow=True)
@@ -483,7 +484,7 @@ class DebitCardFlowTestCase(BaseTestCase):
 
 @patch_gov_uk_pay_availability_check()
 class DebitCardPrisonerDetailsTestCase(DebitCardFlowTestCase):
-    url = '/debit-card/details/'
+    url = '/en-gb/debit-card/details/'
 
     def test_cannot_access_directly(self):
         response = self.client.get(self.url, follow=True)
@@ -628,7 +629,7 @@ class DebitCardPrisonerDetailsTestCase(DebitCardFlowTestCase):
 
 @patch_gov_uk_pay_availability_check()
 class DebitCardAmountTestCase(DebitCardFlowTestCase):
-    url = '/debit-card/amount/'
+    url = '/en-gb/debit-card/amount/'
 
     def test_cannot_access_directly(self):
         response = self.client.get(self.url, follow=True)
@@ -679,7 +680,7 @@ class DebitCardAmountTestCase(DebitCardFlowTestCase):
 
 @patch_gov_uk_pay_availability_check()
 class DebitCardCheckTestCase(DebitCardFlowTestCase):
-    url = '/debit-card/check/'
+    url = '/en-gb/debit-card/check/'
 
     def test_cannot_access_directly(self):
         response = self.client.get(self.url, follow=True)
@@ -709,7 +710,7 @@ class DebitCardCheckTestCase(DebitCardFlowTestCase):
                    SERVICE_CHARGE_FIXED=Decimal('0.20'),
                    GOVUK_PAY_URL='https://pay.gov.local/v1')
 class DebitCardPaymentTestCase(DebitCardFlowTestCase):
-    url = '/debit-card/payment/'
+    url = '/en-gb/debit-card/payment/'
     payment_process_path = '/take'
 
     def test_cannot_access_directly(self):
@@ -810,7 +811,7 @@ class DebitCardPaymentTestCase(DebitCardFlowTestCase):
                    SERVICE_CHARGE_FIXED=Decimal('0.20'),
                    GOVUK_PAY_URL='https://pay.gov.local/v1')
 class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
-    url = '/debit-card/confirmation/'
+    url = '/en-gb/debit-card/confirmation/'
 
     def test_cannot_access_directly(self):
         response = self.client.get(self.url, follow=True)
@@ -1072,4 +1073,4 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
                 response = self.client.get(
                     self.url, {'payment_ref': ref}, follow=False
                 )
-            self.assertRedirects(response, '/')
+            self.assertRedirects(response, '/', fetch_redirect_response=False)

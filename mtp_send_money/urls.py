@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.conf.urls import include, url
+from django.conf.urls.i18n import i18n_patterns
 from django.http import HttpResponse
 from django.template.response import TemplateResponse
 from django.views.generic import TemplateView
@@ -7,7 +8,7 @@ from django.views.generic.base import RedirectView
 
 from moj_irat.views import HealthcheckView, PingJsonView
 
-urlpatterns = [
+urlpatterns = i18n_patterns(
     url(r'^', include('send_money.urls', namespace='send_money',)),
 
     url(r'^', include('feedback.urls')),
@@ -22,7 +23,9 @@ urlpatterns = [
         TemplateView.as_view(template_name='cookies.html'),
         name='cookies',
     ),
+)
 
+urlpatterns += [
     url(r'^ping.json$', PingJsonView.as_view(
         build_date_key='APP_BUILD_DATE',
         commit_id_key='APP_GIT_COMMIT',
