@@ -26,13 +26,18 @@ from send_money.utils import (
 logger = logging.getLogger('mtp')
 
 
+def build_view_url(request, url_name):
+    url_name = '%s:%s' % (request.resolver_match.namespace, url_name)
+    return reverse(url_name)
+
+
 def clear_session_view(request):
     """
     View that clears the session and restarts the user flow.
     @param request: the HTTP request
     """
     request.session.flush()
-    return redirect('/')
+    return redirect(build_view_url(request, PaymentMethodChoiceView.url_name))
 
 
 def help_view(request):
@@ -61,10 +66,6 @@ class SendMoneyView(View):
         super().__init__(**kwargs)
         self.valid_form_data = {}
 
-    def build_view_url(self, url_name):
-        url_name = '%s:%s' % (self.request.resolver_match.namespace, url_name)
-        return reverse(url_name)
-
     def dispatch(self, request, *args, **kwargs):
         for view in self.get_previous_views(self):
             if not hasattr(view, 'form_class') or not view.is_form_enabled():
@@ -73,12 +74,12 @@ class SendMoneyView(View):
             if form.is_valid():
                 self.valid_form_data[view.url_name] = form.cleaned_data
             else:
-                return redirect(self.build_view_url(view.url_name))
+                return redirect(build_view_url(self.request, view.url_name))
         # if choose method form has been used and we are in the wrong flow, redirect
         method_choice = self.valid_form_data.get(PaymentMethodChoiceView.url_name)
         if (method_choice and self.payment_method and
                 method_choice['payment_method'] != self.payment_method.name):
-            return redirect(self.build_view_url(PaymentMethodChoiceView.url_name))
+            return redirect(build_view_url(self.request, PaymentMethodChoiceView.url_name))
         return super().dispatch(request, *args, **kwargs)
 
 
@@ -127,9 +128,9 @@ class PaymentMethodChoiceView(SendMoneyFormView):
                                     expires=timezone.now() + self.experiment_lifetime)
             return response
         if settings.SHOW_BANK_TRANSFER_OPTION:
-            return redirect(self.build_view_url(BankTransferWarningView.url_name))
+            return redirect(build_view_url(self.request, BankTransferWarningView.url_name))
         if settings.SHOW_DEBIT_CARD_OPTION:
-            return redirect(self.build_view_url(DebitCardPrisonerDetailsView.url_name))
+            return redirect(build_view_url(self.request, DebitCardPrisonerDetailsView.url_name))
         return redirect('submit_ticket')
 
     def get_experiment(self):
@@ -172,9 +173,9 @@ class PaymentMethodChoiceView(SendMoneyFormView):
 
     def form_valid(self, form):
         if form.cleaned_data['payment_method'] == PaymentMethod.bank_transfer.name:
-            self.success_url = self.build_view_url(BankTransferWarningView.url_name)
+            self.success_url = build_view_url(self.request, BankTransferWarningView.url_name)
         else:
-            self.success_url = self.build_view_url(DebitCardPrisonerDetailsView.url_name)
+            self.success_url = build_view_url(self.request, DebitCardPrisonerDetailsView.url_name)
         return super().form_valid(form)
 
 
@@ -196,7 +197,7 @@ class BankTransferWarningView(BankTransferFlow, TemplateView):
     template_name = 'send_money/bank-transfer-warning.html'
 
     def get_success_url(self):
-        return self.build_view_url(BankTransferPrisonerDetailsView.url_name)
+        return build_view_url(self.request, BankTransferPrisonerDetailsView.url_name)
 
 
 class BankTransferPrisonerDetailsView(BankTransferFlow, SendMoneyFormView):
@@ -206,7 +207,7 @@ class BankTransferPrisonerDetailsView(BankTransferFlow, SendMoneyFormView):
     form_class = send_money_forms.BankTransferPrisonerDetailsForm
 
     def get_success_url(self):
-        return self.build_view_url(BankTransferReferenceView.url_name)
+        return build_view_url(self.request, BankTransferReferenceView.url_name)
 
 
 class BankTransferReferenceView(BankTransferFlow, TemplateView):
@@ -252,7 +253,7 @@ class DebitCardPrisonerDetailsView(DebitCardFlow, SendMoneyFormView):
     form_class = send_money_forms.DebitCardPrisonerDetailsForm
 
     def get_success_url(self):
-        return self.build_view_url(DebitCardAmountView.url_name)
+        return build_view_url(self.request, DebitCardAmountView.url_name)
 
 
 class DebitCardAmountView(DebitCardFlow, SendMoneyFormView):
@@ -271,7 +272,7 @@ class DebitCardAmountView(DebitCardFlow, SendMoneyFormView):
         return super().get_context_data(**kwargs)
 
     def get_success_url(self):
-        return self.build_view_url(DebitCardCheckView.url_name)
+        return build_view_url(self.request, DebitCardCheckView.url_name)
 
 
 class DebitCardCheckView(DebitCardFlow, TemplateView):
@@ -287,13 +288,13 @@ class DebitCardCheckView(DebitCardFlow, TemplateView):
         return super().get_context_data(service_charged=settings.SERVICE_CHARGED, **kwargs)
 
     def get_prisoner_details_url(self):
-        return self.build_view_url(DebitCardPrisonerDetailsView.url_name)
+        return build_view_url(self.request, DebitCardPrisonerDetailsView.url_name)
 
     def get_amount_url(self):
-        return self.build_view_url(DebitCardAmountView.url_name)
+        return build_view_url(self.request, DebitCardAmountView.url_name)
 
     def get_success_url(self):
-        return self.build_view_url(DebitCardPaymentView.url_name)
+        return build_view_url(self.request, DebitCardPaymentView.url_name)
 
 
 class DebitCardPaymentView(DebitCardFlow):
@@ -327,7 +328,7 @@ class DebitCardPaymentView(DebitCardFlow):
                 'reference': payment_ref,
                 'description': gettext('To this prisoner: %(prisoner_number)s' % prisoner_details),
                 'return_url': site_url(
-                    self.build_view_url(DebitCardConfirmationView.url_name) + '?payment_ref=' + payment_ref
+                    build_view_url(self.request, DebitCardConfirmationView.url_name) + '?payment_ref=' + payment_ref
                 ),
             }
             govuk_payment = payment_client.create_govuk_payment(payment_ref, new_govuk_payment)
@@ -381,7 +382,7 @@ class DebitCardConfirmationView(DebitCardFlow, TemplateView):
                 payment_ref, govuk_id, kwargs
             )
             if not self.success:
-                return redirect(self.build_view_url(DebitCardCheckView.url_name))
+                return redirect(build_view_url(self.request, DebitCardCheckView.url_name))
         except OAuth2Error:
             logger.exception('Authentication error while processing %s' % payment_ref)
         except SlumberHttpBaseException as error:
