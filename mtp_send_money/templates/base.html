@@ -3,14 +3,9 @@
 {% load mtp_common %}
 
 
-{% block main_js %}
-  {{ block.super }}
-  {% sentry_js %}
-{% endblock %}
-
-
 {% block body_end %}
   {{ block.super }}
+  {% sentry_js %}
   <!-- {{ request.resolver_match.url_name }} -->
 {% endblock %}
 
