@@ -1073,4 +1073,4 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
                 response = self.client.get(
                     self.url, {'payment_ref': ref}, follow=False
                 )
-            self.assertRedirects(response, '/', fetch_redirect_response=False)
+            self.assertRedirects(response, '/en-gb/', fetch_redirect_response=False)
