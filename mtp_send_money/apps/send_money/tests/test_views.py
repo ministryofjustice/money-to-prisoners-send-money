@@ -37,6 +37,25 @@ class PaymentOptionAvailabilityTestCase(BaseTestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 404, msg='should not be able to access %s' % url)
 
+    @patch_gov_uk_pay_availability_check()
+    def test_locale_switches_based_on_browser_language(self):
+        languages = (
+            ('*', 'en-gb'),
+            ('en', 'en-gb'),
+            ('en-gb', 'en-gb'),
+            ('en-GB, en, *', 'en-gb'),
+            ('cy', 'cy'),
+            ('cy, en-GB, en, *', 'cy'),
+            ('en, cy, *', 'en-gb'),
+            ('es', 'en-gb'),
+        )
+        with self.silence_logger(name='django.request', level=logging.ERROR):
+            for accept_language, expected_slug in languages:
+                response = self.client.get('/', HTTP_ACCEPT_LANGUAGE=accept_language)
+                self.assertRedirects(response, '/%s/' % expected_slug)
+                response = self.client.get('/terms/', HTTP_ACCEPT_LANGUAGE=accept_language)
+                self.assertRedirects(response, '/%s/terms/' % expected_slug)
+
     @override_settings(SHOW_BANK_TRANSFER_OPTION=False,
                        SHOW_DEBIT_CARD_OPTION=False)
     def test_payment_pages_inaccessible_when_no_options_enabled(self):
