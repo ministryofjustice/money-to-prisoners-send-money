@@ -210,7 +210,7 @@ class SendMoneyFeedbackPages(SendMoneyFunctionalTestCase):
                    GOVUK_PAY_URL='https://pay.gov.local/v1',
                    GOVUK_PAY_AUTH_TOKEN='15a21a56-817a-43d4-bf8d-f01f298298e8')
 class SendMoneyConfirmationPage(SendMoneyFunctionalTestCase):
-    @mock.patch('send_money.views.get_api_client')
+    @mock.patch('send_money.payments.get_api_client')
     def test_success_page(self, mocked_client):
         processor_id = '3'
         mocked_client().payments().get.return_value = {
@@ -222,7 +222,38 @@ class SendMoneyConfirmationPage(SendMoneyFunctionalTestCase):
         }
         with responses.RequestsMock() as rsps, self.patch_view_chain_form_checking():
             rsps.add(rsps.GET, govuk_url('/payments/%s' % processor_id), json={
-                'state': {'status': 'success'}, 'email': 'sender@outside.local'
+                'state': {'status': 'success', 'finished': True},
+                'amount': 2000,
+                'payment_id': processor_id,
+                'email': 'sender@outside.local',
+                '_links': {
+                    'events': {'href': govuk_url('/payments/%s/events' % processor_id), 'method': 'GET'}
+                }
+            })
+            rsps.add(rsps.GET, govuk_url('/payments/%s/events' % processor_id), json={
+                'events': [
+                    {
+                        'payment_id': processor_id,
+                        'state': {'status': 'created', 'finished': False},
+                        'updated': '2016-10-10T12:00:00.0Z',
+                    },
+                    {
+                        'payment_id': processor_id,
+                        'state': {'status': 'started', 'finished': False},
+                        'updated': '2016-10-10T12:00:01.0Z',
+                    },
+                    {
+                        'payment_id': processor_id,
+                        'state': {'status': 'submitted', 'finished': False},
+                        'updated': '2016-10-10T12:00:10.0Z',
+                    },
+                    {
+                        'payment_id': processor_id,
+                        'state': {'status': 'success', 'finished': True},
+                        'updated': '2016-10-10T12:00:11.0Z',
+                    },
+                ],
+                '_links': {},
             })
 
             self.driver.get(self.live_server_url + '/en-gb/debit-card/confirmation/?payment_ref=REF12345')
@@ -231,6 +262,11 @@ class SendMoneyConfirmationPage(SendMoneyFunctionalTestCase):
         self.assertInSource('James Bond')
         self.assertInSource('£20')
         self.assertInSource('Print this page')
+        mocked_client().payments().patch.assert_called_once_with({
+            'received_at': '2016-10-10T12:00:11+00:00',
+            'email': 'sender@outside.local',
+            'status': 'taken',
+        })
 
     @unittest.skip('error pages handled by gov.uk')
     @mock.patch('send_money.views.get_api_client')
