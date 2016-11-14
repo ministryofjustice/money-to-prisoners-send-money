@@ -13,7 +13,7 @@
   require('charges').Charges.init();
   require('experiments').Experiments.init();
   require('reference').Reference.init();
-  require('greyout.js').Greyout.init();
+  require('greyout').Greyout.init();
   require('selection-buttons').SelectionButtons.init();
 
 })();
