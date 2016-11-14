@@ -1,8 +1,12 @@
 {% extends 'base.html' %}
 {% load i18n %}
+{% load mtp_common %}
 
 {% block inner_content %}
-  <h1 class="heading-xlarge">{% trans 'Cookies' %}</h1>
+  <header>
+    {% language_switch %}
+    <h1 class="heading-xlarge">{% trans 'Cookies' %}</h1>
+  </header>
 
   <p>{% trans 'GOV.UK puts small files (known as ‘cookies’) onto your computer to collect information about how you browse the site.' %}</p>
   <p>{% trans 'Cookies are used to:' %}</p>
