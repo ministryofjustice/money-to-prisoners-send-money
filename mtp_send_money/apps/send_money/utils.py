@@ -9,7 +9,7 @@ from django.utils.dateformat import format as format_date
 from django.utils.dateparse import parse_date
 from django.utils import formats
 from django.utils.encoding import force_text
-from django.utils.translation import get_language, gettext as _
+from django.utils.translation import gettext as _
 from mtp_common.auth import api_client, urljoin
 from mtp_common.email import send_email
 import requests
@@ -178,7 +178,7 @@ def api_url(path):
 
 
 def site_url(path):
-    return urljoin(settings.SITE_URL, get_language() or settings.LANGUAGE_CODE, path)
+    return urljoin(settings.SITE_URL, path)
 
 
 def get_link_by_rel(data, rel):
