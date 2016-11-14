@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: MTP send-money\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-11-11 16:19+0000\n"
+"POT-Creation-Date: 2016-11-14 11:02+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Igor U <igor.ushkarev@digital.justice.gov.uk>, 2016\n"
 "Language-Team: Welsh (https://www.transifex.com/ministry-of-justice/teams/34553/cy/)\n"
@@ -391,11 +391,11 @@ msgid "Please note"
 msgstr ""
 
 #: templates/send_money/bank-transfer-warning.html:15
-msgid "You can’t go into a bank branch to transfer money – only transfers done using online banking, using a mobile banking app or telephone banking will reach the prisoner"
+msgid "You can’t go into a bank branch to transfer money – only transfers done using online banking, your mobile banking app or telephone banking will reach the prisoner"
 msgstr ""
 
 #: templates/send_money/bank-transfer-warning.html:16
-msgid "You can’t transfer money from an international bank account"
+msgid "You can’t transfer money from an international bank account - only transfers from a UK bank account will reach the prisoner"
 msgstr ""
 
 #: templates/send_money/bank-transfer-warning.html:21
@@ -684,7 +684,7 @@ msgid "You’ll get a reference you can use to make a transfer from a UK bank"
 msgstr ""
 
 #: templates/send_money/payment-method.html:60
-msgid "This must be done using online banking, using a mobile banking app or telephone banking – you can’t go in branch"
+msgid "This must be done using online banking, your mobile banking app or telephone banking – you can’t go in branch"
 msgstr ""
 
 #: templates/send_money/payment-method.html:61
