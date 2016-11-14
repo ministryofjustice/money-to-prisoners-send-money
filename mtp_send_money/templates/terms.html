@@ -1,9 +1,13 @@
 {% extends 'base.html' %}
 {% load i18n %}
+{% load mtp_common %}
 
 {% block inner_content %}
 
-<h1 class="heading-xlarge">{% trans 'Terms and conditions and privacy policy' %}</h1>
+<header>
+  {% language_switch %}
+  <h1 class="heading-xlarge">{% trans 'Terms and conditions and privacy policy' %}</h1>
+</header>
 
 <p>
   {% trans 'By using the send money to a prisoner service using your bank account you agree to our privacy policy and to these terms and conditions.' %}

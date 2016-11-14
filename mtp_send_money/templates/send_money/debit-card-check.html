@@ -6,10 +6,13 @@
 {% block page_title %}{% trans 'Check details - Send money to a prisoner - GOV.UK' %}{% endblock %}
 
 {% block inner_content %}
-  <h1 class="heading-xlarge">
-    <span class="heading-secondary">{% trans 'Pay now by debit card' %}</span>
-    {% trans 'Check details' %}
-  </h1>
+  <header>
+    {% language_switch %}
+    <h1 class="heading-xlarge">
+      <span class="heading-secondary">{% trans 'Pay now by debit card' %}</span>
+      {% trans 'Check details' %}
+    </h1>
+  </header>
 
   <div class="mtp-confirm">
     <div class="mtp-checkgroup">

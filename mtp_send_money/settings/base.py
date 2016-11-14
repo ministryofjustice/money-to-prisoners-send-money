@@ -251,6 +251,7 @@ SHOW_BANK_TRANSFER_OPTION = os.environ.get('SHOW_BANK_TRANSFER_OPTION', 'True') 
 SHOW_DEBIT_CARD_OPTION = os.environ.get('SHOW_DEBIT_CARD_OPTION', 'True') == 'True'
 BANK_TRANSFER_PRISONS = os.environ.get('BANK_TRANSFER_PRISONS', '')
 DEBIT_CARD_PRISONS = os.environ.get('DEBIT_CARD_PRISONS', '')
+SHOW_LANGUAGE_SWITCH = os.environ.get('SHOW_LANGUAGE_SWITCH', 'False') == 'True'
 
 GOVUK_PAY_URL = os.environ.get('GOVUK_PAY_URL', '')
 GOVUK_PAY_AUTH_TOKEN = os.environ.get('GOVUK_PAY_AUTH_TOKEN', '')
