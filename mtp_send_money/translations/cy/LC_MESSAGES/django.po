@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: MTP send-money\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-11-14 11:02+0000\n"
+"POT-Creation-Date: 2016-11-14 12:17+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Igor U <igor.ushkarev@digital.justice.gov.uk>, 2016\n"
 "Language-Team: Welsh (https://www.transifex.com/ministry-of-justice/teams/34553/cy/)\n"
@@ -13,17 +13,17 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=4; plural=(n==1) ? 0 : (n==2) ? 1 : (n != 8 && n != 11) ? 2 : 3;\n"
 
-#: apps/send_money/context_processors.py:10 templates/base.html:40
+#: apps/send_money/context_processors.py:10 templates/base.html:39
 #: templates/terms.html:13
 msgid "Terms and conditions"
 msgstr ""
 
-#: apps/send_money/context_processors.py:14 templates/base.html:41
+#: apps/send_money/context_processors.py:14 templates/base.html:40
 #: templates/cookies.html:5
 msgid "Cookies"
 msgstr ""
 
-#: apps/send_money/context_processors.py:18 templates/base.html:42
+#: apps/send_money/context_processors.py:18 templates/base.html:41
 msgid "Feedback"
 msgstr ""
 
@@ -121,19 +121,19 @@ msgid "Beta"
 msgstr ""
 
 #: templates/base.html:27
-msgid "This is a trial service for HMP Brixton, HMP Bullingdon, HMP Cardiff and HMP High Down only."
+msgid "This is a new service."
 msgstr ""
 
-#: templates/base.html:29
+#: templates/base.html:28
 #, python-format
 msgid "If you need any help please <a href=\"%(ticket_url)s\">contact us</a>."
 msgstr ""
 
-#: templates/base.html:44
+#: templates/base.html:43
 msgid "Built by"
 msgstr ""
 
-#: templates/base.html:46
+#: templates/base.html:45
 msgid "Ministry of Justice"
 msgstr ""
 
@@ -526,6 +526,10 @@ msgstr ""
 
 #: templates/send_money/debit-card-confirmation.html:43
 msgid "The money will arrive in the prisoner’s account the next working day."
+msgstr ""
+
+#: templates/send_money/debit-card-confirmation.html:52
+msgid "Take a moment to rate this service"
 msgstr ""
 
 #: templates/send_money/debit-card-failure.html:7
