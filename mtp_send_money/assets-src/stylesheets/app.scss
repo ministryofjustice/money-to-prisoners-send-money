@@ -19,3 +19,11 @@ $images-dir: '/static/images/';
 @import 'views/bank-transfer-info';
 @import 'views/check-details';
 @import 'views/send-money';
+
+// Govuk elements overrides
+
+.govuk-box-highlight {
+  p, strong {
+    font-size: 18px;
+  }
+}
