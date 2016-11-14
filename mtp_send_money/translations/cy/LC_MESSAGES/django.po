@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: MTP send-money\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-11-14 12:17+0000\n"
+"POT-Creation-Date: 2016-11-14 17:51+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Igor U <igor.ushkarev@digital.justice.gov.uk>, 2016\n"
 "Language-Team: Welsh (https://www.transifex.com/ministry-of-justice/teams/34553/cy/)\n"
@@ -79,8 +79,11 @@ msgstr ""
 msgid "Could not connect to service, please try again later"
 msgstr ""
 
-#: apps/send_money/models.py:7 templates/send_money/payment-method.html:45
-msgid "Pay now by debit card (not currently available in HMP Brixton)"
+#: apps/send_money/models.py:7 templates/send_money/debit-card-amount.html:8
+#: templates/send_money/debit-card-check.html:10
+#: templates/send_money/debit-card-prisoner-details.html:8
+#: templates/send_money/payment-method.html:45
+msgid "Pay now by debit card"
 msgstr ""
 
 #: apps/send_money/models.py:8
@@ -400,12 +403,6 @@ msgstr ""
 
 #: templates/send_money/bank-transfer-warning.html:21
 msgid "I understand"
-msgstr ""
-
-#: templates/send_money/debit-card-amount.html:8
-#: templates/send_money/debit-card-check.html:10
-#: templates/send_money/debit-card-prisoner-details.html:8
-msgid "Pay now by debit card"
 msgstr ""
 
 #: templates/send_money/debit-card-amount.html:9
