@@ -17,15 +17,15 @@
         <h2 class="heading-large">{% trans 'Prisoner details' %}</h2>
         <table class="mtp-table">
           <tr>
-            <td>{% trans 'Name' %}:</td>
+            <th>{% trans 'Name' %}:</th>
             <td>{{ prisoner_name }}</td>
           </tr>
           <tr>
-            <td>{% trans 'Date of birth' %}:</td>
+            <th>{% trans 'Date of birth' %}:</th>
             <td>{{ prisoner_dob|prepare_prisoner_dob|date:'d/m/Y' }}</td>
           </tr>
           <tr>
-            <td>{% trans 'Prisoner number' %}:</td>
+            <th>{% trans 'Prisoner number' %}:</th>
             <td>{{ prisoner_number }}</td>
           </tr>
         </table>
@@ -42,20 +42,20 @@
         <table class="mtp-table">
           {% if service_charged %}
             <tr>
-              <td>{% trans 'Total to prisoner' %}:</td>
+              <th>{% trans 'Total to prisoner' %}:</th>
               <td>
                 {{ amount|currency_format }}
               </td>
             </tr>
             <tr>
-              <td>{% trans 'Amount to be taken from your account' %}:</td>
+              <th>{% trans 'Amount to be taken from your account' %}:</th>
               <td>
                 {{ amount|add_service_charge|currency_format }}
               </td>
             </tr>
           {% else %}
             <tr>
-              <td>{% trans 'Total' %}:</td>
+              <th>{% trans 'Total' %}:</th>
               <td>
                 {{ amount|currency_format }}
               </td>
