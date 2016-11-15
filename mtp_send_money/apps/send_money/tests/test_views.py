@@ -914,6 +914,20 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
             self.assertTrue('WARGLE-B' in mail.outbox[0].body)
             self.assertTrue('£17' in mail.outbox[0].body)
 
+            mock_auth(rsps)
+            rsps.add(
+                rsps.GET,
+                api_url('/payments/%s/' % ref),
+                json={
+                    'processor_id': processor_id,
+                    'recipient_name': 'John',
+                    'amount': 1700,
+                    'status': 'taken',
+                    'created': datetime.datetime.now().isoformat() + 'Z',
+                },
+                status=200,
+            )
+
             with self.patch_prisoner_details_check():
                 response = self.client.get(
                     self.url, {'payment_ref': ref}, follow=True

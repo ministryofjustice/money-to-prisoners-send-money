@@ -346,9 +346,8 @@ class DebitCardPaymentView(DebitCardFlow):
         return render(request, 'send_money/debit-card-failure.html', failure_context)
 
 
-class DebitCardConfirmationView(DebitCardFlow, TemplateView):
+class DebitCardConfirmationView(TemplateView):
     url_name = 'confirmation'
-    previous_view = DebitCardPaymentView
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -358,6 +357,11 @@ class DebitCardConfirmationView(DebitCardFlow, TemplateView):
         if self.success:
             return ['send_money/debit-card-confirmation.html']
         return ['send_money/debit-card-failure.html']
+
+    def dispatch(self, request, *args, **kwargs):
+        if not settings.SHOW_DEBIT_CARD_OPTION:
+            raise Http404('Debit cards are not available')
+        return super().dispatch(request, *args, **kwargs)
 
     def get(self, request, *args, **kwargs):
         payment_ref = self.request.GET.get('payment_ref')
