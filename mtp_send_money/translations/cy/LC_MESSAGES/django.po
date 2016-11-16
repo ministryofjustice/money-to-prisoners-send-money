@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: MTP send-money\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-11-14 17:51+0000\n"
+"POT-Creation-Date: 2016-11-16 14:36+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Igor U <igor.ushkarev@digital.justice.gov.uk>, 2016\n"
 "Language-Team: Welsh (https://www.transifex.com/ministry-of-justice/teams/34553/cy/)\n"
@@ -14,12 +14,12 @@ msgstr ""
 "Plural-Forms: nplurals=4; plural=(n==1) ? 0 : (n==2) ? 1 : (n != 8 && n != 11) ? 2 : 3;\n"
 
 #: apps/send_money/context_processors.py:10 templates/base.html:39
-#: templates/terms.html:13
+#: templates/terms.html:17
 msgid "Terms and conditions"
 msgstr ""
 
 #: apps/send_money/context_processors.py:14 templates/base.html:40
-#: templates/cookies.html:5
+#: templates/cookies.html:8
 msgid "Cookies"
 msgstr ""
 
@@ -31,7 +31,7 @@ msgstr ""
 msgid "Please choose how you want to send money"
 msgstr ""
 
-#: apps/send_money/forms.py:66 templates/send_money/debit-card-check.html:28
+#: apps/send_money/forms.py:66 templates/send_money/debit-card-check.html:31
 msgid "Prisoner number"
 msgstr ""
 
@@ -79,17 +79,17 @@ msgstr ""
 msgid "Could not connect to service, please try again later"
 msgstr ""
 
-#: apps/send_money/models.py:7 templates/send_money/debit-card-amount.html:8
-#: templates/send_money/debit-card-check.html:10
-#: templates/send_money/debit-card-prisoner-details.html:8
-#: templates/send_money/payment-method.html:45
+#: apps/send_money/models.py:7 templates/send_money/debit-card-amount.html:10
+#: templates/send_money/debit-card-check.html:12
+#: templates/send_money/debit-card-prisoner-details.html:10
+#: templates/send_money/payment-method.html:49
 msgid "Pay now by debit card"
 msgstr ""
 
 #: apps/send_money/models.py:8
-#: templates/send_money/bank-transfer-prisoner-details.html:8
-#: templates/send_money/bank-transfer-warning.html:8
-#: templates/send_money/payment-method.html:57
+#: templates/send_money/bank-transfer-prisoner-details.html:10
+#: templates/send_money/bank-transfer-warning.html:10
+#: templates/send_money/payment-method.html:61
 msgid "Get a prisoner reference to use in a UK bank transfer"
 msgstr ""
 
@@ -114,7 +114,7 @@ msgstr ""
 msgid "Send money to a prisoner - GOV.UK"
 msgstr ""
 
-#: templates/base.html:14 templates/send_money/debit-card-failure.html:5
+#: templates/base.html:14 templates/send_money/debit-card-failure.html:8
 #: templates/send_money/email/debit-card-confirmation.txt:3
 msgid "Send money to a prisoner"
 msgstr ""
@@ -140,181 +140,181 @@ msgstr ""
 msgid "Ministry of Justice"
 msgstr ""
 
-#: templates/cookies.html:7
+#: templates/cookies.html:11
 msgid "GOV.UK puts small files (known as ‘cookies’) onto your computer to collect information about how you browse the site."
 msgstr ""
 
-#: templates/cookies.html:8
+#: templates/cookies.html:12
 msgid "Cookies are used to:"
 msgstr ""
 
-#: templates/cookies.html:10
+#: templates/cookies.html:14
 msgid "measure how you use the website so it can be updated and improved based on your needs"
 msgstr ""
 
-#: templates/cookies.html:11
+#: templates/cookies.html:15
 msgid "remember the notifications you’ve seen so that we don’t show them to you again"
 msgstr ""
 
-#: templates/cookies.html:15
+#: templates/cookies.html:19
 msgid "GOV.UK cookies aren’t used to identify you personally."
 msgstr ""
 
-#: templates/cookies.html:18
+#: templates/cookies.html:22
 msgid "You’ll normally see a message on the site before we store a cookie on your computer."
 msgstr ""
 
-#: templates/cookies.html:20
+#: templates/cookies.html:24
 msgid "Find out more about <a href=\"http://www.aboutcookies.org/\" rel=\"external\">how to manage cookies</a>."
 msgstr ""
 
-#: templates/cookies.html:23
+#: templates/cookies.html:27
 msgid "How cookies are used on GOV.UK"
 msgstr ""
 
-#: templates/cookies.html:24
+#: templates/cookies.html:28
 msgid "Measuring website usage (Google Analytics)"
 msgstr ""
 
-#: templates/cookies.html:25
+#: templates/cookies.html:29
 msgid "We use Google Analytics software to collect information about how you use GOV.UK. We do this to help make sure the site is meeting the needs of its users and to help us make improvements."
 msgstr ""
 
-#: templates/cookies.html:26
+#: templates/cookies.html:30
 msgid "Google Analytics stores information about:"
 msgstr ""
 
-#: templates/cookies.html:28
+#: templates/cookies.html:32
 msgid "the pages you visit on GOV.UK - how long you spend on each GOV.UK page"
 msgstr ""
 
-#: templates/cookies.html:29
+#: templates/cookies.html:33
 msgid "how you got to the site"
 msgstr ""
 
-#: templates/cookies.html:30
+#: templates/cookies.html:34
 msgid "what you click on while you’re visiting the site."
 msgstr ""
 
-#: templates/cookies.html:36
+#: templates/cookies.html:40
 #, python-format
 msgid "We don’t collect or store your personal information so this information can’t be used to identify who you are. For more information visit our <a href=\"%(terms_url)s\">Terms and conditions and privacy policy</a> page."
 msgstr ""
 
-#: templates/cookies.html:42
+#: templates/cookies.html:46
 msgid "We don’t allow Google to use or share our analytics data."
 msgstr ""
 
-#: templates/cookies.html:43
+#: templates/cookies.html:47
 msgid "Google Analytics sets the following cookies:"
 msgstr ""
 
-#: templates/cookies.html:47 templates/cookies.html:73
-#: templates/cookies.html:95 templates/send_money/debit-card-check.html:20
+#: templates/cookies.html:51 templates/cookies.html:77
+#: templates/cookies.html:99 templates/send_money/debit-card-check.html:23
 msgid "Name"
 msgstr ""
 
-#: templates/cookies.html:48 templates/cookies.html:74
-#: templates/cookies.html:96
+#: templates/cookies.html:52 templates/cookies.html:78
+#: templates/cookies.html:100
 msgid "Purpose"
 msgstr ""
 
-#: templates/cookies.html:49 templates/cookies.html:75
-#: templates/cookies.html:97
+#: templates/cookies.html:53 templates/cookies.html:79
+#: templates/cookies.html:101
 msgid "Expires"
 msgstr ""
 
-#: templates/cookies.html:54
+#: templates/cookies.html:58
 msgid "and"
 msgstr ""
 
-#: templates/cookies.html:55
+#: templates/cookies.html:59
 msgid "This is a google analytics cookie that helps us understand how the service is being used in detail. Your data is anonymised."
 msgstr ""
 
-#: templates/cookies.html:56
+#: templates/cookies.html:60
 msgid "2 years"
 msgstr ""
 
-#: templates/cookies.html:62
+#: templates/cookies.html:66
 msgid "You can <a href=\"https://tools.google.com/dlpage/gaoptout\" rel=\"external\">opt out of Google Analytics cookies</a>."
 msgstr ""
 
-#: templates/cookies.html:65
+#: templates/cookies.html:69
 msgid "Our introductory message"
 msgstr ""
 
-#: templates/cookies.html:67
+#: templates/cookies.html:71
 msgid "You may see a pop-up welcome message when you first visit GOV.UK."
 msgstr ""
 
-#: templates/cookies.html:68
+#: templates/cookies.html:72
 msgid "We’ll store a cookie so that your computer knows you’ve seen it and knows not to show it again."
 msgstr ""
 
-#: templates/cookies.html:81
+#: templates/cookies.html:85
 msgid "Saves a message to let us know that you have seen our cookie message"
 msgstr ""
 
-#: templates/cookies.html:82
+#: templates/cookies.html:86
 msgid "1 month"
 msgstr ""
 
-#: templates/cookies.html:87
+#: templates/cookies.html:91
 msgid "Your progress when using the service"
 msgstr ""
 
-#: templates/cookies.html:89
+#: templates/cookies.html:93
 msgid "When you use the “Send money to a prisoner” service, we’ll set a cookie to remember your progress through the forms."
 msgstr ""
 
-#: templates/cookies.html:90
+#: templates/cookies.html:94
 msgid "These cookies don’t store your personal data and are deleted once you’ve completed the transaction."
 msgstr ""
 
-#: templates/cookies.html:103
+#: templates/cookies.html:107
 msgid "An identifier for your session"
 msgstr ""
 
-#: templates/cookies.html:104
+#: templates/cookies.html:108
 msgid "At the end of the session"
 msgstr ""
 
-#: templates/cookies.html:110
+#: templates/cookies.html:114
 msgid "You can read more about <a href=\"https://www.gov.uk/help/cookies\" rel=\"external\">how cookies are used on gov.uk</a>."
 msgstr ""
 
-#: templates/send_money/bank-transfer-prisoner-details.html:9
-#: templates/send_money/debit-card-prisoner-details.html:9
+#: templates/send_money/bank-transfer-prisoner-details.html:11
+#: templates/send_money/debit-card-prisoner-details.html:11
 msgid "Enter prisoner details"
 msgstr ""
 
-#: templates/send_money/bank-transfer-prisoner-details.html:12
+#: templates/send_money/bank-transfer-prisoner-details.html:15
 msgid "To make a bank transfer online, you need a prisoner reference number. To provide this, we need these details: "
 msgstr ""
 
-#: templates/send_money/bank-transfer-prisoner-details.html:20
-#: templates/send_money/debit-card-check.html:17
-#: templates/send_money/debit-card-prisoner-details.html:18
+#: templates/send_money/bank-transfer-prisoner-details.html:23
+#: templates/send_money/debit-card-check.html:20
+#: templates/send_money/debit-card-prisoner-details.html:21
 msgid "Prisoner details"
 msgstr ""
 
-#: templates/send_money/bank-transfer-prisoner-details.html:29
-#: templates/send_money/debit-card-prisoner-details.html:29
+#: templates/send_money/bank-transfer-prisoner-details.html:32
+#: templates/send_money/debit-card-prisoner-details.html:32
 msgid "Day"
 msgstr ""
 
-#: templates/send_money/bank-transfer-prisoner-details.html:33
-#: templates/send_money/debit-card-prisoner-details.html:33
+#: templates/send_money/bank-transfer-prisoner-details.html:36
+#: templates/send_money/debit-card-prisoner-details.html:36
 msgid "Month"
 msgstr ""
 
-#: templates/send_money/bank-transfer-prisoner-details.html:37
-#: templates/send_money/debit-card-prisoner-details.html:37
+#: templates/send_money/bank-transfer-prisoner-details.html:40
+#: templates/send_money/debit-card-prisoner-details.html:40
 msgid "Year"
 msgstr ""
 
-#: templates/send_money/bank-transfer-prisoner-details.html:56
+#: templates/send_money/bank-transfer-prisoner-details.html:59
 msgid "Get reference"
 msgstr ""
 
@@ -356,94 +356,90 @@ msgid "Sort code:"
 msgstr ""
 
 #: templates/send_money/bank-transfer-reference.html:31
-msgid "Your prisoner reference:"
+msgid "Reference:"
 msgstr ""
 
-#: templates/send_money/bank-transfer-reference.html:34
-msgid "Under ‘payee’ enter the prisoner’s name, if required."
-msgstr ""
-
-#: templates/send_money/bank-transfer-reference.html:37
+#: templates/send_money/bank-transfer-reference.html:36
 msgid "Money should reach the prisoner’s account in 1 working day, but your bank can take up to 3 working days to process the payment."
 msgstr ""
 
-#: templates/send_money/bank-transfer-reference.html:38
+#: templates/send_money/bank-transfer-reference.html:37
 msgid "No money is processed at weekends or bank holidays."
 msgstr ""
 
-#: templates/send_money/bank-transfer-reference.html:42
+#: templates/send_money/bank-transfer-reference.html:41
 msgid "Print this page for next time you make a payment to this prisoner."
 msgstr ""
 
-#: templates/send_money/bank-transfer-reference.html:45
+#: templates/send_money/bank-transfer-reference.html:44
 #: templates/send_money/debit-card-confirmation.html:47
 msgid "To find out more about refunds visit:"
 msgstr ""
 
-#: templates/send_money/bank-transfer-reference.html:46
+#: templates/send_money/bank-transfer-reference.html:45
 #: templates/send_money/debit-card-confirmation.html:48
 msgid "Help sending money to a prisoner"
 msgstr ""
 
-#: templates/send_money/bank-transfer-warning.html:9
+#: templates/send_money/bank-transfer-warning.html:11
 msgid "Before you continue"
 msgstr ""
 
-#: templates/send_money/bank-transfer-warning.html:12
+#: templates/send_money/bank-transfer-warning.html:15
 msgid "Please note"
 msgstr ""
 
-#: templates/send_money/bank-transfer-warning.html:15
+#: templates/send_money/bank-transfer-warning.html:18
 msgid "You can’t go into a bank branch to transfer money – only transfers done using online banking, your mobile banking app or telephone banking will reach the prisoner"
 msgstr ""
 
-#: templates/send_money/bank-transfer-warning.html:16
+#: templates/send_money/bank-transfer-warning.html:19
 msgid "You can’t transfer money from an international bank account - only transfers from a UK bank account will reach the prisoner"
 msgstr ""
 
-#: templates/send_money/bank-transfer-warning.html:21
+#: templates/send_money/bank-transfer-warning.html:24
 msgid "I understand"
 msgstr ""
 
-#: templates/send_money/debit-card-amount.html:9
+#: templates/send_money/debit-card-amount.html:11
 msgid "Enter amount to send"
 msgstr ""
 
-#: templates/send_money/debit-card-amount.html:20
-#: templates/send_money/debit-card-check.html:41
+#: templates/send_money/debit-card-amount.html:23
+#: templates/send_money/debit-card-check.html:44
 msgid "Amount"
 msgstr ""
 
-#: templates/send_money/debit-card-amount.html:22
+#: templates/send_money/debit-card-amount.html:25
 msgid "Please enter the amount in pounds"
 msgstr ""
 
-#: templates/send_money/debit-card-amount.html:45
+#: templates/send_money/debit-card-amount.html:48
 msgid "Service charge:"
-msgstr ""
-
-#: templates/send_money/debit-card-amount.html:49
-#: templates/send_money/debit-card-amount.html:61
-#, python-format
-msgid "The service charge is %(charge_percentage)s of the amount you’re sending, plus %(charge_fixed)s."
 msgstr ""
 
 #: templates/send_money/debit-card-amount.html:52
 #: templates/send_money/debit-card-amount.html:64
-msgid "This fee is charged by your card provider."
+#, python-format
+msgid "The service charge is %(charge_percentage)s of the amount you’re sending, plus %(charge_fixed)s."
 msgstr ""
 
 #: templates/send_money/debit-card-amount.html:55
+#: templates/send_money/debit-card-amount.html:67
+msgid "This fee is charged by your card provider."
+msgstr ""
+
+#: templates/send_money/debit-card-amount.html:58
 msgid "Total to pay:"
 msgstr ""
 
-#: templates/send_money/debit-card-amount.html:67
+#: templates/send_money/debit-card-amount.html:70
 #, python-format
 msgid "For instance, if you want to send %(sample_amount)s, you will be charged %(sample_amount_total_charge)s."
 msgstr ""
 
-#: templates/send_money/debit-card-amount.html:78
-#: templates/send_money/debit-card-check.html:11
+#: templates/send_money/debit-card-amount.html:81
+#: templates/send_money/debit-card-check.html:13
 msgid "Check details"
 msgstr ""
 
@@ -451,32 +447,32 @@ msgstr ""
 msgid "Check details - Send money to a prisoner - GOV.UK"
 msgstr ""
 
-#: templates/send_money/debit-card-check.html:24
+#: templates/send_money/debit-card-check.html:27
 msgid "Date of birth"
 msgstr ""
 
-#: templates/send_money/debit-card-check.html:35
-#: templates/send_money/debit-card-check.html:67
+#: templates/send_money/debit-card-check.html:38
+#: templates/send_money/debit-card-check.html:70
 msgid "Change"
 msgstr ""
 
-#: templates/send_money/debit-card-check.html:45
+#: templates/send_money/debit-card-check.html:48
 msgid "Total to prisoner"
 msgstr ""
 
-#: templates/send_money/debit-card-check.html:51
+#: templates/send_money/debit-card-check.html:54
 msgid "Amount to be taken from your account"
 msgstr ""
 
-#: templates/send_money/debit-card-check.html:58
+#: templates/send_money/debit-card-check.html:61
 msgid "Total"
 msgstr ""
 
-#: templates/send_money/debit-card-check.html:73
+#: templates/send_money/debit-card-check.html:76
 msgid "Enter card details"
 msgstr ""
 
-#: templates/send_money/debit-card-check.html:76
+#: templates/send_money/debit-card-check.html:79
 msgid "Cancel and delete all details"
 msgstr ""
 
@@ -517,7 +513,7 @@ msgid "What happens next"
 msgstr ""
 
 #: templates/send_money/debit-card-confirmation.html:41
-#: templates/send_money/payment-method.html:55
+#: templates/send_money/payment-method.html:59
 msgid "You’ll get email confirmation of payment"
 msgstr ""
 
@@ -529,16 +525,16 @@ msgstr ""
 msgid "Take a moment to rate this service"
 msgstr ""
 
-#: templates/send_money/debit-card-failure.html:7
+#: templates/send_money/debit-card-failure.html:11
 msgid "We’re sorry, your payment could not be processed on this occasion"
 msgstr ""
 
-#: templates/send_money/debit-card-failure.html:9
+#: templates/send_money/debit-card-failure.html:13
 #, python-format
 msgid "Your reference number is <strong>%(short_payment_ref)s</strong>"
 msgstr ""
 
-#: templates/send_money/debit-card-prisoner-details.html:55
+#: templates/send_money/debit-card-prisoner-details.html:58
 msgid "Enter amount"
 msgstr ""
 
@@ -578,453 +574,453 @@ msgstr ""
 msgid "Please let us know how you found it at https://send-money.moneytoprisoners.dsd.io/feedback/"
 msgstr ""
 
-#: templates/send_money/help.html:7
+#: templates/send_money/help.html:8
 msgid "Back"
 msgstr ""
 
-#: templates/send_money/help.html:11
+#: templates/send_money/help.html:14
 msgid "Help on sending money to a prisoner"
 msgstr ""
 
-#: templates/send_money/help.html:12
+#: templates/send_money/help.html:15
 msgid "How to get a refund"
 msgstr ""
 
-#: templates/send_money/help.html:15
+#: templates/send_money/help.html:19
 msgid "If you use the wrong reference"
 msgstr ""
 
-#: templates/send_money/help.html:17
+#: templates/send_money/help.html:21
 msgid "your money will be automatically refunded within 4 working days"
 msgstr ""
 
-#: templates/send_money/help.html:18
+#: templates/send_money/help.html:22
 msgid "it will appear as ‘GBS RE NOMS’ on your bank statement"
 msgstr ""
 
-#: templates/send_money/help.html:21
+#: templates/send_money/help.html:25
 msgid "If you make a cash transfer in-branch OR an international payment"
 msgstr ""
 
-#: templates/send_money/help.html:23
+#: templates/send_money/help.html:27
 #, python-format
 msgid "<a href=\"%(contact_url)s\" target=\"_blank\">Telephone the prison business hub</a> to tell them your in-branch cash transfer hasn’t got to the prisoner."
 msgstr ""
 
-#: templates/send_money/help.html:28
+#: templates/send_money/help.html:32
 msgid "You’ll be told to write to the prison to confirm these details:"
 msgstr ""
 
-#: templates/send_money/help.html:31
+#: templates/send_money/help.html:35
 msgid "sender’s name (to whom the cheque will be made payable to)"
 msgstr ""
 
-#: templates/send_money/help.html:32
+#: templates/send_money/help.html:36
 msgid "sender’s address"
 msgstr ""
 
-#: templates/send_money/help.html:33
+#: templates/send_money/help.html:37
 msgid "prisoner’s name"
 msgstr ""
 
-#: templates/send_money/help.html:34
+#: templates/send_money/help.html:38
 msgid "prisoner number"
 msgstr ""
 
-#: templates/send_money/help.html:35
+#: templates/send_money/help.html:39
 msgid "amount and date"
 msgstr ""
 
-#: templates/send_money/help.html:36
+#: templates/send_money/help.html:40
 msgid "bank branch payment was made at (if made in person)"
 msgstr ""
 
-#: templates/send_money/help.html:39
+#: templates/send_money/help.html:43
 msgid "When the prison business hub receives your letter, they’ll post you a cheque for the amount."
 msgstr ""
 
-#: templates/send_money/payment-method.html:4
+#: templates/send_money/payment-method.html:5
 msgid "Choose payment method - Send money to a prisoner - GOV.UK"
 msgstr ""
 
-#: templates/send_money/payment-method.html:7
-#: templates/send_money/payment-method.html:25
+#: templates/send_money/payment-method.html:10
+#: templates/send_money/payment-method.html:29
 msgid "How do you want to send money?"
 msgstr ""
 
-#: templates/send_money/payment-method.html:17
+#: templates/send_money/payment-method.html:21
 msgid "Due to a technical issue, pay by debit card is temporarily unavailable."
 msgstr ""
 
-#: templates/send_money/payment-method.html:19
+#: templates/send_money/payment-method.html:23
 msgid "Please send money using a bank transfer or come back later."
 msgstr ""
 
-#: templates/send_money/payment-method.html:34
+#: templates/send_money/payment-method.html:38
 msgid "or"
 msgstr ""
 
-#: templates/send_money/payment-method.html:41
+#: templates/send_money/payment-method.html:45
 msgid "Which is right for me?"
 msgstr ""
 
-#: templates/send_money/payment-method.html:49
+#: templates/send_money/payment-method.html:53
 msgid "Temporarily unavailable due to a technical issue"
 msgstr ""
 
-#: templates/send_money/payment-method.html:53
+#: templates/send_money/payment-method.html:57
 msgid "You can complete your payment here"
 msgstr ""
 
-#: templates/send_money/payment-method.html:54
+#: templates/send_money/payment-method.html:58
 msgid "Money takes 1 working day to reach the prisoner"
 msgstr ""
 
-#: templates/send_money/payment-method.html:59
+#: templates/send_money/payment-method.html:63
 msgid "You’ll get a reference you can use to make a transfer from a UK bank"
 msgstr ""
 
-#: templates/send_money/payment-method.html:60
+#: templates/send_money/payment-method.html:64
 msgid "This must be done using online banking, your mobile banking app or telephone banking – you can’t go in branch"
 msgstr ""
 
-#: templates/send_money/payment-method.html:61
+#: templates/send_money/payment-method.html:65
 msgid "Money takes 1-3 working days to reach the prisoner"
 msgstr ""
 
-#: templates/send_money/payment-method.html:62
+#: templates/send_money/payment-method.html:66
 msgid "You won’t receive email confirmation of payment"
 msgstr ""
 
-#: templates/send_money/payment-method.html:68
+#: templates/send_money/payment-method.html:72
 msgid "Continue"
 msgstr ""
 
-#: templates/terms.html:6
+#: templates/terms.html:9
 msgid "Terms and conditions and privacy policy"
 msgstr ""
 
-#: templates/terms.html:9
+#: templates/terms.html:13
 msgid "By using the send money to a prisoner service using your bank account you agree to our privacy policy and to these terms and conditions."
 msgstr ""
 
-#: templates/terms.html:10
+#: templates/terms.html:14
 msgid "Please read them carefully."
 msgstr ""
 
-#: templates/terms.html:15
+#: templates/terms.html:19
 msgid "General"
 msgstr ""
 
-#: templates/terms.html:18
+#: templates/terms.html:22
 msgid "These terms and conditions affect your rights and liabilities under the law."
 msgstr ""
 
-#: templates/terms.html:19
+#: templates/terms.html:23
 msgid "They govern your use of, and relationship with, the send money to a prisoner service and information about sending money to prisoners using your bank account."
 msgstr ""
 
-#: templates/terms.html:20
+#: templates/terms.html:24
 msgid "They don’t apply to other services provided by the Ministry of Justice (HM Prison Service), or to any other department or service which is linked to in this service."
 msgstr ""
 
-#: templates/terms.html:23
+#: templates/terms.html:27
 msgid "We may occasionally update these terms and conditions."
 msgstr ""
 
-#: templates/terms.html:24
+#: templates/terms.html:28
 msgid "This might happen if there’s a change in the law or to the way this service works."
 msgstr ""
 
-#: templates/terms.html:25
+#: templates/terms.html:29
 msgid "We recommend you check this page regularly for any updates."
 msgstr ""
 
-#: templates/terms.html:28
+#: templates/terms.html:32
 msgid "If you don’t agree to the terms and conditions and privacy policy set out in this document, you should not send money to prisoners using your bank account."
 msgstr ""
 
-#: templates/terms.html:31
+#: templates/terms.html:35
 msgid "Applicable law"
 msgstr ""
 
-#: templates/terms.html:34
+#: templates/terms.html:38
 msgid "Your use of this service and any dispute arising from its use will be governed by and construed in accordance with the laws of England and Wales, including but not limited to the:"
 msgstr ""
 
-#: templates/terms.html:42
+#: templates/terms.html:46
 msgid "How to use this service responsibly"
 msgstr ""
 
-#: templates/terms.html:45
+#: templates/terms.html:49
 msgid "There are risks in using a shared computer, such as in an internet café, to use this service."
 msgstr ""
 
-#: templates/terms.html:46
+#: templates/terms.html:50
 msgid "It’s your responsibility to be aware of these risks and to avoid using any computer which may leave your personal information accessible to others."
 msgstr ""
 
-#: templates/terms.html:47
+#: templates/terms.html:51
 msgid "You are responsible if you choose to leave a computer unprotected while in the process of sending money to a prisoner."
 msgstr ""
 
-#: templates/terms.html:50
+#: templates/terms.html:54
 msgid "We make every effort to check and test this service whenever we amend or update it."
 msgstr ""
 
-#: templates/terms.html:51
+#: templates/terms.html:55
 msgid "However, you must take your own precautions to ensure that the way you access this service does not expose you to the risk of viruses, malicious computer code or other forms of interference which may damage your own computer system."
 msgstr ""
 
-#: templates/terms.html:54
+#: templates/terms.html:58
 msgid "You must not misuse our service by knowingly introducing viruses, trojans, worms, logic bombs or other material which is malicious or technologically harmful."
 msgstr ""
 
-#: templates/terms.html:55
+#: templates/terms.html:59
 msgid "You must not attempt to gain unauthorised access to our service, the system on which our service is stored or any server, computer or database connected to our service. You must not attack our site via a denial-of-service attack or a distributed denial-of-service attack."
 msgstr ""
 
-#: templates/terms.html:58
+#: templates/terms.html:62
 msgid "Privacy policy"
 msgstr ""
 
-#: templates/terms.html:60
+#: templates/terms.html:64
 msgid "Information provided by this service"
 msgstr ""
 
-#: templates/terms.html:63
+#: templates/terms.html:67
 msgid "We work hard to ensure that information about how to send money to a prisoner using your bank account is accurate."
 msgstr ""
 
-#: templates/terms.html:64
+#: templates/terms.html:68
 msgid "However, we can’t guarantee the accuracy and completeness of any information at all times."
 msgstr ""
 
-#: templates/terms.html:67
+#: templates/terms.html:71
 msgid "While we make every effort to ensure this service is accessible at all times, we are not liable if it is unavailable for any period of time."
 msgstr ""
 
-#: templates/terms.html:70
+#: templates/terms.html:74
 msgid "How we use your information"
 msgstr ""
 
-#: templates/terms.html:73
+#: templates/terms.html:77
 msgid "Sending money to a prisoner using your bank account:"
 msgstr ""
 
-#: templates/terms.html:74
+#: templates/terms.html:78
 msgid "We use your bank details and the payment reference number you provide to identify the payment sender, as well as the prisoner receiving money."
 msgstr ""
 
-#: templates/terms.html:75
+#: templates/terms.html:79
 msgid "Money coming into the prison is monitored for the purposes of crime detection and prevention."
 msgstr ""
 
-#: templates/terms.html:78
+#: templates/terms.html:82
 msgid "You have the right to request details as to the personal information we hold for you; and subsequently request that we correct any personal information if it is found to be inaccurate or out of date."
 msgstr ""
 
-#: templates/terms.html:79
+#: templates/terms.html:83
 #, python-format
 msgid "To request your personal data please read the instructions in the <a href=\"%(url)s\">Personal Information Charter</a>."
 msgstr ""
 
-#: templates/terms.html:80
+#: templates/terms.html:84
 #, python-format
 msgid "You will need a <a href=\"%(url)s\">Subject Access Request form</a>."
 msgstr ""
 
-#: templates/terms.html:83
+#: templates/terms.html:87
 msgid "We will not share your information with other organisations unless it is required for the purposes of prevention, detection of crime, apprehension, prosecution, and management of offenders; prevention of terrorism; national security; or required to by law."
 msgstr ""
 
-#: templates/terms.html:86
+#: templates/terms.html:90
 msgid "Separately from the information entered by those using this service, we also collect site-usage information which allows us to see how the service is being used in order to allow us to improve it."
 msgstr ""
 
-#: templates/terms.html:87
+#: templates/terms.html:91
 msgid "This information does not contain any personal data, unless feedback is submitted with an email address."
 msgstr ""
 
-#: templates/terms.html:90
+#: templates/terms.html:94
 msgid "It includes:"
 msgstr ""
 
-#: templates/terms.html:92
+#: templates/terms.html:96
 msgid "questions, queries or feedback you leave, including your email address if you send a message via feedback"
 msgstr ""
 
-#: templates/terms.html:93
+#: templates/terms.html:97
 msgid "your IP address, and details of which version of web browser you used"
 msgstr ""
 
-#: templates/terms.html:94
+#: templates/terms.html:98
 msgid "information on how you use the site, using cookies and page tagging techniques to help us improve the website"
 msgstr ""
 
-#: templates/terms.html:97
+#: templates/terms.html:101
 msgid "This helps us to:"
 msgstr ""
 
-#: templates/terms.html:99
+#: templates/terms.html:103
 msgid "improve the site by monitoring how you use it"
 msgstr ""
 
-#: templates/terms.html:100
+#: templates/terms.html:104
 msgid "respond to any feedback you send us, if you’ve asked us to"
 msgstr ""
 
-#: templates/terms.html:101
+#: templates/terms.html:105
 msgid "provide you with information about local services if you want it"
 msgstr ""
 
-#: templates/terms.html:104
+#: templates/terms.html:108
 msgid "We can’t personally identify you using your data."
 msgstr ""
 
-#: templates/terms.html:106
+#: templates/terms.html:110
 msgid "Using other websites"
 msgstr ""
 
-#: templates/terms.html:109
+#: templates/terms.html:113
 msgid "These terms and conditions and privacy policy only cover the send money to a prisoner service and information about it."
 msgstr ""
 
-#: templates/terms.html:112
+#: templates/terms.html:116
 msgid "They do not cover links from our website to other third party websites (including bank and building society websites) or any information collected by the parties who own and control those websites or their use of cookies."
 msgstr ""
 
-#: templates/terms.html:113
+#: templates/terms.html:117
 msgid "Individual organisations operate their own policies regarding the use and sale of personal information and the use of cookies."
 msgstr ""
 
-#: templates/terms.html:116
+#: templates/terms.html:120
 msgid "When sending money to a prisoner using your bank account, we recommend that you refer to the specific terms and conditions and privacy policy of any banking website or service that you use."
 msgstr ""
 
-#: templates/terms.html:119
+#: templates/terms.html:123
 msgid "Where your data is stored"
 msgstr ""
 
-#: templates/terms.html:122
+#: templates/terms.html:126
 msgid "We store your data on our secure servers in the EEA."
 msgstr ""
 
-#: templates/terms.html:123
+#: templates/terms.html:127
 msgid "However, feedback may be stored outside of the EEA, where it could be viewed by our staff or suppliers."
 msgstr ""
 
-#: templates/terms.html:124
+#: templates/terms.html:128
 msgid "By submitting your personal data, you agree to this."
 msgstr ""
 
-#: templates/terms.html:126
+#: templates/terms.html:130
 msgid "We also use other suppliers to provide this service:"
 msgstr ""
 
-#: templates/terms.html:129
+#: templates/terms.html:133
 #, python-format
 msgid "<a href=\"%(url)s\">Zendesk</a> to handle any feedback that you leave."
 msgstr ""
 
-#: templates/terms.html:130
+#: templates/terms.html:134
 msgid "Any communication is deleted 2 weeks after the ticket is closed."
 msgstr ""
 
-#: templates/terms.html:131 templates/terms.html:135
+#: templates/terms.html:135 templates/terms.html:139
 #, python-format
 msgid "See the <a href=\"%(url)s\">terms &amp; conditions</a> attached to this service."
 msgstr ""
 
-#: templates/terms.html:134
+#: templates/terms.html:138
 #, python-format
 msgid "<a href=\"%(url)s\">GOV.UK Pay</a> to handle any debit card payments you make."
 msgstr ""
 
-#: templates/terms.html:139
+#: templates/terms.html:143
 msgid "Keeping your data secure"
 msgstr ""
 
-#: templates/terms.html:142
+#: templates/terms.html:146
 msgid "Transmitting information over the internet is generally not completely secure, and we can’t guarantee the security of your data."
 msgstr ""
 
-#: templates/terms.html:143
+#: templates/terms.html:147
 msgid "We do however use SSL in order to encrypt all data transferred to and received from our server."
 msgstr ""
 
-#: templates/terms.html:144
+#: templates/terms.html:148
 msgid "SSL is an industry standard encryption of the communication between your browser and the server."
 msgstr ""
 
-#: templates/terms.html:147
+#: templates/terms.html:151
 msgid "We take data security very seriously and we take every step to ensure that your data remains private and secure."
 msgstr ""
 
-#: templates/terms.html:150
+#: templates/terms.html:154
 msgid "Any data you transmit is at your own risk"
 msgstr ""
 
-#: templates/terms.html:153
+#: templates/terms.html:157
 msgid "We have procedures and security features in place to try and keep your data secure once we receive it."
 msgstr ""
 
-#: templates/terms.html:156
+#: templates/terms.html:160
 msgid "We won’t share your information with any other organisations for marketing, market research or commercial purposes, and we don’t pass on your details to other websites."
 msgstr ""
 
-#: templates/terms.html:159
+#: templates/terms.html:163
 msgid "Disclosing your information"
 msgstr ""
 
-#: templates/terms.html:161
+#: templates/terms.html:165
 msgid "We may pass on your personal information if we have a legal obligation to do so."
 msgstr ""
 
-#: templates/terms.html:166
+#: templates/terms.html:170
 msgid "This service complies with all principles of the Data Protection Act 1998."
 msgstr ""
 
-#: templates/terms.html:169
+#: templates/terms.html:173
 msgid "Ministry of Justice (MoJ) is the ‘data controller’ for the purposes of the Act."
 msgstr ""
 
-#: templates/terms.html:170
+#: templates/terms.html:174
 msgid "However, the information you enter into this service is not automatically transmitted to the Ministry of Justice, but is stored in a secure database."
 msgstr ""
 
-#: templates/terms.html:171
+#: templates/terms.html:175
 msgid "No personal data will be used in testing this service."
 msgstr ""
 
-#: templates/terms.html:174
+#: templates/terms.html:178
 msgid "Our hosting provider, and MoJ staff responsible for supporting this service, will have access to the server in which all personal information entered into this service is stored."
 msgstr ""
 
-#: templates/terms.html:175
+#: templates/terms.html:179
 msgid "All staff who have access to the secure data have MoJ security clearance."
 msgstr ""
 
-#: templates/terms.html:178
+#: templates/terms.html:182
 msgid "Anyone who believes their personal data is kept within this service has the right to submit a subject access request to the MoJ, who will give details of the information stored on the server."
 msgstr ""
 
-#: templates/terms.html:181
+#: templates/terms.html:185
 msgid "Disclaimer"
 msgstr ""
 
-#: templates/terms.html:184
+#: templates/terms.html:188
 msgid "We don’t accept liability for loss or damage incurred by users of this service, whether direct, indirect or consequential, whether caused by tort, breach of contract or otherwise."
 msgstr ""
 
-#: templates/terms.html:185
+#: templates/terms.html:189
 msgid "This includes loss of income or revenue, business, profits or contracts, anticipated savings, data, goodwill, tangible property or wasted time in connection with this service or any websites linked to it and any materials posted on it."
 msgstr ""
 
-#: templates/terms.html:186
+#: templates/terms.html:190
 msgid "This condition shall not prevent claims for loss of or damage to your tangible property or any other claims for direct financial loss that are not excluded by any of the categories set out above."
 msgstr ""
 
-#: templates/terms.html:189
+#: templates/terms.html:193
 msgid "This does not affect our liability for death or personal injury arising from our negligence, nor our liability for fraudulent misrepresentation or misrepresentation as to a fundamental matter, nor any other liability which cannot be excluded or limited under applicable law."
 msgstr ""
