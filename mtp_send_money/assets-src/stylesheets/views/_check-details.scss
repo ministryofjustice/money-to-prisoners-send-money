@@ -3,6 +3,15 @@
 .mtp-confirm {
   width: 65%;
 
+  @include media(tablet) {
+    width: 100%;
+  }
+
+  @include media(mobile) {
+    width: 100%;
+  }
+
+
   h2 {
     font-size: 1.26316em;
     margin: 0 0 .2em;
@@ -13,11 +22,12 @@
     margin-top: 2em;
 
     &.mtp-confirm-fieldset {
-      width: 100%;
+      margin-right: 5%;
+      width: 55%;
 
-      @include breakpoint(347px) {
-        margin-right: 5%;
-        width: 55%;
+      @include media(mobile) {
+        margin-right: 0;
+        width: 100%;
       }
     }
   }
@@ -40,7 +50,7 @@
   vertical-align: top;
   width: 39%;
 
-  @include breakpoint(347px) {
-    width: 39%;
+  @include media(mobile) {
+    width: 100%;
   }
 }
