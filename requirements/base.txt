@@ -2,11 +2,11 @@
 # NB: this is not the complete set needed to run the app
 Django>=1.9,<1.10
 django-mailgun>=0.8,<0.9
-pytz>=2016.4
-requests>=2.8,<2.9
+pytz>=2016.7
+requests>=2.12,<3
 slumber>=0.7,<0.8
 transifex-client>=0.12
 
 django-form-error-reporting>=0.4
 git+git://github.com/ministryofjustice/django-moj-irat.git
-git+git://github.com/ministryofjustice/django-zendesk-tickets.git
+django-zendesk-tickets>=0.8
