@@ -328,8 +328,8 @@ class DebitCardPaymentView(DebitCardFlow):
                 'reference': payment_ref,
                 'description': gettext('To this prisoner: %(prisoner_number)s' % prisoner_details),
                 'return_url': site_url(
-                    build_view_url(self.request, DebitCardConfirmationView.url_name) + '?payment_ref=' + payment_ref
-                ),
+                    build_view_url(self.request, DebitCardConfirmationView.url_name)
+                ) + '?payment_ref=' + payment_ref,
             }
             govuk_payment = payment_client.create_govuk_payment(payment_ref, new_govuk_payment)
             if govuk_payment:
