@@ -50,7 +50,8 @@ class PaymentClient:
     def check_govuk_payment_status(self, payment_ref, govuk_id, context):
         govuk_payment = self.get_govuk_payment(govuk_id)
         govuk_status = govuk_payment['state']['status']
-        email = govuk_payment['email']
+        email = govuk_payment.get('email')
+        card_details = govuk_payment.get('card_details')
 
         if govuk_status not in ('success', 'error', 'cancelled', 'failed'):
             raise GovUkPaymentStatusException('Incomplete status: %s' % govuk_status)
@@ -70,6 +71,13 @@ class PaymentClient:
                 payment_update['received_at'] = received_at.isoformat()
         if email:
             payment_update['email'] = email
+        if card_details:
+            if 'cardholder_name' in card_details:
+                payment_update['cardholder_name'] = card_details['cardholder_name']
+            if 'last_digits_card_number' in card_details:
+                payment_update['card_number_last_digits'] = card_details['last_digits_card_number']
+            if 'expiry_date' in card_details:
+                payment_update['card_expiry_date'] = card_details['expiry_date']
         self.update_payment(payment_ref, payment_update)
 
         if success:
