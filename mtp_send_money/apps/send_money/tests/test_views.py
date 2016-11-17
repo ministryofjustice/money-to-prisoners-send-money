@@ -773,11 +773,11 @@ class DebitCardPaymentTestCase(DebitCardFlowTestCase):
             with self.patch_prisoner_details_check():
                 response = self.client.get(self.url, follow=False)
 
-            # check amount and service charge submitted to api
+            # check amount and service charge submitted to api, uses slumber so body is str
             self.assertEqual(json.loads(rsps.calls[1].request.body)['amount'], 1700)
             self.assertEqual(json.loads(rsps.calls[1].request.body)['service_charge'], 61)
-            # check total charge submitted to govuk
-            self.assertEqual(json.loads(rsps.calls[2].request.body)['amount'], 1761)
+            # check total charge submitted to govuk, uses requests so body is bytes
+            self.assertEqual(json.loads(rsps.calls[2].request.body.decode('utf8'))['amount'], 1761)
 
             self.assertRedirects(
                 response, govuk_url(self.payment_process_path),
