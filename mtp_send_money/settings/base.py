@@ -26,6 +26,7 @@ DEBUG = True
 SECRET_KEY = 'CHANGE_ME'
 ALLOWED_HOSTS = []
 
+START_PAGE_URL = os.environ.get('START_PAGE_URL', 'https://www.gov.uk/send-prisoner-money')
 SITE_URL = os.environ.get('SITE_URL', 'http://localhost:8004')
 
 # Application definition
@@ -244,8 +245,6 @@ ZENDESK_CUSTOM_FIELDS = {
     'user_agent': 23791776,
     'contact_email': 30769508
 }
-
-CITIZEN_INFO_URL = 'sendmoneytoaprisoner.service.justice.gov.uk'
 
 SHOW_BANK_TRANSFER_OPTION = os.environ.get('SHOW_BANK_TRANSFER_OPTION', 'True') == 'True'
 SHOW_DEBIT_CARD_OPTION = os.environ.get('SHOW_DEBIT_CARD_OPTION', 'True') == 'True'
