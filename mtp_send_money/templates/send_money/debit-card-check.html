@@ -35,7 +35,7 @@
       </div>
 
       <div class="mtp-confirm-change">
-        <a href="{{ view.get_prisoner_details_url }}?focus=id_prisoner_name">{% trans 'Change' %}</a><br>
+        <a href="{{ view.get_prisoner_details_url }}?focus=id_prisoner_name">{% trans 'Change' %}<span class="visually-hidden">{% trans 'Name, Date of birth or Prisoner Number' %}</span></a>
       </div>
     </div>
 
@@ -67,7 +67,7 @@
         </table>
       </div>
       <div class="mtp-confirm-change">
-        <a href="{{ view.get_amount_url }}?focus=id_amount">{% trans 'Change' %}</a>
+        <a href="{{ view.get_amount_url }}?focus=id_amount">{% trans 'Change' %}<span class="visually-hidden">{% trans 'Amount' %}</span></a>
       </div>
     </div>
 
