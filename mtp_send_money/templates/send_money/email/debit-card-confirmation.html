@@ -34,6 +34,8 @@
   </p>
 
   <p>
-    {% trans 'Please let us know how you found it at https://send-money.moneytoprisoners.dsd.io/feedback/' %}
+    <a href="{{ feedback_url }}">
+      {% blocktrans %}Please let us know how you found it at {{ feedback_url }}{% endblocktrans %}
+    </a>
   </p>
 {% endblock %}
