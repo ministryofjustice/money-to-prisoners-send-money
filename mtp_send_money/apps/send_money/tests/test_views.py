@@ -914,26 +914,6 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
             self.assertTrue('WARGLE-B' in mail.outbox[0].body)
             self.assertTrue('£17' in mail.outbox[0].body)
 
-            mock_auth(rsps)
-            rsps.add(
-                rsps.GET,
-                api_url('/payments/%s/' % ref),
-                json={
-                    'processor_id': processor_id,
-                    'recipient_name': 'John',
-                    'amount': 1700,
-                    'status': 'taken',
-                    'created': datetime.datetime.now().isoformat() + 'Z',
-                },
-                status=200,
-            )
-
-            with self.patch_prisoner_details_check():
-                response = self.client.get(
-                    self.url, {'payment_ref': ref}, follow=True
-                )
-            self.assertOnPage(response, 'choose_method')
-
     def test_confirmation_handles_api_errors(self):
         self.choose_debit_card_payment_method()
         self.fill_in_prisoner_details()
@@ -1081,7 +1061,7 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
             for key in self.complete_session_keys:
                 self.assertIn(key, self.client.session)
 
-    def test_confirmation_redirects_for_completed_payments(self):
+    def test_confirmation_refreshes_for_recently_completed_payments(self):
         self.choose_debit_card_payment_method()
         self.fill_in_prisoner_details()
         self.fill_in_amount()
@@ -1099,6 +1079,41 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
                     'amount': 1700,
                     'status': 'taken',
                     'created': datetime.datetime.now().isoformat() + 'Z',
+                    'received_at': datetime.datetime.now().isoformat() + 'Z',
+                },
+                status=200,
+            )
+            with self.patch_prisoner_details_check(), self.silence_logger():
+                response = self.client.get(
+                    self.url, {'payment_ref': ref}, follow=False
+                )
+            self.assertContains(response, 'success')
+            # check no new email sent
+            self.assertEqual(len(mail.outbox), 0)
+
+    def test_confirmation_redirects_for_old_payments(self):
+        self.choose_debit_card_payment_method()
+        self.fill_in_prisoner_details()
+        self.fill_in_amount()
+
+        payment_time = (
+            datetime.datetime.now() - datetime.timedelta(hours=2)
+        ).isoformat() + 'Z'
+
+        with responses.RequestsMock() as rsps:
+            ref = 'wargle-blargle'
+            processor_id = '3'
+            mock_auth(rsps)
+            rsps.add(
+                rsps.GET,
+                api_url('/payments/%s/' % ref),
+                json={
+                    'processor_id': processor_id,
+                    'recipient_name': 'John',
+                    'amount': 1700,
+                    'status': 'taken',
+                    'created': payment_time,
+                    'received_at': payment_time,
                 },
                 status=200,
             )

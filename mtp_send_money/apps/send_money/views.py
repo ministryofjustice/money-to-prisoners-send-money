@@ -18,7 +18,7 @@ from slumber.exceptions import SlumberHttpBaseException
 from send_money import forms as send_money_forms
 from send_money.exceptions import GovUkPaymentStatusException
 from send_money.models import PaymentMethod
-from send_money.payments import PaymentClient
+from send_money.payments import is_active_payment, PaymentClient
 from send_money.utils import (
     bank_transfer_reference, get_service_charge, get_link_by_rel, site_url
 )
@@ -369,7 +369,7 @@ class DebitCardConfirmationView(TemplateView):
             # check payment status
             payment_client = PaymentClient()
             payment = payment_client.get_payment(payment_ref)
-            if not payment or payment['status'] != 'pending':
+            if not payment or not is_active_payment(payment):
                 # bail out if accessed without specifying a payment in pending state
                 return clear_session_view(request)
 
@@ -380,11 +380,15 @@ class DebitCardConfirmationView(TemplateView):
                 'email_sent': False,
             })
 
-            # check gov.uk payment status
-            govuk_id = payment['processor_id']
-            self.success, kwargs = payment_client.check_govuk_payment_status(
-                payment_ref, govuk_id, kwargs
-            )
+            if payment['status'] == 'taken':
+                self.success = True
+                kwargs['email_sent'] = True
+            else:
+                # check gov.uk payment status
+                govuk_id = payment['processor_id']
+                self.success, kwargs = payment_client.check_govuk_payment_status(
+                    payment_ref, govuk_id, kwargs
+                )
             if not self.success:
                 return redirect(build_view_url(self.request, DebitCardCheckView.url_name))
         except OAuth2Error:
