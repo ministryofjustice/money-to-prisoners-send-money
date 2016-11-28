@@ -18,6 +18,18 @@ from send_money.utils import (
 logger = logging.getLogger('mtp')
 
 
+def is_active_payment(payment):
+    if payment['status'] == 'pending':
+        return True
+
+    received_at = parse_datetime(payment.get('received_at', ''))
+    return (
+        received_at is not None and
+        (timezone.now() - received_at) <
+        timedelta(hours=1)
+    )
+
+
 class PaymentClient:
 
     @cached_property
