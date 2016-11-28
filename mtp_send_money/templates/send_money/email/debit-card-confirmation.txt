@@ -15,4 +15,4 @@ GOV.UK - {% trans 'Send money to a prisoner' %}
 
 {% trans 'Thank you for using this service.' %}
 
-{% trans 'Please let us know how you found it at https://send-money.moneytoprisoners.dsd.io/feedback/' %}
+{% blocktrans %}Please let us know how you found it at {{ feedback_url }}{% endblocktrans %}

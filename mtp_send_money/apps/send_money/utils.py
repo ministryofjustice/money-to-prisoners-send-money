@@ -5,6 +5,7 @@ import re
 
 from django.conf import settings
 from django.core.exceptions import ValidationError
+from django.core.urlresolvers import reverse
 from django.utils.dateformat import format as format_date
 from django.utils.dateparse import parse_date
 from django.utils import formats
@@ -41,6 +42,7 @@ def send_notification(email, context):
     from smtplib import SMTPException
     if not email:
         return False
+    context['feedback_url'] = site_url(reverse('submit_ticket'))
     try:
         send_email(
             email, 'send_money/email/debit-card-confirmation.txt',

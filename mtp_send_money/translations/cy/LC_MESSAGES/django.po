@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: MTP send-money\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-11-16 14:36+0000\n"
+"POT-Creation-Date: 2016-11-28 10:41+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Igor U <igor.ushkarev@digital.justice.gov.uk>, 2016\n"
 "Language-Team: Welsh (https://www.transifex.com/ministry-of-justice/teams/34553/cy/)\n"
@@ -93,11 +93,11 @@ msgstr ""
 msgid "Get a prisoner reference to use in a UK bank transfer"
 msgstr ""
 
-#: apps/send_money/utils.py:47
+#: apps/send_money/utils.py:49
 msgid "Send money to a prisoner: your payment was successful"
 msgstr ""
 
-#: apps/send_money/utils.py:57
+#: apps/send_money/utils.py:59
 msgid "Incorrect prisoner number format"
 msgstr ""
 
@@ -407,6 +407,7 @@ msgstr ""
 
 #: templates/send_money/debit-card-amount.html:23
 #: templates/send_money/debit-card-check.html:44
+#: templates/send_money/debit-card-check.html:70
 msgid "Amount"
 msgstr ""
 
@@ -454,6 +455,10 @@ msgstr ""
 #: templates/send_money/debit-card-check.html:38
 #: templates/send_money/debit-card-check.html:70
 msgid "Change"
+msgstr ""
+
+#: templates/send_money/debit-card-check.html:38
+msgid "Name, date of birth or prisoner number"
 msgstr ""
 
 #: templates/send_money/debit-card-check.html:48
@@ -569,9 +574,10 @@ msgstr ""
 msgid "Thank you for using this service."
 msgstr ""
 
-#: templates/send_money/email/debit-card-confirmation.html:37
+#: templates/send_money/email/debit-card-confirmation.html:38
 #: templates/send_money/email/debit-card-confirmation.txt:18
-msgid "Please let us know how you found it at https://send-money.moneytoprisoners.dsd.io/feedback/"
+#, python-format
+msgid "Please let us know how you found it at %(feedback_url)s"
 msgstr ""
 
 #: templates/send_money/help.html:8
