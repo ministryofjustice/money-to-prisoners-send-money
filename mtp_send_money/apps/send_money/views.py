@@ -365,6 +365,9 @@ class DebitCardConfirmationView(TemplateView):
 
     def get(self, request, *args, **kwargs):
         payment_ref = self.request.GET.get('payment_ref')
+        if not payment_ref:
+            return clear_session_view(request)
+        kwargs['short_payment_ref'] = payment_ref[:8].upper()
         try:
             # check payment status
             payment_client = PaymentClient()
@@ -374,21 +377,18 @@ class DebitCardConfirmationView(TemplateView):
                 return clear_session_view(request)
 
             kwargs.update({
-                'short_payment_ref': payment_ref[:8].upper(),
                 'prisoner_name': payment['recipient_name'],
                 'amount': decimal.Decimal(payment['amount']) / 100,
-                'email_sent': False,
             })
 
             if payment['status'] == 'taken':
                 self.success = True
-                kwargs['email_sent'] = True
             else:
                 # check gov.uk payment status
                 govuk_id = payment['processor_id']
-                self.success, kwargs = payment_client.check_govuk_payment_status(
-                    payment_ref, govuk_id, kwargs
-                )
+                govuk_payment = payment_client.get_govuk_payment(govuk_id)
+                self.success = payment_client.check_govuk_payment_succeeded(govuk_payment)
+                payment_client.update_completed_payment(govuk_payment, self.success, kwargs)
             if not self.success:
                 return redirect(build_view_url(self.request, DebitCardCheckView.url_name))
         except OAuth2Error:

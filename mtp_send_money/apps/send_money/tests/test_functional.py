@@ -222,6 +222,7 @@ class SendMoneyConfirmationPage(SendMoneyFunctionalTestCase):
         }
         with responses.RequestsMock() as rsps, self.patch_view_chain_form_checking():
             rsps.add(rsps.GET, govuk_url('/payments/%s' % processor_id), json={
+                'reference': 'wargle-blargle',
                 'state': {'status': 'success', 'finished': True},
                 'amount': 2000,
                 'payment_id': processor_id,
@@ -273,6 +274,7 @@ class SendMoneyConfirmationPage(SendMoneyFunctionalTestCase):
     def test_failure_page(self, mocked_client):
         processor_id = '3'
         mocked_client().payments().get.return_value = {
+            'reference': 'wargle-blargle',
             'processor_id': processor_id,
             'recipient_name': 'James Bond',
             'amount': 2000,

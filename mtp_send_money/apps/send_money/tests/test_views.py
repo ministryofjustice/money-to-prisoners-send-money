@@ -871,6 +871,7 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
                 rsps.GET,
                 govuk_url('/payments/%s/' % processor_id),
                 json={
+                    'reference': 'wargle-blargle',
                     'state': {'status': 'success'},
                     'email': 'sender@outside.local',
                     '_links': {
@@ -914,57 +915,16 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
             self.assertTrue('WARGLE-B' in mail.outbox[0].body)
             self.assertTrue('£17' in mail.outbox[0].body)
 
-    def test_confirmation_handles_api_errors(self):
+    def test_confirmation_handles_api_update_errors(self):
         self.choose_debit_card_payment_method()
         self.fill_in_prisoner_details()
         self.fill_in_amount()
 
         with responses.RequestsMock() as rsps:
             ref = 'wargle-blargle'
-            processor_id = '3'
             mock_auth(rsps)
             rsps.add(
                 rsps.GET,
-                api_url('/payments/%s/' % ref),
-                json={
-                    'processor_id': processor_id,
-                    'recipient_name': 'John',
-                    'amount': 1700,
-                    'status': 'pending',
-                    'created': datetime.datetime.now().isoformat() + 'Z',
-                },
-                status=200,
-            )
-            rsps.add(
-                rsps.GET,
-                govuk_url('/payments/%s/' % processor_id),
-                json={
-                    'state': {'status': 'success'},
-                    'email': 'sender@outside.local',
-                    '_links': {
-                        'events': {
-                            'method': 'GET',
-                            'href': govuk_url('/payments/%s/events' % 1),
-                        }
-                    }
-                },
-                status=200
-            )
-            rsps.add(
-                rsps.GET,
-                govuk_url('/payments/%s/events' % 1),
-                json={
-                    'events': [
-                        {
-                            'state': {'status': 'success'},
-                            'updated': '2016-10-27T15:11:05.768Z'
-                        }
-                    ]
-                },
-                status=200
-            )
-            rsps.add(
-                rsps.PATCH,
                 api_url('/payments/%s/' % ref),
                 status=500,
             )
@@ -1041,6 +1001,7 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
                 rsps.GET,
                 govuk_url('/payments/%s/' % processor_id),
                 json={
+                    'reference': 'wargle-blargle',
                     'state': {'status': 'failed'},
                     'email': 'sender@outside.local',
                 },
@@ -1061,6 +1022,7 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
             for key in self.complete_session_keys:
                 self.assertIn(key, self.client.session)
 
+    @override_settings(ENVIRONMENT='prod')  # because non-prod environments don't send to @outside.local
     def test_confirmation_refreshes_for_recently_completed_payments(self):
         self.choose_debit_card_payment_method()
         self.fill_in_prisoner_details()
@@ -1122,3 +1084,62 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
                     self.url, {'payment_ref': ref}, follow=False
                 )
             self.assertRedirects(response, '/en-gb/', fetch_redirect_response=False)
+
+    @override_settings(ENVIRONMENT='prod')  # because non-prod environments don't send to @outside.local
+    def test_confirmation_doesnt_update_api_for_unknown_capture_time(self):
+        self.choose_debit_card_payment_method()
+        self.fill_in_prisoner_details()
+        self.fill_in_amount()
+
+        with responses.RequestsMock() as rsps:
+            ref = 'wargle-blargle'
+            processor_id = '3'
+            mock_auth(rsps)
+            rsps.add(
+                rsps.GET,
+                api_url('/payments/%s/' % ref),
+                json={
+                    'processor_id': processor_id,
+                    'recipient_name': 'John',
+                    'amount': 1700,
+                    'status': 'pending',
+                    'created': datetime.datetime.now().isoformat() + 'Z',
+                },
+                status=200,
+            )
+            rsps.add(
+                rsps.GET,
+                govuk_url('/payments/%s/' % processor_id),
+                json={
+                    'reference': 'wargle-blargle',
+                    'state': {'status': 'success'},
+                    'email': 'sender@outside.local',
+                    '_links': {
+                        'events': {
+                            'method': 'GET',
+                            'href': govuk_url('/payments/%s/events' % 1),
+                        }
+                    }
+                },
+                status=200
+            )
+            rsps.add(
+                rsps.GET,
+                govuk_url('/payments/%s/events' % 1),
+                json={
+                    'events': []
+                },
+                status=200
+            )
+            with self.patch_prisoner_details_check():
+                response = self.client.get(
+                    self.url, {'payment_ref': ref}, follow=False
+                )
+            self.assertContains(response, 'success')
+
+            # check session is cleared
+            for key in self.complete_session_keys:
+                self.assertNotIn(key, self.client.session)
+
+            # check no new email sent
+            self.assertEqual(len(mail.outbox), 0)

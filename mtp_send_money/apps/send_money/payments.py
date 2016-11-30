@@ -41,9 +41,9 @@ class PaymentClient:
         return api_response['uuid']
 
     def get_incomplete_payments(self):
-        an_hour_ago = timezone.now() - timedelta(hours=1)
+        ten_minutes_ago = timezone.now() - timedelta(minutes=10)
         return retrieve_all_pages(
-            self.client.payments.get, modified__lt=an_hour_ago.isoformat()
+            self.client.payments.get, modified__lt=ten_minutes_ago.isoformat()
         )
 
     def get_payment(self, payment_ref):
@@ -59,11 +59,8 @@ class PaymentClient:
             raise ValueError('payment_ref must be provided')
         self.client.payments(payment_ref).patch(payment_update)
 
-    def check_govuk_payment_status(self, payment_ref, govuk_id, context):
-        govuk_payment = self.get_govuk_payment(govuk_id)
+    def check_govuk_payment_succeeded(self, govuk_payment):
         govuk_status = govuk_payment['state']['status']
-        email = govuk_payment.get('email')
-        card_details = govuk_payment.get('card_details')
 
         if govuk_status not in ('success', 'error', 'cancelled', 'failed'):
             raise GovUkPaymentStatusException('Incomplete status: %s' % govuk_status)
@@ -73,6 +70,11 @@ class PaymentClient:
                          {'code': govuk_payment['state']['code'],
                           'msg': govuk_payment['state']['message']})
         success = govuk_status == 'success'
+        return success
+
+    def update_completed_payment(self, govuk_payment, success, context):
+        email = govuk_payment.get('email')
+        card_details = govuk_payment.get('card_details')
 
         payment_update = {
             'status': 'taken' if success else 'failed'
@@ -90,13 +92,8 @@ class PaymentClient:
                 payment_update['card_number_last_digits'] = card_details['last_digits_card_number']
             if 'expiry_date' in card_details:
                 payment_update['card_expiry_date'] = card_details['expiry_date']
-        self.update_payment(payment_ref, payment_update)
-
-        if success:
-            # notify sender if email known, but still show success page if it fails
-            context['email_sent'] = send_notification(email, context)
-
-        return (success, context)
+        self.update_payment(govuk_payment['reference'], payment_update)
+        send_notification(email, context)
 
     def get_govuk_payment(self, govuk_id):
         response = requests.get(
@@ -132,6 +129,7 @@ class PaymentClient:
                     return parse_datetime(event['updated'])
         except (ValueError, KeyError):
             raise RequestException('Cannot parse response', response=response)
+        raise GovUkPaymentStatusException('Capture time not yet available')
 
     def create_govuk_payment(self, payment_ref, new_govuk_payment):
         govuk_response = requests.post(
