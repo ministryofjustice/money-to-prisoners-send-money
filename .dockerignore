@@ -9,9 +9,20 @@
 *.sublime-workspace
 *.sublime-project
 
-# project
-mtp_send_money/settings/local.py
-mtp_send_money/assets/
+# sass & node.js
+*.sass-cache/
+.eslintcache/
 node_modules/
+npm-debug.log
+
+# project
+Dockerfile
+docker-compose.yml
+package.json
+webpack.config.js
+mtp_send_money/assets/
+mtp_send_money/settings/local.py
+mtp_send_money/templates/govuk_template
 static/
+media/
 venv/

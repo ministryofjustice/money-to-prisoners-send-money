@@ -1,5 +1,4 @@
 // Greyout debit card choice when unavailable
-/* globals exports, $ */
 'use strict';
 
 exports.Greyout = {

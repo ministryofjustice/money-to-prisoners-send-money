@@ -1,6 +1,4 @@
-/* globals require */
-
-(function() {
+(function () {
   'use strict';
 
   require('proposition-header').PropositionHeader.init();
@@ -15,5 +13,4 @@
   require('reference').Reference.init();
   require('greyout').Greyout.init();
   require('selection-buttons').SelectionButtons.init();
-
-})();
+}());
