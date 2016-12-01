@@ -387,8 +387,10 @@ class DebitCardConfirmationView(TemplateView):
                 # check gov.uk payment status
                 govuk_id = payment['processor_id']
                 govuk_payment = payment_client.get_govuk_payment(govuk_id)
-                self.success = payment_client.check_govuk_payment_succeeded(govuk_payment)
-                payment_client.update_completed_payment(govuk_payment, self.success, kwargs)
+                self.success = payment_client.check_govuk_payment_succeeded(
+                    govuk_payment, kwargs
+                )
+                payment_client.update_completed_payment(govuk_payment, self.success)
             if not self.success:
                 return redirect(build_view_url(self.request, DebitCardCheckView.url_name))
         except OAuth2Error:

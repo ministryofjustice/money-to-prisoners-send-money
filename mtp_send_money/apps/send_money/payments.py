@@ -41,7 +41,7 @@ class PaymentClient:
         return api_response['uuid']
 
     def get_incomplete_payments(self):
-        ten_minutes_ago = timezone.now() - timedelta(minutes=10)
+        ten_minutes_ago = timezone.now() - timedelta(minutes=30)
         return retrieve_all_pages(
             self.client.payments.get, modified__lt=ten_minutes_ago.isoformat()
         )
@@ -59,8 +59,9 @@ class PaymentClient:
             raise ValueError('payment_ref must be provided')
         self.client.payments(payment_ref).patch(payment_update)
 
-    def check_govuk_payment_succeeded(self, govuk_payment):
+    def check_govuk_payment_succeeded(self, govuk_payment, context):
         govuk_status = govuk_payment['state']['status']
+        email = govuk_payment.get('email')
 
         if govuk_status not in ('success', 'error', 'cancelled', 'failed'):
             raise GovUkPaymentStatusException('Incomplete status: %s' % govuk_status)
@@ -70,9 +71,13 @@ class PaymentClient:
                          {'code': govuk_payment['state']['code'],
                           'msg': govuk_payment['state']['message']})
         success = govuk_status == 'success'
+
+        if success:
+            send_notification(email, context)
+
         return success
 
-    def update_completed_payment(self, govuk_payment, success, context):
+    def update_completed_payment(self, govuk_payment, success):
         email = govuk_payment.get('email')
         card_details = govuk_payment.get('card_details')
 
@@ -93,7 +98,6 @@ class PaymentClient:
             if 'expiry_date' in card_details:
                 payment_update['card_expiry_date'] = card_details['expiry_date']
         self.update_payment(govuk_payment['reference'], payment_update)
-        send_notification(email, context)
 
     def get_govuk_payment(self, govuk_id):
         response = requests.get(

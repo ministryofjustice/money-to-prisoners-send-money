@@ -1135,11 +1135,14 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
                 response = self.client.get(
                     self.url, {'payment_ref': ref}, follow=False
                 )
+            self.assertEqual(len(rsps.calls), 4)
             self.assertContains(response, 'success')
 
             # check session is cleared
             for key in self.complete_session_keys:
                 self.assertNotIn(key, self.client.session)
 
-            # check no new email sent
-            self.assertEqual(len(mail.outbox), 0)
+            # check email sent
+            self.assertEqual('Send money to a prisoner: your payment was successful', mail.outbox[0].subject)
+            self.assertTrue('WARGLE-B' in mail.outbox[0].body)
+            self.assertTrue('£17' in mail.outbox[0].body)
