@@ -1,40 +1,23 @@
+*.DS_Store
 *.py[cod]
 *.mo
 *.pot
-include/
-lib/
-/static/
-media/
-.build
-
-# Sass-cache
-*.sass-cache/
-
-# sublime stuff
-*.sublime-workspace
-*.sublime-project
-
-# Virtual env
 venv/
 
-# Mac crap
-*.DS_Store
-
-# Ignore settings/local.py
-*/settings/local.py
-
-# Node Stuff
-node_modules
+# sass & node.js
+*.sass-cache/
+.eslintcache/
+node_modules/
 npm-debug.log
 
-# App assets
+# app-specific
+docker-compose.yml
+package.json
+webpack.config.js
 mtp_send_money/assets/
-
-# Docker make targets
-.dev_django_container
-
-# failed test screenshots
-test/errorshots/
+mtp_send_money/settings/local.py
+static/
+media/
 
 # selenium
 geckodriver.log

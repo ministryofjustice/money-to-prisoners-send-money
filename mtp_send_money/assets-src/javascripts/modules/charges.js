@@ -1,6 +1,5 @@
 // Charges module
 // Automatically shows service charges when typing an amount in the payment page
-/* globals exports, $ */
 'use strict';
 
 exports.Charges = {
@@ -11,7 +10,7 @@ exports.Charges = {
     var $noJsSection = $(this.selector + ' .mtp-charges-no-js');
     var $input = $(this.selector + ' .mtp-charges-amount');
 
-    this.percentageCharge = Number($input.data('percentage-charge'))/100;
+    this.percentageCharge = Number($input.data('percentage-charge')) / 100;
     this.fixedCharge = Number($input.data('fixed-charge'));
 
     this.$charges = $(this.selector + ' .mtp-charges-charges');
@@ -22,23 +21,23 @@ exports.Charges = {
     if ($jsSection.length) {
       $jsSection.show();
       $noJsSection.hide();
-      $input.on('keyup', function(event) {
+      $input.on('keyup', function (event) {
         updateTotal(event.target.value);
       });
       updateTotal($input.val());
     }
   },
 
-  _formatAsPrice: function(num) {
+  _formatAsPrice: function (num) {
     return '£' + num.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
   },
 
   // Applies the rounding algorithm we use:
   // 1. discard all decimal digits after the 3rd place (excluded)
   // 2. round up
-  _round: function(num) {
-    num = num*100;
-    return Math.ceil(Number(num.toString().replace(/(\.\d)\d*/, '$1')))/100;
+  _round: function (num) {
+    num = num * 100;
+    return Math.ceil(Number(num.toString().replace(/(\.\d)\d*/, '$1'))) / 100;
   },
 
   _updateTotal: function (amount) {

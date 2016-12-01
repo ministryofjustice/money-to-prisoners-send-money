@@ -1,5 +1,4 @@
 // A/B/N testing experiments
-/* globals exports, require, $ */
 'use strict';
 
 var analytics = require('analytics');
