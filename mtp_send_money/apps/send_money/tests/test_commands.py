@@ -55,6 +55,7 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
                 rsps.GET,
                 govuk_url('/payments/%s/' % 1),
                 json={
+                    'reference': 'wargle-1111',
                     'state': {'status': 'success'},
                     'email': 'success_sender@outside.local',
                     '_links': {
@@ -88,6 +89,7 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
                 rsps.GET,
                 govuk_url('/payments/%s/' % 2),
                 json={
+                    'reference': 'wargle-2222',
                     'state': {'status': 'submitted'},
                     'email': 'pending_sender@outside.local',
                 },
@@ -97,6 +99,7 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
                 rsps.GET,
                 govuk_url('/payments/%s/' % 3),
                 json={
+                    'reference': 'wargle-3333',
                     'state': {'status': 'failed'},
                     'email': 'failed_sender@outside.local',
                 },
