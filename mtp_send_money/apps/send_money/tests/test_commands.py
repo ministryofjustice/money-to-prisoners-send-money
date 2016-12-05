@@ -112,3 +112,40 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
             )
 
             call_command('update_incomplete_payments')
+
+    @override_settings(ENVIRONMENT='prod')  # because non-prod environments don't send to @outside.local
+    def test_update_incomplete_payments_no_govuk_payment_found(self):
+        with responses.RequestsMock() as rsps:
+            mock_auth(rsps)
+            rsps.add(
+                rsps.GET,
+                api_url('/payments/'),
+                json={
+                    'count': 1,
+                    'results': [
+                        {
+                            'uuid': 'wargle-1111',
+                            'processor_id': 1,
+                            'recipient_name': 'John',
+                            'amount': 1700,
+                            'status': 'pending',
+                            'created': datetime.now().isoformat() + 'Z'
+                        },
+                    ]
+                },
+                status=200,
+            )
+            rsps.add(
+                rsps.GET,
+                govuk_url('/payments/%s/' % 1),
+                status=404
+            )
+            rsps.add(
+                rsps.PATCH,
+                api_url('/payments/%s/' % 'wargle-1111'),
+                status=200,
+            )
+
+            call_command('update_incomplete_payments')
+
+            self.assertEqual(rsps.calls[3].request.body, '{"status": "failed"}')
