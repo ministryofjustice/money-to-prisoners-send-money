@@ -60,6 +60,9 @@ class PaymentClient:
         self.client.payments(payment_ref).patch(payment_update)
 
     def check_govuk_payment_succeeded(self, govuk_payment, context):
+        if govuk_payment is None:
+            return False
+
         govuk_status = govuk_payment['state']['status']
         email = govuk_payment.get('email')
 
@@ -77,9 +80,9 @@ class PaymentClient:
 
         return success
 
-    def update_completed_payment(self, govuk_payment, success):
-        email = govuk_payment.get('email')
-        card_details = govuk_payment.get('card_details')
+    def update_completed_payment(self, payment_ref, govuk_payment, success):
+        email = govuk_payment.get('email') if govuk_payment else None
+        card_details = govuk_payment.get('card_details') if govuk_payment else None
 
         payment_update = {
             'status': 'taken' if success else 'failed'
@@ -97,7 +100,7 @@ class PaymentClient:
                 payment_update['card_number_last_digits'] = card_details['last_digits_card_number']
             if 'expiry_date' in card_details:
                 payment_update['card_expiry_date'] = card_details['expiry_date']
-        self.update_payment(govuk_payment['reference'], payment_update)
+        self.update_payment(payment_ref, payment_update)
 
     def get_govuk_payment(self, govuk_id):
         response = requests.get(
@@ -105,8 +108,14 @@ class PaymentClient:
             headers=govuk_headers(),
             timeout=15
         )
+
         if response.status_code != 200:
-            raise RequestException('Status code not 200', response=response)
+            if response.status_code == 404:
+                return None
+            raise RequestException(
+                'Unexpected status code: %s' % response.status_code,
+                response=response
+            )
         try:
             data = response.json()
             try:
@@ -125,7 +134,10 @@ class PaymentClient:
         )
 
         if response.status_code != 200:
-            raise RequestException('Status code not 200', response=response)
+            raise RequestException(
+                'Unexpected status code: %s' % response.status_code,
+                response=response
+            )
         try:
             data = response.json()
             for event in data['events']:

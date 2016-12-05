@@ -33,7 +33,9 @@ class Command(BaseCommand):
                     success = payment_client.check_govuk_payment_succeeded(
                         govuk_payment, context
                     )
-                    payment_client.update_completed_payment(govuk_payment, success)
+                    payment_client.update_completed_payment(
+                        payment_ref, govuk_payment, success
+                    )
                 except OAuth2Error:
                     logger.exception(
                         'Scheduled job: Authentication error while processing %s' % payment_ref
