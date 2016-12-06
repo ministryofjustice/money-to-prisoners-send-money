@@ -1063,3 +1063,35 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
                     self.url, {'payment_ref': ref}, follow=False
                 )
             self.assertRedirects(response, '/en-gb/', fetch_redirect_response=False)
+
+    def test_confirmation_redirects_for_old_failed_payments(self):
+        self.choose_debit_card_payment_method()
+        self.fill_in_prisoner_details()
+        self.fill_in_amount()
+
+        payment_time = (
+            datetime.datetime.now() - datetime.timedelta(hours=2)
+        ).isoformat() + 'Z'
+
+        with responses.RequestsMock() as rsps:
+            ref = 'wargle-blargle'
+            processor_id = '3'
+            mock_auth(rsps)
+            rsps.add(
+                rsps.GET,
+                api_url('/payments/%s/' % ref),
+                json={
+                    'processor_id': processor_id,
+                    'recipient_name': 'John',
+                    'amount': 1700,
+                    'status': 'failed',
+                    'created': payment_time,
+                    'received_at': None,
+                },
+                status=200,
+            )
+            with self.patch_prisoner_details_check(), self.silence_logger():
+                response = self.client.get(
+                    self.url, {'payment_ref': ref}, follow=False
+                )
+            self.assertRedirects(response, '/en-gb/', fetch_redirect_response=False)

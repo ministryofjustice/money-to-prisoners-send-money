@@ -22,12 +22,16 @@ def is_active_payment(payment):
     if payment['status'] == 'pending':
         return True
 
-    received_at = parse_datetime(payment.get('received_at', ''))
-    return (
-        received_at is not None and
-        (timezone.now() - received_at) <
-        timedelta(hours=1)
-    )
+    date_str = payment.get('received_at')
+    if date_str:
+        received_at = parse_datetime(date_str)
+        return (
+            received_at is not None and
+            (timezone.now() - received_at) <
+            timedelta(hours=1)
+        )
+    else:
+        return False
 
 
 class PaymentClient:
