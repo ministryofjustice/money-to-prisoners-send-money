@@ -86,6 +86,11 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
                 status=200,
             )
             rsps.add(
+                rsps.PATCH,
+                api_url('/payments/%s/' % 'wargle-1111'),
+                status=200,
+            )
+            rsps.add(
                 rsps.GET,
                 govuk_url('/payments/%s/' % 2),
                 json={

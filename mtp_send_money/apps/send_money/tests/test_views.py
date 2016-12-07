@@ -859,6 +859,7 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
                 rsps.GET,
                 api_url('/payments/%s/' % ref),
                 json={
+                    'uuid': ref,
                     'processor_id': processor_id,
                     'recipient_name': 'John',
                     'amount': 1700,
@@ -882,6 +883,11 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
                     }
                 },
                 status=200
+            )
+            rsps.add(
+                rsps.PATCH,
+                api_url('/payments/%s/' % 'wargle-blargle'),
+                status=200,
             )
             with self.patch_prisoner_details_check():
                 response = self.client.get(
@@ -934,6 +940,7 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
                 rsps.GET,
                 api_url('/payments/%s/' % ref),
                 json={
+                    'uuid': ref,
                     'processor_id': processor_id,
                     'recipient_name': 'John',
                     'amount': 1700,
@@ -972,6 +979,7 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
                 rsps.GET,
                 api_url('/payments/%s/' % ref),
                 json={
+                    'uuid': ref,
                     'processor_id': processor_id,
                     'recipient_name': 'John',
                     'amount': 1700,
@@ -1015,6 +1023,7 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
                 rsps.GET,
                 api_url('/payments/%s/' % ref),
                 json={
+                    'uuid': ref,
                     'processor_id': processor_id,
                     'recipient_name': 'John',
                     'amount': 1700,
@@ -1049,6 +1058,7 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
                 rsps.GET,
                 api_url('/payments/%s/' % ref),
                 json={
+                    'uuid': ref,
                     'processor_id': processor_id,
                     'recipient_name': 'John',
                     'amount': 1700,
@@ -1081,6 +1091,7 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
                 rsps.GET,
                 api_url('/payments/%s/' % ref),
                 json={
+                    'uuid': ref,
                     'processor_id': processor_id,
                     'recipient_name': 'John',
                     'amount': 1700,

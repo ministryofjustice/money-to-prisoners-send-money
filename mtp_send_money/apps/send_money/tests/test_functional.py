@@ -214,6 +214,7 @@ class SendMoneyConfirmationPage(SendMoneyFunctionalTestCase):
     def test_success_page(self, mocked_client):
         processor_id = '3'
         mocked_client().payments().get.return_value = {
+            'uuid': 'wargle-blargle',
             'processor_id': processor_id,
             'recipient_name': 'James Bond',
             'amount': 2000,
@@ -244,7 +245,7 @@ class SendMoneyConfirmationPage(SendMoneyFunctionalTestCase):
     def test_failure_page(self, mocked_client):
         processor_id = '3'
         mocked_client().payments().get.return_value = {
-            'reference': 'wargle-blargle',
+            'uuid': 'wargle-blargle',
             'processor_id': processor_id,
             'recipient_name': 'James Bond',
             'amount': 2000,
