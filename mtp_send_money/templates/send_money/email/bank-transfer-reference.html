@@ -1,0 +1,37 @@
+{% extends 'mtp_common/email_base.html' %}
+{% load i18n %}
+{% load send_money %}
+
+{% block inner_content %}
+
+  <p>
+    {% blocktrans trimmed %}
+      Your prisoner reference number is: <strong>{{ bank_transfer_reference }}</strong>.
+    {% endblocktrans %}
+  </p>
+
+  <p>{% trans 'You can now make your bank transfer in the usual way.' %}</p>
+
+  <p>
+    {% trans 'Remember: This is just the reference.' %}
+    {% trans 'You have not sent any money yet.' %}
+    {% trans 'You need to cut and paste this reference into the ‘reference’ box on the bank transfer.' %}
+  </p>
+
+  <p>
+    {% trans 'This reference can be used each time you send money to this prisoner.' %}
+  </p>
+
+  <p>
+    <a href="https://www.gov.uk/send-prisoner-money">{% trans 'Back to the service' %}</a>
+  </p>
+
+  <p>
+    <a href="{% url 'send_money:help' %}">{% trans 'more information' %}</a>
+    {% ' about how to use the service'}
+    <a href="{{ feedback_url }}">{% trans 'leave feedback' %}</a>
+    {% ' or' %}
+    <a href="{% url 'send_money:help' %}">{% trans 'contact us.' %}</a>
+  </p>
+
+{% endblock %}
