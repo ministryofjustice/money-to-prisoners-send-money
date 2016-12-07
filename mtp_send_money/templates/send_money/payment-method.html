@@ -57,13 +57,15 @@
           <li>{% trans 'You can complete your payment here' %}</li>
           <li>{% trans 'Money takes 1 working day to reach the prisoner' %}</li>
           <li>{% trans 'You’ll get email confirmation of payment' %}</li>
+          <li>{% trans 'More '%}<a href="{% url 'send_money:help' %}">{% trans 'help' %}</a></li>
         </ol>
         <h2 class="heading-small">{% trans 'Get a prisoner reference to use in a UK bank transfer' %}</h2>
         <ol class="list list-number">
-          <li>{% trans 'You’ll get a reference you can use to make a transfer from a UK bank' %}</li>
-          <li>{% trans 'This must be done using online banking, your mobile banking app or telephone banking – you can’t go in branch' %}</li>
+          <li>{% trans 'You’ll get a prisoner reference you can use to make a bank transfer from a UK bank in your usual way' %}</li>
+          <li>{% trans 'You can re-use this reference for this prisoner each time you make a transfer' %}</li>
+          <li>{% trans 'The transfer must be done using online banking, your mobile banking app or telephone banking – you can’t go in branch' %}</li>
           <li>{% trans 'Money takes 1-3 working days to reach the prisoner' %}</li>
-          <li>{% trans 'You won’t receive email confirmation of payment' %}</li>
+          <li>{% trans 'More '%}<a href="{% url 'send_money:help' %}">{% trans 'help' %}</a></li>
         </ol>
       </div>
     </div>

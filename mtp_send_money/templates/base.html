@@ -25,9 +25,9 @@
       {% endif %}
       <span>
         {% trans 'This is a new service.' %}
-        {% blocktrans trimmed %}
-          If you need any help please <a href="{{ ticket_url }}">contact us</a>.
-        {% endblocktrans %}
+        {% trans 'You can find ' %}<a href="{% url 'send_money:help' %}">{% trans 'help' %}</a>
+        {% trans 'or ' %}<a href="{% url 'send_money:help' %}">{% trans 'contact us' %}</a>
+        {% trans 'about this service.' %}
       </span>
     </p>
   </div>
