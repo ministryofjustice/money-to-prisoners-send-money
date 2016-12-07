@@ -11,9 +11,8 @@
     <p>{% trans 'Use this reference to now make your bank transfer' %}</p>
   </div>
 
-  <div class="mtp-print print-hidden">
-      <a class="mtp-print-reference" href="#">{% trans 'Print this page' %}</a> &nbsp;
-      <a class="mtp-email-reference" href="#">{% trans 'Email me this page' %}</a>
+  <div class="print-hidden">
+    <a class="mtp-print-reference" href="#">{% trans 'Print this page' %}</a>
   </div>
 
   <section class="mtp-steps">
@@ -22,9 +21,9 @@
     <p>{% trans 'Put these details into the transfer:' %}</p>
     <div class="mtp-account panel panel-border-wide">
       <ul>
-        <li>{% trans 'Account number:' %} {{ account_number }}</li>
-        <li>{% trans 'Sort code:'%} {{ sort_code }}</li>
-        <li>{% trans 'Reference:' %} {{ bank_transfer_reference }}</li>
+        <li>{% trans 'Account number:' %} &nbsp; {{ account_number }}</li>
+        <li>{% trans 'Sort code:'%} &nbsp; {{ sort_code }}</li>
+        <li>{% trans 'Reference:' %} &nbsp; {{ bank_transfer_reference }}</li>
       </ul>
     </div>
     <p>{% trans 'Copy and paste all these details into the bank transfer, if it’s easier.' %}</p>
@@ -33,9 +32,12 @@
       {% trans 'Money should reach the prisoner’s account in 1 working day, but your bank can take up to 3 working days to process the payment.' %}
       {% trans 'No money is processed at weekends or bank holidays.' %}
     </p>
-
     <p>
-      <a href="{% url 'send_money:help' %}">{% trans 'Help ' %}</a>{% trans 'on how to use the service or ' %}<a href="{% url 'send_money:help' %}">{% trans 'contact us.' %}</a>
+      {% url 'send_money:help' as help_url %}
+      {% url 'submit_ticket' as ticket_url %}
+      {% blocktrans trimmed %}
+        <a href="{{ help_url }}">Find help</a> on how to use the service or <a href="{{ ticket_url }}">contact us</a>.
+      {% endblocktrans %}
     </p>
   </section>
 

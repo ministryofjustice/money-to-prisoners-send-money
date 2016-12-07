@@ -42,7 +42,10 @@ def send_notification(email, context):
     from smtplib import SMTPException
     if not email:
         return False
-    context['feedback_url'] = site_url(reverse('submit_ticket'))
+    context.update({
+        'feedback_url': site_url(reverse('submit_ticket')),
+        'help_url': site_url(reverse('send_money:help')),
+    })
     try:
         send_email(
             email, 'send_money/email/debit-card-confirmation.txt',

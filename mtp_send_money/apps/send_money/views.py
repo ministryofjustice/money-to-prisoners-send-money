@@ -47,7 +47,7 @@ def help_view(request):
     """
     context = {}
     return_to = request.META.get('HTTP_REFERER')
-    if is_safe_url(url=return_to, host=request.get_host()):
+    if is_safe_url(url=return_to, host=request.get_host()) and return_to != request.build_absolute_uri():
         context['return_to'] = return_to
     return render(request, 'send_money/help.html', context=context)
 

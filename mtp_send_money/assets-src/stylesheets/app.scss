@@ -11,6 +11,7 @@ $images-dir: '/static/images/';
 @import 'elements/icons';
 @import 'elements/tables';
 @import 'elements/typography';
+@import 'elements/related-items';
 
 // View-specific styles
 @import 'views/payment-method';
@@ -19,6 +20,7 @@ $images-dir: '/static/images/';
 @import 'views/bank-transfer-info';
 @import 'views/check-details';
 @import 'views/send-money';
+@import 'views/help-page';
 
 // Govuk elements overrides
 
