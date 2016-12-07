@@ -1,0 +1,21 @@
+{% load i18n %}
+{% load send_money %}
+GOV.UK - {% trans 'Send money to a prisoner' %}
+
+
+{% blocktrans trimmed %}
+  Your prisoner reference number is: <strong>{{ bank_transfer_reference }}</strong>.
+{% endblocktrans %}
+
+{% trans 'You can now make your bank transfer in the usual way.' %}
+
+{% trans 'Remember: This is just the reference.' %}
+{% trans 'You have not sent any money yet.' %}
+{% trans 'You need to cut and paste this reference into the ‘reference’ box on the bank transfer.' %}
+
+{% trans 'This reference can be used each time you send money to this prisoner.' %}
+
+
+{% trans 'Back to the service: ' %} https://www.gov.uk/send-prisoner-money
+
+{% trans 'Help: ' %} https://send-money-to-prisoner.service.gov.uk/en-gb/help/

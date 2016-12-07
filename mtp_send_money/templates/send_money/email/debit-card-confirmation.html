@@ -34,8 +34,10 @@
   </p>
 
   <p>
-    <a href="{{ feedback_url }}">
-      {% blocktrans %}Please let us know how you found it at {{ feedback_url }}{% endblocktrans %}
-    </a>
+    <a href="{% url 'send_money:help' %}">{% trans 'more information' %}</a>
+    {% ' about how to use the service'}
+    <a href="{{ feedback_url }}">{% trans 'leave feedback' %}</a>
+    {% ' or' %}
+    <a href="{% url 'send_money:help' %}">{% trans 'contact us.' %}</a>
   </p>
 {% endblock %}
