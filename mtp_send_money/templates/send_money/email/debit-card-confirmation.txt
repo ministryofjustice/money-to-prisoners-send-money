@@ -15,4 +15,5 @@ GOV.UK - {% trans 'Send money to a prisoner' %}
 
 {% trans 'Thank you for using this service.' %}
 
-{% blocktrans %}Please let us know how you found it at {{ feedback_url }}{% endblocktrans %}
+{% trans 'More information about how to use the service:' %} {{ help_url }}
+{% trans 'Leave feedback or contact us at:' %} {{ feedback_url }}

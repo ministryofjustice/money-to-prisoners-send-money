@@ -1,0 +1,30 @@
+// View-specific styles
+
+.mtp-help-page {
+  .column-one-third {
+    float: right;
+    padding-bottom: 2em;
+
+    @media (max-width: 769px) {
+      float: none;
+      width: auto;
+
+      .mtp-related-items {
+        border-left: 10px solid $border-colour;
+        border-top: none;
+        padding: 0.5em 0 0.5em 1em;
+      }
+    }
+  }
+
+  .column-two-thirds {
+    :first-child {
+      margin-top: 0;
+    }
+
+    @media (max-width: 769px) {
+      float: none;
+      width: auto;
+    }
+  }
+}

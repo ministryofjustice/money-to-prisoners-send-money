@@ -1,20 +1,24 @@
 from django.conf import settings
 from django.conf.urls import url
 from django.core.urlresolvers import reverse_lazy
+from django.views.generic import RedirectView
 from zendesk_tickets import views
-from zendesk_tickets.forms import EmailTicketForm
+
+from feedback.forms import ContactForm
 
 urlpatterns = [
-    url(r'^feedback/$', views.ticket,
+    url(r'^feedback/$', RedirectView.as_view(url=reverse_lazy('submit_ticket'))),
+    url(r'^contact-us/$', views.ticket,
         {
-            'form_class': EmailTicketForm,
-            'template_name': 'mtp_common/feedback/submit_feedback.html',
+            'form_class': ContactForm,
+            'template_name': 'send_money/contact-form.html',
+            'ticket_template_name': 'send_money/contact-form-ticket.txt',
             'success_redirect_url': reverse_lazy('feedback_success'),
             'subject': 'MTP Send Money Feedback',
             'tags': ['feedback', 'mtp', 'send-money', settings.ENVIRONMENT],
         }, name='submit_ticket'),
-    url(r'^feedback/success/$', views.success,
+    url(r'^contact-us/success/$', views.success,
         {
-            'template_name': 'mtp_common/feedback/success.html',
+            'template_name': 'send_money/contact-form-success.html',
         }, name='feedback_success'),
 ]

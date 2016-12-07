@@ -9,4 +9,4 @@ transifex-client>=0.12
 
 django-form-error-reporting>=0.4
 git+git://github.com/ministryofjustice/django-moj-irat.git
-django-zendesk-tickets>=0.8
+django-zendesk-tickets>=0.10
