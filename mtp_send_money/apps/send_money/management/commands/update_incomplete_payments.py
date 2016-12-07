@@ -31,7 +31,7 @@ class Command(BaseCommand):
                 try:
                     govuk_payment = payment_client.get_govuk_payment(govuk_id)
                     success = payment_client.check_govuk_payment_succeeded(
-                        govuk_payment, context
+                        payment, govuk_payment, context
                     )
                     payment_client.update_completed_payment(
                         payment_ref, govuk_payment, success

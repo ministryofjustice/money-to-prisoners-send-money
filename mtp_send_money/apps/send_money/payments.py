@@ -63,7 +63,7 @@ class PaymentClient:
             raise ValueError('payment_ref must be provided')
         self.client.payments(payment_ref).patch(payment_update)
 
-    def check_govuk_payment_succeeded(self, govuk_payment, context):
+    def check_govuk_payment_succeeded(self, payment, govuk_payment, context):
         if govuk_payment is None:
             return False
 
@@ -79,13 +79,13 @@ class PaymentClient:
                           'msg': govuk_payment['state']['message']})
         success = govuk_status == 'success'
 
-        if success:
+        if success and email and not payment.get('email'):
             send_notification(email, context)
+            self.update_payment(payment['uuid'], {'email': email})
 
         return success
 
     def update_completed_payment(self, payment_ref, govuk_payment, success):
-        email = govuk_payment.get('email') if govuk_payment else None
         card_details = govuk_payment.get('card_details') if govuk_payment else None
 
         payment_update = {
@@ -95,8 +95,6 @@ class PaymentClient:
             received_at = self.get_govuk_capture_time(govuk_payment)
             if received_at is not None:
                 payment_update['received_at'] = received_at.isoformat()
-        if email:
-            payment_update['email'] = email
         if card_details:
             if 'cardholder_name' in card_details:
                 payment_update['cardholder_name'] = card_details['cardholder_name']
