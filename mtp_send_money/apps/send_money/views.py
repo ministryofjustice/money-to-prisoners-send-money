@@ -2,6 +2,7 @@ import datetime
 import decimal
 import logging
 import random
+import smtplib
 
 from django.conf import settings
 from django.core.urlresolvers import reverse
@@ -13,6 +14,7 @@ from django.utils.dateparse import parse_datetime
 from django.utils.http import is_safe_url
 from django.utils.translation import gettext, gettext_lazy as _
 from django.views.generic import FormView, TemplateView, View
+from mtp_common.email import send_email
 from oauthlib.oauth2 import OAuth2Error
 from requests.exceptions import RequestException, Timeout as RequestsTimeout
 from slumber.exceptions import SlumberHttpBaseException
@@ -212,12 +214,13 @@ class BankTransferPrisonerDetailsView(BankTransferFlow, SendMoneyFormView):
         return build_view_url(self.request, BankTransferReferenceView.url_name)
 
 
-class BankTransferReferenceView(BankTransferFlow, TemplateView):
+class BankTransferReferenceView(BankTransferFlow, SendMoneyFormView):
     url_name = 'bank_transfer'
     previous_view = BankTransferPrisonerDetailsView
     template_name = 'send_money/bank-transfer-reference.html'
+    form_class = send_money_forms.BankTransferEmailForm
 
-    def get(self, request, *args, **kwargs):
+    def dispatch(self, request, *args, **kwargs):
         now = timezone.now()
         expires = request.session.get('expires')
         if not expires:
@@ -226,16 +229,39 @@ class BankTransferReferenceView(BankTransferFlow, TemplateView):
             )
         elif parse_datetime(expires) < now:
             return clear_session_view(request)
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context_data = super().get_context_data(**kwargs)
         prisoner_details = self.valid_form_data[BankTransferPrisonerDetailsView.url_name]
-        kwargs.update({
+        context_data.update({
             'account_number': settings.NOMS_HOLDING_ACCOUNT_NUMBER,
             'sort_code': settings.NOMS_HOLDING_ACCOUNT_SORT_CODE,
             'bank_transfer_reference': bank_transfer_reference(
                 prisoner_details['prisoner_number'],
                 prisoner_details['prisoner_dob'],
-            )
+            ),
         })
-        return super().get(request, *args, **kwargs)
+        return context_data
+
+    def form_valid(self, form):
+        email = form.cleaned_data['email']
+        context = self.get_context_data(site_url=settings.START_PAGE_URL,
+                                        feedback_url=site_url(reverse('submit_ticket')),
+                                        help_url=site_url(reverse('send_money:help')))
+        try:
+            send_email(
+                email, 'send_money/email/bank-transfer-reference.txt',
+                gettext('Send money to a prisoner: your bank transfer reference'),
+                context=context, html_template='send_money/email/bank-transfer-reference.html'
+            )
+        except smtplib.SMTPException:
+            logger.exception('Could not send bank transfer reference email')
+
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return build_view_url(self.request, self.url_name)
 
 
 # DEBIT CARD FLOW

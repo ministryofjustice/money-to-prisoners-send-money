@@ -10,7 +10,7 @@ from django.utils.dateformat import format as format_date
 from django.utils.dateparse import parse_date
 from django.utils import formats
 from django.utils.encoding import force_text
-from django.utils.translation import gettext as _
+from django.utils.translation import gettext, gettext_lazy as _
 from mtp_common.auth import api_client, urljoin
 from mtp_common.email import send_email
 import requests
@@ -49,7 +49,7 @@ def send_notification(email, context):
     try:
         send_email(
             email, 'send_money/email/debit-card-confirmation.txt',
-            _('Send money to a prisoner: your payment was successful'),
+            gettext('Send money to a prisoner: your payment was successful'),
             context=context, html_template='send_money/email/debit-card-confirmation.html'
         )
         return True

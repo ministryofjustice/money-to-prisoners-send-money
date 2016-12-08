@@ -13,7 +13,20 @@
 
   <div class="print-hidden">
     <a class="mtp-print-reference" href="#">{% trans 'Print this page' %}</a>
+    &nbsp;
+    <a class="mtp-email-reference" href="#">{% trans 'Email me this page' %}</a>
   </div>
+
+  <form id="mtp-email-reference-form" class="print-hidden {% if form.errors %}mtp-email-reference-form--errors{% endif %}" method="post" action=".">
+    {% csrf_token %}
+
+    {% include 'mtp_common/forms/error-summary.html' with form=form only %}
+    {% include 'mtp_common/forms/field.html' with field=form.email only %}
+
+    <p>
+      <input id="id_next_btn" class="button" type="submit" value="{% trans 'Send me an email' %}">
+    </p>
+  </form>
 
   <section class="mtp-steps">
     <h2 class="heading-medium">{% trans 'Now you can make the bank transfer' %}</h2>

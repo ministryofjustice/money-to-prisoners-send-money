@@ -21,3 +21,11 @@
     font-size: 1.1em;
   }
 }
+
+#mtp-email-reference-form {
+  display: none;
+
+  &.mtp-email-reference-form--errors {
+    display: block;
+  }
+}
