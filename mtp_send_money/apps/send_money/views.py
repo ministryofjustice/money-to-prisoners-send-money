@@ -239,7 +239,7 @@ class BankTransferReferenceView(BankTransferFlow, SendMoneyFormView):
         try:
             send_email(
                 email, 'send_money/email/bank-transfer-reference.txt',
-                gettext('Send money to a prisoner: your bank transfer reference'),
+                gettext('Send money to a prisoner: Your prisoner reference is %(bank_transfer_reference)s') % context,
                 context=context, html_template='send_money/email/bank-transfer-reference.html'
             )
         except smtplib.SMTPException:

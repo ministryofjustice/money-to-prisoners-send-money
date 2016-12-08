@@ -43,6 +43,7 @@ def send_notification(email, context):
     if not email:
         return False
     context.update({
+        'site_url': settings.START_PAGE_URL,
         'feedback_url': site_url(reverse('submit_ticket')),
         'help_url': site_url(reverse('send_money:help')),
     })
