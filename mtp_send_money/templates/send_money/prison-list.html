@@ -1,0 +1,135 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% load mtp_common %}
+
+{% block inner_content %}
+
+  {% url 'send_money:help' as help_url %}
+  <a class="link-back" href="{{ return_to|default:help_url }}">{% trans 'Back' %}</a>
+
+  <header>
+    {% language_switch %}
+    <h1 class="heading-xlarge">
+      {% trans 'Public prisons in England and Wales' %}
+    </h1>
+  </header>
+
+  <p>{% trans 'The ‘Send money to a prisoner’ service is available in the following public prisons and immigration removal centres in England and Wales.' %}</p>
+
+  <ul class="panel panel-border-narrow">
+    <li>HMP &amp; YOI Askham Grange</li>
+    <li>HMP Aylesbury</li>
+    <li>HMP Bedford</li>
+    <li>HMP Belmarsh</li>
+    <li>HMP Blantyre House</li>
+    <li>HMP Brinsford</li>
+    <li>HMP Bristol</li>
+    <li>HMP Brixton</li>
+    <li>HMP Buckley Hall</li>
+    <li>HMP Bullingdon</li>
+    <li>HMP Bure</li>
+    <li>HMP Cardiff</li>
+    <li>HMP Channings Wood</li>
+    <li>HMP Chelmsford</li>
+    <li>HMP Clive House</li>
+    <li>HMP Coldingley</li>
+    <li>HMP Cookham Wood</li>
+    <li>HMP Dartmoor</li>
+    <li>HMYOI Deerbolt</li>
+    <li>IRC Dover</li>
+    <li>HMP Downview</li>
+    <li>HMP &amp; YOI Drake Hall</li>
+    <li>HMP Durham</li>
+    <li>HMP &amp; YOI East Sutton Park</li>
+    <li>HMP Eastwood Park</li>
+    <li>HMP Elmley</li>
+    <li>HMP Erlestoke</li>
+    <li>HMP Exeter</li>
+    <li>HMP Featherstone</li>
+    <li>HMP &amp; YOI Feltham</li>
+    <li>HMP Ford</li>
+    <li>HMP Foston Hall</li>
+    <li>HMP Frankland</li>
+    <li>HMP Full Sutton</li>
+    <li>HMP Garth</li>
+    <li>HMP Gartree</li>
+    <li>HMYOI &amp; RC Glen Parva</li>
+    <li>HMP Grendon</li>
+    <li>HMP Guys Marsh</li>
+    <li>IRC Haslar</li>
+    <li>HMP &amp; YOI Hatfield</li>
+    <li>HMP Haverigg</li>
+    <li>HMP Hewell</li>
+    <li>HMP High Down</li>
+    <li>HMP Highpoint</li>
+    <li>HMP &amp; YOI Hindley</li>
+    <li>HMP Hollesley Bay</li>
+    <li>HMP Holloway</li>
+    <li>HMP Holme House</li>
+    <li>HMP Hull</li>
+    <li>HMP Humber</li>
+    <li>HMP Huntercombe</li>
+    <li>HMP &amp; YOI ISIS</li>
+    <li>HMP Isle Of Wight</li>
+    <li>HMP Kennet</li>
+    <li>HMP Kirkham</li>
+    <li>HMP Kirklevington Grange</li>
+    <li>HMYOI Lancaster Farms</li>
+    <li>HMP Leeds</li>
+    <li>HMP Leicester</li>
+    <li>HMP Lewes</li>
+    <li>HMP Leyhill</li>
+    <li>HMP Lincoln</li>
+    <li>HMP Lindholme</li>
+    <li>HMP Littlehey</li>
+    <li>HMP Liverpool</li>
+    <li>HMP Long Lartin</li>
+    <li>HMP Low Newton</li>
+    <li>HMP Maidstone</li>
+    <li>HMP Manchester</li>
+    <li>HMP Medway</li>
+    <li>HMP &amp; YOI Moorland</li>
+    <li>IRC Morton Hall</li>
+    <li>HMP New Hall</li>
+    <li>HMP North Sea Camp</li>
+    <li>HMP &amp; YOI Norwich</li>
+    <li>HMP Nottingham</li>
+    <li>HMP Onley</li>
+    <li>HMP Pentonville</li>
+    <li>HMYOI Portland</li>
+    <li>HMP Prescoed</li>
+    <li>HMP Preston</li>
+    <li>HMP Ranby</li>
+    <li>HMP Risley</li>
+    <li>HMP &amp; YOI Rochester</li>
+    <li>HMP Send</li>
+    <li>HMP Spring Hill</li>
+    <li>HMP Stafford</li>
+    <li>HMP Standford Hill</li>
+    <li>HMP Stocken</li>
+    <li>HMYOI Stoke Heath</li>
+    <li>HMP &amp; YOI Styal</li>
+    <li>HMP Sudbury</li>
+    <li>HMP Swaleside</li>
+    <li>HMP Swansea</li>
+    <li>HMP Swinfen Hall</li>
+    <li>HMP The Mount</li>
+    <li>HMP The Verne</li>
+    <li>HMYOI Thorn Cross</li>
+    <li>HMP Usk</li>
+    <li>HMP Wakefield</li>
+    <li>HMP Wandsworth</li>
+    <li>HMP &amp; YOI Warren Hill</li>
+    <li>HMP Wayland</li>
+    <li>HMP Wealstun</li>
+    <li>HMYOI Werrington</li>
+    <li>HMYOI Wetherby</li>
+    <li>HMP Whatton</li>
+    <li>HMP Whitemoor</li>
+    <li>HMP Winchester</li>
+    <li>HMP Woodhill</li>
+    <li>HMP Wormwood Scrubs</li>
+    <li>HMP Wymott</li>
+  </ul>
+
+{% endblock %}
