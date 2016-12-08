@@ -2,12 +2,15 @@
 'use strict';
 
 exports.Reference = {
-  selector: '.mtp-print-reference',
-
   init: function () {
-    $(this.selector).click(function (e) {
+    $('.mtp-print-reference').click(function (e) {
       e.preventDefault();
       window.print();
+    });
+    $('.mtp-email-reference').click(function (e) {
+      e.preventDefault();
+      $('#mtp-email-reference-form').show();
+      $('#id_email').focus();
     });
   }
 };

@@ -164,3 +164,7 @@ class DebitCardAmountForm(SendMoneyForm):
     )
     serialise_amount = serialise_amount
     unserialise_amount = unserialise_amount
+
+
+class BankTransferEmailForm(SendMoneyForm):
+    email = forms.EmailField(label=_('Your email address'))
