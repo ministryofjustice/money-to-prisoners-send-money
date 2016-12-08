@@ -35,7 +35,8 @@
 
   <p>
     {% blocktrans trimmed %}
-      More information about <a href="{{ help_url }}">how to use the service</a>, <a href="{{ feedback_url }}">leave feedback or contact us</a>.
+      <a href="{{ help_url }}">Help</a> on how to use the service or <a href="{{ feedback_url }}">contact us</a>.
     {% endblocktrans %}
   </p>
+  <p><a href="{{ site_url }}">{% trans 'Back to the service' %}</a></p>
 {% endblock %}

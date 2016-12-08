@@ -37,9 +37,7 @@
       {% include 'mtp_common/forms/field.html' with field=form.prisoner_number only %}
       {% include 'mtp_common/forms/field.html' with field=form.prisoner_dob only %}
 
-      <h2 class="heading-large">{% trans 'Do you want a reply?' %}</h2>
-      <p>{% trans 'Enter your email address if you’d like a reply. We won’t use it for anything else.' %}</p>
-
+      <h2 class="heading-medium">{% trans 'Enter your email address if you’d like a reply. We won’t use it for anything else.' %}</h2>
       {% include 'mtp_common/forms/field.html' with field=form.contact_email only %}
 
       <div class="form-group">

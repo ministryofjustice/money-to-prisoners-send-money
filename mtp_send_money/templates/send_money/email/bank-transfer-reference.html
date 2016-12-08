@@ -9,35 +9,30 @@
   </p>
 
   <p>
-    {% trans 'Remember: This is just the reference.' %}
+    <strong>{% trans 'Remember:' %}</strong>
+    {% trans 'This is just the reference.' %}
     {% trans 'You have not sent any money yet.' %}
-    {% trans 'This reference can be used each time you send money to this prisoner.' %}
+    {% trans 'You need to log into your online banking account, mobile banking app or use your telephone banking, as usual.' %}
   </p>
 
-  <p>{% trans 'Log into your online banking account, mobile banking app, or use your telephone banking, as normal.' %}</p>
-  <p>{% trans 'Put these details into the transfer:' %}</p>
-  <div class="mtp-account panel panel-border-wide">
-    <ul>
-      <li>{% trans 'Account number:' %} &nbsp; {{ account_number }}</li>
-      <li>{% trans 'Sort code:'%} &nbsp; {{ sort_code }}</li>
-      <li>{% trans 'Reference:' %} &nbsp; {{ bank_transfer_reference }}</li>
-    </ul>
-  </div>
-  <p>{% trans 'Copy and paste all these details into the bank transfer, if it’s easier.' %}</p>
-  <p>{% trans 'Remember, you can’t do a bank transfer in-branch and you must use a UK bank account.' %}</p>
+  <p>{% trans 'Copy and paste this reference into the ‘reference’ box on the bank transfer, and use these details:' %}</p>
+  <ul>
+    <li>{% trans 'Account number:' %} &nbsp; {{ account_number }}</li>
+    <li>{% trans 'Sort code:'%} &nbsp; {{ sort_code }}</li>
+  </ul>
+
   <p>
+    <strong>{% trans 'Please note:' %}</strong>
+    {% trans 'You can’t do a bank transfer in-branch and you must use a UK bank account.' %}
     {% trans 'Money should reach the prisoner’s account in 1 working day, but your bank can take up to 3 working days to process the payment.' %}
     {% trans 'No money is processed at weekends or bank holidays.' %}
   </p>
 
   <p>
-    <a href="{{ site_url }}">{% trans 'Back to the service' %}</a>
-  </p>
-
-  <p>
     {% blocktrans trimmed %}
-      More information about <a href="{{ help_url }}">how to use the service</a>, <a href="{{ feedback_url }}">leave feedback or contact us</a>.
+      <a href="{{ help_url }}">Help</a> on how to use the service or <a href="{{ feedback_url }}">contact us</a>.
     {% endblocktrans %}
   </p>
+  <p><a href="{{ site_url }}">{% trans 'Back to the service' %}</a></p>
 
 {% endblock %}
