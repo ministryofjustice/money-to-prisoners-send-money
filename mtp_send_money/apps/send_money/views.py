@@ -8,6 +8,8 @@ from django.core.urlresolvers import reverse
 from django.http import Http404
 from django.shortcuts import redirect, render
 from django.utils import timezone
+from django.utils.dateformat import format as format_date
+from django.utils.dateparse import parse_datetime
 from django.utils.http import is_safe_url
 from django.utils.translation import gettext, gettext_lazy as _
 from django.views.generic import FormView, TemplateView, View
@@ -216,6 +218,14 @@ class BankTransferReferenceView(BankTransferFlow, TemplateView):
     template_name = 'send_money/bank-transfer-reference.html'
 
     def get(self, request, *args, **kwargs):
+        now = timezone.now()
+        expires = request.session.get('expires')
+        if not expires:
+            request.session['expires'] = format_date(
+                now + datetime.timedelta(hours=settings.CONFIRMATION_EXPIRES / 60), 'c'
+            )
+        elif parse_datetime(expires) < now:
+            return clear_session_view(request)
         prisoner_details = self.valid_form_data[BankTransferPrisonerDetailsView.url_name]
         kwargs.update({
             'account_number': settings.NOMS_HOLDING_ACCOUNT_NUMBER,
@@ -225,9 +235,7 @@ class BankTransferReferenceView(BankTransferFlow, TemplateView):
                 prisoner_details['prisoner_dob'],
             )
         })
-        response = super().get(request, *args, **kwargs)
-        request.session.flush()
-        return response
+        return super().get(request, *args, **kwargs)
 
 
 # DEBIT CARD FLOW

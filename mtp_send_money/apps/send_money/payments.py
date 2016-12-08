@@ -1,6 +1,7 @@
 from datetime import timedelta
 import logging
 
+from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
 from django.utils import timezone
@@ -27,8 +28,7 @@ def is_active_payment(payment):
         received_at = parse_datetime(date_str)
         return (
             received_at is not None and
-            (timezone.now() - received_at) <
-            timedelta(hours=1)
+            (timezone.now() - received_at) < timedelta(hours=settings.CONFIRMATION_EXPIRES / 60)
         )
     else:
         return False
