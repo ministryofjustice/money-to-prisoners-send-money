@@ -11,7 +11,6 @@ from django.shortcuts import redirect, render
 from django.utils import timezone
 from django.utils.dateformat import format as format_date
 from django.utils.dateparse import parse_datetime
-from django.utils.http import is_safe_url
 from django.utils.translation import gettext, gettext_lazy as _
 from django.views.generic import FormView, TemplateView, View
 from mtp_common.email import send_email
@@ -42,18 +41,6 @@ def clear_session_view(request):
     """
     request.session.flush()
     return redirect(build_view_url(request, PaymentMethodChoiceView.url_name))
-
-
-def help_view(request):
-    """
-    FAQ section
-    @param request: the HTTP request
-    """
-    context = {}
-    return_to = request.META.get('HTTP_REFERER')
-    if is_safe_url(url=return_to, host=request.get_host()) and return_to != request.build_absolute_uri():
-        context['return_to'] = return_to
-    return render(request, 'send_money/help.html', context=context)
 
 
 class SendMoneyView(View):
