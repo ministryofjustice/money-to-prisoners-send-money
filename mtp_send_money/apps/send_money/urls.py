@@ -2,12 +2,13 @@ from django.conf.urls import url
 from django.views.generic import TemplateView
 
 from send_money.views import (
-    clear_session_view, help_view,
+    clear_session_view,
     PaymentMethodChoiceView,
     BankTransferWarningView, BankTransferPrisonerDetailsView, BankTransferReferenceView,
     DebitCardPrisonerDetailsView, DebitCardAmountView, DebitCardCheckView,
     DebitCardPaymentView, DebitCardConfirmationView
 )
+from send_money.views_misc import help_view
 
 app_name = 'send_money'
 urlpatterns = [

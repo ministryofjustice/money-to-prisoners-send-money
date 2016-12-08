@@ -4,9 +4,11 @@ import json
 import logging
 import time
 from unittest import mock
+from xml.etree import ElementTree
 
 from django.conf import settings
 from django.core import mail
+from django.core.urlresolvers import reverse
 from django.test import override_settings
 from django.test.testcases import SimpleTestCase
 from mtp_common.test_utils import silence_logger
@@ -1101,3 +1103,42 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
                     self.url, {'payment_ref': ref}, follow=False
                 )
             self.assertRedirects(response, '/en-gb/', fetch_redirect_response=False)
+
+
+class SitemapTestCase(SimpleTestCase):
+    name_space = {
+        's': 'http://www.sitemaps.org/schemas/sitemap/0.9',
+        'x': 'http://www.w3.org/1999/xhtml',
+    }
+
+    def assertAbsoluteURL(self, url):
+        self.assertIn(url.split(':', 1)[0], ('http', 'https'), msg='URL is not absolute')
+
+    def get_sitemap(self):
+        response = self.client.get(reverse('sitemap_xml'))
+        return ElementTree.fromstring(response.content.decode(response.charset))
+
+    def test_sitemap_with_multiple_languages(self):
+        language_codes = set(lang[0] for lang in settings.LANGUAGES)
+        with self.settings(SHOW_LANGUAGE_SWITCH=True):
+            for url_element in self.get_sitemap():
+                loc_elements = url_element.findall('s:loc', self.name_space)
+                self.assertEqual(len(loc_elements), 1)
+                url = loc_elements[0].findtext('.').strip()
+                self.assertAbsoluteURL(url)
+
+                link_elements = url_element.findall('x:link', self.name_space)
+                for link_element in link_elements:
+                    self.assertIn(link_element.attrib['hreflang'], language_codes)
+                    self.assertAbsoluteURL(link_element.attrib['href'])
+
+    def test_sitemap_with_enlish_only(self):
+        with self.settings(SHOW_LANGUAGE_SWITCH=False):
+            for url_element in self.get_sitemap():
+                loc_elements = url_element.findall('s:loc', self.name_space)
+                self.assertEqual(len(loc_elements), 1)
+                url = loc_elements[0].findtext('.').strip()
+                self.assertAbsoluteURL(url)
+
+                link_elements = url_element.findall('x:link', self.name_space)
+                self.assertFalse(link_elements)
