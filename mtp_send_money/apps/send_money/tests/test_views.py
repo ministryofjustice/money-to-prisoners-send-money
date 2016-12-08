@@ -1,14 +1,15 @@
 import datetime
-import json
-from contextlib import contextmanager
-import logging
 from decimal import Decimal
+import json
+import logging
+import time
 from unittest import mock
 
 from django.conf import settings
 from django.core import mail
 from django.test import override_settings
 from django.test.testcases import SimpleTestCase
+from mtp_common.test_utils import silence_logger
 from requests import ConnectionError
 import responses
 
@@ -19,14 +20,6 @@ from send_money.utils import api_url, govuk_url
 
 class BaseTestCase(SimpleTestCase):
     root_url = '/en-gb/'
-
-    @contextmanager
-    def silence_logger(self, name='mtp', level=logging.CRITICAL):
-        logger = logging.getLogger(name)
-        old_level = logger.level
-        logger.setLevel(level)
-        yield
-        logger.setLevel(old_level)
 
     def assertOnPage(self, response, url_name):  # noqa
         self.assertContains(response, '<!-- %s -->' % url_name)
@@ -49,7 +42,7 @@ class PaymentOptionAvailabilityTestCase(BaseTestCase):
             ('en, cy, *', 'en-gb'),
             ('es', 'en-gb'),
         )
-        with self.silence_logger(name='django.request', level=logging.ERROR):
+        with silence_logger(name='django.request', level=logging.ERROR):
             for accept_language, expected_slug in languages:
                 response = self.client.get('/', HTTP_ACCEPT_LANGUAGE=accept_language)
                 self.assertRedirects(response, '/%s/' % expected_slug)
@@ -59,7 +52,7 @@ class PaymentOptionAvailabilityTestCase(BaseTestCase):
     @override_settings(SHOW_BANK_TRANSFER_OPTION=False,
                        SHOW_DEBIT_CARD_OPTION=False)
     def test_payment_pages_inaccessible_when_no_options_enabled(self):
-        with self.silence_logger('django.request'):
+        with silence_logger('django.request'):
             urls = [
                 '/bank-transfer/', '/bank-transfer/warning/', '/bank-transfer/details/', '/bank-transfer/reference/',
                 '/debit-card/', '/debit-card/details/', '/debit-card/amount/', '/debit-card/check/',
@@ -302,7 +295,7 @@ class BankTransferPrisonerDetailsTestCase(BankTransferFlowTestCase):
         self.choose_bank_transfer_payment_method()
 
         mocked_is_prisoner_known.side_effect = ConnectionError
-        with self.silence_logger():
+        with silence_logger():
             response = self.client.post(self.url, data={
                 'prisoner_number': 'A1231DE',
                 'prisoner_dob_0': '4',
@@ -418,16 +411,18 @@ class BankTransferReferenceTestCase(BankTransferFlowTestCase):
         response = self.fill_in_prisoner_details()
         self.assertOnPage(response, 'bank_transfer')
 
-    def test_bank_transfer_page_clears_session(self):
-        self.choose_bank_transfer_payment_method()
-        for key in ['payment_method']:
-            self.assertIn(key, self.client.session)
+    def test_bank_transfer_page_clears_session_after_delay(self):
+        with self.settings(CONFIRMATION_EXPIRES=0):
+            self.choose_bank_transfer_payment_method()
+            for key in ['payment_method']:
+                self.assertIn(key, self.client.session)
 
-        self.fill_in_prisoner_details()
-        for key in self.complete_session_keys:
-            self.assertNotIn(key, self.client.session)
-        response = self.client.get(self.url, follow=True)
-        self.assertOnPage(response, 'choose_method')
+            self.fill_in_prisoner_details()
+            time.sleep(0.1)
+            response = self.client.get(self.url, follow=True)
+            for key in self.complete_session_keys:
+                self.assertNotIn(key, self.client.session)
+            self.assertOnPage(response, 'choose_method')
 
     @override_settings(NOMS_HOLDING_ACCOUNT_NAME='NOMS',
                        NOMS_HOLDING_ACCOUNT_NUMBER='1001001',
@@ -521,7 +516,7 @@ class DebitCardPrisonerDetailsTestCase(DebitCardFlowTestCase):
         self.choose_debit_card_payment_method()
 
         mocked_is_prisoner_known.side_effect = ConnectionError
-        with self.silence_logger():
+        with silence_logger():
             response = self.client.post(self.url, data={
                 'prisoner_name': 'john smith',
                 'prisoner_number': 'A1231DE',
@@ -796,7 +791,7 @@ class DebitCardPaymentTestCase(DebitCardFlowTestCase):
                 api_url('/payments/'),
                 status=500,
             )
-            with self.patch_prisoner_details_check(), self.silence_logger():
+            with self.patch_prisoner_details_check(), silence_logger():
                 response = self.client.get(self.url, follow=False)
             self.assertContains(response, 'We’re sorry, your payment could not be processed on this occasion')
 
@@ -818,7 +813,7 @@ class DebitCardPaymentTestCase(DebitCardFlowTestCase):
                 govuk_url('/payments/'),
                 status=500
             )
-            with self.patch_prisoner_details_check(), self.silence_logger():
+            with self.patch_prisoner_details_check(), silence_logger():
                 response = self.client.get(self.url, follow=False)
             self.assertContains(response, 'We’re sorry, your payment could not be processed on this occasion')
 
@@ -916,7 +911,7 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
                 api_url('/payments/%s/' % ref),
                 status=500,
             )
-            with self.patch_prisoner_details_check(), self.silence_logger():
+            with self.patch_prisoner_details_check(), silence_logger():
                 response = self.client.get(
                     self.url, {'payment_ref': ref}, follow=False
                 )
@@ -954,7 +949,7 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
                 govuk_url('/payments/%s/' % processor_id),
                 status=500
             )
-            with self.patch_prisoner_details_check(), self.silence_logger():
+            with self.patch_prisoner_details_check(), silence_logger():
                 response = self.client.get(
                     self.url, {'payment_ref': ref}, follow=False
                 )
@@ -998,7 +993,7 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
                 },
                 status=200
             )
-            with self.patch_prisoner_details_check(), self.silence_logger():
+            with self.patch_prisoner_details_check(), silence_logger():
                 response = self.client.get(
                     self.url, {'payment_ref': ref}, follow=True
                 )
@@ -1033,7 +1028,7 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
                 },
                 status=200,
             )
-            with self.patch_prisoner_details_check(), self.silence_logger():
+            with self.patch_prisoner_details_check(), silence_logger():
                 response = self.client.get(
                     self.url, {'payment_ref': ref}, follow=False
                 )
@@ -1068,7 +1063,7 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
                 },
                 status=200,
             )
-            with self.patch_prisoner_details_check(), self.silence_logger():
+            with self.patch_prisoner_details_check(), silence_logger():
                 response = self.client.get(
                     self.url, {'payment_ref': ref}, follow=False
                 )
@@ -1101,7 +1096,7 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
                 },
                 status=200,
             )
-            with self.patch_prisoner_details_check(), self.silence_logger():
+            with self.patch_prisoner_details_check(), silence_logger():
                 response = self.client.get(
                     self.url, {'payment_ref': ref}, follow=False
                 )
