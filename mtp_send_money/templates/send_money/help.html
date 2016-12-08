@@ -11,7 +11,7 @@
   <header>
     {% language_switch %}
     <h1 class="heading-xlarge">
-      {% trans 'Help on sending money to a prisoner' %}
+      {% trans 'Help with sending money to a prisoner' %}
     </h1>
   </header>
 
@@ -23,7 +23,7 @@
             <li>
               {% url 'submit_ticket' as ticket_url %}
               {% blocktrans trimmed %}
-                If you still have a question about this service, <a href="{{ ticket_url }}">contact us</a>.
+                If you read this help section but still have a question about this service, <a href="{{ ticket_url }}">contact us</a>.
               {% endblocktrans %}
             </li>
           </ul>
@@ -32,7 +32,7 @@
     </div>
 
     <div class="column-two-thirds">
-      <h2 class="heading-medium">{% trans 'General help' %}</h2>
+      <h2 class="heading-medium">{% trans 'General' %}</h2>
       <p>
         {% trans 'You need a bank account to use this service.' %}
         {% blocktrans trimmed with url='https://www.gov.uk/staying-in-touch-with-someone-in-prison/sending-money' %}
@@ -40,21 +40,26 @@
         {% endblocktrans %}
       </p>
       <p>{% trans 'This is a free service which uses a secure payment site for debit cards.' %}</p>
-      <p>{% trans 'It takes one working day to get any prisoner into the system.' %}</p>
+      <p>{% trans 'It normally takes one working day to get any prisoner into the system.' %}</p>
       <p>{% trans 'Prisoners receive a break-down receipt for money sent to them only when they collect their canteen.' %}</p>
       <p>
-        {% blocktrans trimmed with url='https://www.justice.gov.uk/about/hmps/contracted-out' %}
-          This service is not available in <a href="{{ url }}">private prisons</a>.
+        {% url 'send_money:prison_list' as prison_list_url %}
+        {% blocktrans trimmed %}
+          You can use this service to send money to prisoners and detainees in <a href="{{ prison_list_url }}">public prisons</a> in both England and Wales.
+        {% endblocktrans %}
+      {% blocktrans trimmed with url='https://www.justice.gov.uk/about/hmps/contracted-out' %}
+          But this service is not available in <a href="{{ url }}">private prisons</a>.
         {% endblocktrans %}
       </p>
 
       <h2 id="help-with-bank-transfers" class="heading-medium">{% trans 'Help with bank transfers' %}</h2>
       <h3 class="heading-small">
         {% trans 'I have the correct details so why can’t I generate a reference?' %}
+        {% trans 'It says the prisoner details are incorrect?' %}
         {% trans 'Why does it tell me the prisoner doesn’t exist?' %}
       </h3>
       <p>
-        {% trans 'Sometimes the prisoner’s date of birth and/or prison number is incorrectly entered into the prison database.' %}
+        {% trans 'Sometimes the prisoner’s date of birth and/or prison number are incorrectly entered into the prison database.' %}
         {% trans 'Please ask the prisoner to check with the wing officer what details are on the prison database to make sure your details match theirs.' %}
       </p>
       <h3 class="heading-small">
@@ -64,7 +69,7 @@
       <p>
         {% trans 'You may have used an incorrect reference.' %}
         {% trans 'If this is the case, you’ll receive a refund within 4 working days of making the transfer.' %}
-        {% trans 'Your bank statement will show ‘gbs re noms agency’ and the reference will be ‘refund’.' %}
+        {% trans 'Your bank statement will show ‘GBS RE NOMS AGENCY’ and the reference will be ‘refund’.' %}
       </p>
       <h3 class="heading-small">{% trans 'Do I need a new reference each time I send money by bank transfer?' %}</h3>
       <p>

@@ -7,7 +7,7 @@ from send_money.utils import validate_prisoner_number
 
 class ContactForm(EmailTicketForm):
     ticket_content = forms.CharField(
-        label=_('Enter the questions or feedback you have about this service'),
+        label=_('Enter any questions or feedback you may have about this service'),
         widget=forms.Textarea,
     )
     prisoner_number = forms.CharField(

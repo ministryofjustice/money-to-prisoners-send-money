@@ -25,15 +25,15 @@
       {% with field=form.ticket_content %}
         <div class="form-group {% if field.errors %}error{% endif %}">
           {% include 'mtp_common/forms/field-label.html' with field=field only %}
-          <p class="panel panel-border-wide">
-            {% trans 'Please don’t include bank details or any other personal information' %}
-          </p>
           {% include 'mtp_common/forms/field-errors.html' with field=field only %}
           <textarea class="form-control" id="{{ field.id_for_label }}" name="{{ field.html_name }}" cols="40" rows="10">{{ field.value|default:'' }}</textarea>
+          <p>
+            {% trans 'Please don’t include your bank details or any other of your personal information.' %}
+          </p>
         </div>
       {% endwith %}
 
-      <h2 class="heading-medium">{% trans 'If you had trouble sending money, please enter the prisoner’s details' %}</h2>
+      <h2 class="heading-medium">{% trans 'If you had difficulties using the service, please enter the prisoner’s details:' %}</h2>
       {% include 'mtp_common/forms/field.html' with field=form.prisoner_number only %}
       {% include 'mtp_common/forms/field.html' with field=form.prisoner_dob only %}
 
