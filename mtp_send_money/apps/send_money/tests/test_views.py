@@ -1111,7 +1111,7 @@ class SitemapTestCase(SimpleTestCase):
         'x': 'http://www.w3.org/1999/xhtml',
     }
 
-    def assertAbsoluteURL(self, url):
+    def assertAbsoluteURL(self, url):  # noqa
         self.assertIn(url.split(':', 1)[0], ('http', 'https'), msg='URL is not absolute')
 
     def get_sitemap(self):

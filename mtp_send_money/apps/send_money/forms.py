@@ -64,20 +64,19 @@ class PaymentMethodChoiceForm(SendMoneyForm):
 class PrisonerDetailsForm(SendMoneyForm):
     prisoner_number = forms.CharField(
         label=_('Prisoner number'),
-        help_text=_('eg A1234BC'),
+        help_text=_('For example, A1234BC'),
         max_length=7,
         validators=[validate_prisoner_number],
     )
     prisoner_dob = SplitDateField(
         label=_('Prisoner date of birth'),
-        help_text=_('eg 28 04 1996'),
+        help_text=_('For example, 28 04 1996'),
     )
     serialise_prisoner_dob = serialise_date
     unserialise_prisoner_dob = unserialise_date
     error_messages = {
         'connection': _('This service is currently unavailable'),
-        'not_found': _('No prisoner matches the details you’ve supplied, '
-                       'please ask the prisoner to check your details are correct'),
+        'not_found': _('No prisoner matches the details you’ve supplied'),
     }
 
     @classmethod

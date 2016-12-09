@@ -12,13 +12,13 @@ class ContactForm(EmailTicketForm):
     )
     prisoner_number = forms.CharField(
         label=_('Prisoner number'),
-        help_text=_('Optional, for example: A1234BC'),
+        help_text=_('For example, A1234BC'),
         max_length=7,
         validators=[validate_prisoner_number],
         required=False,
     )
     prisoner_dob = forms.CharField(
         label=_('Prisoner date of birth'),
-        help_text=_('Optional, for example: 28/04/1996'),
+        help_text=_('For example, 28/04/1996'),
         required=False,
     )

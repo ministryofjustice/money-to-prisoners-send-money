@@ -15,11 +15,25 @@
     {% trans 'You need to log into your online banking account, mobile banking app or use your telephone banking, as usual.' %}
   </p>
 
-  <p>{% trans 'Copy and paste this reference into the ‘reference’ box on the bank transfer, and use these details:' %}</p>
-  <ul>
-    <li>{% trans 'Account number:' %} &nbsp; {{ account_number }}</li>
-    <li>{% trans 'Sort code:'%} &nbsp; {{ sort_code }}</li>
-  </ul>
+  <p>{% trans 'Put these details into the transfer:' %}</p>
+  <table>
+    <tbody>
+      <tr>
+        <th style="font-weight:normal;text-align:left">{% trans 'Account number:' %}</th>
+        <td style="font-weight:bold">{{ account_number }}</td>
+      </tr>
+      <tr>
+        <th style="font-weight:normal;text-align:left">{% trans 'Sort code:'%}</th>
+        <td style="font-weight:bold">{{ sort_code }}</td>
+      </tr>
+      <tr>
+        <th style="font-weight:normal;text-align:left">{% trans 'Reference:' %}</th>
+        <td style="font-weight:bold">{{ bank_transfer_reference }}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p>{% trans 'It’s important to use this reference because all prisons share this account.' %}</p>
 
   <p>
     <strong>{% trans 'Please note:' %}</strong>

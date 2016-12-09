@@ -21,7 +21,6 @@
         <nav role="navigation">
           <ul>
             <li>
-              {% url 'submit_ticket' as ticket_url %}
               {% blocktrans trimmed %}
                 If you read this help section but still have a question about this service, <a href="{{ ticket_url }}">contact us</a>.
               {% endblocktrans %}
@@ -32,36 +31,67 @@
     </div>
 
     <div class="column-two-thirds">
-      <h2 class="heading-medium">{% trans 'General' %}</h2>
+      <p>
+        {% blocktrans trimmed %}
+          This service is free and secure, and available in all <a href="{{ prison_list_url }}">public prisons in England and Wales</a>.
+        {% endblocktrans %}
+        {% blocktrans trimmed with url='https://www.justice.gov.uk/about/hmps/contracted-out' %}
+          But it is not available in <a href="{{ url }}">private prisons</a>.
+        {% endblocktrans %}
+      </p>
       <p>
         {% trans 'You need a bank account to use this service.' %}
         {% blocktrans trimmed with url='https://www.gov.uk/staying-in-touch-with-someone-in-prison/sending-money' %}
           But you can send money to a prisoner <a href="{{ url }}">using a postal order, a cheque or cash</a>.
         {% endblocktrans %}
       </p>
-      <p>{% trans 'This is a free service which uses a secure payment site for debit cards.' %}</p>
-      <p>{% trans 'It normally takes one working day to get any new prisoner into the system and onto the database.' %}</p>
-      <p>{% trans 'Prisoners receive a break-down receipt for money sent to them only when they collect their canteen.' %}</p>
-      <p>
-        {% url 'send_money:prison_list' as prison_list_url %}
-        {% blocktrans trimmed %}
-          You can use this service to send money to prisoners and detainees in <a href="{{ prison_list_url }}">public prisons</a> in both England and Wales.
-        {% endblocktrans %}
-      {% blocktrans trimmed with url='https://www.justice.gov.uk/about/hmps/contracted-out' %}
-          But this service is not available in <a href="{{ url }}">private prisons</a>.
-        {% endblocktrans %}
-      </p>
 
-      <h2 id="help-with-bank-transfers" class="heading-medium">{% trans 'Help with bank transfers' %}</h2>
-      <h3 class="heading-small">
-        {% trans 'I have the correct details so why can’t I generate a reference?' %}
-        {% trans 'It says the prisoner details are incorrect?' %}
-        {% trans 'Why does it tell me the prisoner doesn’t exist?' %}
-      </h3>
+
+      <h2 id="not-found" class="heading-medium">
+        {% trans 'Why does it say no prisoner matches the details I enter?' %}
+      </h2>
+      <p>
+        {% blocktrans trimmed %}
+          This service is available in all <a href="{{ prison_list_url }}">public prisons in England and Wales</a>.
+        {% endblocktrans %}
+        {% trans 'It normally takes one working day to get any new prisoner into the system and onto the database.' %}
+      </p>
       <p>
         {% trans 'Sometimes the prisoner’s date of birth and/or prison number are incorrectly entered into the prison database.' %}
         {% trans 'Please ask the prisoner to check with the wing officer what details are on the prison database to make sure your details match theirs.' %}
       </p>
+
+
+      <h2 id="how-long" class="heading-medium">
+        {% trans 'How long does it take?' %}
+        {% trans 'Does the prisoner get told when they get their money?' %}
+      </h2>
+      <p>
+        {% trans 'Money should reach the prisoner’s account in 1 working day, but your bank can take up to 3 working days to process the payment.' %}
+        {% trans 'No money is processed at weekends or bank holidays.' %}
+      </p>
+      <p>
+        {% trans 'Prisoners receive a break-down receipt for money sent to them only when they collect their canteen.' %}
+      </p>
+
+
+      <h2 id="help-with-debit-cards" class="heading-medium">{% trans 'Help with debit cards' %}</h2>
+      <h3 class="heading-small">{% trans 'Which card types can I use?' %}</h3>
+      <p>
+        {% trans 'We currently support Mastercard Debit and Visa Debit cards only.' %}
+      </p>
+      <h3 class="heading-small">{% trans 'Can I make a payment internationally?' %}</h3>
+      <p>
+        {% trans 'Only using the debit card method.' %}
+      </p>
+      <h3 class="heading-small">{% trans 'I can’t connect to the site to pay' %}</h3>
+      <p>
+        {% trans 'Due to security restrictions, some older web browsers are not supported.' %}
+        {% trans 'Try on another computer or try using a newer web browser, such as Chrome, Firefox or Internet Explorer 10.' %}
+      </p>
+
+
+      <h2 id="help-with-bank-transfers" class="heading-medium">{% trans 'Help with bank transfers' %}</h2>
       <h3 class="heading-small">
         {% trans 'Why haven’t they got their money?' %}
         {% trans 'Why has my money been returned?' %}
@@ -75,10 +105,10 @@
       <p>
         {% trans 'No, use the reference you first generated each time you send money to this particular prisoner.' %}
       </p>
-      <h3 class="heading-small">{% trans 'Why didn’t I get email confirmation using my bank transfer?' %}</h3>
+      <h3 class="heading-small">{% trans 'Why didn’t I get email confirmation after I made a bank transfer?' %}</h3>
       <p>
         {% trans 'When you send money using a bank transfer, you only generate the reference on the GOV.UK site, then you use that reference when you make the bank transfer with your bank in the usual way (by mobile app, online and telephone banking).' %}
-        {% trans 'If you want confirmation of your bank transfer, you need to ask your bank for this.' %}
+        {% trans 'If you want confirmation that the money was sent, you need to ask your bank for this.' %}
       </p>
       <h3 class="heading-small">
         {% trans 'What if I made a transfer at a bank branch?' %}
@@ -92,7 +122,7 @@
         {% blocktrans trimmed with url='https://www.justice.gov.uk/contacts/prison-finder' %}
           <a href="{{ url }}">Find the prison address</a> and write to the prison.
         {% endblocktrans %}
-        {% trans 'Address your letter to the ‘business hub’ and confirm:' %}
+        {% trans 'Address your letter to the ‘Business Hub’ and confirm:' %}
       </p>
       <ul class="list list-bullet">
         <li>{% trans 'your name' %}</li>
@@ -106,19 +136,6 @@
         {% trans 'The prison will send you a refund by cheque.' %}
       </p>
 
-      <h2 id="help-with-debit-cards" class="heading-medium">{% trans 'Help with debit cards' %}</h2>
-      <h3 class="heading-small">{% trans 'What browsers can I use to pay by debit card?' %}</h3>
-      <p>
-        {% trans 'You can use Chrome, Firefox, and Internet Explorer 10.' %}
-      </p>
-      <h3 class="heading-small">{% trans 'Which card types can I use?' %}</h3>
-      <p>
-        {% trans 'We currently support Mastercard Debit and Visa Debit cards only.' %}
-      </p>
-      <h3 class="heading-small">{% trans 'Can I make a payment internationally?' %}</h3>
-      <p>
-        {% trans 'Only using the debit card method.' %}
-      </p>
     </div>
   </div>
 

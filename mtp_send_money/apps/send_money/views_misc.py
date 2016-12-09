@@ -1,5 +1,5 @@
 from django.conf import settings
-from django.core.urlresolvers import reverse
+from django.core.urlresolvers import reverse, reverse_lazy
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.utils.http import is_safe_url
@@ -12,7 +12,10 @@ def help_view(request):
     FAQ section
     @param request: the HTTP request
     """
-    context = {}
+    context = {
+        'prison_list_url': reverse_lazy('send_money:prison_list'),
+        'ticket_url': reverse_lazy('submit_ticket'),
+    }
     return_to = request.META.get('HTTP_REFERER')
     if is_safe_url(url=return_to, host=request.get_host()) and return_to != request.build_absolute_uri():
         context['return_to'] = return_to
