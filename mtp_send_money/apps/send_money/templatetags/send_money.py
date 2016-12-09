@@ -39,3 +39,8 @@ def prepare_prisoner_dob(dob):
     if not isinstance(dob, datetime.date):
         return None
     return dob
+
+
+@register.filter
+def prisoner_details_not_found(error_list):
+    return any(error.code == 'not_found' for error in error_list.as_data())
