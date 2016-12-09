@@ -25,10 +25,8 @@ ol > li {
   }
 
   @media print {
-    & {
-      background: none;
-      border: 2px solid $border-color;
-      color: $text-colour;
-    }
+    background: none;
+    border: 2px solid $border-color;
+    color: $text-colour;
   }
 }

@@ -28,7 +28,7 @@ class SendMoneyFunctionalTestCase(FunctionalTestCase):
 
     def make_payment_method_choice(self, payment_method):
         field = self.driver.find_element_by_id('id_%s' % payment_method)
-        field.click()
+        field.find_element_by_xpath('..').click()  # input is obscured so click on parent label
         self.click_on_text('Continue')
 
     def fill_in_form(self, data):
@@ -196,11 +196,11 @@ class SendMoneyCheckDetailsPage(SendMoneyFunctionalTestCase):
 
 class SendMoneyFeedbackPages(SendMoneyFunctionalTestCase):
     def test_feedback_page(self):
-        self.driver.get(self.live_server_url + '/en-gb/feedback/')
-        self.assertInSource('Enter your feedback or any questions you have about this service.')
+        self.driver.get(self.live_server_url + '/en-gb/contact-us/')
+        self.assertInSource('Contact us')
 
     def test_feedback_received_page(self):
-        self.driver.get(self.live_server_url + '/en-gb/feedback/success/')
+        self.driver.get(self.live_server_url + '/en-gb/contact-us/success/')
         self.assertInSource('Thank you')
 
 

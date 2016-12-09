@@ -1,0 +1,25 @@
+// View-specific styles
+
+.mtp-filtered-list__input {
+  display: none;
+
+  .js-enabled & {
+    display: inline;
+
+    @media print {
+      display: none;
+    }
+  }
+}
+
+.mtp-filtered-list__hidden-item {
+  display: none;
+
+  @media print {
+    display: block;
+  }
+}
+
+.mtp-filtered-list__empty {
+  display: none;
+}
