@@ -74,6 +74,11 @@ class PrisonerDetailsForm(SendMoneyForm):
     )
     serialise_prisoner_dob = serialise_date
     unserialise_prisoner_dob = unserialise_date
+    error_messages = {
+        'connection': _('This service is currently unavailable'),
+        'not_found': _('No prisoner matches the details you’ve supplied, '
+                       'please ask the prisoner to check your details are correct'),
+    }
 
     @classmethod
     def get_prison_set(cls):
@@ -119,16 +124,10 @@ class PrisonerDetailsForm(SendMoneyForm):
     def clean(self):
         try:
             if not self.errors and not self.is_prisoner_known():
-                raise ValidationError(
-                    message=[_('No prisoner matches the details you’ve supplied, '
-                               'please ask the prisoner to check your details are correct')],
-                    code='not_found'
-                )
+                raise ValidationError(self.error_messages['not_found'], code='not_found')
         except (SlumberHttpBaseException, RequestException, OAuth2Error):
             logger.exception('Could not look up prisoner validity')
-            raise ValidationError(
-                message=[_('This service is currently unavailable')],
-                code='connection')
+            raise ValidationError(self.error_messages['connection'], code='connection')
         return self.cleaned_data
 
 
