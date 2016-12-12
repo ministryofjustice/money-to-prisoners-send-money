@@ -212,7 +212,7 @@ class BankTransferReferenceView(BankTransferFlow, SendMoneyFormView):
         expires = request.session.get('expires')
         if not expires:
             request.session['expires'] = format_date(
-                now + datetime.timedelta(hours=settings.CONFIRMATION_EXPIRES / 60), 'c'
+                now + datetime.timedelta(minutes=settings.CONFIRMATION_EXPIRES), 'c'
             )
         elif parse_datetime(expires) < now:
             return clear_session_view(request)
@@ -242,7 +242,7 @@ class BankTransferReferenceView(BankTransferFlow, SendMoneyFormView):
                 gettext('Send money to a prisoner: Your prisoner reference is %(bank_transfer_reference)s') % context,
                 context=context, html_template='send_money/email/bank-transfer-reference.html'
             )
-        except smtplib.SMTPException:
+        except (RequestException, smtplib.SMTPException):
             logger.exception('Could not send bank transfer reference email')
 
         return super().form_valid(form)

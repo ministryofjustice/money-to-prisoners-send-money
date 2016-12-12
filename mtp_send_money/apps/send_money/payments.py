@@ -28,7 +28,7 @@ def is_active_payment(payment):
         received_at = parse_datetime(date_str)
         return (
             received_at is not None and
-            (timezone.now() - received_at) < timedelta(hours=settings.CONFIRMATION_EXPIRES / 60)
+            (timezone.now() - received_at) < timedelta(minutes=settings.CONFIRMATION_EXPIRES)
         )
     else:
         return False

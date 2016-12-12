@@ -14,7 +14,7 @@ from django.utils.translation import gettext, gettext_lazy as _
 from mtp_common.auth import api_client, urljoin
 from mtp_common.email import send_email
 import requests
-from requests.exceptions import Timeout
+from requests.exceptions import RequestException, Timeout
 
 logger = logging.getLogger('mtp')
 prisoner_number_re = re.compile(r'^[a-z]\d\d\d\d[a-z]{2}$', re.IGNORECASE)
@@ -40,6 +40,7 @@ def check_payment_service_available():
 
 def send_notification(email, context):
     from smtplib import SMTPException
+
     if not email:
         return False
     context.update({
@@ -54,7 +55,7 @@ def send_notification(email, context):
             context=context, html_template='send_money/email/debit-card-confirmation.html'
         )
         return True
-    except SMTPException:
+    except (RequestException, SMTPException):
         logger.exception('Could not send successful payment notification')
 
 
