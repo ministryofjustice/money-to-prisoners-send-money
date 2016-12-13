@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: MTP send-money\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-12-12 11:41+0000\n"
+"POT-Creation-Date: 2016-12-13 11:57+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Igor U <igor.ushkarev@digital.justice.gov.uk>, 2016\n"
 "Language-Team: Welsh (https://www.transifex.com/ministry-of-justice/teams/34553/cy/)\n"
@@ -106,11 +106,11 @@ msgstr ""
 msgid "Get a prisoner reference to use in a UK bank transfer"
 msgstr ""
 
-#: apps/send_money/utils.py:53
+#: apps/send_money/utils.py:54
 msgid "Send money to a prisoner: your payment was successful"
 msgstr ""
 
-#: apps/send_money/utils.py:63
+#: apps/send_money/utils.py:64
 msgid "Incorrect prisoner number format"
 msgstr ""
 
@@ -368,8 +368,7 @@ msgstr ""
 
 #: templates/send_money/bank-transfer-reference.html:34
 #: templates/send_money/email/bank-transfer-reference.html:18
-#: templates/send_money/email/bank-transfer-reference.txt:11
-msgid "Put these details into the transfer:"
+msgid "Copy and paste these details into the transfer:"
 msgstr ""
 
 #: templates/send_money/bank-transfer-reference.html:39
@@ -403,14 +402,14 @@ msgstr ""
 #: templates/send_money/bank-transfer-reference.html:56
 #: templates/send_money/email/bank-transfer-reference.html:41
 #: templates/send_money/email/bank-transfer-reference.txt:18
-#: templates/send_money/help.html:70
+#: templates/send_money/help.html:71
 msgid "Money should reach the prisoner’s account in 1 working day, but your bank can take up to 3 working days to process the payment."
 msgstr ""
 
 #: templates/send_money/bank-transfer-reference.html:57
 #: templates/send_money/email/bank-transfer-reference.html:42
 #: templates/send_money/email/bank-transfer-reference.txt:18
-#: templates/send_money/help.html:71
+#: templates/send_money/help.html:72
 msgid "No money is processed at weekends or bank holidays."
 msgstr ""
 
@@ -463,7 +462,7 @@ msgid "Your message"
 msgstr ""
 
 #: templates/send_money/contact-form.html:31
-msgid "Please don’t include your bank details or any other of your personal information."
+msgid "Please don’t include your bank details or any other personal information."
 msgstr ""
 
 #: templates/send_money/contact-form.html:36
@@ -666,6 +665,10 @@ msgstr ""
 msgid "Back to the service"
 msgstr ""
 
+#: templates/send_money/email/bank-transfer-reference.txt:11
+msgid "Put these details into the transfer:"
+msgstr ""
+
 #: templates/send_money/email/bank-transfer-reference.txt:20
 #: templates/send_money/email/debit-card-confirmation.txt:18
 msgid "Help on how to use the service:"
@@ -726,183 +729,187 @@ msgid "If you read this help section but still have a question about this servic
 msgstr ""
 
 #: templates/send_money/help.html:35
-#, python-format
-msgid "This service is free and secure, and available in all <a href=\"%(prison_list_url)s\">public prisons in England and Wales</a>."
+msgid "This service is free and secure."
 msgstr ""
 
-#: templates/send_money/help.html:38
+#: templates/send_money/help.html:36
+#, python-format
+msgid "It’s available in <a href=\"%(prison_list_url)s\">public prisons in England and Wales</a>."
+msgstr ""
+
+#: templates/send_money/help.html:39
 #, python-format
 msgid "But it is not available in <a href=\"%(url)s\">private prisons</a>."
 msgstr ""
 
-#: templates/send_money/help.html:43
+#: templates/send_money/help.html:44
 msgid "You need a bank account to use this service."
 msgstr ""
 
-#: templates/send_money/help.html:44
+#: templates/send_money/help.html:45
 #, python-format
 msgid "But you can send money to a prisoner <a href=\"%(url)s\">using a postal order, a cheque or cash</a>."
 msgstr ""
 
-#: templates/send_money/help.html:51
+#: templates/send_money/help.html:52
 msgid "Why does it say no prisoner matches the details I enter?"
 msgstr ""
 
-#: templates/send_money/help.html:54
+#: templates/send_money/help.html:55
 #, python-format
 msgid "This service is available in all <a href=\"%(prison_list_url)s\">public prisons in England and Wales</a>."
 msgstr ""
 
-#: templates/send_money/help.html:57
+#: templates/send_money/help.html:58
 msgid "It normally takes one working day to get any new prisoner into the system and onto the database."
 msgstr ""
 
-#: templates/send_money/help.html:60
+#: templates/send_money/help.html:61
 msgid "Sometimes the prisoner’s date of birth and/or prison number are incorrectly entered into the prison database."
 msgstr ""
 
-#: templates/send_money/help.html:61
+#: templates/send_money/help.html:62
 msgid "Please ask the prisoner to check with the wing officer what details are on the prison database to make sure your details match theirs."
 msgstr ""
 
-#: templates/send_money/help.html:66
+#: templates/send_money/help.html:67
 msgid "How long does it take?"
 msgstr ""
 
-#: templates/send_money/help.html:67
+#: templates/send_money/help.html:68
 msgid "Does the prisoner get told when they get their money?"
 msgstr ""
 
-#: templates/send_money/help.html:74
+#: templates/send_money/help.html:75
 msgid "Prisoners receive a break-down receipt for money sent to them only when they collect their canteen."
 msgstr ""
 
-#: templates/send_money/help.html:78
+#: templates/send_money/help.html:79
 msgid "Help with debit cards"
 msgstr ""
 
-#: templates/send_money/help.html:79
+#: templates/send_money/help.html:80
 msgid "Which card types can I use?"
 msgstr ""
 
-#: templates/send_money/help.html:81
+#: templates/send_money/help.html:82
 msgid "We currently support Mastercard Debit and Visa Debit cards only."
 msgstr ""
 
-#: templates/send_money/help.html:83
+#: templates/send_money/help.html:84
 msgid "Can I make a payment internationally?"
 msgstr ""
 
-#: templates/send_money/help.html:85
+#: templates/send_money/help.html:86
 msgid "Only using the debit card method."
 msgstr ""
 
-#: templates/send_money/help.html:87
+#: templates/send_money/help.html:88
 msgid "I can’t connect to the site to pay"
 msgstr ""
 
-#: templates/send_money/help.html:89
+#: templates/send_money/help.html:90
 msgid "Due to security restrictions, some older web browsers are not supported."
 msgstr ""
 
-#: templates/send_money/help.html:90
+#: templates/send_money/help.html:91
 msgid "Try on another computer or try using a newer web browser, such as Chrome, Firefox or Internet Explorer 10."
 msgstr ""
 
-#: templates/send_money/help.html:94
+#: templates/send_money/help.html:95
 msgid "Help with bank transfers"
 msgstr ""
 
-#: templates/send_money/help.html:96
+#: templates/send_money/help.html:97
 msgid "Why haven’t they got their money?"
 msgstr ""
 
-#: templates/send_money/help.html:97
+#: templates/send_money/help.html:98
 msgid "Why has my money been returned?"
 msgstr ""
 
-#: templates/send_money/help.html:100
+#: templates/send_money/help.html:101
 msgid "You may have used an incorrect reference."
 msgstr ""
 
-#: templates/send_money/help.html:101
+#: templates/send_money/help.html:102
 msgid "If this is the case, you’ll receive a refund within 4 working days of making the transfer."
 msgstr ""
 
-#: templates/send_money/help.html:102
+#: templates/send_money/help.html:103
 msgid "Your bank statement will show ‘GBS RE NOMS AGENCY’ and the reference will be ‘refund’."
 msgstr ""
 
-#: templates/send_money/help.html:104
+#: templates/send_money/help.html:105
 msgid "Do I need a new reference each time I send money by bank transfer?"
 msgstr ""
 
-#: templates/send_money/help.html:106
+#: templates/send_money/help.html:107
 msgid "No, use the reference you first generated each time you send money to this particular prisoner."
 msgstr ""
 
-#: templates/send_money/help.html:108
+#: templates/send_money/help.html:109
 msgid "Why didn’t I get email confirmation after I made a bank transfer?"
 msgstr ""
 
-#: templates/send_money/help.html:110
+#: templates/send_money/help.html:111
 msgid "When you send money using a bank transfer, you only generate the reference on the GOV.UK site, then you use that reference when you make the bank transfer with your bank in the usual way (by mobile app, online and telephone banking)."
 msgstr ""
 
-#: templates/send_money/help.html:111
+#: templates/send_money/help.html:112
 msgid "If you want confirmation that the money was sent, you need to ask your bank for this."
 msgstr ""
 
-#: templates/send_money/help.html:114
+#: templates/send_money/help.html:115
 msgid "What if I made a transfer at a bank branch?"
 msgstr ""
 
-#: templates/send_money/help.html:115
+#: templates/send_money/help.html:116
 msgid "Or from an international bank account?"
 msgstr ""
 
-#: templates/send_money/help.html:118
+#: templates/send_money/help.html:119
 msgid "Your payment won’t go through so we can’t credit the prisoner and you’ll have to request a refund."
 msgstr ""
 
-#: templates/send_money/help.html:119
+#: templates/send_money/help.html:120
 msgid "Please follow these steps:"
 msgstr ""
 
-#: templates/send_money/help.html:122
+#: templates/send_money/help.html:123
 #, python-format
 msgid "<a href=\"%(url)s\">Find the prison address</a> and write to the prison."
 msgstr ""
 
-#: templates/send_money/help.html:125
+#: templates/send_money/help.html:126
 msgid "Address your letter to the ‘Business Hub’ and confirm:"
 msgstr ""
 
-#: templates/send_money/help.html:128
+#: templates/send_money/help.html:129
 msgid "your name"
 msgstr ""
 
-#: templates/send_money/help.html:129
+#: templates/send_money/help.html:130
 msgid "your address"
 msgstr ""
 
-#: templates/send_money/help.html:130
+#: templates/send_money/help.html:131
 msgid "the prisoner’s name"
 msgstr ""
 
-#: templates/send_money/help.html:131
+#: templates/send_money/help.html:132
 msgid "the prisoner number"
 msgstr ""
 
-#: templates/send_money/help.html:132
+#: templates/send_money/help.html:133
 msgid "the amount and date you paid"
 msgstr ""
 
-#: templates/send_money/help.html:133
+#: templates/send_money/help.html:134
 msgid "the bank branch where you made the payment"
 msgstr ""
 
-#: templates/send_money/help.html:136
+#: templates/send_money/help.html:137
 msgid "The prison will send you a refund by cheque."
 msgstr ""
 

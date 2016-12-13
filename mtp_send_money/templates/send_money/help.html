@@ -32,8 +32,9 @@
 
     <div class="column-two-thirds">
       <p>
+        {% trans 'This service is free and secure.' %}
         {% blocktrans trimmed %}
-          This service is free and secure, and available in all <a href="{{ prison_list_url }}">public prisons in England and Wales</a>.
+          It’s available in <a href="{{ prison_list_url }}">public prisons in England and Wales</a>.
         {% endblocktrans %}
         {% blocktrans trimmed with url='https://www.justice.gov.uk/about/hmps/contracted-out' %}
           But it is not available in <a href="{{ url }}">private prisons</a>.
