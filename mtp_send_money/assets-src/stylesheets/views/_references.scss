@@ -1,5 +1,13 @@
 // Application-specific
 
+.mtp-reference-actions {
+  display: none;
+
+  .js-enabled & {
+    display: block;
+  }
+}
+
 .mtp-print-reference {
   background: url('/static/images/icon-file-download.png') no-repeat scroll 0 0;
   display: inline-block;
