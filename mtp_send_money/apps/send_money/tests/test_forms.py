@@ -11,7 +11,7 @@ from send_money.forms import (
 )
 from send_money.models import PaymentMethod
 from send_money.tests import mock_auth, patch_gov_uk_pay_availability_check
-from send_money.utils import api_url
+from send_money.utils import api_url, get_api_client
 
 
 class FormTestCase(unittest.TestCase):
@@ -90,7 +90,9 @@ PaymentMethodChoiceFormTestCase.make_invalid_tests(
 
 class PrisonerDetailsFormTestCase(FormTestCase):
     def assertFormValid(self, form):  # noqa
-        with responses.RequestsMock() as rsps:
+        with responses.RequestsMock() as rsps, \
+                mock.patch('send_money.forms.PrisonerDetailsForm.get_api_client') as mocked_api_client:
+            mocked_api_client.side_effect = get_api_client
             mock_auth(rsps)
             rsps.add(
                 rsps.GET,
@@ -104,8 +106,7 @@ class PrisonerDetailsFormTestCase(FormTestCase):
                 },
                 status=200,
             )
-            is_valid = form.is_valid()
-        self.assertTrue(is_valid, msg='\n\n%s' % form.errors.as_text())
+            self.assertTrue(form.is_valid(), msg='\n\n%s' % form.errors.as_text())
 
     def assertFormInvalid(self, form):  # noqa
         with mock.patch('send_money.utils.api_client') as mocked_api_client:

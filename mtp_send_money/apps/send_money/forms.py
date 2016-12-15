@@ -1,6 +1,7 @@
 import datetime
 import decimal
 import logging
+import threading
 
 from django import forms
 from django.conf import settings
@@ -10,7 +11,7 @@ from form_error_reporting import GARequestErrorReportingMixin
 from mtp_common.forms.fields import SplitDateField
 from oauthlib.oauth2 import OAuth2Error
 from requests.exceptions import RequestException
-from slumber.exceptions import HttpNotFoundError, SlumberHttpBaseException
+from slumber.exceptions import HttpClientError, HttpNotFoundError, SlumberHttpBaseException
 
 from send_money.models import PaymentMethod
 from send_money.utils import (
@@ -79,9 +80,19 @@ class PrisonerDetailsForm(SendMoneyForm):
         'not_found': _('No prisoner matches the details you’ve supplied'),
     }
 
+    shared_api_client_lock = threading.RLock()
+    shared_api_client = None
+
     @classmethod
     def get_prison_set(cls):
         return set()
+
+    @classmethod
+    def get_api_client(cls, reconnect=False):
+        with cls.shared_api_client_lock:
+            if reconnect or not cls.shared_api_client:
+                cls.shared_api_client = get_api_client()
+            return cls.shared_api_client
 
     def __init__(self, **kwargs):
         if isinstance(kwargs.get('data', {}).get('prisoner_dob'), datetime.date):
@@ -93,6 +104,16 @@ class PrisonerDetailsForm(SendMoneyForm):
             })
         super().__init__(**kwargs)
 
+    def lookup_prisoner(self, **filters):
+        api_client = self.get_api_client()
+        try:
+            return api_client.prisoner_validity().get(**filters)
+        except HttpClientError as e:
+            if e.response.status_code != 401:
+                raise
+        api_client = self.get_api_client(reconnect=True)
+        return api_client.prisoner_validity().get(**filters)
+
     def clean_prisoner_number(self):
         prisoner_number = self.cleaned_data.get('prisoner_number')
         if prisoner_number:
@@ -103,7 +124,6 @@ class PrisonerDetailsForm(SendMoneyForm):
         prisoner_number = self.cleaned_data['prisoner_number']
         prisoner_dob = serialise_date(self.cleaned_data['prisoner_dob'])
         try:
-            client = get_api_client()
             filters = {
                 'prisoner_number': prisoner_number,
                 'prisoner_dob': prisoner_dob,
@@ -111,7 +131,7 @@ class PrisonerDetailsForm(SendMoneyForm):
             prison_set = self.get_prison_set()
             if prison_set:
                 filters['prisons'] = ','.join(sorted(prison_set))
-            prisoners = client.prisoner_validity().get(**filters)
+            prisoners = self.lookup_prisoner(**filters)
             assert prisoners['count'] == len(prisoners['results']) == 1
             prisoner = prisoners['results'][0]
             return prisoner and prisoner['prisoner_number'] == prisoner_number \
