@@ -360,7 +360,7 @@ class BankTransferPrisonerDetailsTestCase(BankTransferFlowTestCase):
         form = response.context['form']
         self.assertTrue(form.errors)
 
-    @mock.patch('send_money.forms.get_api_client')
+    @mock.patch('send_money.forms.PrisonerDetailsForm.get_api_client')
     def test_search_not_limited_to_specific_prisons(self, mocked_api_client):
         self.choose_bank_transfer_payment_method()
 
@@ -379,7 +379,7 @@ class BankTransferPrisonerDetailsTestCase(BankTransferFlowTestCase):
         mocked_api_call.assert_called_with(prisoner_number='A1231DE', prisoner_dob='1980-10-04')
 
     @override_settings(BANK_TRANSFER_PRISONS='DEF,ABC')
-    @mock.patch('send_money.forms.get_api_client')
+    @mock.patch('send_money.forms.PrisonerDetailsForm.get_api_client')
     def test_can_limit_search_to_specific_prisons(self, mocked_api_client):
         self.choose_bank_transfer_payment_method()
 
@@ -602,7 +602,7 @@ class DebitCardPrisonerDetailsTestCase(DebitCardFlowTestCase):
         self.assertTrue(form.errors)
         self.assertEqual(mocked_is_prisoner_known.call_count, 0)
 
-    @mock.patch('send_money.forms.get_api_client')
+    @mock.patch('send_money.forms.PrisonerDetailsForm.get_api_client')
     def test_search_not_limited_to_specific_prisons(self, mocked_api_client):
         self.choose_debit_card_payment_method()
 
@@ -622,7 +622,7 @@ class DebitCardPrisonerDetailsTestCase(DebitCardFlowTestCase):
         mocked_api_call.assert_called_with(prisoner_number='A1231DE', prisoner_dob='1980-10-04')
 
     @override_settings(DEBIT_CARD_PRISONS='DEF,ABC,ZZZ')
-    @mock.patch('send_money.forms.get_api_client')
+    @mock.patch('send_money.forms.PrisonerDetailsForm.get_api_client')
     def test_can_limit_search_to_specific_prisons(self, mocked_api_client):
         self.choose_debit_card_payment_method()
 
