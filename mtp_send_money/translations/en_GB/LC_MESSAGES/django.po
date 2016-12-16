@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: MTP send-money\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-12-16 10:50+0000\n"
+"POT-Creation-Date: 2016-12-16 11:08+0000\n"
 "PO-Revision-Date: 2016-11-04 10:00+0000\n"
 "Last-Translator: Welsh Language Unit <welsh.language.unit.manager@hmcts.gsi.gov.uk>\n"
 "Language-Team: Welsh (http://www.transifex.com/ministry-of-justice/mtp/language/cy/)\n"
@@ -389,29 +389,37 @@ msgstr ""
 msgid "Reference:"
 msgstr ""
 
-#: templates/send_money/bank-transfer-reference.html:53
-msgid "It’s important to use this reference because all prisons share this account."
+#: templates/send_money/bank-transfer-reference.html:54
+#: templates/send_money/email/bank-transfer-reference.html:37
+#: templates/send_money/email/bank-transfer-reference.txt:16
+msgid "All prisons share this bank account."
 msgstr ""
 
-#: templates/send_money/bank-transfer-reference.html:54
+#: templates/send_money/bank-transfer-reference.html:55
+#: templates/send_money/email/bank-transfer-reference.html:38
+#: templates/send_money/email/bank-transfer-reference.txt:17
+msgid "Please use your prisoner reference to make sure the money goes to the right prisoner."
+msgstr ""
+
+#: templates/send_money/bank-transfer-reference.html:57
 msgid "Remember, you can’t do a bank transfer in-branch and you must use a UK bank account."
 msgstr ""
 
-#: templates/send_money/bank-transfer-reference.html:56
+#: templates/send_money/bank-transfer-reference.html:59
 #: templates/send_money/email/bank-transfer-reference.html:44
 #: templates/send_money/email/bank-transfer-reference.txt:19
 #: templates/send_money/help.html:71
 msgid "Money should reach the prisoner’s account in 1 working day, but your bank can take up to 3 working days to process the payment."
 msgstr ""
 
-#: templates/send_money/bank-transfer-reference.html:57
+#: templates/send_money/bank-transfer-reference.html:60
 #: templates/send_money/email/bank-transfer-reference.html:45
 #: templates/send_money/email/bank-transfer-reference.txt:19
 #: templates/send_money/help.html:72
 msgid "No money is processed at weekends or bank holidays."
 msgstr ""
 
-#: templates/send_money/bank-transfer-reference.html:62
+#: templates/send_money/bank-transfer-reference.html:65
 #, python-format
 msgid "<a href=\"%(help_url)s\">Find help</a> on how to use the service or <a href=\"%(ticket_url)s\">contact us</a>."
 msgstr ""
@@ -642,16 +650,6 @@ msgstr ""
 msgid "You need to log into your online banking account, mobile banking app or use your telephone banking, as usual."
 msgstr ""
 
-#: templates/send_money/email/bank-transfer-reference.html:37
-#: templates/send_money/email/bank-transfer-reference.txt:16
-msgid "All prisons share this bank account."
-msgstr ""
-
-#: templates/send_money/email/bank-transfer-reference.html:38
-#: templates/send_money/email/bank-transfer-reference.txt:17
-msgid "Please use your prisoner reference to make sure the money goes to the right prisoner."
-msgstr ""
-
 #: templates/send_money/email/bank-transfer-reference.html:42
 #: templates/send_money/email/bank-transfer-reference.txt:19
 msgid "Please note:"
@@ -663,6 +661,7 @@ msgid "You can’t do a bank transfer in-branch and you must use a UK bank accou
 msgstr ""
 
 #: templates/send_money/email/bank-transfer-reference.html:49
+#: templates/send_money/email/debit-card-confirmation.html:37
 #, python-format
 msgid "<a href=\"%(help_url)s\">Help</a> with problems using this service or how to <a href=\"%(feedback_url)s\">contact us</a>."
 msgstr ""
@@ -677,6 +676,7 @@ msgid "Put these details into the transfer:"
 msgstr ""
 
 #: templates/send_money/email/bank-transfer-reference.txt:21
+#: templates/send_money/email/debit-card-confirmation.txt:18
 msgid "Help with problems using this service:"
 msgstr ""
 
@@ -720,18 +720,9 @@ msgstr ""
 msgid "Thank you for using this service."
 msgstr ""
 
-#: templates/send_money/email/debit-card-confirmation.html:37
-#, python-format
-msgid "<a href=\"%(help_url)s\">Help</a> on how to use the service or <a href=\"%(feedback_url)s\">contact us</a>."
-msgstr ""
-
 #: templates/send_money/email/debit-card-confirmation.txt:7
 #, python-format
 msgid "Your reference number is %(short_payment_ref)s."
-msgstr ""
-
-#: templates/send_money/email/debit-card-confirmation.txt:18
-msgid "Help on how to use the service:"
 msgstr ""
 
 #: templates/send_money/help.html:14
