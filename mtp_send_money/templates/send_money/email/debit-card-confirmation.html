@@ -16,15 +16,15 @@
 
   <table cellspacing="10" style="font-family: sans-serif;">
     <tr>
-      <th valign="top" align="left">{% trans 'Payment to' %}</th>
+      <th valign="top" align="left">{% trans 'Payment to:' %}</th>
       <td>{{ prisoner_name }}</td>
     </tr>
     <tr>
-      <th valign="top" align="left">{% trans 'Amount paid' %}</th>
+      <th valign="top" align="left">{% trans 'Amount paid:' %}</th>
       <td>{{ amount|currency_format }}</td>
     </tr>
     <tr>
-      <th valign="top" align="left">{% trans 'Date payment made' %}</th>
+      <th valign="top" align="left">{% trans 'Date payment made:' %}</th>
       <td>{% now 'd/m/Y' %}</td>
     </tr>
   </table>
