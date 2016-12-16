@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: MTP send-money\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-12-16 11:08+0000\n"
+"POT-Creation-Date: 2016-12-16 16:00+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Igor U <igor.ushkarev@digital.justice.gov.uk>, 2016\n"
 "Language-Team: Welsh (https://www.transifex.com/ministry-of-justice/teams/34553/cy/)\n"
@@ -576,7 +576,6 @@ msgid "Payment summary"
 msgstr ""
 
 #: templates/send_money/debit-card-confirmation.html:20
-#: templates/send_money/email/debit-card-confirmation.html:19
 #: templates/send_money/email/debit-card-confirmation.txt:11
 msgid "Payment to"
 msgstr ""
@@ -586,7 +585,6 @@ msgid "Payment amount"
 msgstr ""
 
 #: templates/send_money/debit-card-confirmation.html:28
-#: templates/send_money/email/debit-card-confirmation.html:27
 #: templates/send_money/email/debit-card-confirmation.txt:13
 msgid "Date payment made"
 msgstr ""
@@ -710,9 +708,16 @@ msgstr ""
 msgid "The money you sent will reach the prisoner’s account in 1 working day."
 msgstr ""
 
+#: templates/send_money/email/debit-card-confirmation.html:19
+msgid "Payment to:"
+msgstr ""
+
 #: templates/send_money/email/debit-card-confirmation.html:23
-#: templates/send_money/email/debit-card-confirmation.txt:12
-msgid "Amount paid"
+msgid "Amount paid:"
+msgstr ""
+
+#: templates/send_money/email/debit-card-confirmation.html:27
+msgid "Date payment made:"
 msgstr ""
 
 #: templates/send_money/email/debit-card-confirmation.html:33
@@ -723,6 +728,10 @@ msgstr ""
 #: templates/send_money/email/debit-card-confirmation.txt:7
 #, python-format
 msgid "Your reference number is %(short_payment_ref)s."
+msgstr ""
+
+#: templates/send_money/email/debit-card-confirmation.txt:12
+msgid "Amount paid"
 msgstr ""
 
 #: templates/send_money/help.html:14
