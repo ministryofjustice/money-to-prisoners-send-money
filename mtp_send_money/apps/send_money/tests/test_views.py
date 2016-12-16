@@ -875,12 +875,10 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
                     'reference': 'wargle-blargle',
                     'state': {'status': 'success'},
                     'email': 'sender@outside.local',
-                    '_links': {
-                        'events': {
-                            'method': 'GET',
-                            'href': govuk_url('/payments/%s/events' % 1),
-                        }
-                    }
+                    'settlement_summary': {
+                        'capture_submit_time': None,
+                        'captured_date': None
+                    },
                 },
                 status=200
             )

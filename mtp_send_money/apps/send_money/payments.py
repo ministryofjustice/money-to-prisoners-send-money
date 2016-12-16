@@ -1,11 +1,11 @@
-from datetime import timedelta
+from datetime import datetime, time, timedelta
 import logging
 
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
 from django.utils import timezone
-from django.utils.dateparse import parse_datetime
+from django.utils.dateparse import parse_datetime, parse_date
 from django.utils.functional import cached_property
 from mtp_common.api import retrieve_all_pages
 import requests
@@ -13,7 +13,7 @@ from requests.exceptions import RequestException
 
 from send_money.exceptions import GovUkPaymentStatusException
 from send_money.utils import (
-    get_api_client, govuk_headers, govuk_url, send_notification, get_link_by_rel
+    get_api_client, govuk_headers, govuk_url, send_notification
 )
 
 logger = logging.getLogger('mtp')
@@ -93,8 +93,7 @@ class PaymentClient:
         }
         if success:
             received_at = self.get_govuk_capture_time(govuk_payment)
-            if received_at is not None:
-                payment_update['received_at'] = received_at.isoformat()
+            payment_update['received_at'] = received_at.isoformat()
         if card_details:
             if 'cardholder_name' in card_details:
                 payment_update['cardholder_name'] = card_details['cardholder_name']
@@ -129,25 +128,26 @@ class PaymentClient:
             raise RequestException('Cannot parse response', response=response)
 
     def get_govuk_capture_time(self, govuk_payment):
-        response = requests.get(
-            get_link_by_rel(govuk_payment, 'events'),
-            headers=govuk_headers(),
-            timeout=15
-        )
-
-        if response.status_code != 200:
-            raise RequestException(
-                'Unexpected status code: %s' % response.status_code,
-                response=response
-            )
         try:
-            data = response.json()
-            for event in data['events']:
-                if event['state']['status'] == 'success':
-                    return parse_datetime(event['updated'])
-        except (ValueError, KeyError):
-            raise RequestException('Cannot parse response', response=response)
-        raise GovUkPaymentStatusException('Capture time not yet available')
+            capture_submit_time = parse_datetime(
+                govuk_payment['settlement_summary'].get('capture_submit_time', '')
+            )
+            captured_date = parse_date(
+                govuk_payment['settlement_summary'].get('captured_date', '')
+            )
+            if capture_submit_time is not None and captured_date is not None:
+                capture_submit_time = capture_submit_time.astimezone(timezone.utc)
+                if capture_submit_time.date() < captured_date:
+                    return datetime.combine(
+                        captured_date, time.min
+                    ).replace(tzinfo=timezone.utc)
+                else:
+                    return capture_submit_time
+        except (KeyError, TypeError):
+            pass
+        raise GovUkPaymentStatusException(
+            'Capture date not yet available for payment %s' % govuk_payment['reference']
+        )
 
     def create_govuk_payment(self, payment_ref, new_govuk_payment):
         govuk_response = requests.post(
