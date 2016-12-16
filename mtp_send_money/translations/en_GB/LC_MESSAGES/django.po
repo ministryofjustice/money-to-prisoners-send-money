@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: MTP send-money\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-12-13 11:57+0000\n"
+"POT-Creation-Date: 2016-12-16 10:50+0000\n"
 "PO-Revision-Date: 2016-11-04 10:00+0000\n"
 "Last-Translator: Welsh Language Unit <welsh.language.unit.manager@hmcts.gsi.gov.uk>\n"
 "Language-Team: Welsh (http://www.transifex.com/ministry-of-justice/mtp/language/cy/)\n"
@@ -390,8 +390,6 @@ msgid "Reference:"
 msgstr ""
 
 #: templates/send_money/bank-transfer-reference.html:53
-#: templates/send_money/email/bank-transfer-reference.html:36
-#: templates/send_money/email/bank-transfer-reference.txt:16
 msgid "It’s important to use this reference because all prisons share this account."
 msgstr ""
 
@@ -400,15 +398,15 @@ msgid "Remember, you can’t do a bank transfer in-branch and you must use a UK 
 msgstr ""
 
 #: templates/send_money/bank-transfer-reference.html:56
-#: templates/send_money/email/bank-transfer-reference.html:41
-#: templates/send_money/email/bank-transfer-reference.txt:18
+#: templates/send_money/email/bank-transfer-reference.html:44
+#: templates/send_money/email/bank-transfer-reference.txt:19
 #: templates/send_money/help.html:71
 msgid "Money should reach the prisoner’s account in 1 working day, but your bank can take up to 3 working days to process the payment."
 msgstr ""
 
 #: templates/send_money/bank-transfer-reference.html:57
-#: templates/send_money/email/bank-transfer-reference.html:42
-#: templates/send_money/email/bank-transfer-reference.txt:18
+#: templates/send_money/email/bank-transfer-reference.html:45
+#: templates/send_money/email/bank-transfer-reference.txt:19
 #: templates/send_money/help.html:72
 msgid "No money is processed at weekends or bank holidays."
 msgstr ""
@@ -621,7 +619,7 @@ msgstr ""
 
 #: templates/send_money/email/bank-transfer-reference.html:8
 #: templates/send_money/email/bank-transfer-reference.txt:6
-msgid "Your prisoner reference number is:"
+msgid "Send your bank transfer using this prisoner reference:"
 msgstr ""
 
 #: templates/send_money/email/bank-transfer-reference.html:12
@@ -644,23 +642,32 @@ msgstr ""
 msgid "You need to log into your online banking account, mobile banking app or use your telephone banking, as usual."
 msgstr ""
 
-#: templates/send_money/email/bank-transfer-reference.html:39
-#: templates/send_money/email/bank-transfer-reference.txt:18
+#: templates/send_money/email/bank-transfer-reference.html:37
+#: templates/send_money/email/bank-transfer-reference.txt:16
+msgid "All prisons share this bank account."
+msgstr ""
+
+#: templates/send_money/email/bank-transfer-reference.html:38
+#: templates/send_money/email/bank-transfer-reference.txt:17
+msgid "Please use your prisoner reference to make sure the money goes to the right prisoner."
+msgstr ""
+
+#: templates/send_money/email/bank-transfer-reference.html:42
+#: templates/send_money/email/bank-transfer-reference.txt:19
 msgid "Please note:"
 msgstr ""
 
-#: templates/send_money/email/bank-transfer-reference.html:40
-#: templates/send_money/email/bank-transfer-reference.txt:18
+#: templates/send_money/email/bank-transfer-reference.html:43
+#: templates/send_money/email/bank-transfer-reference.txt:19
 msgid "You can’t do a bank transfer in-branch and you must use a UK bank account."
 msgstr ""
 
-#: templates/send_money/email/bank-transfer-reference.html:46
-#: templates/send_money/email/debit-card-confirmation.html:37
+#: templates/send_money/email/bank-transfer-reference.html:49
 #, python-format
-msgid "<a href=\"%(help_url)s\">Help</a> on how to use the service or <a href=\"%(feedback_url)s\">contact us</a>."
+msgid "<a href=\"%(help_url)s\">Help</a> with problems using this service or how to <a href=\"%(feedback_url)s\">contact us</a>."
 msgstr ""
 
-#: templates/send_money/email/bank-transfer-reference.html:50
+#: templates/send_money/email/bank-transfer-reference.html:53
 #: templates/send_money/email/debit-card-confirmation.html:41
 msgid "Back to the service"
 msgstr ""
@@ -669,17 +676,16 @@ msgstr ""
 msgid "Put these details into the transfer:"
 msgstr ""
 
-#: templates/send_money/email/bank-transfer-reference.txt:20
-#: templates/send_money/email/debit-card-confirmation.txt:18
-msgid "Help on how to use the service:"
+#: templates/send_money/email/bank-transfer-reference.txt:21
+msgid "Help with problems using this service:"
 msgstr ""
 
-#: templates/send_money/email/bank-transfer-reference.txt:21
+#: templates/send_money/email/bank-transfer-reference.txt:22
 #: templates/send_money/email/debit-card-confirmation.txt:19
 msgid "Leave feedback or contact us at:"
 msgstr ""
 
-#: templates/send_money/email/bank-transfer-reference.txt:22
+#: templates/send_money/email/bank-transfer-reference.txt:23
 #: templates/send_money/email/debit-card-confirmation.txt:20
 msgid "Back to the service:"
 msgstr ""
@@ -714,9 +720,18 @@ msgstr ""
 msgid "Thank you for using this service."
 msgstr ""
 
+#: templates/send_money/email/debit-card-confirmation.html:37
+#, python-format
+msgid "<a href=\"%(help_url)s\">Help</a> on how to use the service or <a href=\"%(feedback_url)s\">contact us</a>."
+msgstr ""
+
 #: templates/send_money/email/debit-card-confirmation.txt:7
 #, python-format
 msgid "Your reference number is %(short_payment_ref)s."
+msgstr ""
+
+#: templates/send_money/email/debit-card-confirmation.txt:18
+msgid "Help on how to use the service:"
 msgstr ""
 
 #: templates/send_money/help.html:14

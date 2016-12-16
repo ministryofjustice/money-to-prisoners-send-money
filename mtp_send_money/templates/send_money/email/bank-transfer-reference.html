@@ -5,7 +5,7 @@
 {% block inner_content %}
 
   <p>
-    {% trans 'Your prisoner reference number is:' %} <strong>{{ bank_transfer_reference }}</strong>.
+    {% trans 'Send your bank transfer using this prisoner reference:' %} <strong>{{ bank_transfer_reference }}</strong>.
   </p>
 
   <p>
@@ -33,7 +33,10 @@
     </tbody>
   </table>
 
-  <p>{% trans 'It’s important to use this reference because all prisons share this account.' %}</p>
+  <p>
+    {% trans 'All prisons share this bank account.' %}
+    {% trans 'Please use your prisoner reference to make sure the money goes to the right prisoner.' %}
+  </p>
 
   <p>
     <strong>{% trans 'Please note:' %}</strong>
@@ -44,7 +47,7 @@
 
   <p>
     {% blocktrans trimmed %}
-      <a href="{{ help_url }}">Help</a> on how to use the service or <a href="{{ feedback_url }}">contact us</a>.
+      <a href="{{ help_url }}">Help</a> with problems using this service or how to <a href="{{ feedback_url }}">contact us</a>.
     {% endblocktrans %}
   </p>
   <p><a href="{{ site_url }}">{% trans 'Back to the service' %}</a></p>
