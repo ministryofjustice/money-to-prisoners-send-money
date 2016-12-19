@@ -33,6 +33,9 @@
           <input id="id_{{ payment_method.0 }}" type="radio" name="{{ form.payment_method.html_name }}" value="{{ payment_method.0 }}" {% if form.payment_method.value == payment_method.0 %}checked{% endif %} {%if form.payment_method.field.disabled %}disabled{% endif %}>
           {{ payment_method.1 }}
         </label>
+        {% if not forloop.last %}
+          <p class="form-block">{% trans 'or' %}</p>
+        {% endif %}
       {% endfor %}
     </fieldset>
 
