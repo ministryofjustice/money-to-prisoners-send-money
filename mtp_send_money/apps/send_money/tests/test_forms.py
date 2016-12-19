@@ -1,3 +1,6 @@
+import logging
+import threading
+import time
 import unittest
 from unittest import mock
 
@@ -12,6 +15,8 @@ from send_money.forms import (
 from send_money.models import PaymentMethod
 from send_money.tests import mock_auth, patch_gov_uk_pay_availability_check
 from send_money.utils import api_url, get_api_client
+
+logger = logging.getLogger('mtp')
 
 
 class FormTestCase(unittest.TestCase):
@@ -122,6 +127,59 @@ class PrisonerDetailsFormTestCase(FormTestCase):
 
 class BankTransferPrisonerDetailsFormTestCase(PrisonerDetailsFormTestCase):
     form_class = BankTransferPrisonerDetailsForm
+
+    @mock.patch('send_money.forms.get_api_client')
+    def test_validation_check_concurrency(self, mocked_api_client):
+        threading.enumerate()
+        form_class = self.form_class
+        lock = threading.RLock()
+        finished = threading.Event()
+        concurrency = 5
+        runs = 0
+        successes = 0
+
+        def delayed_response(**_):
+            logger.debug('Call to API takes 1 second')
+            time.sleep(1)
+            logger.debug('API call returning')
+            return {
+                'count': 1,
+                'results': [{
+                    'prisoner_number': 'A1234AB',
+                    'prisoner_dob': '1980-10-05',
+                }]
+            }
+
+        mocked_api_call = mocked_api_client().prisoner_validity().get
+        mocked_api_call.side_effect = delayed_response
+        setup_call_count = mocked_api_client.call_count
+
+        class TestThread(threading.Thread):
+            def run(self):
+                nonlocal runs, successes
+
+                form = form_class(data={
+                    'prisoner_number': 'A1234AB',
+                    'prisoner_dob_0': '5',
+                    'prisoner_dob_1': '10',
+                    'prisoner_dob_2': '1980',
+                })
+                is_valid = form.is_valid()
+                with lock:
+                    runs += 1
+                    if is_valid:
+                        successes += 1
+                    if runs == concurrency:
+                        finished.set()
+
+        with patch_gov_uk_pay_availability_check():
+            for _ in range(concurrency):
+                TestThread().start()
+        finished.wait()
+        self.assertEqual(mocked_api_client.call_count, setup_call_count + 1, 'get_api_client called more than one, '
+                                                                             'but the response should be shared')
+        self.assertEqual(mocked_api_call.call_count, concurrency, 'validity should be called once for each thread')
+        self.assertEqual(successes, concurrency, 'all threads should report valid forms')
 
 
 BankTransferPrisonerDetailsFormTestCase.make_valid_tests([
