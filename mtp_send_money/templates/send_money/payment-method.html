@@ -25,7 +25,7 @@
       </div>
     {% endif %}
 
-    <fieldset>
+    <fieldset class="mtp-payment-choice">
       <legend class="visuallyhidden">{% trans 'How do you want to send money?' %}</legend>
 
       {% for payment_method in form.payment_method.field.choices %}
@@ -39,7 +39,7 @@
       {% endfor %}
     </fieldset>
 
-    <div class="help-box help-box-collapsed">
+    <div class="mtp-payment-help help-box help-box-collapsed">
       <div class="help-box-title" aria-controls="help-box-contents" aria-expanded="false" role="heading">
         <div></div><a href="#">{% trans 'Which is right for me?' %}</a>
       </div>

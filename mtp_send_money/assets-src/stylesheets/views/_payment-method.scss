@@ -27,6 +27,13 @@
 
 // govuk elements overrides
 
-.form-block, .help-box {
+.mtp-payment-choice {
+
+  .form-block {
+    padding-left: 0.4em;
+  }
+}
+
+.mtp-payment-help {
   padding-left: 0.4em;
 }
