@@ -13,7 +13,7 @@ from requests.exceptions import RequestException
 
 from send_money.exceptions import GovUkPaymentStatusException
 from send_money.utils import (
-    get_api_client, govuk_headers, govuk_url, send_notification, get_link_by_rel
+    get_api_client, govuk_headers, govuk_url, send_notification
 )
 
 logger = logging.getLogger('mtp')
@@ -93,8 +93,7 @@ class PaymentClient:
         }
         if success:
             received_at = self.get_govuk_capture_time(govuk_payment)
-            if received_at is not None:
-                payment_update['received_at'] = received_at.isoformat()
+            payment_update['received_at'] = received_at.isoformat()
         if card_details:
             if 'cardholder_name' in card_details:
                 payment_update['cardholder_name'] = card_details['cardholder_name']
@@ -129,25 +128,15 @@ class PaymentClient:
             raise RequestException('Cannot parse response', response=response)
 
     def get_govuk_capture_time(self, govuk_payment):
-        response = requests.get(
-            get_link_by_rel(govuk_payment, 'events'),
-            headers=govuk_headers(),
-            timeout=15
-        )
-
-        if response.status_code != 200:
-            raise RequestException(
-                'Unexpected status code: %s' % response.status_code,
-                response=response
-            )
         try:
-            data = response.json()
-            for event in data['events']:
-                if event['state']['status'] == 'success':
-                    return parse_datetime(event['updated'])
-        except (ValueError, KeyError):
-            raise RequestException('Cannot parse response', response=response)
-        raise GovUkPaymentStatusException('Capture time not yet available')
+            capture_time = parse_datetime(govuk_payment['settlement_summary'].get('captured_time', ''))
+            if capture_time is not None:
+                return capture_time
+        except (KeyError, TypeError):
+            pass
+        raise GovUkPaymentStatusException(
+            'Capture time not yet available for payment %s' % govuk_payment['reference']
+        )
 
     def create_govuk_payment(self, payment_ref, new_govuk_payment):
         govuk_response = requests.post(
