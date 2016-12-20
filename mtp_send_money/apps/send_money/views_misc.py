@@ -27,7 +27,7 @@ def robots_txt_view(request):
     robots.txt - blocks access on non-prod and refers to sitemap.xml
     @param request: the HTTP request
     """
-    if settings.ENVIRONMENT == 'prod':
+    if settings.ENVIRONMENT != 'prod':
         robots_txt = 'User-agent: *\nDisallow: /'
     else:
         robots_txt = 'Sitemap: %s' % request.build_absolute_uri(reverse('sitemap_xml'))
