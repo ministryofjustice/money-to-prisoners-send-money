@@ -12,7 +12,7 @@
 }
 
 .mtp-grey-text {
-  color: #696969;;
+  color: #696969;
 
   &.mtp-debit-header {
     padding-bottom: 0;
@@ -20,7 +20,7 @@
 }
 
 .mtp-debit-unavailable {
-  color: #b10e1e;
+  color: $error-colour;
   margin-top: 0;
   padding-top: 0;
 }
@@ -36,14 +36,14 @@
 
 .mtp-payment-help {
   padding-left: 0.4em;
-}
 
-.help-box-contents {
-  ol {
-    margin-bottom: 5px;
-  }
+  .help-box-contents {
+    ol {
+      margin-bottom: 5px;
+    }
 
-  a {
-    margin-left: .8em;
+    a {
+      margin-left: .8em;
+    }
   }
 }
