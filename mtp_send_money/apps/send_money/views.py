@@ -53,6 +53,14 @@ class SendMoneyView(View):
             yield from cls.get_previous_views(view.previous_view)
             yield view.previous_view
 
+    @classmethod
+    def is_service_charged(cls):
+        zero = decimal.Decimal('0')
+        return (
+            settings.SERVICE_CHARGE_PERCENTAGE > zero or
+            settings.SERVICE_CHARGE_FIXED > zero
+        )
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.valid_form_data = {}
@@ -151,7 +159,7 @@ class PaymentMethodChoiceView(SendMoneyFormView):
         context_data = super().get_context_data(**kwargs)
         context_data.update({
             'experiment': experiment,
-            'service_charged': settings.SERVICE_CHARGED,
+            'service_charged': self.is_service_charged(),
             'service_charge_percentage': settings.SERVICE_CHARGE_PERCENTAGE,
             'service_charge_fixed': settings.SERVICE_CHARGE_FIXED,
         })
@@ -285,7 +293,7 @@ class DebitCardAmountView(DebitCardFlow, SendMoneyFormView):
 
     def get_context_data(self, **kwargs):
         kwargs.update({
-            'service_charged': settings.SERVICE_CHARGED,
+            'service_charged': self.is_service_charged(),
             'service_charge_percentage': settings.SERVICE_CHARGE_PERCENTAGE,
             'service_charge_fixed': settings.SERVICE_CHARGE_FIXED,
             'sample_amount': 20,  # in pounds
@@ -306,7 +314,7 @@ class DebitCardCheckView(DebitCardFlow, TemplateView):
         amount_details = self.valid_form_data[DebitCardAmountView.url_name]
         kwargs.update(**prisoner_details)
         kwargs.update(**amount_details)
-        return super().get_context_data(service_charged=settings.SERVICE_CHARGED, **kwargs)
+        return super().get_context_data(service_charged=self.is_service_charged(), **kwargs)
 
     def get_prisoner_details_url(self):
         return build_view_url(self.request, DebitCardPrisonerDetailsView.url_name)
