@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: MTP send-money\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-12-19 14:43+0000\n"
+"POT-Creation-Date: 2016-12-22 14:28+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Igor U <igor.ushkarev@digital.justice.gov.uk>, 2016\n"
 "Language-Team: Welsh (https://www.transifex.com/ministry-of-justice/teams/34553/cy/)\n"
@@ -17,16 +17,16 @@ msgstr ""
 msgid "Enter any questions or feedback you may have about this service"
 msgstr ""
 
-#: apps/feedback/forms.py:14 apps/send_money/forms.py:66
+#: apps/feedback/forms.py:14 apps/send_money/forms.py:68
 #: templates/send_money/debit-card-check.html:31
 msgid "Prisoner number"
 msgstr ""
 
-#: apps/feedback/forms.py:15 apps/send_money/forms.py:67
+#: apps/feedback/forms.py:15 apps/send_money/forms.py:69
 msgid "For example, A1234BC"
 msgstr ""
 
-#: apps/feedback/forms.py:21 apps/send_money/forms.py:72
+#: apps/feedback/forms.py:21 apps/send_money/forms.py:74
 msgid "Prisoner date of birth"
 msgstr ""
 
@@ -48,43 +48,51 @@ msgstr ""
 msgid "Feedback"
 msgstr ""
 
-#: apps/send_money/forms.py:52
+#: apps/send_money/forms.py:54
 msgid "Please choose how you want to send money"
 msgstr ""
 
-#: apps/send_money/forms.py:73
+#: apps/send_money/forms.py:75
 msgid "For example, 28 04 1996"
 msgstr ""
 
-#: apps/send_money/forms.py:78
+#: apps/send_money/forms.py:80
 msgid "This service is currently unavailable"
 msgstr ""
 
-#: apps/send_money/forms.py:79
+#: apps/send_money/forms.py:81
 msgid "No prisoner matches the details you’ve supplied"
 msgstr ""
 
-#: apps/send_money/forms.py:142
+#: apps/send_money/forms.py:163
 msgid "Prisoner name"
 msgstr ""
 
-#: apps/send_money/forms.py:153
+#: apps/send_money/forms.py:173
+msgid "The amount you are trying to send is too large."
+msgstr ""
+
+#: apps/send_money/forms.py:174
+msgid "Please enter a smaller amount"
+msgstr ""
+
+#: apps/send_money/forms.py:179
 msgid "Amount you are sending"
 msgstr ""
 
-#: apps/send_money/forms.py:158
+#: apps/send_money/forms.py:184
 msgid "Enter as a number"
 msgstr ""
 
-#: apps/send_money/forms.py:159
+#: apps/send_money/forms.py:185
 msgid "Amount should be 1p or more"
 msgstr ""
 
-#: apps/send_money/forms.py:160
+#: apps/send_money/forms.py:186
 msgid "Only use 2 decimal places"
 msgstr ""
 
-#: apps/send_money/forms.py:168
+#: apps/send_money/forms.py:194
 msgid "Your email address"
 msgstr ""
 
@@ -961,8 +969,8 @@ msgstr ""
 msgid "Money takes 1 working day to reach the prisoner"
 msgstr ""
 
-#: templates/send_money/payment-method.html:55
-#: templates/send_money/payment-method.html:64
+#: templates/send_money/payment-method.html:56
+#: templates/send_money/payment-method.html:65
 msgid "More help"
 msgstr ""
 
