@@ -6,7 +6,8 @@ import threading
 from django import forms
 from django.conf import settings
 from django.core.exceptions import ValidationError
-from django.utils.translation import ugettext_lazy as _
+from django.core.validators import MaxValueValidator
+from django.utils.translation import gettext, gettext_lazy as _
 from form_error_reporting import GARequestErrorReportingMixin
 from mtp_common.forms.fields import SplitDateField
 from oauthlib.oauth2 import OAuth2Error
@@ -168,12 +169,17 @@ class DebitCardPrisonerDetailsForm(PrisonerDetailsForm):
         return set(filter(None, settings.DEBIT_CARD_PRISONS.split(',')))
 
 
+class MaxAmountValidator(MaxValueValidator):
+    message = (gettext('The amount you are trying to send is too large.') + ' ' +
+               gettext('Please enter a smaller amount'))
+
+
 class DebitCardAmountForm(SendMoneyForm):
     amount = forms.DecimalField(
         label=_('Amount you are sending'),
         min_value=decimal.Decimal('0.01'),
-        max_value=decimal.Decimal('1000000'),
         decimal_places=2,
+        validators=[MaxAmountValidator(decimal.Decimal('200'))],
         error_messages={
             'invalid': _('Enter as a number'),
             'min_value': _('Amount should be 1p or more'),

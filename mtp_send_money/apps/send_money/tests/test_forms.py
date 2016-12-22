@@ -461,13 +461,13 @@ DebitCardAmountFormTestCase.make_valid_tests([
     {
         'name': 'amount_2',
         'input_data': {
-            'amount': '12000.00',
+            'amount': '120.00',
         }
     },
     {
         'name': 'amount_3',
         'input_data': {
-            'amount': '1000000.00',
+            'amount': '200.00',
         }
     },
     {
@@ -531,9 +531,15 @@ DebitCardAmountFormTestCase.make_invalid_tests([
         }
     },
     {
-        'name': 'too_much',
+        'name': 'too_much_1',
         'input_data': {
-            'amount': '1000000.01',
+            'amount': '200.01',
+        }
+    },
+    {
+        'name': 'too_much_2',
+        'input_data': {
+            'amount': '1000',
         }
     },
     {
