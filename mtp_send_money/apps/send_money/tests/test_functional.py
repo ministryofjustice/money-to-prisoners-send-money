@@ -1,4 +1,5 @@
 import datetime
+import decimal
 import os
 import random
 import unittest
@@ -123,7 +124,9 @@ class SendMoneyDetailsPage(SendMoneyFunctionalTestCase):
         self.check_2_digit_entry()
 
     @override_settings(SHOW_BANK_TRANSFER_OPTION=False,
-                       SHOW_DEBIT_CARD_OPTION=True)
+                       SHOW_DEBIT_CARD_OPTION=True,
+                       SERVICE_CHARGE_PERCENTAGE=decimal.Decimal('2.4'),
+                       SERVICE_CHARGE_FIXED=decimal.Decimal('0.20'))
     def test_service_charge_js(self):
         def check_service_charge(amount, expected):
             amount_field = self.driver.find_element_by_id('id_amount')

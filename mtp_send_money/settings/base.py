@@ -220,14 +220,11 @@ NOMS_HOLDING_ACCOUNT_SORT_CODE = os.environ.get('NOMS_HOLDING_ACCOUNT_SORT_CODE'
 ENABLE_PAYMENT_CHOICE_EXPERIMENT = os.environ.get('ENABLE_PAYMENT_CHOICE_EXPERIMENT', 'True') == 'True'
 
 SERVICE_CHARGE_PERCENTAGE = Decimal(
-    os.environ.get('SERVICE_CHARGE_PERCENTAGE', '2.4')
+    os.environ.get('SERVICE_CHARGE_PERCENTAGE', '0')
 )  # always use `Decimal` percentage
 SERVICE_CHARGE_FIXED = Decimal(
-    os.environ.get('SERVICE_CHARGE_FIXED', '0.20')
+    os.environ.get('SERVICE_CHARGE_FIXED', '0')
 )  # always use `Decimal` in pounds
-SERVICE_CHARGED = (
-    SERVICE_CHARGE_PERCENTAGE > Decimal('0') or SERVICE_CHARGE_FIXED > Decimal('0')
-)
 
 GOOGLE_ANALYTICS_ID = os.environ.get('GOOGLE_ANALYTICS_ID', None)
 

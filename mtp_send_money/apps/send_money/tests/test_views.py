@@ -651,7 +651,8 @@ class DebitCardAmountTestCase(DebitCardFlowTestCase):
         response = self.client.get(self.url, follow=True)
         self.assertOnPage(response, 'choose_method')
 
-    @override_settings(SERVICE_CHARGED=False)
+    @override_settings(SERVICE_CHARGE_PERCENTAGE=Decimal('0'),
+                       SERVICE_CHARGE_FIXED=Decimal('0'))
     def test_send_money_page_shows_no_service_charge(self):
         self.choose_debit_card_payment_method()
         response = self.fill_in_prisoner_details()
@@ -667,7 +668,8 @@ class DebitCardAmountTestCase(DebitCardFlowTestCase):
         self.assertContains(response, '2.5%')
         self.assertContains(response, '21p')
 
-    @override_settings(SERVICE_CHARGED=False)
+    @override_settings(SERVICE_CHARGE_PERCENTAGE=Decimal('0'),
+                       SERVICE_CHARGE_FIXED=Decimal('0'))
     def test_empty_form_shows_errors(self):
         self.choose_debit_card_payment_method()
         self.fill_in_prisoner_details()
@@ -678,7 +680,8 @@ class DebitCardAmountTestCase(DebitCardFlowTestCase):
         form = response.context['form']
         self.assertTrue(form.errors)
 
-    @override_settings(SERVICE_CHARGED=False)
+    @override_settings(SERVICE_CHARGE_PERCENTAGE=Decimal('0'),
+                       SERVICE_CHARGE_FIXED=Decimal('0'))
     def test_amount_saved_and_can_be_changed(self):
         self.choose_debit_card_payment_method()
         self.fill_in_prisoner_details()
