@@ -10,7 +10,7 @@ from django.core.validators import MaxValueValidator
 from django.utils.translation import gettext, gettext_lazy as _
 from form_error_reporting import GARequestErrorReportingMixin
 from mtp_common.forms.fields import SplitDateField
-from oauthlib.oauth2 import OAuth2Error
+from oauthlib.oauth2 import OAuth2Error, TokenExpiredError
 from requests.exceptions import RequestException
 from slumber.exceptions import HttpClientError, HttpNotFoundError, SlumberHttpBaseException
 
@@ -109,6 +109,8 @@ class PrisonerDetailsForm(SendMoneyForm):
         api_client = self.get_api_client()
         try:
             return api_client.prisoner_validity().get(**filters)
+        except TokenExpiredError:
+            pass
         except HttpClientError as e:
             if e.response.status_code != 401:
                 raise
