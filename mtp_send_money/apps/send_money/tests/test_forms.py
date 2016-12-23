@@ -128,9 +128,65 @@ class PrisonerDetailsFormTestCase(FormTestCase):
 class BankTransferPrisonerDetailsFormTestCase(PrisonerDetailsFormTestCase):
     form_class = BankTransferPrisonerDetailsForm
 
+    def test_session_expiry(self):
+        from mtp_common.auth.api_client import REQUEST_TOKEN_URL
+
+        form = self.form_class(data={
+            'prisoner_number': 'A1234AB',
+            'prisoner_dob_0': '5',
+            'prisoner_dob_1': '10',
+            'prisoner_dob_2': '1980',
+        })
+        create_session_calls = []
+
+        def mocked_get_api_client(reconnect=False):
+            create_session_calls.append(reconnect)
+            return get_api_client()
+
+        with responses.RequestsMock() as rsps, \
+                mock.patch('send_money.forms.PrisonerDetailsForm.get_api_client') as mocked_api_client:
+            mocked_api_client.side_effect = mocked_get_api_client
+            rsps.add(
+                rsps.POST,
+                REQUEST_TOKEN_URL,
+                json={
+                    'token_type': 'Bearer',
+                    'scope': 'read write',
+                    'access_token': get_random_string(length=30),
+                    'refresh_token': get_random_string(length=30),
+                    'expires_in': 0,
+                },
+                status=200,
+            )
+            rsps.add(
+                rsps.POST,
+                REQUEST_TOKEN_URL,
+                json={
+                    'token_type': 'Bearer',
+                    'scope': 'read write',
+                    'access_token': get_random_string(length=30),
+                    'refresh_token': get_random_string(length=30),
+                    'expires_in': 3600,
+                },
+                status=200,
+            )
+            rsps.add(
+                rsps.GET,
+                api_url('/prisoner_validity/'),
+                json={
+                    'count': 1,
+                    'results': [{
+                        'prisoner_number': 'A1234AB',
+                        'prisoner_dob': '1980-10-05',
+                    }],
+                },
+                status=200,
+            )
+            self.assertTrue(form.is_valid())
+        self.assertSequenceEqual(create_session_calls, [False, True])
+
     @mock.patch('send_money.forms.get_api_client')
     def test_validation_check_concurrency(self, mocked_api_client):
-        threading.enumerate()
         form_class = self.form_class
         lock = threading.RLock()
         finished = threading.Event()
