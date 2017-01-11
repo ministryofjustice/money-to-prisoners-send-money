@@ -96,9 +96,14 @@ class SendMoneyFormView(SendMoneyView, FormView):
                 context_data['form'] = form
         return context_data
 
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['request'] = self.request
+        return kwargs
+
     def form_valid(self, form):
         # save valid form to session
-        form.serialise_to_session(self.request)
+        form.serialise_to_session()
         return super().form_valid(form)
 
 
