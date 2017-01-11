@@ -29,19 +29,27 @@ class SendMoneyForm(GARequestErrorReportingMixin, forms.Form):
         session = request.session
 
         def get_value(f):
-            value = session.get(f)
+            value = session[f]
             if hasattr(cls, 'unserialise_%s' % f) and value is not None:
                 value = getattr(cls, 'unserialise_%s' % f)(value)
             return value
 
-        return cls(data={
-            field: get_value(field)
-            for field in cls.base_fields
-        })
+        try:
+            data = {
+                field: get_value(field)
+                for field in cls.base_fields
+            }
+        except KeyError:
+            data = None
+        return cls(request=request, data=data)
 
-    def serialise_to_session(self, request):
+    def __init__(self, request=None, **kwargs):
+        super().__init__(**kwargs)
+        self.request = request
+
+    def serialise_to_session(self):
         cls = self.__class__
-        session = request.session
+        session = self.request.session
         for field in cls.base_fields:
             value = self.cleaned_data[field]
             if hasattr(cls, 'serialise_%s' % field):
@@ -96,7 +104,7 @@ class PrisonerDetailsForm(SendMoneyForm):
             return cls.shared_api_client
 
     def __init__(self, **kwargs):
-        if isinstance(kwargs.get('data', {}).get('prisoner_dob'), datetime.date):
+        if isinstance((kwargs.get('data') or {}).get('prisoner_dob'), datetime.date):
             prisoner_dob = kwargs['data'].pop('prisoner_dob')
             kwargs['data'].update({
                 'prisoner_dob_0': prisoner_dob.day,
