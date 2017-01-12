@@ -14,7 +14,7 @@
     {% csrf_token %}
     {% include 'mtp_common/forms/error-summary.html' with form=form only %}
 
-    {%if form.payment_method.field.disabled %}
+    {% if form.payment_method.field.disabled %}
       <div class="error-summary" role="alert" aria-labelledby="error-summary-heading" tabindex="-1">
 
         <h1 class="heading-medium error-summary-heading">
@@ -29,8 +29,10 @@
       <legend class="visuallyhidden">{% trans 'How do you want to send money?' %}</legend>
 
       {% for payment_method in form.payment_method.field.choices %}
-        <label class="block-label" for="id_{{ payment_method.0 }}">
-          <input id="id_{{ payment_method.0 }}" type="radio" name="{{ form.payment_method.html_name }}" value="{{ payment_method.0 }}" {% if form.payment_method.value == payment_method.0 %}checked{% endif %} {%if form.payment_method.field.disabled %}disabled{% endif %}>
+        <label class="block-label {% if form.payment_method.field.disabled %}mtp-grey-choice{% endif %}" for="id_{{ payment_method.0 }}">
+          <input id="id_{{ payment_method.0 }}" type="radio" name="{{ form.payment_method.html_name }}" value="{{ payment_method.0 }}"
+                 {% if form.payment_method.field.disabled %}disabled{% endif %}
+                 {% if form.payment_method.value == payment_method.0 %}checked{% endif %}>
           {{ payment_method.1 }}
         </label>
         {% if not forloop.last %}
@@ -44,7 +46,7 @@
         <div></div><a href="#">{% trans 'Which is right for me?' %}</a>
       </div>
       <div class="panel panel-border-narrow help-box-contents" id="help-box-contents">
-        <h2 class="heading-small mtp-debit-header">{% trans 'Pay now by debit card' %}</h2>
+        <h2 class="heading-small mtp-debit-header {% if form.payment_method.field.disabled %}mtp-grey-text{% endif %}">{% trans 'Pay now by debit card' %}</h2>
         {% if form.payment_method.field.disabled %}
           <h2 class="heading-small mtp-debit-unavailable">{% trans 'Temporarily unavailable due to a technical issue' %}</h2>
         {% endif %}

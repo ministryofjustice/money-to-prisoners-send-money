@@ -10,7 +10,6 @@
   require('charges').Charges.init();
   require('experiments').Experiments.init();
   require('reference').Reference.init();
-  require('greyout').Greyout.init();
   require('filtered-list').FilteredList.init();
   require('placeholder-polyfill').PlaceholderPolyfill.init();
   require('selection-buttons').SelectionButtons.init();
