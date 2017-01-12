@@ -11,6 +11,7 @@ from django.utils.dateparse import parse_date
 from django.utils import formats
 from django.utils.encoding import force_text
 from django.utils.translation import gettext, gettext_lazy as _
+from django_mailgun import MailgunAPIError
 from mtp_common.auth import api_client, urljoin
 from mtp_common.email import send_email
 import requests
@@ -55,7 +56,7 @@ def send_notification(email, context):
             context=context, html_template='send_money/email/debit-card-confirmation.html'
         )
         return True
-    except (RequestException, SMTPException):
+    except (MailgunAPIError, RequestException, SMTPException):
         logger.exception('Could not send successful payment notification')
 
 
