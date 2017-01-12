@@ -64,11 +64,12 @@ class PaymentMethodChoiceForm(SendMoneyForm):
 
     def __init__(self, show_bank_transfer_first=False, **kwargs):
         super().__init__(**kwargs)
+        payment_method_field = self.fields['payment_method']
         if show_bank_transfer_first:
-            self['payment_method'].field.choices = reversed(self['payment_method'].field.choices)
+            payment_method_field.choices = reversed(payment_method_field.choices)
         if not check_payment_service_available():
-            self.fields['payment_method'].initial = PaymentMethod.bank_transfer.name
-            self.fields['payment_method'].disabled = True
+            payment_method_field.initial = PaymentMethod.bank_transfer.name
+            payment_method_field.disabled = True
 
 
 class PrisonerDetailsForm(SendMoneyForm):
