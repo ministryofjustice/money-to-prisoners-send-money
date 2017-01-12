@@ -232,7 +232,7 @@ class BankTransferPrisonerDetailsFormTestCase(PrisonerDetailsFormTestCase):
             for _ in range(concurrency):
                 TestThread().start()
         finished.wait()
-        self.assertEqual(mocked_api_client.call_count, setup_call_count + 1, 'get_api_client called more than one, '
+        self.assertEqual(mocked_api_client.call_count, setup_call_count + 1, 'get_api_client called more than once, '
                                                                              'but the response should be shared')
         self.assertEqual(mocked_api_call.call_count, concurrency, 'validity should be called once for each thread')
         self.assertEqual(successes, concurrency, 'all threads should report valid forms')
