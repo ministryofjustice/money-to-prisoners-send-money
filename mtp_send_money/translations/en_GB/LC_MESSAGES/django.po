@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: MTP send-money\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-12-22 14:28+0000\n"
+"POT-Creation-Date: 2017-01-19 16:41+0000\n"
 "PO-Revision-Date: 2016-11-04 10:00+0000\n"
 "Last-Translator: Welsh Language Unit <welsh.language.unit.manager@hmcts.gsi.gov.uk>\n"
 "Language-Team: Welsh (http://www.transifex.com/ministry-of-justice/mtp/language/cy/)\n"
@@ -17,16 +17,16 @@ msgstr ""
 msgid "Enter any questions or feedback you may have about this service"
 msgstr ""
 
-#: apps/feedback/forms.py:14 apps/send_money/forms.py:68
+#: apps/feedback/forms.py:14 apps/send_money/forms.py:77
 #: templates/send_money/debit-card-check.html:31
 msgid "Prisoner number"
 msgstr ""
 
-#: apps/feedback/forms.py:15 apps/send_money/forms.py:69
+#: apps/feedback/forms.py:15 apps/send_money/forms.py:78
 msgid "For example, A1234BC"
 msgstr ""
 
-#: apps/feedback/forms.py:21 apps/send_money/forms.py:74
+#: apps/feedback/forms.py:21 apps/send_money/forms.py:83
 msgid "Prisoner date of birth"
 msgstr ""
 
@@ -48,51 +48,51 @@ msgstr ""
 msgid "Feedback"
 msgstr ""
 
-#: apps/send_money/forms.py:54
+#: apps/send_money/forms.py:62
 msgid "Please choose how you want to send money"
 msgstr ""
 
-#: apps/send_money/forms.py:75
+#: apps/send_money/forms.py:84
 msgid "For example, 28 04 1996"
 msgstr ""
 
-#: apps/send_money/forms.py:80
+#: apps/send_money/forms.py:89
 msgid "This service is currently unavailable"
 msgstr ""
 
-#: apps/send_money/forms.py:81
+#: apps/send_money/forms.py:90
 msgid "No prisoner matches the details you’ve supplied"
 msgstr ""
 
-#: apps/send_money/forms.py:163
+#: apps/send_money/forms.py:174
 msgid "Prisoner name"
 msgstr ""
 
-#: apps/send_money/forms.py:173
+#: apps/send_money/forms.py:184
 msgid "The amount you are trying to send is too large."
 msgstr ""
 
-#: apps/send_money/forms.py:174
+#: apps/send_money/forms.py:185
 msgid "Please enter a smaller amount"
 msgstr ""
 
-#: apps/send_money/forms.py:179
+#: apps/send_money/forms.py:190
 msgid "Amount you are sending"
 msgstr ""
 
-#: apps/send_money/forms.py:184
+#: apps/send_money/forms.py:195
 msgid "Enter as a number"
 msgstr ""
 
-#: apps/send_money/forms.py:185
+#: apps/send_money/forms.py:196
 msgid "Amount should be 1p or more"
 msgstr ""
 
-#: apps/send_money/forms.py:186
+#: apps/send_money/forms.py:197
 msgid "Only use 2 decimal places"
 msgstr ""
 
-#: apps/send_money/forms.py:194
+#: apps/send_money/forms.py:205
 msgid "Your email address"
 msgstr ""
 
@@ -103,35 +103,35 @@ msgstr ""
 #: apps/send_money/models.py:7 templates/send_money/debit-card-amount.html:10
 #: templates/send_money/debit-card-check.html:12
 #: templates/send_money/debit-card-prisoner-details.html:10
-#: templates/send_money/payment-method.html:47
+#: templates/send_money/payment-method.html:49
 msgid "Pay now by debit card"
 msgstr ""
 
 #: apps/send_money/models.py:8
 #: templates/send_money/bank-transfer-prisoner-details.html:10
 #: templates/send_money/bank-transfer-warning.html:10
-#: templates/send_money/payment-method.html:58
+#: templates/send_money/payment-method.html:60
 msgid "Get a prisoner reference to use in a UK bank transfer"
 msgstr ""
 
-#: apps/send_money/utils.py:54
+#: apps/send_money/utils.py:55
 msgid "Send money to a prisoner: your payment was successful"
 msgstr ""
 
-#: apps/send_money/utils.py:64
+#: apps/send_money/utils.py:65
 msgid "Incorrect prisoner number format"
 msgstr ""
 
-#: apps/send_money/views.py:242
+#: apps/send_money/views.py:255
 #, python-format
 msgid "Send money to a prisoner: Your prisoner reference is %(bank_transfer_reference)s"
 msgstr ""
 
-#: apps/send_money/views.py:333
+#: apps/send_money/views.py:346
 msgid "Not known"
 msgstr ""
 
-#: apps/send_money/views.py:350
+#: apps/send_money/views.py:363
 #, python-format
 msgid "To this prisoner: %(prisoner_number)s"
 msgstr ""
@@ -441,11 +441,11 @@ msgid "Please note"
 msgstr ""
 
 #: templates/send_money/bank-transfer-warning.html:18
-msgid "You can’t go into a bank branch to transfer money – only transfers done using online banking, your mobile banking app or telephone banking will reach the prisoner"
+msgid "Only transfers done using online banking, your mobile banking app or telephone banking will reach the prisoner - you can’t go into a bank branch to transfer money"
 msgstr ""
 
 #: templates/send_money/bank-transfer-warning.html:19
-msgid "You can’t transfer money from an international bank account - only transfers from a UK bank account will reach the prisoner"
+msgid "Only transfers from a UK bank account will reach the prisoner - you can’t transfer money from an international bank account"
 msgstr ""
 
 #: templates/send_money/bank-transfer-warning.html:24
@@ -606,7 +606,7 @@ msgid "What happens next"
 msgstr ""
 
 #: templates/send_money/debit-card-confirmation.html:40
-#: templates/send_money/payment-method.html:54
+#: templates/send_money/payment-method.html:56
 msgid "You’ll get email confirmation of payment"
 msgstr ""
 
@@ -949,48 +949,48 @@ msgstr ""
 msgid "Please send money using a bank transfer or come back later."
 msgstr ""
 
-#: templates/send_money/payment-method.html:37
+#: templates/send_money/payment-method.html:39
 msgid "or"
 msgstr ""
 
-#: templates/send_money/payment-method.html:44
+#: templates/send_money/payment-method.html:46
 msgid "Which is right for me?"
 msgstr ""
 
-#: templates/send_money/payment-method.html:49
+#: templates/send_money/payment-method.html:51
 msgid "Temporarily unavailable due to a technical issue"
 msgstr ""
 
-#: templates/send_money/payment-method.html:52
+#: templates/send_money/payment-method.html:54
 msgid "You can complete your payment here"
 msgstr ""
 
-#: templates/send_money/payment-method.html:53
+#: templates/send_money/payment-method.html:55
 msgid "Money takes 1 working day to reach the prisoner"
 msgstr ""
 
-#: templates/send_money/payment-method.html:56
-#: templates/send_money/payment-method.html:65
+#: templates/send_money/payment-method.html:58
+#: templates/send_money/payment-method.html:67
 msgid "More help"
 msgstr ""
 
-#: templates/send_money/payment-method.html:60
+#: templates/send_money/payment-method.html:62
 msgid "You’ll get a prisoner reference you can use to make a bank transfer from a UK bank in your usual way"
 msgstr ""
 
-#: templates/send_money/payment-method.html:61
+#: templates/send_money/payment-method.html:63
 msgid "You can re-use this reference for this prisoner each time you make a transfer"
 msgstr ""
 
-#: templates/send_money/payment-method.html:62
+#: templates/send_money/payment-method.html:64
 msgid "The transfer must be done using online banking, your mobile banking app or telephone banking – you can’t go in branch"
 msgstr ""
 
-#: templates/send_money/payment-method.html:63
+#: templates/send_money/payment-method.html:65
 msgid "Money takes 1-3 working days to reach the prisoner"
 msgstr ""
 
-#: templates/send_money/payment-method.html:70
+#: templates/send_money/payment-method.html:72
 msgid "Continue"
 msgstr ""
 
