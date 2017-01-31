@@ -31,6 +31,16 @@
     </div>
 
     <div class="column-two-thirds">
+      <ul class="list mtp-help-page__sections">
+        <li><a href="#not-found">{% trans 'When no prisoner matches the details entered' %}</a></li>
+        <li><a href="#help-with-debit-cards">{% trans 'Help with debit cards' %}</a></li>
+        <li><a href="#help-with-bank-transfers">{% trans 'Help with bank transfers' %}</a></li>
+        <li><a href="#returned-payment">{% trans 'When your money has been returned' %}</a></li>
+        <li><a href="#email-confirmation">{% trans 'Email confirmation' %}</a></li>
+        <li><a href="#payment-not-received">{% trans 'When a payment doesn’t go through' %}</a></li>
+        <li><a href="#payment-not-received">{% trans 'Request a refund' %}</a></li>
+
+      </ul>
       <p>
         {% trans 'This service is free and secure.' %}
         {% blocktrans trimmed %}
@@ -46,80 +56,53 @@
           But you can send money to a prisoner <a href="{{ url }}">using a postal order, a cheque or cash</a>.
         {% endblocktrans %}
       </p>
-
-
-      <h2 id="not-found" class="heading-medium">
-        {% trans 'Why does it say no prisoner matches the details I enter?' %}
-      </h2>
       <p>
-        {% blocktrans trimmed %}
-          This service is available in all <a href="{{ prison_list_url }}">public prisons in England and Wales</a>.
-        {% endblocktrans %}
-        {% trans 'It normally takes one working day to get any new prisoner into the system and onto the database.' %}
-      </p>
-      <p>
-        {% trans 'Sometimes the prisoner’s date of birth and/or prison number are incorrectly entered into the prison database.' %}
-        {% trans 'Please ask the prisoner to check with the wing officer what details are on the prison database to make sure your details match theirs.' %}
-      </p>
-
-
-      <h2 id="how-long" class="heading-medium">
-        {% trans 'How long does it take?' %}
-        {% trans 'Does the prisoner get told when they get their money?' %}
-      </h2>
-      <p>
-        {% trans 'Money should reach the prisoner’s account in 1 working day, but your bank can take up to 3 working days to process the payment.' %}
+        {% trans 'Money should reach the prisoner’s account in about 3 working days.' %}
         {% trans 'No money is processed at weekends or bank holidays.' %}
       </p>
-      {% comment %}
-      <p>
-        {% trans 'Prisoners receive a break-down receipt for money sent to them only when they collect their canteen.' %}
-      </p>
-      {% endcomment %}
 
+      <p id="not-found">
+        {% url 'send_money:help' as help_url %}
+        {% blocktrans trimmed %}
+          <strong>When no prisoner matches the details entered: </strong>Please check you entered the details correctly and you're sending money to a <a href="{{ help_url }}prisons">public prison</a>.
+          You can also check the details match those held by the prison - ask the prisoner to check with the wing officer.
+        {% endblocktrans %}
+      </p>
 
-      <h2 id="help-with-debit-cards" class="heading-medium">{% trans 'Help with debit cards' %}</h2>
-      <h3 class="heading-small">{% trans 'Which card types can I use?' %}</h3>
+      <p id="help-with-debit-cards" class="heading-medium">{% trans 'Help with debit cards' %}</p>
       <p>
-        {% trans 'We currently support Mastercard Debit and Visa Debit cards only.' %}
+        {% trans 'We currently support Mastercard and Visa debit cards only.' %}
       </p>
-      <h3 class="heading-small">{% trans 'Can I make a payment internationally?' %}</h3>
       <p>
-        {% trans 'Only using the debit card method.' %}
+        {% trans 'You can make an international payment using the debit card method.' %}
       </p>
-      <h3 class="heading-small">{% trans 'I can’t connect to the site to pay' %}</h3>
       <p>
         {% trans 'Due to security restrictions, some older web browsers are not supported.' %}
-        {% trans 'Try on another computer or try using a newer web browser, such as Chrome, Firefox or Internet Explorer 11 and up.' %}
+        {% trans 'If you can’t connect to the site to pay, try on another computer or try using a newer web browser, such as Chrome, Firefox or Internet Explorer 11 and up.' %}
       </p>
 
-
-      <h2 id="help-with-bank-transfers" class="heading-medium">{% trans 'Help with bank transfers' %}</h2>
-      <h3 class="heading-small">
-        {% trans 'Why haven’t they got their money?' %}
-        {% trans 'Why has my money been returned?' %}
-      </h3>
+      <p id="help-with-bank-transfers" class="heading-medium">{% trans 'Help with bank transfers' %}</p>
       <p>
-        {% trans 'You may have used an incorrect reference.' %}
-        {% trans 'If this is the case, you’ll receive a refund within 4 working days of making the transfer.' %}
-        {% trans 'Your bank statement will show ‘GBS RE NOMS AGENCY’ and the reference will be ‘refund’.' %}
+        {% trans 'You can use the reference you first generated each time you send money to this particular prisoner.' %}
       </p>
-      <h3 class="heading-small">{% trans 'Do I need a new reference each time I send money by bank transfer?' %}</h3>
-      <p>
-        {% trans 'No, use the reference you first generated each time you send money to this particular prisoner.' %}
+      <p id="returned-payment">
+        {% blocktrans trimmed %}
+          <strong>When your money has been returned: </strong> You may have used an incorrect reference. If this is the case, you’ll receive a refund within 4 working days of making the transfer.
+          Your bank statement will show ‘GBS RE NOMS AGENCY’ and the reference will be ‘refund’.'
+        {% endblocktrans %}
       </p>
-      <h3 class="heading-small">{% trans 'Why didn’t I get email confirmation after I made a bank transfer?' %}</h3>
-      <p>
-        {% trans 'When you send money using a bank transfer, you only generate the reference on the GOV.UK site, then you use that reference when you make the bank transfer with your bank in the usual way (by mobile app, online and telephone banking).' %}
-        {% trans 'If you want confirmation that the money was sent, you need to ask your bank for this.' %}
+      <p id="email-confirmation">
+        {% blocktrans trimmed %}
+          <strong>Email confirmation: </strong> You don’t receive an email confirmation when you do a bank transfer because when you send money using this method, you only generate the reference on the GOV.UK site.
+          Then you use that reference when you make the bank transfer with your bank in the usual way (by mobile app, online and telephone banking).
+          If you want confirmation that the money was sent, you need to ask your bank for this.
+        {% endblocktrans %}
       </p>
-      <h3 class="heading-small">
-        {% trans 'What if I made a transfer at a bank branch?' %}
-        {% trans 'Or from an international bank account?' %}
-      </h3>
-      <p>
-        {% trans 'Your payment won’t go through so we can’t credit the prisoner and you’ll have to request a refund.' %}
-        {% trans 'Please follow these steps:' %}
+      <p id="payment-not-received">
+        {% blocktrans trimmed %}
+          <strong>When a payment doesn’t go through: </strong> If you made a transfer at a bank branch or from an international bank account, your payment won't go through.
+          That means we can't credit the prisoner and you'll have to request a refund. Please follow these steps:
+        {% endblocktrans %}
       </p>
       <p>
         {% blocktrans trimmed with url='https://www.justice.gov.uk/contacts/prison-finder' %}

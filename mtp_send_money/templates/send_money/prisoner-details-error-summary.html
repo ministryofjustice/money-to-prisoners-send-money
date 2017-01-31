@@ -20,7 +20,12 @@
         <li class="non-field-error">
           {% url 'send_money:help' as help_url %}
           {% blocktrans trimmed %}
-            To find out why, refer to <a href="{{ help_url }}#not-found">help</a>
+          Please check:
+            <ul class="list list-bullet">
+              <li>you entered the details correctly</li>
+              <li>you're sending money to a <a href="{{ help_url }}prisons">public prison</a></li>
+              <li>the details match those held by the prison - ask the prisoner to check with the wing officer</li>
+            </ul>
           {% endblocktrans %}
         </li>
       {% endif %}
