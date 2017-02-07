@@ -1,6 +1,7 @@
 (function () {
   'use strict';
 
+  require('sticky-contents').StickyContents.init();
   require('proposition-header').PropositionHeader.init();
   require('analytics').Analytics.init();
   require('element-focus').ElementFocus.init();

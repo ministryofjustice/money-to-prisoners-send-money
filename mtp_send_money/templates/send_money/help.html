@@ -16,31 +16,28 @@
   </header>
 
   <div class="grid-row mtp-help-page">
-    <div class="column-one-third related-container">
-      <aside class="mtp-related-items" role="complementary">
-        <nav role="navigation">
-          <ul>
-            <li>
-              {% blocktrans trimmed %}
-                If you read this help section but still have a question about this service, <a href="{{ ticket_url }}">contact us</a>.
-              {% endblocktrans %}
-            </li>
-          </ul>
-        </nav>
-      </aside>
+    <div class="column-one-third">
+      <div class="mtp-help__contents">
+        <strong>{% trans 'Page contents:' %}</strong>
+        <ul class="list mtp-help__contents-list">
+          <li><a href="#not-found">{% trans 'When no prisoner matches the details entered' %}</a></li>
+          <li><a href="#help-with-debit-cards">{% trans 'Help with debit cards' %}</a></li>
+          <li><a href="#help-with-bank-transfers">{% trans 'Help with bank transfers' %}</a></li>
+          <li><a href="#returned-payment">{% trans 'When your money has been returned' %}</a></li>
+          <li><a href="#email-confirmation">{% trans 'Email confirmation' %}</a></li>
+          <li><a href="#payment-not-received">{% trans 'When a payment doesn’t go through' %}</a></li>
+          <li><a href="#payment-not-received">{% trans 'Request a refund' %}</a></li>
+        </ul>
+      </div>
     </div>
-
     <div class="column-two-thirds">
-      <ul class="list mtp-help-page__sections">
-        <li><a href="#not-found">{% trans 'When no prisoner matches the details entered' %}</a></li>
-        <li><a href="#help-with-debit-cards">{% trans 'Help with debit cards' %}</a></li>
-        <li><a href="#help-with-bank-transfers">{% trans 'Help with bank transfers' %}</a></li>
-        <li><a href="#returned-payment">{% trans 'When your money has been returned' %}</a></li>
-        <li><a href="#email-confirmation">{% trans 'Email confirmation' %}</a></li>
-        <li><a href="#payment-not-received">{% trans 'When a payment doesn’t go through' %}</a></li>
-        <li><a href="#payment-not-received">{% trans 'Request a refund' %}</a></li>
-
-      </ul>
+      <div class="panel panel-border-wide">
+        <p>
+          {% blocktrans trimmed %}
+            If you read this help section but still have a question about this service, <a href="{{ ticket_url }}">contact us</a>.
+          {% endblocktrans %}
+        </p>
+      </div>
       <p>
         {% trans 'This service is free and secure.' %}
         {% blocktrans trimmed %}
@@ -60,8 +57,7 @@
         {% trans 'Money should reach the prisoner’s account in about 3 working days.' %}
         {% trans 'No money is processed at weekends or bank holidays.' %}
       </p>
-
-      <p id="not-found">
+      <p class="mtp-help__section" id="not-found">
         {% url 'send_money:help' as help_url %}
         {% blocktrans trimmed %}
           <strong>When no prisoner matches the details entered: </strong>Please check you entered the details correctly and you're sending money to a <a href="{{ help_url }}prisons">public prison</a>.
@@ -69,7 +65,7 @@
         {% endblocktrans %}
       </p>
 
-      <p id="help-with-debit-cards" class="heading-medium">{% trans 'Help with debit cards' %}</p>
+      <p id="help-with-debit-cards" class="heading-medium mtp-help__section">{% trans 'Help with debit cards' %}</p>
       <p>
         {% trans 'We currently support Mastercard and Visa debit cards only.' %}
       </p>
@@ -81,24 +77,24 @@
         {% trans 'If you can’t connect to the site to pay, try on another computer or try using a newer web browser, such as Chrome, Firefox or Internet Explorer 11 and up.' %}
       </p>
 
-      <p id="help-with-bank-transfers" class="heading-medium">{% trans 'Help with bank transfers' %}</p>
+      <p id="help-with-bank-transfers" class="heading-medium mtp-help__section">{% trans 'Help with bank transfers' %}</p>
       <p>
         {% trans 'You can use the reference you first generated each time you send money to this particular prisoner.' %}
       </p>
-      <p id="returned-payment">
+      <p class="mtp-help__section" id="returned-payment">
         {% blocktrans trimmed %}
           <strong>When your money has been returned: </strong> You may have used an incorrect reference. If this is the case, you’ll receive a refund within 4 working days of making the transfer.
           Your bank statement will show ‘GBS RE NOMS AGENCY’ and the reference will be ‘refund’.'
         {% endblocktrans %}
       </p>
-      <p id="email-confirmation">
+      <p class="mtp-help__section" id="email-confirmation">
         {% blocktrans trimmed %}
           <strong>Email confirmation: </strong> You don’t receive an email confirmation when you do a bank transfer because when you send money using this method, you only generate the reference on the GOV.UK site.
           Then you use that reference when you make the bank transfer with your bank in the usual way (by mobile app, online and telephone banking).
           If you want confirmation that the money was sent, you need to ask your bank for this.
         {% endblocktrans %}
       </p>
-      <p id="payment-not-received">
+      <p class="mtp-help__section" id="payment-not-received">
         {% blocktrans trimmed %}
           <strong>When a payment doesn’t go through: </strong> If you made a transfer at a bank branch or from an international bank account, your payment won't go through.
           That means we can't credit the prisoner and you'll have to request a refund. Please follow these steps:
@@ -121,7 +117,6 @@
       <p>
         {% trans 'The prison will send you a refund by cheque.' %}
       </p>
-
     </div>
   </div>
 

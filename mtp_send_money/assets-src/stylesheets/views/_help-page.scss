@@ -1,31 +1,65 @@
 // View-specific styles
 
 .mtp-help-page {
-  .column-one-third {
-    float: right;
-    padding-bottom: 2em;
+  margin: 0;
 
-    @media (max-width: 769px) {
-      float: none;
-      width: auto;
+  .mtp-help__contents {
 
-      .mtp-related-items {
-        border-left: 10px solid $border-colour;
-        border-top: 0;
-        padding: 0.5em 0 0.5em 1em;
+    @media (min-width: 641px) {
+      width: 22%;
+      position: absolute;
+
+      strong {
+        font-size: 16px;
+        margin-left: -15px;
+      }
+    }
+  }
+
+  @media (min-width: 641px) {
+    .mtp-help-contents--fixed {
+      position: fixed;
+      top: 0;
+    }
+  }
+
+  .mtp-help__contents-list {
+    padding-left: 0;
+
+    li {
+      font-size: 16px;
+    }
+
+    li:before {
+      content: "–";
+      float: left;
+      display: block;
+      width: 15px;
+
+      @media (min-width: 641px) {
+        margin-left: -15px;
       }
     }
 
+    a {
+      text-decoration: none;
+    }
+
+    .mtp-help__contents-list--active {
+      font-weight: bold;
+    }
   }
 
   .column-two-thirds {
+    margin: 0;
+    float: none;
+
     :first-child {
       margin-top: 0;
     }
 
-    @media (max-width: 769px) {
-      float: none;
-      width: auto;
+    @media (min-width: 641px) {
+      margin: 0 35%;
     }
   }
 }
