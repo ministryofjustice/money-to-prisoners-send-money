@@ -58,9 +58,9 @@
         {% trans 'No money is processed at weekends or bank holidays.' %}
       </p>
       <p class="mtp-help__section" id="not-found">
-        {% url 'send_money:help' as help_url %}
+        {% url 'send_money:prison_list' as prison_list_url %}
         {% blocktrans trimmed %}
-          <strong>When no prisoner matches the details entered: </strong>Please check you entered the details correctly and you're sending money to a <a href="{{ help_url }}prisons">public prison</a>.
+          <strong>When no prisoner matches the details entered: </strong>Please check you entered the details correctly and you're sending money to a <a href="{{ prison_list_url }}">public prison</a>.
           You can also check the details match those held by the prison - ask the prisoner to check with the wing officer.
         {% endblocktrans %}
       </p>
