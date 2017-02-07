@@ -22,7 +22,13 @@
           {% trans 'Please check:' %}
             <ul class="list list-bullet">
               <li>{% trans 'you entered the details correctly' %}</li>
-              <li>{% trans 'you’re sending money to a <a href="{{ help_url }}prisons">public prison' %}</a></li>
+              <li>
+                {% url 'send_money:prison_list' as prison_list_url %}
+                {% blocktrans trimmed %}
+                  you’re sending money to a <a href="{{ prison_list_url }}">public prison</a>
+                {% endblocktrans %}
+              </li>
+
               <li>{% trans 'the details match those held by the prison - ask the prisoner to check with the wing officer' %}</li>
             </ul>
         </li>
