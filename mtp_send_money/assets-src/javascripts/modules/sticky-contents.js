@@ -4,8 +4,10 @@
 exports.StickyContents = {
 
   init: function () {
-    this.cacheEls();
-    this.bindEvents();
+    if ($('.mtp-help__contents').length) {
+      this.cacheEls();
+      this.bindEvents();
+    }
   },
 
   bindEvents: function () {
