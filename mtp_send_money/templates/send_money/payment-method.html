@@ -51,7 +51,7 @@
           <h2 class="heading-small mtp-debit-unavailable">{% trans 'Temporarily unavailable due to a technical issue' %}</h2>
         {% endif %}
         <ol class="list list-number">
-          <li>{% trans 'Your payment will be instant using a Mastercard or Visa debit card' %}</li>
+          <li>{% trans 'You can complete your payment here using Mastercard/Visa debit cards' %}</li>
           <li>{% trans 'The money should take about 3 working days to reach the prisoner' %}</li>
           <li>{% trans 'You’ll get email confirmation of payment' %}</li>
           <li>{% trans 'You can make an international payment using a debit card' %}</li>
@@ -63,9 +63,7 @@
           <li>{% trans 'You’ll get a prisoner reference you can use to make a bank transfer using online banking, your mobile banking app or telephone banking' %}</li>
           <li>{% trans 'You can re-use this reference for this prisoner each time you make a transfer' %}</li>
           <li>{% trans 'The money should take about 3 working days to reach the prisoner' %}</li>
-          <li>{% trans 'If you use an incorrect reference, you’ll receive a refund within 4 working days of making the transfer. Your bank statement will show ‘GBS RE NOMS AGENCY’ and the reference will be ‘refund’' %}</li>
           <li>{% trans 'You don’t get email confirmation after your bank transfer.' %} <a href="{% url 'send_money:help' %}#email-confirmation">{% trans 'Why?' %}</a></li>
-          <li><a href="{% url 'send_money:help' %}#payment-not-received">{% trans 'Request a refund' %}</a></li>
         </ol>
         <a class="mtp-help-link" href="{% url 'send_money:help' %}#help-with-bank-transfers">{% trans 'More help' %}</a>
       </div>
