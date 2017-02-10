@@ -23,12 +23,12 @@
     }
   }
 
-  .mtp-help__contents-list {
+  .mtp-help__contents-list--first {
+    margin-left: -15px;
     padding-left: 0;
+  }
 
-    li {
-      font-size: 16px;
-    }
+  .mtp-help__contents-list--second {
 
     li:before {
       content: "–";
@@ -39,6 +39,12 @@
       @media (min-width: 641px) {
         margin-left: -15px;
       }
+    }
+  }
+
+  .mtp-help__contents-list {
+    li {
+      font-size: 16px;
     }
 
     a {
