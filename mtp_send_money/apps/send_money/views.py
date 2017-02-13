@@ -341,7 +341,7 @@ class DebitCardPaymentView(DebitCardFlow):
 
         amount_pence = int(amount_details['amount'] * 100)
         service_charge_pence = int(get_service_charge(amount_details['amount']) * 100)
-        user_ip = request.META.get('HTTP_X_FORWARDED_FOR', request.META.get('REMOTE_ADDR', ''))
+        user_ip = request.META.get('HTTP_X_FORWARDED_FOR', '')
         user_ip = user_ip.split(',')[0].strip() or None
 
         payment_ref = None
