@@ -777,7 +777,7 @@ class DebitCardPaymentTestCase(DebitCardFlowTestCase):
             payment_request = json.loads(rsps.calls[1].request.body)
             self.assertEqual(payment_request['amount'], 1700)
             self.assertEqual(payment_request['service_charge'], 61)
-            self.assertEqual(payment_request['ip_address'], '127.0.0.1')
+            self.assertEqual(payment_request['ip_address'], None)  # only forwarded-for IP is recorded
 
             # check total charge submitted to govuk, uses requests so body is bytes
             govuk_request = json.loads(rsps.calls[2].request.body.decode('utf8'))
