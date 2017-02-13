@@ -341,6 +341,9 @@ class DebitCardPaymentView(DebitCardFlow):
 
         amount_pence = int(amount_details['amount'] * 100)
         service_charge_pence = int(get_service_charge(amount_details['amount']) * 100)
+        user_ip = request.META.get('HTTP_X_FORWARDED_FOR', request.META.get('REMOTE_ADDR', ''))
+        user_ip = user_ip.split(',')[0].strip() or None
+
         payment_ref = None
         failure_context = {
             'short_payment_ref': _('Not known')
@@ -353,6 +356,7 @@ class DebitCardPaymentView(DebitCardFlow):
                 'recipient_name': prisoner_details['prisoner_name'],
                 'prisoner_number': prisoner_details['prisoner_number'],
                 'prisoner_dob': prisoner_details['prisoner_dob'].isoformat(),
+                'ip_address': user_ip,
             }
             payment_ref = payment_client.create_payment(new_payment)
             failure_context['short_payment_ref'] = payment_ref[:8]
