@@ -33,12 +33,12 @@ exports.StickyContents = {
   highlightActiveSectionLink: function () {
     var scrollPosition = this.$window.scrollTop();
     var $navigationLinks = $('.mtp-help__contents-list > li > a');
-    var $sections = $($(".mtp-help__section").get().reverse());
+    var $sections = $($('.mtp-help__section').get().reverse());
     var sectionIdToNavigationLink = {};
 
-    $sections.each(function() {
+    $sections.each(function () {
       var currentSection = $(this);
-      var sectionTop = currentSection.offset().top -20;
+      var sectionTop = currentSection.offset().top - 20;
       var id = $(this).attr('id');
 
       sectionIdToNavigationLink[id] = $('.mtp-help__contents-list > li > a[href=#' + id + ']');
@@ -52,5 +52,5 @@ exports.StickyContents = {
         return false;
       }
     });
-  },
-}
+  }
+};

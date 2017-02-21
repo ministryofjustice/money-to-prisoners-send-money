@@ -5,7 +5,7 @@
   padding-top: 10px;
   width: 60%;
 
-  @media (max-width: 769px) {
+  @include media($max-width: 769px) {
     width: auto;
   }
 }
@@ -23,9 +23,11 @@
     border: 0;
     padding: 0.5em;
   }
+
   th {
     font-weight: normal;
   }
+
   td {
     font-weight: bold;
   }
