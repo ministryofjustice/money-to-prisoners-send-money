@@ -9,14 +9,14 @@
 }
 
 .mtp-print-reference {
-  background: url('../images/icon-file-download.png') no-repeat scroll 0 0;
+  background: file-url('icon-file-download.png') no-repeat scroll 0 0;
   display: inline-block;
   line-height: 40px;
   min-height: 2.5em;
   padding-left: 2.5em;
 
   @include device-pixel-ratio {
-    background-image: url('../images/icon-file-download-2x.png');
+    background-image: file-url('icon-file-download-2x.png');
     background-size: 30px 39px;
   }
 }
