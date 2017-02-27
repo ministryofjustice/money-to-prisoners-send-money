@@ -1,6 +1,6 @@
 # Dependencies needed for all environments
 # NB: this is not the complete set needed to run the app
-Django>=1.9,<1.10
+Django>=1.10,<1.11
 django-mailgun>=0.8,<0.9
 pytz>=2016.7
 requests>=2.12,<3
