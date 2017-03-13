@@ -1,5 +1,4 @@
 from django.conf.urls import url
-from django.views.generic import TemplateView
 
 from send_money.views import (
     clear_session_view,
@@ -8,7 +7,7 @@ from send_money.views import (
     DebitCardPrisonerDetailsView, DebitCardAmountView, DebitCardCheckView,
     DebitCardPaymentView, DebitCardConfirmationView
 )
-from send_money.views_misc import help_view
+from send_money.views_misc import help_view, prison_list_view
 
 app_name = 'send_money'
 urlpatterns = [
@@ -34,7 +33,7 @@ urlpatterns = [
         name=DebitCardConfirmationView.url_name),
 
     url(r'^help/$', help_view, name='help'),
-    url(r'^help/prisons/$', TemplateView.as_view(template_name='send_money/prison-list.html'), name='prison_list'),
+    url(r'^help/prisons/$', prison_list_view, name='prison_list'),
 
     url(r'^clear-session/$', clear_session_view, name='clear_session'),
 ]

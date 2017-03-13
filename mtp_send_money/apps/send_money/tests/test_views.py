@@ -1147,3 +1147,40 @@ class SitemapTestCase(SimpleTestCase):
 
                 link_elements = url_element.findall('x:link', self.name_space)
                 self.assertFalse(link_elements)
+
+
+class PrisonList(SimpleTestCase):
+    def test_prison_list(self):
+        with responses.RequestsMock() as rsps, \
+                self.settings(CACHES={'default': {'BACKEND': 'django.core.cache.backends.dummy.DummyCache'}}):
+            mock_auth(rsps)
+            rsps.add(
+                rsps.GET,
+                api_url('/prisons/'),
+                json={
+                    'count': 3,
+                    'results': [
+                        {
+                            'nomis_id': 'ZCH',
+                            'short_name': 'Clive House',
+                            'name': 'HMP Clive House',
+                        },
+                        {
+                            'nomis_id': 'BBB',
+                            'short_name': 'Prison 1',
+                            'name': 'YOI Prison 1',
+                        },
+                        {
+                            'nomis_id': 'AAA',
+                            'short_name': 'Prison 2',
+                            'name': 'HMP Prison 2',
+                        },
+                    ],
+                },
+            )
+            response = self.client.get(reverse('send_money:prison_list'))
+        self.assertNotContains(response, 'Clive House')
+        response = response.content.decode(response.charset)
+        self.assertIn('Prison 1', response)
+        self.assertIn('Prison 2', response)
+        self.assertLess(response.index('Prison 1'), response.index('Prison 2'))
