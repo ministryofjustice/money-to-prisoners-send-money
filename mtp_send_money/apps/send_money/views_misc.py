@@ -1,10 +1,21 @@
+import logging
+
 from django.conf import settings
+from django.core.cache import cache
 from django.core.urlresolvers import reverse, reverse_lazy
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.utils.http import is_safe_url
 from django.utils.translation import override as override_language
 from django.views.generic import TemplateView
+from mtp_common.api import retrieve_all_pages
+from oauthlib.oauth2 import OAuth2Error
+from requests import RequestException
+from slumber.exceptions import SlumberHttpBaseException
+
+from send_money.utils import get_api_client
+
+logger = logging.getLogger('mtp')
 
 
 def help_view(request):
@@ -20,6 +31,31 @@ def help_view(request):
     if is_safe_url(url=return_to, host=request.get_host()) and return_to != request.build_absolute_uri():
         context['return_to'] = return_to
     return render(request, 'send_money/help.html', context=context)
+
+
+def prison_list_view(request):
+    """
+    List the prisons that MTP supports
+    """
+    prison_list = cache.get('prison_list')
+    if not prison_list:
+        try:
+            excluded_nomis_ids = {'ZCH'}
+            client = get_api_client()
+            prison_list = retrieve_all_pages(client.prisons.get)
+            prison_list = [
+                prison['name']
+                for prison in sorted(prison_list, key=lambda prison: prison['short_name'])
+                if prison['nomis_id'] not in excluded_nomis_ids
+            ]
+            if not prison_list:
+                raise ValueError('Empty prison list')
+            cache.set('prison_list', prison_list, timeout=60 * 60)
+        except (SlumberHttpBaseException, RequestException, OAuth2Error, ValueError):
+            logger.exception('Could not look up prison list')
+    return render(request, 'send_money/prison-list.html', context={
+        'prison_list': prison_list,
+    })
 
 
 def robots_txt_view(request):
