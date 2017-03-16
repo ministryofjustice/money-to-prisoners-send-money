@@ -16,7 +16,9 @@ GOV.UK - {% trans 'Send money to a prisoner' %}
 {% trans 'All prisons share this bank account.' %}
 {% trans 'Please use your prisoner reference to make sure the money goes to the right prisoner.' %}
 
-{% trans 'Please note:' %} {% trans 'You can’t do a bank transfer in-branch and you must use a UK bank account.' %} {% trans 'Money should reach the prisoner’s account in 1 working day, but your bank can take up to 3 working days to process the payment.' %} {% trans 'No money is processed at weekends or bank holidays.' %}
+{% trans 'Please note:' %} {% trans 'You can’t do a bank transfer in-branch and you must use a UK bank account.' %}
+{% trans 'Money should reach the prisoner’s account in up to 3 working days.' %}
+{% trans 'No money is processed at weekends or bank holidays.' %}
 
 {% trans 'Help with problems using this service:' %} {{ help_url }}
 {% trans 'Leave feedback or contact us at:' %} {{ feedback_url }}

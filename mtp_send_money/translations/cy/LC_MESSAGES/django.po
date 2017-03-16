@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: MTP send-money\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-02-10 16:04+0000\n"
+"POT-Creation-Date: 2017-03-16 12:15+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Igor U <igor.ushkarev@digital.justice.gov.uk>, 2016\n"
 "Language-Team: Welsh (https://www.transifex.com/ministry-of-justice/teams/34553/cy/)\n"
@@ -56,7 +56,7 @@ msgstr ""
 msgid "For example, 28 04 1996"
 msgstr ""
 
-#: apps/send_money/forms.py:89
+#: apps/send_money/forms.py:89 templates/send_money/prison-list.html:33
 msgid "This service is currently unavailable"
 msgstr ""
 
@@ -114,6 +114,26 @@ msgstr ""
 msgid "Get a prisoner reference to use in a UK bank transfer"
 msgstr ""
 
+#: apps/send_money/templatetags/prisons.py:8
+msgid "Her Majesty’s Prison and Young Offender Institution"
+msgstr ""
+
+#: apps/send_money/templatetags/prisons.py:9
+msgid "Her Majesty’s Prison"
+msgstr ""
+
+#: apps/send_money/templatetags/prisons.py:10
+msgid "Her Majesty’s Young Offender Institution and Remand Centre"
+msgstr ""
+
+#: apps/send_money/templatetags/prisons.py:11
+msgid "Her Majesty’s Young Offender Institution"
+msgstr ""
+
+#: apps/send_money/templatetags/prisons.py:12
+msgid "Immigration Removal Centre"
+msgstr ""
+
 #: apps/send_money/utils.py:55
 msgid "Send money to a prisoner: your payment was successful"
 msgstr ""
@@ -127,11 +147,11 @@ msgstr ""
 msgid "Send money to a prisoner: Your prisoner reference is %(bank_transfer_reference)s"
 msgstr ""
 
-#: apps/send_money/views.py:346
+#: apps/send_money/views.py:349
 msgid "Not known"
 msgstr ""
 
-#: apps/send_money/views.py:363
+#: apps/send_money/views.py:367
 #, python-format
 msgid "To this prisoner: %(prisoner_number)s"
 msgstr ""
@@ -419,7 +439,7 @@ msgstr ""
 
 #: templates/send_money/bank-transfer-reference.html:60
 #: templates/send_money/email/bank-transfer-reference.html:45
-#: templates/send_money/email/bank-transfer-reference.txt:19
+#: templates/send_money/email/bank-transfer-reference.txt:21
 #: templates/send_money/help.html:60
 msgid "No money is processed at weekends or bank holidays."
 msgstr ""
@@ -464,7 +484,7 @@ msgstr ""
 
 #: templates/send_money/contact-form-success.html:15
 #: templates/send_money/contact-form.html:7 templates/send_money/help.html:8
-#: templates/send_money/prison-list.html:8
+#: templates/send_money/prison-list.html:9
 msgid "Back"
 msgstr ""
 
@@ -664,8 +684,10 @@ msgid "You can’t do a bank transfer in-branch and you must use a UK bank accou
 msgstr ""
 
 #: templates/send_money/email/bank-transfer-reference.html:44
-#: templates/send_money/email/bank-transfer-reference.txt:19
-msgid "Money should reach the prisoner’s account in 1 working day, but your bank can take up to 3 working days to process the payment."
+#: templates/send_money/email/bank-transfer-reference.txt:20
+#: templates/send_money/email/debit-card-confirmation.html:15
+#: templates/send_money/email/debit-card-confirmation.txt:9
+msgid "Money should reach the prisoner’s account in up to 3 working days."
 msgstr ""
 
 #: templates/send_money/email/bank-transfer-reference.html:49
@@ -683,17 +705,17 @@ msgstr ""
 msgid "Put these details into the transfer:"
 msgstr ""
 
-#: templates/send_money/email/bank-transfer-reference.txt:21
+#: templates/send_money/email/bank-transfer-reference.txt:23
 #: templates/send_money/email/debit-card-confirmation.txt:18
 msgid "Help with problems using this service:"
 msgstr ""
 
-#: templates/send_money/email/bank-transfer-reference.txt:22
+#: templates/send_money/email/bank-transfer-reference.txt:24
 #: templates/send_money/email/debit-card-confirmation.txt:19
 msgid "Leave feedback or contact us at:"
 msgstr ""
 
-#: templates/send_money/email/bank-transfer-reference.txt:23
+#: templates/send_money/email/bank-transfer-reference.txt:25
 #: templates/send_money/email/debit-card-confirmation.txt:20
 msgid "Back to the service:"
 msgstr ""
@@ -711,11 +733,6 @@ msgstr ""
 #: templates/send_money/email/debit-card-confirmation.html:10
 #, python-format
 msgid "Your reference number is <strong>%(short_payment_ref)s</strong>."
-msgstr ""
-
-#: templates/send_money/email/debit-card-confirmation.html:15
-#: templates/send_money/email/debit-card-confirmation.txt:9
-msgid "The money you sent will reach the prisoner’s account in 1 working day."
 msgstr ""
 
 #: templates/send_money/email/debit-card-confirmation.html:19
@@ -949,144 +966,20 @@ msgstr ""
 msgid "Continue"
 msgstr ""
 
-#: templates/send_money/prison-list.html:13
+#: templates/send_money/prison-list.html:14
 msgid "Public prisons in England and Wales"
 msgstr ""
 
-#: templates/send_money/prison-list.html:17
+#: templates/send_money/prison-list.html:18
 msgid "The ‘Send money to a prisoner’ service is available in the following public prisons, young offender institutions and immigration removal centres in England and Wales."
 msgstr ""
 
-#: templates/send_money/prison-list.html:21
+#: templates/send_money/prison-list.html:23
 msgid "Search"
 msgstr ""
 
-#: templates/send_money/prison-list.html:24
-msgid "No prisons found"
-msgstr ""
-
-#: templates/send_money/prison-list.html:25
-#: templates/send_money/prison-list.html:45
-#: templates/send_money/prison-list.html:47
-#: templates/send_money/prison-list.html:53
-#: templates/send_money/prison-list.html:64
-#: templates/send_money/prison-list.html:69
-#: templates/send_money/prison-list.html:76
-#: templates/send_money/prison-list.html:95
-#: templates/send_money/prison-list.html:99
-#: templates/send_money/prison-list.html:108
-#: templates/send_money/prison-list.html:115
-#: templates/send_money/prison-list.html:126
-msgid "Her Majesty’s Prison and Young Offender Institution"
-msgstr ""
-
 #: templates/send_money/prison-list.html:26
-#: templates/send_money/prison-list.html:27
-#: templates/send_money/prison-list.html:28
-#: templates/send_money/prison-list.html:29
-#: templates/send_money/prison-list.html:30
-#: templates/send_money/prison-list.html:31
-#: templates/send_money/prison-list.html:32
-#: templates/send_money/prison-list.html:33
-#: templates/send_money/prison-list.html:34
-#: templates/send_money/prison-list.html:35
-#: templates/send_money/prison-list.html:36
-#: templates/send_money/prison-list.html:37
-#: templates/send_money/prison-list.html:38
-#: templates/send_money/prison-list.html:39
-#: templates/send_money/prison-list.html:40
-#: templates/send_money/prison-list.html:41
-#: templates/send_money/prison-list.html:44
-#: templates/send_money/prison-list.html:46
-#: templates/send_money/prison-list.html:48
-#: templates/send_money/prison-list.html:49
-#: templates/send_money/prison-list.html:50
-#: templates/send_money/prison-list.html:51
-#: templates/send_money/prison-list.html:52
-#: templates/send_money/prison-list.html:54
-#: templates/send_money/prison-list.html:55
-#: templates/send_money/prison-list.html:56
-#: templates/send_money/prison-list.html:57
-#: templates/send_money/prison-list.html:58
-#: templates/send_money/prison-list.html:59
-#: templates/send_money/prison-list.html:61
-#: templates/send_money/prison-list.html:62
-#: templates/send_money/prison-list.html:65
-#: templates/send_money/prison-list.html:66
-#: templates/send_money/prison-list.html:67
-#: templates/send_money/prison-list.html:68
-#: templates/send_money/prison-list.html:70
-#: templates/send_money/prison-list.html:71
-#: templates/send_money/prison-list.html:72
-#: templates/send_money/prison-list.html:73
-#: templates/send_money/prison-list.html:74
-#: templates/send_money/prison-list.html:75
-#: templates/send_money/prison-list.html:77
-#: templates/send_money/prison-list.html:78
-#: templates/send_money/prison-list.html:79
-#: templates/send_money/prison-list.html:80
-#: templates/send_money/prison-list.html:82
-#: templates/send_money/prison-list.html:83
-#: templates/send_money/prison-list.html:84
-#: templates/send_money/prison-list.html:85
-#: templates/send_money/prison-list.html:86
-#: templates/send_money/prison-list.html:87
-#: templates/send_money/prison-list.html:88
-#: templates/send_money/prison-list.html:89
-#: templates/send_money/prison-list.html:90
-#: templates/send_money/prison-list.html:91
-#: templates/send_money/prison-list.html:92
-#: templates/send_money/prison-list.html:93
-#: templates/send_money/prison-list.html:94
-#: templates/send_money/prison-list.html:97
-#: templates/send_money/prison-list.html:98
-#: templates/send_money/prison-list.html:100
-#: templates/send_money/prison-list.html:101
-#: templates/send_money/prison-list.html:102
-#: templates/send_money/prison-list.html:104
-#: templates/send_money/prison-list.html:105
-#: templates/send_money/prison-list.html:106
-#: templates/send_money/prison-list.html:107
-#: templates/send_money/prison-list.html:109
-#: templates/send_money/prison-list.html:110
-#: templates/send_money/prison-list.html:111
-#: templates/send_money/prison-list.html:112
-#: templates/send_money/prison-list.html:113
-#: templates/send_money/prison-list.html:116
-#: templates/send_money/prison-list.html:117
-#: templates/send_money/prison-list.html:118
-#: templates/send_money/prison-list.html:119
-#: templates/send_money/prison-list.html:120
-#: templates/send_money/prison-list.html:121
-#: templates/send_money/prison-list.html:123
-#: templates/send_money/prison-list.html:124
-#: templates/send_money/prison-list.html:125
-#: templates/send_money/prison-list.html:127
-#: templates/send_money/prison-list.html:128
-#: templates/send_money/prison-list.html:131
-#: templates/send_money/prison-list.html:132
-#: templates/send_money/prison-list.html:133
-#: templates/send_money/prison-list.html:134
-#: templates/send_money/prison-list.html:135
-#: templates/send_money/prison-list.html:136
-msgid "Her Majesty’s Prison"
-msgstr ""
-
-#: templates/send_money/prison-list.html:42
-#: templates/send_money/prison-list.html:60
-#: templates/send_money/prison-list.html:81
-#: templates/send_money/prison-list.html:103
-#: templates/send_money/prison-list.html:114
-#: templates/send_money/prison-list.html:122
-#: templates/send_money/prison-list.html:129
-#: templates/send_money/prison-list.html:130
-msgid "Her Majesty’s Young Offender Institution"
-msgstr ""
-
-#: templates/send_money/prison-list.html:43
-#: templates/send_money/prison-list.html:63
-#: templates/send_money/prison-list.html:96
-msgid "Immigration Removal Centre"
+msgid "No prisons found"
 msgstr ""
 
 #: templates/send_money/prisoner-details-error-summary.html:10
