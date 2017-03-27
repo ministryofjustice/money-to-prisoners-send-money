@@ -835,6 +835,19 @@ class DebitCardPaymentTestCase(DebitCardFlowTestCase):
                    GOVUK_PAY_URL='https://pay.gov.local/v1')
 class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
     url = '/en-gb/debit-card/confirmation/'
+    ref = 'wargle-blargle'
+    processor_id = '3'
+    payment_data = {
+        'uuid': ref,
+        'processor_id': processor_id,
+        'recipient_name': 'John',
+        'amount': 1700,
+        'status': 'pending',
+        'created': datetime.datetime.now().isoformat() + 'Z',
+        'received_at': datetime.datetime.now().isoformat() + 'Z',
+        'prisoner_number': 'A1409AE',
+        'prisoner_dob': '1989-01-21'
+    }
 
     def test_cannot_access_directly(self):
         response = self.client.get(self.url, follow=True)
@@ -856,25 +869,16 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
         self.fill_in_amount()
 
         with responses.RequestsMock() as rsps:
-            ref = 'wargle-blargle'
-            processor_id = '3'
             mock_auth(rsps)
             rsps.add(
                 rsps.GET,
-                api_url('/payments/%s/' % ref),
-                json={
-                    'uuid': ref,
-                    'processor_id': processor_id,
-                    'recipient_name': 'John',
-                    'amount': 1700,
-                    'status': 'pending',
-                    'created': datetime.datetime.now().isoformat() + 'Z',
-                },
+                api_url('/payments/%s/' % self.ref),
+                json=self.payment_data,
                 status=200,
             )
             rsps.add(
                 rsps.GET,
-                govuk_url('/payments/%s/' % processor_id),
+                govuk_url('/payments/%s/' % self.processor_id),
                 json={
                     'reference': 'wargle-blargle',
                     'state': {'status': 'success'},
@@ -887,13 +891,26 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
                 status=200
             )
             rsps.add(
+                rsps.GET,
+                api_url('/prisoner_validity/'),
+                json={
+                    'count': 1,
+                    'results': [{
+                        'prisoner_number': 'A1409AE',
+                        'prisoner_dob': '1989-21-01',
+                        'nomis_integrated_prison': False
+                    }]
+                },
+                status=200
+            )
+            rsps.add(
                 rsps.PATCH,
                 api_url('/payments/%s/' % 'wargle-blargle'),
                 status=200,
             )
             with self.patch_prisoner_details_check():
                 response = self.client.get(
-                    self.url, {'payment_ref': ref}, follow=False
+                    self.url, {'payment_ref': self.ref}, follow=False
                 )
             self.assertContains(response, 'success')
 
@@ -911,19 +928,18 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
         self.fill_in_amount()
 
         with responses.RequestsMock() as rsps:
-            ref = 'wargle-blargle'
             mock_auth(rsps)
             rsps.add(
                 rsps.GET,
-                api_url('/payments/%s/' % ref),
+                api_url('/payments/%s/' % self.ref),
                 status=500,
             )
             with self.patch_prisoner_details_check(), silence_logger():
                 response = self.client.get(
-                    self.url, {'payment_ref': ref}, follow=False
+                    self.url, {'payment_ref': self.ref}, follow=False
                 )
             self.assertContains(response, 'your payment could not be processed')
-            self.assertContains(response, ref[:8].upper())
+            self.assertContains(response, self.ref[:8].upper())
 
             # check session is cleared
             for key in self.complete_session_keys:
@@ -935,33 +951,24 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
         self.fill_in_amount()
 
         with responses.RequestsMock() as rsps:
-            ref = 'wargle-blargle'
-            processor_id = '3'
             mock_auth(rsps)
             rsps.add(
                 rsps.GET,
-                api_url('/payments/%s/' % ref),
-                json={
-                    'uuid': ref,
-                    'processor_id': processor_id,
-                    'recipient_name': 'John',
-                    'amount': 1700,
-                    'status': 'pending',
-                    'created': datetime.datetime.now().isoformat() + 'Z',
-                },
+                api_url('/payments/%s/' % self.ref),
+                json=self.payment_data,
                 status=200,
             )
             rsps.add(
                 rsps.GET,
-                govuk_url('/payments/%s/' % processor_id),
+                govuk_url('/payments/%s/' % self.processor_id),
                 status=500
             )
             with self.patch_prisoner_details_check(), silence_logger():
                 response = self.client.get(
-                    self.url, {'payment_ref': ref}, follow=False
+                    self.url, {'payment_ref': self.ref}, follow=False
                 )
             self.assertContains(response, 'your payment could not be processed')
-            self.assertContains(response, ref[:8].upper())
+            self.assertContains(response, self.ref[:8].upper())
 
             # check session is cleared
             for key in self.complete_session_keys:
@@ -974,25 +981,16 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
         self.fill_in_amount()
 
         with responses.RequestsMock() as rsps:
-            ref = 'wargle-blargle'
-            processor_id = '3'
             mock_auth(rsps)
             rsps.add(
                 rsps.GET,
-                api_url('/payments/%s/' % ref),
-                json={
-                    'uuid': ref,
-                    'processor_id': processor_id,
-                    'recipient_name': 'John',
-                    'amount': 1700,
-                    'status': 'pending',
-                    'created': datetime.datetime.now().isoformat() + 'Z',
-                },
+                api_url('/payments/%s/' % self.ref),
+                json=self.payment_data,
                 status=200,
             )
             rsps.add(
                 rsps.GET,
-                govuk_url('/payments/%s/' % processor_id),
+                govuk_url('/payments/%s/' % self.processor_id),
                 json={
                     'reference': 'wargle-blargle',
                     'state': {'status': 'failed'},
@@ -1002,7 +1000,7 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
             )
             with self.patch_prisoner_details_check(), silence_logger():
                 response = self.client.get(
-                    self.url, {'payment_ref': ref}, follow=True
+                    self.url, {'payment_ref': self.ref}, follow=True
                 )
             self.assertOnPage(response, 'check_details')
 
@@ -1018,26 +1016,16 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
         self.fill_in_amount()
 
         with responses.RequestsMock() as rsps:
-            ref = 'wargle-blargle'
-            processor_id = '3'
             mock_auth(rsps)
             rsps.add(
                 rsps.GET,
-                api_url('/payments/%s/' % ref),
-                json={
-                    'uuid': ref,
-                    'processor_id': processor_id,
-                    'recipient_name': 'John',
-                    'amount': 1700,
-                    'status': 'taken',
-                    'created': datetime.datetime.now().isoformat() + 'Z',
-                    'received_at': datetime.datetime.now().isoformat() + 'Z',
-                },
+                api_url('/payments/%s/' % self.ref),
+                json=dict(self.payment_data, status='taken'),
                 status=200,
             )
             with self.patch_prisoner_details_check(), silence_logger():
                 response = self.client.get(
-                    self.url, {'payment_ref': ref}, follow=False
+                    self.url, {'payment_ref': self.ref}, follow=False
                 )
             self.assertContains(response, 'success')
             # check no new email sent
@@ -1053,26 +1041,21 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
         ).isoformat() + 'Z'
 
         with responses.RequestsMock() as rsps:
-            ref = 'wargle-blargle'
-            processor_id = '3'
             mock_auth(rsps)
             rsps.add(
                 rsps.GET,
-                api_url('/payments/%s/' % ref),
-                json={
-                    'uuid': ref,
-                    'processor_id': processor_id,
-                    'recipient_name': 'John',
-                    'amount': 1700,
-                    'status': 'taken',
-                    'created': payment_time,
-                    'received_at': payment_time,
-                },
+                api_url('/payments/%s/' % self.ref),
+                json=dict(
+                    self.payment_data,
+                    status='taken',
+                    created=payment_time,
+                    received_at=payment_time,
+                ),
                 status=200,
             )
             with self.patch_prisoner_details_check(), silence_logger():
                 response = self.client.get(
-                    self.url, {'payment_ref': ref}, follow=False
+                    self.url, {'payment_ref': self.ref}, follow=False
                 )
             self.assertRedirects(response, '/en-gb/', fetch_redirect_response=False)
 
@@ -1086,26 +1069,21 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
         ).isoformat() + 'Z'
 
         with responses.RequestsMock() as rsps:
-            ref = 'wargle-blargle'
-            processor_id = '3'
             mock_auth(rsps)
             rsps.add(
                 rsps.GET,
-                api_url('/payments/%s/' % ref),
-                json={
-                    'uuid': ref,
-                    'processor_id': processor_id,
-                    'recipient_name': 'John',
-                    'amount': 1700,
-                    'status': 'failed',
-                    'created': payment_time,
-                    'received_at': None,
-                },
+                api_url('/payments/%s/' % self.ref),
+                json=dict(
+                    self.payment_data,
+                    status='failed',
+                    created=payment_time,
+                    received_at=None,
+                ),
                 status=200,
             )
             with self.patch_prisoner_details_check(), silence_logger():
                 response = self.client.get(
-                    self.url, {'payment_ref': ref}, follow=False
+                    self.url, {'payment_ref': self.ref}, follow=False
                 )
             self.assertRedirects(response, '/en-gb/', fetch_redirect_response=False)
 

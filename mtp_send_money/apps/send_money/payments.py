@@ -80,6 +80,7 @@ class PaymentClient:
         success = govuk_status == 'success'
 
         if success and email and not payment.get('email'):
+            context['nomis_integration_available'] = self.is_nomis_integration_available(payment)
             send_notification(email, context)
             self.update_payment(payment['uuid'], {'email': email})
 
@@ -169,3 +170,10 @@ class PaymentClient:
                 'Failed to create new GOV.UK payment for MTP payment %s. Received: %s'
                 % (payment_ref, govuk_response.content)
             )
+
+    def is_nomis_integration_available(self, payment):
+        data = self.client.prisoner_validity().get(
+            prisoner_number=payment['prisoner_number'],
+            prisoner_dob=payment['prisoner_dob']
+        )
+        return len(data['results']) > 0 and data['results'][0].get('nomis_integrated_prison', False)
