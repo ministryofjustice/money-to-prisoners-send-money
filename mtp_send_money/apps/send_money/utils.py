@@ -29,14 +29,13 @@ def get_api_client():
 
 
 def check_payment_service_available():
+    # service is deemed unavailable only if status is explicitly false, not if it cannot be determined
     try:
-        response = requests.get('%s/healthcheck.json' % settings.API_URL, timeout=5)
-        if response.status_code == 500:
-            gov_uk_status = response.json().get('gov_uk_pay')
-            return gov_uk_status is None or gov_uk_status.get('status', True)
-    except Timeout:
-        pass
-    return True
+        response = requests.get(api_url('/service-availability/'), timeout=5)
+        gov_uk_status = response.json().get('gov_uk_pay', {})
+        return gov_uk_status.get('status', True)
+    except (Timeout, ValueError):
+        return True
 
 
 def send_notification(email, context):
