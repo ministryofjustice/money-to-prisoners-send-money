@@ -18,7 +18,7 @@
       <div class="error-summary" role="alert" aria-labelledby="error-summary-heading" tabindex="-1">
 
         <h1 class="heading-medium error-summary-heading">
-          {% trans 'Due to a technical issue, pay by debit card is temporarily unavailable.' %}
+          Pay by debit card is temporarily unavailable. Back online at 1.30pm.
         </h1>
         <p>{% trans 'Please send money using a bank transfer or come back later.' %}</p>
 
@@ -48,7 +48,7 @@
       <div class="panel panel-border-narrow help-box-contents" id="help-box-contents">
         <h2 class="heading-small mtp-debit-header {% if form.payment_method.field.disabled %}mtp-grey-text{% endif %}">{% trans 'Pay now by debit card' %}</h2>
         {% if form.payment_method.field.disabled %}
-          <h2 class="heading-small mtp-debit-unavailable">{% trans 'Temporarily unavailable due to a technical issue' %}</h2>
+          <h2 class="heading-small mtp-debit-unavailable">Temporarily unavailable. Back online at 1.30pm.</h2>
         {% endif %}
         <ol class="list list-number">
           <li>{% trans 'You can complete your payment here using Mastercard/Visa debit cards' %}</li>
