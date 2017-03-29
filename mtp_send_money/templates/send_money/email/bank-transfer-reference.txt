@@ -5,19 +5,25 @@ GOV.UK - {% trans 'Send money to a prisoner' %}
 
 {% trans 'Send your bank transfer using this prisoner reference:' %}  {{ bank_transfer_reference }}
 
+(1)
 {% trans 'Remember:' %} {% trans 'This is just the reference.' %} {% trans 'You have not sent any money yet.' %}
 {% trans 'You need to log into your online banking account, mobile banking app or use your telephone banking, as usual.' %}
 
-{% trans 'Put these details into the transfer:' %}
-{% trans 'Account number:' %}   {{ account_number }}
-{% trans 'Sort code:'%}         {{ sort_code }}
-{% trans 'Reference:'%}         {{ bank_transfer_reference }}
+(2)
+{% trans 'Copy and paste these details into the transfer:' %}
+
+  {% trans 'Account number:' %}   {{ account_number }}
+  {% trans 'Sort code:' %}        {{ sort_code }}
+  {% trans 'Reference:' %}        {{ bank_transfer_reference }}
+  {% trans 'Payee/Name:' %}       {{ bank_transfer_reference }}
 
 {% trans 'All prisons share this bank account.' %}
 {% trans 'Please use your prisoner reference to make sure the money goes to the right prisoner.' %}
 
-{% trans 'Please note:' %} {% trans 'You can’t do a bank transfer in-branch and you must use a UK bank account.' %}
-{% trans 'Money should reach the prisoner’s account in up to 3 working days.' %}
+{% trans 'Remember, you can’t do a bank transfer in-branch and you must use a UK bank account.' %}
+
+(3)
+{% trans 'The money should take about 3 working days to reach the prisoner.' %}
 {% trans 'No money is processed at weekends or bank holidays.' %}
 
 {% trans 'Help with problems using this service:' %} {{ help_url }}

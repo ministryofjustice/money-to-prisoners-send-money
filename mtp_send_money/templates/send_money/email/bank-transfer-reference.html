@@ -8,42 +8,48 @@
     {% trans 'Send your bank transfer using this prisoner reference:' %} <strong>{{ bank_transfer_reference }}</strong>
   </p>
 
-  <p>
-    <strong>{% trans 'Remember:' %}</strong>
-    {% trans 'This is just the reference.' %}
-    {% trans 'You have not sent any money yet.' %}
-    {% trans 'You need to log into your online banking account, mobile banking app or use your telephone banking, as usual.' %}
-  </p>
+  <ol>
+    <li>
+      <strong>{% trans 'Remember:' %}</strong>
+      {% trans 'This is just the reference.' %}
+      {% trans 'You have not sent any money yet.' %}
+      {% trans 'You need to log into your online banking account, mobile banking app or use your telephone banking, as usual.' %}
+    </li>
 
-  <p>{% trans 'Copy and paste these details into the transfer:' %}</p>
-  <table>
-    <tbody>
-      <tr>
-        <th style="font-weight:normal;text-align:left">{% trans 'Account number:' %}</th>
-        <td style="font-weight:bold">{{ account_number }}</td>
-      </tr>
-      <tr>
-        <th style="font-weight:normal;text-align:left">{% trans 'Sort code:'%}</th>
-        <td style="font-weight:bold">{{ sort_code }}</td>
-      </tr>
-      <tr>
-        <th style="font-weight:normal;text-align:left">{% trans 'Reference:' %}</th>
-        <td style="font-weight:bold">{{ bank_transfer_reference }}</td>
-      </tr>
-    </tbody>
-  </table>
+    <li>
+      <p>{% trans 'Copy and paste these details into the transfer:' %}</p>
+      <table>
+        <tbody>
+          <tr>
+            <th style="font-weight:normal;text-align:left">{% trans 'Account number:' %}</th>
+            <td style="font-weight:bold">{{ account_number }}</td>
+          </tr>
+          <tr>
+            <th style="font-weight:normal;text-align:left">{% trans 'Sort code:'%}</th>
+            <td style="font-weight:bold">{{ sort_code }}</td>
+          </tr>
+          <tr>
+            <th style="font-weight:normal;text-align:left">{% trans 'Reference:' %}</th>
+            <td style="font-weight:bold">{{ bank_transfer_reference }}</td>
+          </tr>
+          <tr>
+            <th style="font-weight:normal;text-align:left">{% trans 'Payee/Name:' %}</th>
+            <td style="font-weight:bold">{{ bank_transfer_reference }}</td>
+          </tr>
+        </tbody>
+      </table>
+      <p>
+        {% trans 'All prisons share this bank account.' %}
+        {% trans 'Please use your prisoner reference to make sure the money goes to the right prisoner.' %}
+      </p>
+      <p>{% trans 'Remember, you can’t do a bank transfer in-branch and you must use a UK bank account.' %}</p>
+    </li>
 
-  <p>
-    {% trans 'All prisons share this bank account.' %}
-    {% trans 'Please use your prisoner reference to make sure the money goes to the right prisoner.' %}
-  </p>
-
-  <p>
-    <strong>{% trans 'Please note:' %}</strong>
-    {% trans 'You can’t do a bank transfer in-branch and you must use a UK bank account.' %}
-    {% trans 'Money should reach the prisoner’s account in up to 3 working days.' %}
-    {% trans 'No money is processed at weekends or bank holidays.' %}
-  </p>
+    <li>
+      {% trans 'The money should take about 3 working days to reach the prisoner.' %}
+      {% trans 'No money is processed at weekends or bank holidays.' %}
+    </li>
+  </ol>
 
   <p>
     {% blocktrans trimmed %}
