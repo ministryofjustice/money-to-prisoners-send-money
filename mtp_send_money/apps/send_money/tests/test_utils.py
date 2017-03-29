@@ -6,6 +6,7 @@ import unittest
 from django.core.exceptions import ValidationError
 from django.test.utils import override_settings
 from requests.exceptions import Timeout
+import responses
 
 from send_money.utils import (
     serialise_amount, unserialise_amount,
@@ -13,7 +14,7 @@ from send_money.utils import (
     format_percentage, currency_format, currency_format_pence,
     clamp_amount, get_service_charge, get_total_charge,
     validate_prisoner_number, bank_transfer_reference,
-    check_payment_service_available
+    api_url, check_payment_service_available,
 )
 
 
@@ -309,27 +310,47 @@ class BankTransferReference(unittest.TestCase):
         )
 
 
-@unittest.mock.patch('send_money.utils.requests')
 class PaymentServiceAvailabilityTestCase(unittest.TestCase):
-    def test_passed_healthcheck_returns_true(self, mock_requests):
-        mock_requests.get.return_value.status_code = 200
-        self.assertTrue(check_payment_service_available())
+    def test_passed_healthcheck_returns_true(self):
+        with responses.RequestsMock() as rsps:
+            rsps.add(rsps.GET, api_url('/service-availability/'), json={'gov_uk_pay': {'status': True}})
+            available, message_to_users = check_payment_service_available()
+        self.assertTrue(available)
+        self.assertIsNone(message_to_users)
 
-    def test_healthcheck_timeout_returns_true(self, mock_requests):
-        mock_requests.get.side_effect = Timeout()
-        self.assertTrue(check_payment_service_available())
+    def test_healthcheck_timeout_returns_true(self):
+        with responses.RequestsMock() as rsps:
+            rsps.add(rsps.GET, api_url('/service-availability/'), body=Timeout())
+            available, message_to_users = check_payment_service_available()
+        self.assertTrue(available)
+        self.assertIsNone(message_to_users)
 
-    def test_failed_healthcheck_with_service_up_returns_true(self, mock_requests):
-        mock_requests.get.return_value.status_code = 500
-        mock_requests.get.return_value.json.return_value = {'gov_uk_pay': {'status': True}}
-        self.assertTrue(check_payment_service_available())
+    def test_failed_healthcheck_returns_true(self):
+        with responses.RequestsMock() as rsps:
+            rsps.add(rsps.GET, api_url('/service-availability/'), body=b'Server error', status=500)
+            available, message_to_users = check_payment_service_available()
+        self.assertTrue(available)
+        self.assertIsNone(message_to_users)
 
-    def test_failed_healthcheck_with_service_unspecified_returns_true(self, mock_requests):
-        mock_requests.get.return_value.status_code = 500
-        mock_requests.get.return_value.json.return_value = {}
-        self.assertTrue(check_payment_service_available())
+    def test_healthcheck_with_service_unspecified_returns_true(self):
+        with responses.RequestsMock() as rsps:
+            rsps.add(rsps.GET, api_url('/service-availability/'), json={'another_service': {'status': False}})
+            available, message_to_users = check_payment_service_available()
+        self.assertTrue(available)
+        self.assertIsNone(message_to_users)
 
-    def test_failed_healthcheck_with_service_down_returns_false(self, mock_requests):
-        mock_requests.get.return_value.status_code = 500
-        mock_requests.get.return_value.json.return_value = {'gov_uk_pay': {'status': False}}
-        self.assertFalse(check_payment_service_available())
+    def test_healthcheck_with_service_down_returns_false(self):
+        with responses.RequestsMock() as rsps:
+            rsps.add(rsps.GET, api_url('/service-availability/'), json={'gov_uk_pay': {'status': False}})
+            available, message_to_users = check_payment_service_available()
+        self.assertFalse(available)
+        self.assertIsNone(message_to_users)
+
+    def test_healthcheck_with_service_down_returns_message_to_users(self):
+        with responses.RequestsMock() as rsps:
+            rsps.add(rsps.GET, api_url('/service-availability/'), json={
+                'gov_uk_pay': {'status': False, 'message_to_users': 'Scheduled downtime'}
+            })
+            available, message_to_users = check_payment_service_available()
+        self.assertFalse(available)
+        self.assertEqual(message_to_users, 'Scheduled downtime')

@@ -21,4 +21,4 @@ def mock_auth(rsps):
 
 def patch_gov_uk_pay_availability_check():
     return mock.patch('send_money.forms.check_payment_service_available',
-                      mock.Mock(return_value=True))
+                      mock.Mock(return_value=(True, None)))
