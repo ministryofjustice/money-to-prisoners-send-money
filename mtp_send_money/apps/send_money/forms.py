@@ -67,7 +67,9 @@ class PaymentMethodChoiceForm(SendMoneyForm):
         payment_method_field = self.fields['payment_method']
         if show_bank_transfer_first:
             payment_method_field.choices = reversed(payment_method_field.choices)
-        if not check_payment_service_available():
+        payment_service_available, message_to_users = check_payment_service_available()
+        if not payment_service_available:
+            payment_method_field.message_to_users = message_to_users
             payment_method_field.initial = PaymentMethod.bank_transfer.name
             payment_method_field.disabled = True
 

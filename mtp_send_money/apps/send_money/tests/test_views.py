@@ -191,7 +191,7 @@ class ChooseMethodViewTestCase(BaseTestCase):
                             'Bank transfer option should appear first according to experiment')
 
 
-@mock.patch('send_money.forms.check_payment_service_available', mock.Mock(return_value=False))
+@mock.patch('send_money.forms.check_payment_service_available', mock.Mock(return_value=(False, 'Scheduled work')))
 class PaymentServiceUnavailableChooseMethodViewTestCase(BaseTestCase):
     url = '/en-gb/'
 
@@ -200,6 +200,12 @@ class PaymentServiceUnavailableChooseMethodViewTestCase(BaseTestCase):
     def test_gov_uk_service_unavailable_disables_choice(self):
         response = self.client.get(self.url, follow=True)
         self.assertContains(response, 'disabled')
+
+    @override_settings(SHOW_BANK_TRANSFER_OPTION=True,
+                       SHOW_DEBIT_CARD_OPTION=True)
+    def test_gov_uk_service_unavailable_can_show_message_to_users(self):
+        response = self.client.get(self.url, follow=True)
+        self.assertContains(response, 'Scheduled work')
 
     @override_settings(SHOW_BANK_TRANSFER_OPTION=True,
                        SHOW_DEBIT_CARD_OPTION=True)

@@ -33,9 +33,9 @@ def check_payment_service_available():
     try:
         response = requests.get(api_url('/service-availability/'), timeout=5)
         gov_uk_status = response.json().get('gov_uk_pay', {})
-        return gov_uk_status.get('status', True)
+        return gov_uk_status.get('status', True), gov_uk_status.get('message_to_users')
     except (Timeout, ValueError):
-        return True
+        return True, None
 
 
 def send_notification(email, context):
