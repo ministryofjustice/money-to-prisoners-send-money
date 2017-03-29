@@ -223,6 +223,8 @@ class SendMoneyConfirmationPage(SendMoneyFunctionalTestCase):
             'amount': 2000,
             'status': 'pending',
             'created': datetime.datetime.now().isoformat() + 'Z',
+            'prisoner_number': 'A5544CD',
+            'prisoner_dob': '1992-12-05'
         }
         with responses.RequestsMock() as rsps, self.patch_view_chain_form_checking():
             rsps.add(rsps.GET, govuk_url('/payments/%s' % processor_id), json={
@@ -254,6 +256,8 @@ class SendMoneyConfirmationPage(SendMoneyFunctionalTestCase):
             'amount': 2000,
             'status': 'pending',
             'created': datetime.datetime.now().isoformat() + 'Z',
+            'prisoner_number': 'A5544CD',
+            'prisoner_dob': '1992-12-05'
         }
         with responses.RequestsMock() as rsps:
             rsps.add(rsps.GET, govuk_url('/payments/%s' % processor_id), json={
