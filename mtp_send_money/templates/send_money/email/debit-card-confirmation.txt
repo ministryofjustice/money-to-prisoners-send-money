@@ -4,7 +4,7 @@ GOV.UK - {% trans 'Send money to a prisoner' %}
 
 {% trans 'Dear sender,' %}
 
-{% trans 'Your payment has been successful.' %} {% blocktrans trimmed %}Your reference number is {{ short_payment_ref }}.{% endblocktrans %}
+{% trans 'Your payment has been successful.' %} {% blocktrans trimmed %}Your confirmation number is {{ short_payment_ref }}.{% endblocktrans %}
 
 {% trans 'Money should reach the prisoner’s account in up to 3 working days.' %}
 {% if nomis_integration_available %}

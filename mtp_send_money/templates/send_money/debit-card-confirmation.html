@@ -6,7 +6,7 @@
 
   <div class="govuk-box-highlight">
     <h1 class="heading-large">{% trans 'Payment successful' %}</h1>
-    <p>{% trans 'Your payment reference is' %}<p>
+    <p>{% trans 'Your confirmation number is' %}<p>
     <strong>{{ short_payment_ref }}</strong>
   </div>
 
@@ -29,7 +29,7 @@
       <td>{% now 'd/m/Y' %}</td>
     </tr>
     <tr>
-      <th>{% trans 'Payment reference' %}:</th>
+      <th>{% trans 'Confirmation number' %}:</th>
       <td>{{ short_payment_ref }}</td>
     </tr>
   </table>
