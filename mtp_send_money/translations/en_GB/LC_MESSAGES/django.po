@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: MTP send-money\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-03-16 12:15+0000\n"
+"POT-Creation-Date: 2017-04-04 11:00+0100\n"
 "PO-Revision-Date: 2016-11-04 10:00+0000\n"
 "Last-Translator: Welsh Language Unit <welsh.language.unit.manager@hmcts.gsi.gov.uk>\n"
 "Language-Team: Welsh (http://www.transifex.com/ministry-of-justice/mtp/language/cy/)\n"
@@ -17,16 +17,16 @@ msgstr ""
 msgid "Enter any questions or feedback you may have about this service"
 msgstr ""
 
-#: apps/feedback/forms.py:14 apps/send_money/forms.py:77
+#: apps/feedback/forms.py:14 apps/send_money/forms.py:79
 #: templates/send_money/debit-card-check.html:31
 msgid "Prisoner number"
 msgstr ""
 
-#: apps/feedback/forms.py:15 apps/send_money/forms.py:78
+#: apps/feedback/forms.py:15 apps/send_money/forms.py:80
 msgid "For example, A1234BC"
 msgstr ""
 
-#: apps/feedback/forms.py:21 apps/send_money/forms.py:83
+#: apps/feedback/forms.py:21 apps/send_money/forms.py:85
 msgid "Prisoner date of birth"
 msgstr ""
 
@@ -52,47 +52,47 @@ msgstr ""
 msgid "Please choose how you want to send money"
 msgstr ""
 
-#: apps/send_money/forms.py:84
+#: apps/send_money/forms.py:86
 msgid "For example, 28 04 1996"
 msgstr ""
 
-#: apps/send_money/forms.py:89 templates/send_money/prison-list.html:33
+#: apps/send_money/forms.py:91 templates/send_money/prison-list.html:33
 msgid "This service is currently unavailable"
 msgstr ""
 
-#: apps/send_money/forms.py:90
+#: apps/send_money/forms.py:92
 msgid "No prisoner matches the details you’ve supplied."
 msgstr ""
 
-#: apps/send_money/forms.py:174
+#: apps/send_money/forms.py:176
 msgid "Prisoner name"
 msgstr ""
 
-#: apps/send_money/forms.py:184
+#: apps/send_money/forms.py:186
 msgid "The amount you are trying to send is too large."
 msgstr ""
 
-#: apps/send_money/forms.py:185
+#: apps/send_money/forms.py:187
 msgid "Please enter a smaller amount"
 msgstr ""
 
-#: apps/send_money/forms.py:190
+#: apps/send_money/forms.py:192
 msgid "Amount you are sending"
 msgstr ""
 
-#: apps/send_money/forms.py:195
+#: apps/send_money/forms.py:197
 msgid "Enter as a number"
 msgstr ""
 
-#: apps/send_money/forms.py:196
+#: apps/send_money/forms.py:198
 msgid "Amount should be 1p or more"
 msgstr ""
 
-#: apps/send_money/forms.py:197
+#: apps/send_money/forms.py:199
 msgid "Only use 2 decimal places"
 msgstr ""
 
-#: apps/send_money/forms.py:205
+#: apps/send_money/forms.py:207
 msgid "Your email address"
 msgstr ""
 
@@ -110,7 +110,7 @@ msgstr ""
 #: apps/send_money/models.py:8
 #: templates/send_money/bank-transfer-prisoner-details.html:10
 #: templates/send_money/bank-transfer-warning.html:10
-#: templates/send_money/payment-method.html:61
+#: templates/send_money/payment-method.html:63
 msgid "Get a prisoner reference to use in a UK bank transfer"
 msgstr ""
 
@@ -134,11 +134,11 @@ msgstr ""
 msgid "Immigration Removal Centre"
 msgstr ""
 
-#: apps/send_money/utils.py:55
+#: apps/send_money/utils.py:54
 msgid "Send money to a prisoner: your payment was successful"
 msgstr ""
 
-#: apps/send_money/utils.py:65
+#: apps/send_money/utils.py:64
 msgid "Incorrect prisoner number format"
 msgstr ""
 
@@ -390,61 +390,72 @@ msgstr ""
 msgid "Now you can make the bank transfer"
 msgstr ""
 
-#: templates/send_money/bank-transfer-reference.html:33
+#: templates/send_money/bank-transfer-reference.html:35
 msgid "Log into your online banking account, mobile banking app or use your telephone banking, as normal."
 msgstr ""
 
-#: templates/send_money/bank-transfer-reference.html:34
-#: templates/send_money/email/bank-transfer-reference.html:18
+#: templates/send_money/bank-transfer-reference.html:39
+#: templates/send_money/email/bank-transfer-reference.html:20
+#: templates/send_money/email/bank-transfer-reference.txt:13
 msgid "Copy and paste these details into the transfer:"
 msgstr ""
 
-#: templates/send_money/bank-transfer-reference.html:39
-#: templates/send_money/email/bank-transfer-reference.html:22
-#: templates/send_money/email/bank-transfer-reference.txt:12
+#: templates/send_money/bank-transfer-reference.html:44
+#: templates/send_money/email/bank-transfer-reference.html:24
+#: templates/send_money/email/bank-transfer-reference.txt:15
 msgid "Account number:"
 msgstr ""
 
-#: templates/send_money/bank-transfer-reference.html:43
-#: templates/send_money/email/bank-transfer-reference.html:26
-#: templates/send_money/email/bank-transfer-reference.txt:13
+#: templates/send_money/bank-transfer-reference.html:48
+#: templates/send_money/email/bank-transfer-reference.html:28
+#: templates/send_money/email/bank-transfer-reference.txt:16
 msgid "Sort code:"
 msgstr ""
 
-#: templates/send_money/bank-transfer-reference.html:47
-#: templates/send_money/email/bank-transfer-reference.html:30
-#: templates/send_money/email/bank-transfer-reference.txt:14
+#: templates/send_money/bank-transfer-reference.html:52
+#: templates/send_money/email/bank-transfer-reference.html:32
+#: templates/send_money/email/bank-transfer-reference.txt:17
 msgid "Reference:"
 msgstr ""
 
-#: templates/send_money/bank-transfer-reference.html:54
-#: templates/send_money/email/bank-transfer-reference.html:37
-#: templates/send_money/email/bank-transfer-reference.txt:16
+#: templates/send_money/bank-transfer-reference.html:56
+#: templates/send_money/email/bank-transfer-reference.html:36
+#: templates/send_money/email/bank-transfer-reference.txt:18
+msgid "Payee/Name:"
+msgstr ""
+
+#: templates/send_money/bank-transfer-reference.html:63
+#: templates/send_money/email/bank-transfer-reference.html:42
+#: templates/send_money/email/bank-transfer-reference.txt:20
 msgid "All prisons share this bank account."
 msgstr ""
 
-#: templates/send_money/bank-transfer-reference.html:55
-#: templates/send_money/email/bank-transfer-reference.html:38
-#: templates/send_money/email/bank-transfer-reference.txt:17
+#: templates/send_money/bank-transfer-reference.html:64
+#: templates/send_money/email/bank-transfer-reference.html:43
+#: templates/send_money/email/bank-transfer-reference.txt:21
 msgid "Please use your prisoner reference to make sure the money goes to the right prisoner."
 msgstr ""
 
-#: templates/send_money/bank-transfer-reference.html:57
+#: templates/send_money/bank-transfer-reference.html:66
+#: templates/send_money/email/bank-transfer-reference.html:45
+#: templates/send_money/email/bank-transfer-reference.txt:23
 msgid "Remember, you can’t do a bank transfer in-branch and you must use a UK bank account."
 msgstr ""
 
-#: templates/send_money/bank-transfer-reference.html:59
-msgid "The money should take about 3 working days to reach the prisoner."
+#: templates/send_money/bank-transfer-reference.html:70
+#: templates/send_money/email/bank-transfer-reference.html:49
+#: templates/send_money/email/bank-transfer-reference.txt:26
+msgid "The money should take up to 3 working days to reach the prisoner."
 msgstr ""
 
-#: templates/send_money/bank-transfer-reference.html:60
-#: templates/send_money/email/bank-transfer-reference.html:45
-#: templates/send_money/email/bank-transfer-reference.txt:21
+#: templates/send_money/bank-transfer-reference.html:71
+#: templates/send_money/email/bank-transfer-reference.html:50
+#: templates/send_money/email/bank-transfer-reference.txt:27
 #: templates/send_money/help.html:60
 msgid "No money is processed at weekends or bank holidays."
 msgstr ""
 
-#: templates/send_money/bank-transfer-reference.html:65
+#: templates/send_money/bank-transfer-reference.html:77
 #, python-format
 msgid "<a href=\"%(help_url)s\">Find further help</a> on how to use the service or <a href=\"%(ticket_url)s\">contact us</a>."
 msgstr ""
@@ -593,7 +604,7 @@ msgid "Payment successful"
 msgstr ""
 
 #: templates/send_money/debit-card-confirmation.html:9
-msgid "Your payment reference is"
+msgid "Your confirmation number is"
 msgstr ""
 
 #: templates/send_money/debit-card-confirmation.html:17
@@ -601,7 +612,7 @@ msgid "Payment summary"
 msgstr ""
 
 #: templates/send_money/debit-card-confirmation.html:20
-#: templates/send_money/email/debit-card-confirmation.txt:11
+#: templates/send_money/email/debit-card-confirmation.txt:14
 msgid "Payment to"
 msgstr ""
 
@@ -610,12 +621,12 @@ msgid "Payment amount"
 msgstr ""
 
 #: templates/send_money/debit-card-confirmation.html:28
-#: templates/send_money/email/debit-card-confirmation.txt:13
+#: templates/send_money/email/debit-card-confirmation.txt:16
 msgid "Date payment made"
 msgstr ""
 
 #: templates/send_money/debit-card-confirmation.html:32
-msgid "Payment reference"
+msgid "Confirmation number"
 msgstr ""
 
 #: templates/send_money/debit-card-confirmation.html:37
@@ -623,15 +634,20 @@ msgid "What happens next"
 msgstr ""
 
 #: templates/send_money/debit-card-confirmation.html:40
-#: templates/send_money/payment-method.html:56
-msgid "You’ll get email confirmation of payment"
+msgid "We’ll email you a copy of this confirmation page."
 msgstr ""
 
 #: templates/send_money/debit-card-confirmation.html:41
-msgid "The money will arrive in the prisoner’s account the next working day."
+msgid "The money will arrive in the prisoner’s account in up to 3 working days."
 msgstr ""
 
-#: templates/send_money/debit-card-confirmation.html:45
+#: templates/send_money/debit-card-confirmation.html:43
+#: templates/send_money/email/debit-card-confirmation.html:18
+#: templates/send_money/email/debit-card-confirmation.txt:11
+msgid "You’ll get a further email when the prisoner’s account has been credited to confirm your money has arrived."
+msgstr ""
+
+#: templates/send_money/debit-card-confirmation.html:48
 msgid "Take a moment to rate this service"
 msgstr ""
 
@@ -653,70 +669,49 @@ msgstr ""
 msgid "Send your bank transfer using this prisoner reference:"
 msgstr ""
 
-#: templates/send_money/email/bank-transfer-reference.html:12
-#: templates/send_money/email/bank-transfer-reference.txt:8
+#: templates/send_money/email/bank-transfer-reference.html:13
+#: templates/send_money/email/bank-transfer-reference.txt:9
 msgid "Remember:"
 msgstr ""
 
-#: templates/send_money/email/bank-transfer-reference.html:13
-#: templates/send_money/email/bank-transfer-reference.txt:8
-msgid "This is just the reference."
-msgstr ""
-
 #: templates/send_money/email/bank-transfer-reference.html:14
-#: templates/send_money/email/bank-transfer-reference.txt:8
-msgid "You have not sent any money yet."
+#: templates/send_money/email/bank-transfer-reference.txt:9
+msgid "This is just the reference."
 msgstr ""
 
 #: templates/send_money/email/bank-transfer-reference.html:15
 #: templates/send_money/email/bank-transfer-reference.txt:9
+msgid "You have not sent any money yet."
+msgstr ""
+
+#: templates/send_money/email/bank-transfer-reference.html:16
+#: templates/send_money/email/bank-transfer-reference.txt:10
 msgid "You need to log into your online banking account, mobile banking app or use your telephone banking, as usual."
 msgstr ""
 
-#: templates/send_money/email/bank-transfer-reference.html:42
-#: templates/send_money/email/bank-transfer-reference.txt:19
-msgid "Please note:"
-msgstr ""
-
-#: templates/send_money/email/bank-transfer-reference.html:43
-#: templates/send_money/email/bank-transfer-reference.txt:19
-msgid "You can’t do a bank transfer in-branch and you must use a UK bank account."
-msgstr ""
-
-#: templates/send_money/email/bank-transfer-reference.html:44
-#: templates/send_money/email/bank-transfer-reference.txt:20
-#: templates/send_money/email/debit-card-confirmation.html:15
-#: templates/send_money/email/debit-card-confirmation.txt:9
-msgid "Money should reach the prisoner’s account in up to 3 working days."
-msgstr ""
-
-#: templates/send_money/email/bank-transfer-reference.html:49
-#: templates/send_money/email/debit-card-confirmation.html:37
+#: templates/send_money/email/bank-transfer-reference.html:55
+#: templates/send_money/email/debit-card-confirmation.html:42
 #, python-format
 msgid "<a href=\"%(help_url)s\">Help</a> with problems using this service or how to <a href=\"%(feedback_url)s\">contact us</a>."
 msgstr ""
 
-#: templates/send_money/email/bank-transfer-reference.html:53
-#: templates/send_money/email/debit-card-confirmation.html:41
+#: templates/send_money/email/bank-transfer-reference.html:59
+#: templates/send_money/email/debit-card-confirmation.html:46
 msgid "Back to the service"
 msgstr ""
 
-#: templates/send_money/email/bank-transfer-reference.txt:11
-msgid "Put these details into the transfer:"
-msgstr ""
-
-#: templates/send_money/email/bank-transfer-reference.txt:23
-#: templates/send_money/email/debit-card-confirmation.txt:18
+#: templates/send_money/email/bank-transfer-reference.txt:29
+#: templates/send_money/email/debit-card-confirmation.txt:21
 msgid "Help with problems using this service:"
 msgstr ""
 
-#: templates/send_money/email/bank-transfer-reference.txt:24
-#: templates/send_money/email/debit-card-confirmation.txt:19
+#: templates/send_money/email/bank-transfer-reference.txt:30
+#: templates/send_money/email/debit-card-confirmation.txt:22
 msgid "Leave feedback or contact us at:"
 msgstr ""
 
-#: templates/send_money/email/bank-transfer-reference.txt:25
-#: templates/send_money/email/debit-card-confirmation.txt:20
+#: templates/send_money/email/bank-transfer-reference.txt:31
+#: templates/send_money/email/debit-card-confirmation.txt:23
 msgid "Back to the service:"
 msgstr ""
 
@@ -732,32 +727,38 @@ msgstr ""
 
 #: templates/send_money/email/debit-card-confirmation.html:10
 #, python-format
-msgid "Your reference number is <strong>%(short_payment_ref)s</strong>."
+msgid "Your confirmation number is <strong>%(short_payment_ref)s</strong>."
 msgstr ""
 
-#: templates/send_money/email/debit-card-confirmation.html:19
+#: templates/send_money/email/debit-card-confirmation.html:16
+#: templates/send_money/email/debit-card-confirmation.txt:9
+#: templates/send_money/help.html:59
+msgid "Money should reach the prisoner’s account in up to 3 working days."
+msgstr ""
+
+#: templates/send_money/email/debit-card-confirmation.html:24
 msgid "Payment to:"
 msgstr ""
 
-#: templates/send_money/email/debit-card-confirmation.html:23
+#: templates/send_money/email/debit-card-confirmation.html:28
 msgid "Amount paid:"
 msgstr ""
 
-#: templates/send_money/email/debit-card-confirmation.html:27
+#: templates/send_money/email/debit-card-confirmation.html:32
 msgid "Date payment made:"
 msgstr ""
 
-#: templates/send_money/email/debit-card-confirmation.html:33
-#: templates/send_money/email/debit-card-confirmation.txt:16
+#: templates/send_money/email/debit-card-confirmation.html:38
+#: templates/send_money/email/debit-card-confirmation.txt:19
 msgid "Thank you for using this service."
 msgstr ""
 
 #: templates/send_money/email/debit-card-confirmation.txt:7
 #, python-format
-msgid "Your reference number is %(short_payment_ref)s."
+msgid "Your confirmation number is %(short_payment_ref)s."
 msgstr ""
 
-#: templates/send_money/email/debit-card-confirmation.txt:12
+#: templates/send_money/email/debit-card-confirmation.txt:15
 msgid "Amount paid"
 msgstr ""
 
@@ -819,10 +820,6 @@ msgstr ""
 #: templates/send_money/help.html:54
 #, python-format
 msgid "But you can send money to a prisoner <a href=\"%(url)s\">using a postal order, a cheque or cash</a>."
-msgstr ""
-
-#: templates/send_money/help.html:59
-msgid "Money should reach the prisoner’s account in about 3 working days."
 msgstr ""
 
 #: templates/send_money/help.html:65
@@ -924,45 +921,49 @@ msgstr ""
 msgid "Which is right for me?"
 msgstr ""
 
-#: templates/send_money/payment-method.html:51
+#: templates/send_money/payment-method.html:52
 msgid "Temporarily unavailable due to a technical issue"
 msgstr ""
 
-#: templates/send_money/payment-method.html:54
+#: templates/send_money/payment-method.html:56
 msgid "You can complete your payment here using Mastercard/Visa debit cards"
 msgstr ""
 
-#: templates/send_money/payment-method.html:55
-#: templates/send_money/payment-method.html:65
-msgid "The money should take about 3 working days to reach the prisoner"
+#: templates/send_money/payment-method.html:57
+#: templates/send_money/payment-method.html:67
+msgid "The money should take up to 3 working days to reach the prisoner"
 msgstr ""
 
-#: templates/send_money/payment-method.html:57
-msgid "You can make an international payment using a debit card"
+#: templates/send_money/payment-method.html:58
+msgid "You’ll get email confirmation of payment"
 msgstr ""
 
 #: templates/send_money/payment-method.html:59
-#: templates/send_money/payment-method.html:68
+msgid "You can make an international payment using a debit card"
+msgstr ""
+
+#: templates/send_money/payment-method.html:61
+#: templates/send_money/payment-method.html:70
 msgid "More help"
 msgstr ""
 
-#: templates/send_money/payment-method.html:63
+#: templates/send_money/payment-method.html:65
 msgid "You’ll get a prisoner reference you can use to make a bank transfer using online banking, your mobile banking app or telephone banking"
 msgstr ""
 
-#: templates/send_money/payment-method.html:64
+#: templates/send_money/payment-method.html:66
 msgid "You can re-use this reference for this prisoner each time you make a transfer"
 msgstr ""
 
-#: templates/send_money/payment-method.html:66
+#: templates/send_money/payment-method.html:68
 msgid "You don’t get email confirmation after your bank transfer."
 msgstr ""
 
-#: templates/send_money/payment-method.html:66
+#: templates/send_money/payment-method.html:68
 msgid "Why?"
 msgstr ""
 
-#: templates/send_money/payment-method.html:73
+#: templates/send_money/payment-method.html:75
 msgid "Continue"
 msgstr ""
 

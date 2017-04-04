@@ -67,11 +67,10 @@
       </li>
 
       <li>
-        {% trans 'The money should take about 3 working days to reach the prisoner.' %}
+        {% trans 'The money should take up to 3 working days to reach the prisoner.' %}
         {% trans 'No money is processed at weekends or bank holidays.' %}
       </li>
     </ol>
-
     <p>
       {% url 'send_money:help' as help_url %}
       {% url 'submit_ticket' as ticket_url %}
