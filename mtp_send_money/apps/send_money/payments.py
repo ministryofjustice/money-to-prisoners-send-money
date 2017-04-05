@@ -74,9 +74,12 @@ class PaymentClient:
             raise GovUkPaymentStatusException('Incomplete status: %s' % govuk_status)
 
         if govuk_status == 'error':
-            logger.error('GOV.UK Pay returned an error: %(code)s %(msg)s' %
-                         {'code': govuk_payment['state']['code'],
-                          'msg': govuk_payment['state']['message']})
+            logger.error(
+                'GOV.UK Pay returned an error for %(govuk_id)s: %(code)s %(msg)s' %
+                {'govuk_id': govuk_payment['payment_id'],
+                 'code': govuk_payment['state']['code'],
+                 'msg': govuk_payment['state']['message']}
+            )
         success = govuk_status == 'success'
 
         if success and email and not payment.get('email'):
