@@ -33,11 +33,3 @@
     font-weight: bold;
   }
 }
-
-#mtp-email-reference-form {
-  display: none;
-
-  &.mtp-email-reference-form--errors {
-    display: block;
-  }
-}

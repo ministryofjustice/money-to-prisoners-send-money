@@ -238,6 +238,7 @@ class BankTransferFlowTestCase(BaseTestCase):
         'prisoner_number',
         'prisoner_dob',
     ]
+    prisoner_number = 'A1231DE'
 
     @classmethod
     def patch_prisoner_details_check(cls):
@@ -251,7 +252,7 @@ class BankTransferFlowTestCase(BaseTestCase):
 
     def fill_in_prisoner_details(self, **kwargs):
         data = {
-            'prisoner_number': 'A1231DE',
+            'prisoner_number': self.prisoner_number,
             'prisoner_dob_0': '4',
             'prisoner_dob_1': '10',
             'prisoner_dob_2': '1980',
@@ -259,6 +260,12 @@ class BankTransferFlowTestCase(BaseTestCase):
         data.update(kwargs)
         with self.patch_prisoner_details_check():
             return self.client.post(BankTransferPrisonerDetailsTestCase.url, data=data, follow=True)
+
+    def enter_email_address(self, email='user@outside.local'):
+        with self.patch_prisoner_details_check():
+            return self.client.post(BankTransferEmailTestCase.url, data={
+                'email': email
+            }, follow=True)
 
 
 @patch_gov_uk_pay_availability_check()
@@ -413,6 +420,32 @@ class BankTransferPrisonerDetailsTestCase(BankTransferFlowTestCase):
 
 @patch_gov_uk_pay_availability_check()
 @patch_govuk_pay_connection_check()
+class BankTransferEmailTestCase(BankTransferFlowTestCase):
+    url = '/en-gb/bank-transfer/email/'
+
+    def test_cannot_access_directly(self):
+        response = self.client.get(self.url, follow=True)
+        self.assertOnPage(response, 'choose_method')
+
+    def test_empty_email_allowed(self):
+        self.choose_bank_transfer_payment_method()
+        self.fill_in_prisoner_details()
+
+        response = self.enter_email_address(email='')
+        self.assertOnPage(response, 'bank_transfer')
+
+    def test_displays_errors_for_invalid_email_address(self):
+        self.choose_bank_transfer_payment_method()
+        self.fill_in_prisoner_details()
+
+        response = self.enter_email_address(email='this@whatwhat')
+        self.assertContains(response, 'Enter a valid email address')
+        form = response.context['form']
+        self.assertTrue(form.errors)
+
+
+@patch_gov_uk_pay_availability_check()
+@patch_govuk_pay_connection_check()
 class BankTransferReferenceTestCase(BankTransferFlowTestCase):
     url = '/en-gb/bank-transfer/reference/'
 
@@ -422,8 +455,9 @@ class BankTransferReferenceTestCase(BankTransferFlowTestCase):
 
     def test_can_reach_reference_page(self):
         self.choose_bank_transfer_payment_method()
+        self.fill_in_prisoner_details()
 
-        response = self.fill_in_prisoner_details()
+        response = self.enter_email_address()
         self.assertOnPage(response, 'bank_transfer')
 
     def test_bank_transfer_page_clears_session_after_delay(self):
@@ -433,6 +467,7 @@ class BankTransferReferenceTestCase(BankTransferFlowTestCase):
                 self.assertIn(key, self.client.session)
 
             self.fill_in_prisoner_details()
+            self.enter_email_address()
             time.sleep(0.1)
             response = self.client.get(self.url, follow=True)
             for key in self.complete_session_keys:
@@ -444,8 +479,9 @@ class BankTransferReferenceTestCase(BankTransferFlowTestCase):
                        NOMS_HOLDING_ACCOUNT_SORT_CODE='10-20-30')
     def test_noms_account_details_presented_correctly(self):
         self.choose_bank_transfer_payment_method()
+        self.fill_in_prisoner_details()
 
-        response = self.fill_in_prisoner_details()
+        response = self.enter_email_address()
         expected_data = {
             'account_number': '1001001',
             'sort_code': '10-20-30',
@@ -456,8 +492,9 @@ class BankTransferReferenceTestCase(BankTransferFlowTestCase):
 
     def test_reference_number_presented_correctly(self):
         self.choose_bank_transfer_payment_method()
+        self.fill_in_prisoner_details()
 
-        response = self.fill_in_prisoner_details()
+        response = self.enter_email_address()
         bank_transfer_reference = 'A1231DE/04/10/1980'
         self.assertContains(response, bank_transfer_reference)
         self.assertEqual(response.context['bank_transfer_reference'], bank_transfer_reference)

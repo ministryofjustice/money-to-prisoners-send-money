@@ -204,4 +204,8 @@ class DebitCardAmountForm(SendMoneyForm):
 
 
 class BankTransferEmailForm(SendMoneyForm):
-    email = forms.EmailField(label=_('Your email address'))
+    email = forms.EmailField(
+        label=_('Your email address'),
+        help_text=_('For example, name@provider.com'),
+        required=False
+    )

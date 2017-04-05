@@ -52,6 +52,10 @@ class SendMoneyFlows(SendMoneyFunctionalTestCase):
             'prisoner_dob_2': '1989',
         })
         self.driver.find_element_by_id('id_next_btn').click()
+        self.fill_in_form({
+            'email': 'user@outside.local',
+        })
+        self.driver.find_element_by_id('id_next_btn').click()
         self.assertOnPage('bank_transfer')
 
     @override_settings(SHOW_BANK_TRANSFER_OPTION=True,
@@ -65,6 +69,10 @@ class SendMoneyFlows(SendMoneyFunctionalTestCase):
             'prisoner_dob_0': '21',
             'prisoner_dob_1': '1',
             'prisoner_dob_2': '1989',
+        })
+        self.driver.find_element_by_id('id_next_btn').click()
+        self.fill_in_form({
+            'email': 'user@outside.local',
         })
         self.driver.find_element_by_id('id_next_btn').click()
         self.assertOnPage('bank_transfer')

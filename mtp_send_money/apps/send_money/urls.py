@@ -5,7 +5,7 @@ from send_money.views import (
     PaymentMethodChoiceView,
     BankTransferWarningView, BankTransferPrisonerDetailsView, BankTransferReferenceView,
     DebitCardPrisonerDetailsView, DebitCardAmountView, DebitCardCheckView,
-    DebitCardPaymentView, DebitCardConfirmationView
+    DebitCardPaymentView, DebitCardConfirmationView, BankTransferEmailView
 )
 from send_money.views_misc import help_view, prison_list_view
 
@@ -18,6 +18,8 @@ urlpatterns = [
         name=BankTransferWarningView.url_name),
     url(r'^bank-transfer/details/$', BankTransferPrisonerDetailsView.as_view(),
         name=BankTransferPrisonerDetailsView.url_name),
+    url(r'^bank-transfer/email/$', BankTransferEmailView.as_view(),
+        name=BankTransferEmailView.url_name),
     url(r'^bank-transfer/reference/$', BankTransferReferenceView.as_view(),
         name=BankTransferReferenceView.url_name),
 

@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% load mtp_common %}
+{% load send_money %}
+
+{% block inner_content %}
+  <header>
+    {% language_switch %}
+    <h1 class="heading-xlarge">
+      <span class="heading-secondary">{% trans 'Get a prisoner reference to use in a UK bank transfer' %}</span>
+      {% trans 'Enter your email' %}
+    </h1>
+  </header>
+
+  <p class="mtp-bank-transfer-instructions">{% trans 'If you fill in your email address, we’ll send you a copy of your prisoner reference to make bank transfers to this prisoner easier in the future. This is optional.' %}</p>
+
+  <form id="mtp-email-reference-form" class="{% if form.errors %}mtp-email-reference-form--errors{% endif %}" method="post" action=".">
+    {% csrf_token %}
+
+    {% include 'mtp_common/forms/error-summary.html' with form=form only %}
+    {% include 'mtp_common/forms/field.html' with field=form.email only %}
+
+    <p>
+      <input id="id_next_btn" class="button" type="submit" value="{% trans 'Continue' %}">
+    </p>
+  </form>
+{% endblock %}
