@@ -19,13 +19,14 @@
 }
 
 .mtp-account {
-  table th, table td {
-    border: 0;
-    padding: 0.5em;
-  }
+  margin: 1em 0 1.5em;
+  padding-bottom: 0;
+  padding-top: 0;
 
-  th {
+  th, td {
+    border: 0;
     font-weight: normal;
+    padding: 0.5em;
   }
 
   td {
