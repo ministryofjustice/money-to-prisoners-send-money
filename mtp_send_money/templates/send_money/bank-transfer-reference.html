@@ -2,50 +2,51 @@
 {% load i18n %}
 {% load send_money %}
 {% load static %}
+{% load mtp_common %}
 
 {% block inner_content %}
+  <header>
+    {% language_switch %}
+    <h1 class="heading-xlarge">
+      <span class="heading-secondary">{% trans 'Get a prisoner reference to use in a UK bank transfer' %}</span>
+      {% trans 'How to make your transfer' %}
+    </h1>
+  </header>
 
-  <div class="govuk-box-highlight">
-    <h1 class="heading-medium">{% trans 'Your prisoner reference:' %}</h1>
-    <h2 class="heading-large">{{ bank_transfer_reference }}</h2>
-    <p>{% trans 'Use this reference to make your bank transfer' %}</p>
-  </div>
-
-  {% if email %}
-  <p>{% blocktrans %}This page has been emailed to {{ email }}{% endblocktrans %}</p>
-  {% endif %}
-
-  <div class="print-hidden mtp-reference-actions">
+  <div class="print-hidden">
+    {% if email %}
+    <div>{% blocktrans %}This page has been emailed to {{ email }}{% endblocktrans %}</div>
+    {% endif %}
     <a class="mtp-print-reference" href="#">{% trans 'Print this page' %}</a>
   </div>
 
   <section>
-    <h2 class="heading-medium">{% trans 'Now you can make the bank transfer' %}</h2>
-    <ol class="list list-number">
-      <li>
-        {% trans 'Log into your online banking account, mobile banking app or use your telephone banking, as normal.' %}
+    <ol class="mtp-bank-transfer-procedure">
+      <li class="first">
+        <p>{% trans 'Log into your online banking account, mobile banking app or use your telephone banking, as normal.' %}
+        {% trans 'Remember, you can’t do a bank transfer in-branch and you must use a UK bank account.' %}</p>
       </li>
 
-      <li>
-        {% trans 'Copy and paste these details into the transfer:' %}
+      <li class="second">
+        <p>{% trans 'Copy and paste these details into the transfer:' %}</p>
         <div class="mtp-account panel panel-border-wide">
           <table>
             <tbody>
               <tr>
                 <th>{% trans 'Account number:' %}</th>
-                <td>{{ account_number }}</td>
+                <td><div>{{ account_number }}</div></td>
               </tr>
               <tr>
                 <th>{% trans 'Sort code:'%}</th>
-                <td>{{ sort_code }}</td>
+                <td><div>{{ sort_code }}</div></td>
               </tr>
               <tr>
                 <th>{% trans 'Reference:' %}</th>
-                <td>{{ bank_transfer_reference }}</td>
+                <td><div>{{ bank_transfer_reference }}</div></td>
               </tr>
               <tr>
                 <th>{% trans 'Payee/Name:' %}</th>
-                <td>{{ bank_transfer_reference }}</td>
+                <td><div>{{ bank_transfer_reference }}</div></td>
               </tr>
             </tbody>
           </table>
@@ -54,12 +55,11 @@
           {% trans 'All prisons share this bank account.' %}
           {% trans 'Please use your prisoner reference to make sure the money goes to the right prisoner.' %}
         </p>
-        <p>{% trans 'Remember, you can’t do a bank transfer in-branch and you must use a UK bank account.' %}</p>
       </li>
 
-      <li>
-        {% trans 'The money should take up to 3 working days to reach the prisoner.' %}
-        {% trans 'No money is processed at weekends or bank holidays.' %}
+      <li class="third">
+        <p>{% trans 'The money should take up to 3 working days to reach the prisoner.' %}
+        {% trans 'No money is processed at weekends or bank holidays.' %}</p>
       </li>
     </ol>
     <p>

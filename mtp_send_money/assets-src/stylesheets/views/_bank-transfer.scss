@@ -31,5 +31,49 @@
 
   td {
     font-weight: bold;
+
+    div {
+      border: 2px solid $text-colour;
+      padding: 0.15em;
+      width: 100%;
+    }
+  }
+}
+
+.mtp-bank-transfer-procedure {
+  width: 75%;
+
+  @include media(mobile) {
+    width: 100%;
+  }
+}
+
+ol.mtp-bank-transfer-procedure {
+  margin-top: 2em;
+
+  li {
+    padding-top: 8px;
+    padding-left: 80px;
+    margin-bottom: 1em;
+  }
+
+  li.first {
+    background: file-url('icon-step-1-2x.png') no-repeat scroll 0 0;
+  }
+
+  li.second {
+    background: file-url('icon-step-2-2x.png') no-repeat scroll 0 0;
+  }
+
+  li.third {
+    background: file-url('icon-step-3-2x.png') no-repeat scroll 0 0;
+  }
+
+  @media print {
+    list-style-type: decimal;
+
+    li {
+      padding: 0;
+    }
   }
 }
