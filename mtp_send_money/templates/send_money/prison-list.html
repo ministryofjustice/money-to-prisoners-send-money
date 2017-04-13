@@ -22,7 +22,7 @@
       <p>
         <input class="form-control form-control-1-3 mtp-filtered-list__input" type="search" value="" placeholder="{% trans 'Search' %}" />
       </p>
-      <ul class="panel panel-border-narrow mtp-filtered-list__list" data-stop-words="centre immigration prison prisons removal the">
+      <ul class="panel panel-border-narrow mtp-filtered-list__list" data-stop-words="{{ stop_words|join:' ' }}">
         <li class="mtp-filtered-list__empty">{% trans 'No prisons found' %}</li>
         {% for prison in prison_list %}
           <li>{{ prison|describe_abbreviation }}</li>
