@@ -55,6 +55,14 @@ def prison_list_view(request):
             logger.exception('Could not look up prison list')
     return render(request, 'send_money/prison-list.html', context={
         'prison_list': prison_list,
+        'stop_words': sorted([
+            # NB: these are output into a regular expression so must have special characters escaped
+            'and', 'the',
+            'prison', 'prisons',
+            'young', 'offender', 'institutions', 'institutions',
+            'immigration', 'removal', 'centre', 'centres',
+            'secure', 'training',
+        ]),
     })
 
 
