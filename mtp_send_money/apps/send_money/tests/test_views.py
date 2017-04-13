@@ -1142,13 +1142,8 @@ class PrisonList(SimpleTestCase):
                 rsps.GET,
                 api_url('/prisons/'),
                 json={
-                    'count': 3,
+                    'count': 2,
                     'results': [
-                        {
-                            'nomis_id': 'ZCH',
-                            'short_name': 'Clive House',
-                            'name': 'HMP Clive House',
-                        },
                         {
                             'nomis_id': 'BBB',
                             'short_name': 'Prison 1',
@@ -1163,8 +1158,8 @@ class PrisonList(SimpleTestCase):
                 },
             )
             response = self.client.get(reverse('send_money:prison_list'))
-        self.assertNotContains(response, 'Clive House')
+            self.assertIn('exclude_empty_prisons=True', rsps.calls[-1].request.url)
+        self.assertContains(response, 'Prison 1')
         response = response.content.decode(response.charset)
-        self.assertIn('Prison 1', response)
         self.assertIn('Prison 2', response)
         self.assertLess(response.index('Prison 1'), response.index('Prison 2'))

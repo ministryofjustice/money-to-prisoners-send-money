@@ -40,13 +40,11 @@ def prison_list_view(request):
     prison_list = cache.get('prison_list')
     if not prison_list:
         try:
-            excluded_nomis_ids = {'ZCH'}
             client = get_api_client()
-            prison_list = retrieve_all_pages(client.prisons.get)
+            prison_list = retrieve_all_pages(client.prisons.get, exclude_empty_prisons=True)
             prison_list = [
                 prison['name']
                 for prison in sorted(prison_list, key=lambda prison: prison['short_name'])
-                if prison['nomis_id'] not in excluded_nomis_ids
             ]
             if not prison_list:
                 raise ValueError('Empty prison list')
