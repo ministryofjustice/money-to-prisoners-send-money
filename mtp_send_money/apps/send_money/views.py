@@ -23,7 +23,7 @@ from send_money.exceptions import GovUkPaymentStatusException
 from send_money.models import PaymentMethod
 from send_money.payments import is_active_payment, PaymentClient
 from send_money.utils import (
-    bank_transfer_reference, get_service_charge, get_link_by_rel, site_url
+    bank_transfer_reference, can_load_govuk_pay_image, get_service_charge, get_link_by_rel, site_url
 )
 
 logger = logging.getLogger('mtp')
@@ -167,6 +167,8 @@ class PaymentMethodChoiceView(SendMoneyFormView):
             'service_charged': self.is_service_charged(),
             'service_charge_percentage': settings.SERVICE_CHARGE_PERCENTAGE,
             'service_charge_fixed': settings.SERVICE_CHARGE_FIXED,
+            'check_govuk_pay_connection': can_load_govuk_pay_image(),
+            'govuk_pay_connection_check_image': settings.GOVUK_PAY_CONNECTION_CHECK_IMAGE,
         })
         return context_data
 

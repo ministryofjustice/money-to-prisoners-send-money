@@ -16,7 +16,7 @@ from requests import ConnectionError
 import responses
 
 from send_money.models import PaymentMethod
-from send_money.tests import mock_auth, patch_gov_uk_pay_availability_check
+from send_money.tests import mock_auth, patch_gov_uk_pay_availability_check, patch_govuk_pay_connection_check
 from send_money.utils import api_url, govuk_url
 
 
@@ -33,6 +33,7 @@ class PaymentOptionAvailabilityTestCase(BaseTestCase):
         self.assertEqual(response.status_code, 404, msg='should not be able to access %s' % url)
 
     @patch_gov_uk_pay_availability_check()
+    @patch_govuk_pay_connection_check()
     def test_locale_switches_based_on_browser_language(self):
         languages = (
             ('*', 'en-gb'),
@@ -89,6 +90,7 @@ class PaymentOptionAvailabilityTestCase(BaseTestCase):
         self.assertNotContains(response, 'Amount')
 
     @patch_gov_uk_pay_availability_check()
+    @patch_govuk_pay_connection_check()
     @override_settings(SHOW_BANK_TRANSFER_OPTION=True,
                        SHOW_DEBIT_CARD_OPTION=True)
     def test_both_flows_accessible_when_enabled(self):
@@ -99,6 +101,7 @@ class PaymentOptionAvailabilityTestCase(BaseTestCase):
 
 
 @patch_gov_uk_pay_availability_check()
+@patch_govuk_pay_connection_check()
 class ChooseMethodViewTestCase(BaseTestCase):
     url = '/en-gb/'
 
@@ -192,6 +195,7 @@ class ChooseMethodViewTestCase(BaseTestCase):
 
 
 @mock.patch('send_money.forms.check_payment_service_available', mock.Mock(return_value=(False, 'Scheduled work')))
+@patch_govuk_pay_connection_check()
 class PaymentServiceUnavailableChooseMethodViewTestCase(BaseTestCase):
     url = '/en-gb/'
 
@@ -258,6 +262,7 @@ class BankTransferFlowTestCase(BaseTestCase):
 
 
 @patch_gov_uk_pay_availability_check()
+@patch_govuk_pay_connection_check()
 class BankTransferWarningTestCase(BankTransferFlowTestCase):
     url = '/en-gb/bank-transfer/warning/'
 
@@ -278,6 +283,7 @@ class BankTransferWarningTestCase(BankTransferFlowTestCase):
 
 
 @patch_gov_uk_pay_availability_check()
+@patch_govuk_pay_connection_check()
 class BankTransferPrisonerDetailsTestCase(BankTransferFlowTestCase):
     url = '/en-gb/bank-transfer/details/'
 
@@ -406,6 +412,7 @@ class BankTransferPrisonerDetailsTestCase(BankTransferFlowTestCase):
 
 
 @patch_gov_uk_pay_availability_check()
+@patch_govuk_pay_connection_check()
 class BankTransferReferenceTestCase(BankTransferFlowTestCase):
     url = '/en-gb/bank-transfer/reference/'
 
@@ -505,6 +512,7 @@ class DebitCardFlowTestCase(BaseTestCase):
 
 
 @patch_gov_uk_pay_availability_check()
+@patch_govuk_pay_connection_check()
 class DebitCardPrisonerDetailsTestCase(DebitCardFlowTestCase):
     url = '/en-gb/debit-card/details/'
 
@@ -650,6 +658,7 @@ class DebitCardPrisonerDetailsTestCase(DebitCardFlowTestCase):
 
 
 @patch_gov_uk_pay_availability_check()
+@patch_govuk_pay_connection_check()
 class DebitCardAmountTestCase(DebitCardFlowTestCase):
     url = '/en-gb/debit-card/amount/'
 
@@ -704,6 +713,7 @@ class DebitCardAmountTestCase(DebitCardFlowTestCase):
 
 
 @patch_gov_uk_pay_availability_check()
+@patch_govuk_pay_connection_check()
 class DebitCardCheckTestCase(DebitCardFlowTestCase):
     url = '/en-gb/debit-card/check/'
 
@@ -729,6 +739,7 @@ class DebitCardCheckTestCase(DebitCardFlowTestCase):
 
 
 @patch_gov_uk_pay_availability_check()
+@patch_govuk_pay_connection_check()
 @override_settings(SHOW_BANK_TRANSFER_OPTION=True,
                    SHOW_DEBIT_CARD_OPTION=True,
                    SERVICE_CHARGE_PERCENTAGE=Decimal('2.4'),
@@ -834,6 +845,7 @@ class DebitCardPaymentTestCase(DebitCardFlowTestCase):
 
 
 @patch_gov_uk_pay_availability_check()
+@patch_govuk_pay_connection_check()
 @override_settings(SHOW_BANK_TRANSFER_OPTION=True,
                    SHOW_DEBIT_CARD_OPTION=True,
                    SERVICE_CHARGE_PERCENTAGE=Decimal('2.4'),
