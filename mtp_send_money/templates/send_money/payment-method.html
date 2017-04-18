@@ -29,7 +29,7 @@
       <legend class="visuallyhidden">{% trans 'How do you want to send money?' %}</legend>
 
       {% for payment_method in form.payment_method.field.choices %}
-        <label class="block-label {% if form.payment_method.field.disabled %}mtp-grey-choice{% endif %}" for="id_{{ payment_method.0 }}">
+        <label class="block-label {% if form.payment_method.field.disabled and form.payment_method.value != payment_method.0 %}mtp-grey-choice{% endif %}" for="id_{{ payment_method.0 }}">
           <input id="id_{{ payment_method.0 }}" type="radio" name="{{ form.payment_method.html_name }}" value="{{ payment_method.0 }}"
                  {% if form.payment_method.field.disabled %}disabled{% endif %}
                  {% if form.payment_method.value == payment_method.0 %}checked{% endif %}>
