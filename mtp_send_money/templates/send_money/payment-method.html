@@ -18,9 +18,9 @@
       <div class="error-summary" role="alert" aria-labelledby="error-summary-heading" tabindex="-1">
 
         <h1 class="heading-medium error-summary-heading">
-          {{ form.payment_method.field.message_to_users|default:_('Due to a technical issue, pay by debit card is temporarily unavailable.') }}
+          {{ form.payment_method.field.message_to_users|default:_('Sending money by debit card is temporarily unavailable') }}
         </h1>
-        <p>{% trans 'Please send money using a bank transfer or come back later.' %}</p>
+        <p>{% trans 'You can come back later or choose to get a prisoner reference to use in a UK bank transfer' %}</p>
 
       </div>
     {% endif %}
@@ -49,7 +49,7 @@
         <h2 class="heading-small mtp-debit-header {% if form.payment_method.field.disabled %}mtp-grey-text{% endif %}">{% trans 'Pay now by debit card' %}</h2>
         {% if form.payment_method.field.disabled %}
           <h2 class="heading-small mtp-debit-unavailable">
-            {{ form.payment_method.field.message_to_users|default:_('Temporarily unavailable due to a technical issue') }}
+            {% trans 'Temporarily unavailable' %}
           </h2>
         {% endif %}
         <ol class="list list-number">
