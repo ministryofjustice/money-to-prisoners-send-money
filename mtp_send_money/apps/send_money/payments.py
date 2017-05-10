@@ -45,7 +45,10 @@ class PaymentClient:
         return api_response['uuid']
 
     def get_incomplete_payments(self):
-        return retrieve_all_pages(self.client.payments.get)
+        an_hour_ago = timezone.now() - timedelta(hours=1)
+        return retrieve_all_pages(
+            self.client.payments.get, modified__lt=an_hour_ago.isoformat()
+        )
 
     def get_payment(self, payment_ref):
         from slumber.exceptions import HttpNotFoundError
