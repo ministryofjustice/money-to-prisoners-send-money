@@ -11,9 +11,8 @@ from django.utils.dateparse import parse_date
 from django.utils import formats
 from django.utils.encoding import force_text
 from django.utils.translation import gettext, gettext_lazy as _
-from django_mailgun import MailgunAPIError
 from mtp_common.auth import api_client, urljoin
-from mtp_common.email import send_email
+from mtp_common.tasks import send_email
 import requests
 from requests.exceptions import RequestException, Timeout
 
@@ -54,24 +53,16 @@ def can_load_govuk_pay_image():
 
 
 def send_notification(email, context):
-    from smtplib import SMTPException
-
-    if not email:
-        return False
     context.update({
         'site_url': settings.START_PAGE_URL,
         'feedback_url': site_url(reverse('submit_ticket')),
         'help_url': site_url(reverse('send_money:help')),
     })
-    try:
-        send_email(
-            email, 'send_money/email/debit-card-confirmation.txt',
-            gettext('Send money to a prisoner: your payment was successful'),
-            context=context, html_template='send_money/email/debit-card-confirmation.html'
-        )
-        return True
-    except (MailgunAPIError, RequestException, SMTPException):
-        logger.exception('Could not send successful payment notification')
+    send_email(
+        email, 'send_money/email/debit-card-confirmation.txt',
+        gettext('Send money to a prisoner: your payment was successful'),
+        context=context, html_template='send_money/email/debit-card-confirmation.html'
+    )
 
 
 def validate_prisoner_number(value):

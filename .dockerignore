@@ -26,3 +26,4 @@ mtp_send_money/templates/govuk_template
 static/
 media/
 venv/
+spooler/
