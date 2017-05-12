@@ -18,6 +18,7 @@ mtp_send_money/assets/
 mtp_send_money/settings/local.py
 static/
 media/
+spooler/
 
 # selenium
 geckodriver.log

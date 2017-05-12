@@ -2,7 +2,6 @@ import datetime
 import decimal
 import logging
 import random
-import smtplib
 
 from django.conf import settings
 from django.core.urlresolvers import reverse
@@ -13,7 +12,7 @@ from django.utils.dateformat import format as format_date
 from django.utils.dateparse import parse_datetime
 from django.utils.translation import gettext, gettext_lazy as _
 from django.views.generic import FormView, TemplateView, View
-from mtp_common.email import send_email
+from mtp_common.tasks import send_email
 from oauthlib.oauth2 import OAuth2Error
 from requests.exceptions import RequestException, Timeout as RequestsTimeout
 from slumber.exceptions import SlumberHttpBaseException
@@ -251,15 +250,11 @@ class BankTransferReferenceView(BankTransferFlow, SendMoneyFormView):
         context = self.get_context_data(site_url=settings.START_PAGE_URL,
                                         feedback_url=site_url(reverse('submit_ticket')),
                                         help_url=site_url(reverse('send_money:help')))
-        try:
-            send_email(
-                email, 'send_money/email/bank-transfer-reference.txt',
-                gettext('Send money to a prisoner: Your prisoner reference is %(bank_transfer_reference)s') % context,
-                context=context, html_template='send_money/email/bank-transfer-reference.html'
-            )
-        except (RequestException, smtplib.SMTPException):
-            logger.exception('Could not send bank transfer reference email')
-
+        send_email(
+            email, 'send_money/email/bank-transfer-reference.txt',
+            gettext('Send money to a prisoner: Your prisoner reference is %(bank_transfer_reference)s') % context,
+            context=context, html_template='send_money/email/bank-transfer-reference.html'
+        )
         return super().form_valid(form)
 
     def get_success_url(self):
