@@ -147,6 +147,10 @@ class PaymentClient:
                     return datetime.combine(
                         captured_date, time.min
                     ).replace(tzinfo=timezone.utc)
+                elif capture_submit_time.date() > captured_date:
+                    return datetime.combine(
+                        captured_date, time.max
+                    ).replace(tzinfo=timezone.utc)
                 else:
                     return capture_submit_time
         except (KeyError, TypeError):
