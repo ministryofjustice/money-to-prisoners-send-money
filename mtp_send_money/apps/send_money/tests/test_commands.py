@@ -342,3 +342,12 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
             '2016-10-28',
             '2016-10-28T12:45:22+00:00'
         )
+
+    @mock.patch('mtp_send_money.apps.send_money.payments.timezone.now')
+    def test_received_at_date_is_put_back(self, mock_now):
+        mock_now.return_value = datetime(2016, 10, 29, 0, 5, 22, tzinfo=utc)
+        self._test_received_at_date_matches_captured_date(
+            '',
+            '2016-10-28',
+            '2016-10-28T23:59:59.999999+00:00'
+        )
