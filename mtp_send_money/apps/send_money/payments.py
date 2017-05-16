@@ -139,8 +139,10 @@ class PaymentClient:
             captured_date = parse_date(
                 govuk_payment['settlement_summary'].get('captured_date', '')
             )
-            if capture_submit_time is not None and captured_date is not None:
-                capture_submit_time = capture_submit_time.astimezone(timezone.utc)
+            if captured_date is not None:
+                capture_submit_time = (
+                    capture_submit_time or timezone.now()
+                ).astimezone(timezone.utc)
                 if capture_submit_time.date() < captured_date:
                     return datetime.combine(
                         captured_date, time.min
