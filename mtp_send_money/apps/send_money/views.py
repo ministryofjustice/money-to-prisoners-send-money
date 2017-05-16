@@ -250,6 +250,8 @@ class BankTransferReferenceView(BankTransferFlow, SendMoneyFormView):
         context = self.get_context_data(site_url=settings.START_PAGE_URL,
                                         feedback_url=site_url(reverse('submit_ticket')),
                                         help_url=site_url(reverse('send_money:help')))
+        context.pop('form', None)
+        context.pop('view', None)
         send_email(
             email, 'send_money/email/bank-transfer-reference.txt',
             gettext('Send money to a prisoner: Your prisoner reference is %(bank_transfer_reference)s') % context,
