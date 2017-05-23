@@ -28,8 +28,7 @@ class SendMoneyFunctionalTestCase(FunctionalTestCase):
         self.assertInSource('<!-- %s -->' % url_name)
 
     def make_payment_method_choice(self, payment_method):
-        field = self.driver.find_element_by_id('id_%s' % payment_method)
-        field.find_element_by_xpath('..').click()  # input is obscured so click on parent label
+        self.driver.find_element_by_id('id_%s' % payment_method).click()
         self.click_on_text('Continue')
 
     def fill_in_form(self, data):
