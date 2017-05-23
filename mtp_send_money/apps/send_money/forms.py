@@ -189,7 +189,7 @@ class MaxAmountValidator(MaxValueValidator):
 
 class DebitCardAmountForm(SendMoneyForm):
     amount = forms.DecimalField(
-        label=_('Amount you are sending'),
+        label=_('Amount'),
         min_value=decimal.Decimal('0.01'),
         decimal_places=2,
         validators=[MaxAmountValidator(decimal.Decimal('200'))],
