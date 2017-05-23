@@ -20,9 +20,9 @@
     {% with field=form.amount %}
       <div class="mtp-amount">
         <fieldset>
-          <legend class="form-label">{% trans 'Amount' %}</legend>
+          <legend class="visually-hidden">{% trans 'Please enter the amount in pounds' %}</legend>
 
-          <label id="{{ field.id_for_label }}-label" class="mtp-hidden" for="{{ field.id_for_label }}">{% trans 'Please enter the amount in pounds' %}</label>
+          {% include 'mtp_common/forms/field-label.html' with field=field only %}
           <div class="form-group mtp-money-amount {% if field.errors %}form-group-error{% endif %}">
             {% include 'mtp_common/forms/field-errors.html' with field=field only %}
             <div class="mtp-money-box">
