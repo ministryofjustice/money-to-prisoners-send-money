@@ -1,4 +1,4 @@
-// govuk_elements overrides
+// app-specific styles
 
 .form-date {
   p {
@@ -17,26 +17,10 @@
   margin-right: 1em;
 }
 
-.form-date-day input {
-  width: 3em;
-}
-
-.form-date-month input {
+.form-date-day input, .form-date-month input {
   width: 3em;
 }
 
 .form-date-year input {
   width: 5em;
-}
-
-.form-label {
-  margin-bottom: 0;
-}
-
-form fieldset legend {
-  margin-bottom: .5em;
-}
-
-form .form-group .form-hint {
-  margin-top: 0;
 }

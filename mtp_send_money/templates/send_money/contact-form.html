@@ -23,10 +23,10 @@
       <legend class="visually-hidden">{% trans 'Your message' %}</legend>
 
       {% with field=form.ticket_content value=request.GET.message|default:'' %}
-        <div class="form-group {% if field.errors %}error{% endif %}">
+        <div class="form-group {% if field.errors %}form-group-error{% endif %}">
           {% include 'mtp_common/forms/field-label.html' with field=field only %}
           {% include 'mtp_common/forms/field-errors.html' with field=field only %}
-          <textarea class="form-control" id="{{ field.id_for_label }}" name="{{ field.html_name }}" cols="40" rows="10">{{ field.value|default:value }}</textarea>
+          <textarea class="form-control {% if field.errors %}form-control-error{% endif %}" id="{{ field.id_for_label }}" name="{{ field.html_name }}" cols="40" rows="10">{{ field.value|default:value }}</textarea>
           <p>
             {% trans 'Please don’t include your bank details or any other personal information.' %}
           </p>
@@ -37,7 +37,10 @@
       {% include 'mtp_common/forms/field.html' with field=form.prisoner_number only %}
       {% include 'mtp_common/forms/field.html' with field=form.prisoner_dob only %}
 
-      <h2 class="heading-medium">{% trans 'Enter your email address if you’d like a reply. We won’t use it for anything else.' %}</h2>
+      <h2 class="heading-medium">
+        {% trans 'Enter your email address if you’d like a reply.' %}
+        {% trans 'We won’t use it for anything else.' %}
+      </h2>
       {% include 'mtp_common/forms/field.html' with field=form.contact_email value=request.GET.email|default:'' only %}
 
       <div class="form-group">

@@ -33,15 +33,17 @@
     {% endif %}
 
     <fieldset class="mtp-payment-choice">
-      <legend class="visuallyhidden">{% trans 'How do you want to send money?' %}</legend>
+      <legend id="{{ form.payment_method.id_for_label }}-label" class="visually-hidden">{% trans 'How do you want to send money?' %}</legend>
 
       {% for payment_method in form.payment_method.field.choices %}
-        <label class="block-label {% if form.payment_method.field.disabled and form.payment_method.value != payment_method.0 %}mtp-grey-choice{% endif %}" for="id_{{ payment_method.0 }}">
+        <div class="multiple-choice">
           <input id="id_{{ payment_method.0 }}" type="radio" name="{{ form.payment_method.html_name }}" value="{{ payment_method.0 }}"
                  {% if form.payment_method.field.disabled %}disabled{% endif %}
                  {% if form.payment_method.value == payment_method.0 %}checked{% endif %}>
-          {{ payment_method.1 }}
-        </label>
+          <label class="{% if form.payment_method.field.disabled and form.payment_method.value != payment_method.0 %}mtp-grey-choice{% endif %}" for="id_{{ payment_method.0 }}">
+            {{ payment_method.1 }}
+          </label>
+        </div>
         {% if not forloop.last %}
           <p class="form-block">{% trans 'or' %}</p>
         {% endif %}
