@@ -5,6 +5,10 @@
 
   .js-enabled & {
     display: block;
+
+    @media print {
+      display: none;
+    }
   }
 }
 
