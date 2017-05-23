@@ -75,15 +75,15 @@ class PaymentMethodChoiceForm(SendMoneyForm):
 
 
 class PrisonerDetailsForm(SendMoneyForm):
+    prisoner_dob = SplitDateField(
+        label=_('Prisoner date of birth'),
+        help_text=_('For example, 28 04 1996'),
+    )
     prisoner_number = forms.CharField(
         label=_('Prisoner number'),
         help_text=_('For example, A1234BC'),
         max_length=7,
         validators=[validate_prisoner_number],
-    )
-    prisoner_dob = SplitDateField(
-        label=_('Prisoner date of birth'),
-        help_text=_('For example, 28 04 1996'),
     )
     serialise_prisoner_dob = serialise_date
     unserialise_prisoner_dob = unserialise_date
