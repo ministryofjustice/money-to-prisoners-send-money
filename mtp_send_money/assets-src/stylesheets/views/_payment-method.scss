@@ -32,16 +32,20 @@
   }
 }
 
-.mtp-payment-help {
+.mtp-payment-help__container {
+  margin-bottom: 30px;
+  margin-top: 25px;
   padding-left: 0.4em;
 
-  .help-box-contents {
-    ol {
-      margin-bottom: 5px;
-    }
+  .mtp-disclosure__contents {
+    padding-left: 30px;
+  }
 
-    .mtp-help-link {
-      margin-left: .8em;
-    }
+  ol {
+    margin-bottom: 5px;
+  }
+
+  .mtp-help-link {
+    margin-left: .8em;
   }
 }
