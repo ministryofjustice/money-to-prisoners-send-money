@@ -13,6 +13,7 @@ npm-debug.log
 # app-specific
 docker-compose.yml
 package.json
+package-lock.json
 webpack.config.js
 mtp_send_money/assets/
 mtp_send_money/settings/local.py
