@@ -33,6 +33,12 @@ urlpatterns = [
         name=DebitCardConfirmationView.url_name),
 
     url(r'^help/$', help_view, name='help'),
+    url(r'^help/bank-transfer-issues/$', help_view, kwargs={'page': 'bank-transfer-issues'},
+        name='help_bank_transfer'),
+    url(r'^help/payment-delay/$', help_view, kwargs={'page': 'payment-delay'},
+        name='help_delays'),
+    url(r'^help/prisoner-moved-or-released/$', help_view, kwargs={'page': 'prisoner-moved-or-released'},
+        name='help_transfered'),
     url(r'^help/prisons/$', prison_list_view, name='prison_list'),
 
     url(r'^clear-session/$', clear_session_view, name='clear_session'),

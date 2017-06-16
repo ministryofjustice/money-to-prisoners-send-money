@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% load mtp_common %}
+
+{% block inner_content %}
+
+  <nav class="mtp-help-nav">
+    <div class="mtp-help-nav__item">
+      {% if return_to %}
+        <a class="link-back" href="{{ return_to }}">{% trans 'Back' %}</a>
+      {% endif %}
+    </div>
+    <div class="mtp-help-nav__item">
+      {% language_switch %}
+    </div>
+  </nav>
+
+  <div class="grid-row">
+    <div class="column-two-thirds">
+
+      <header>
+        <h1 class="heading-xlarge">
+          <span class="heading-secondary">
+            {% trans 'Help' %}
+          </span>
+          {% trans 'Payment issues' %}
+        </h1>
+      </header>
+
+      <p>
+        {% trans 'If you’ve already sent money but are experiencing problems, we can help.' %}
+      </p>
+      <p>
+        {% trans 'Find out:' %}
+      </p>
+      <ul class="list list-bullet">
+        <li>
+          <a href="{% url 'send_money:help_bank_transfer' %}">
+            {% trans 'why a bank transfer was returned or didn’t reach the prisoner' %}
+          </a>
+        </li>
+        <li>
+          <a href="{% url 'send_money:help_delays' %}">
+            {% trans 'why a payment has taken longer' %}
+          </a>
+        </li>
+        <li>
+          <a href="{% url 'send_money:help_transfered' %}">
+            {% trans 'what happens to money sent when a prisoner has been moved or released' %}
+          </a>
+        </li>
+      </ul>
+      <p>
+        {% url 'submit_ticket' as feedback_url %}
+        {% blocktrans trimmed %}
+          If none of the above help to solve your problem, please <a href="{{ feedback_url }}">contact us</a>.
+        {% endblocktrans %}
+      </p>
+
+    </div>
+  </div>
+
+{% endblock %}
