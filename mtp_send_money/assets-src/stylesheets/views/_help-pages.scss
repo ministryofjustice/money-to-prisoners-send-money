@@ -1,0 +1,14 @@
+.mtp-help-nav {
+  @extend %contain-floats;
+
+  .mtp-language-switch {
+    margin: 15px 0;
+    padding-top: 0;
+  }
+}
+
+.mtp-help-nav__item {
+  display: inline-block;
+  width: 50%;
+  float: left;
+}

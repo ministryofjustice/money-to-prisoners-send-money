@@ -2,7 +2,7 @@ import logging
 
 from django.conf import settings
 from django.core.cache import cache
-from django.core.urlresolvers import reverse, reverse_lazy
+from django.core.urlresolvers import reverse
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.utils.http import is_safe_url
@@ -18,19 +18,19 @@ from send_money.utils import get_api_client
 logger = logging.getLogger('mtp')
 
 
-def help_view(request):
+def help_view(request, page='payment-issues'):
     """
-    FAQ section
+    FAQ sections
     @param request: the HTTP request
+    @param page: page slug
     """
     context = {
-        'prison_list_url': reverse_lazy('send_money:prison_list'),
-        'ticket_url': reverse_lazy('submit_ticket'),
+        'return_to': reverse('send_money:choose_method'),
     }
     return_to = request.META.get('HTTP_REFERER')
     if is_safe_url(url=return_to, host=request.get_host()) and return_to != request.build_absolute_uri():
         context['return_to'] = return_to
-    return render(request, 'send_money/help.html', context=context)
+    return render(request, 'send_money/help/%s.html' % page, context=context)
 
 
 def prison_list_view(request):
