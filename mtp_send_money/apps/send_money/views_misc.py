@@ -84,7 +84,10 @@ class SitemapXMLView(TemplateView):
     content_type = 'application/xml; charset=utf-8'
 
     def make_links(self):
-        url_names = ['send_money:choose_method', 'send_money:help', 'send_money:prison_list']
+        url_names = [
+            'send_money:choose_method', 'send_money:help', 'send_money:help_bank_transfer',
+            'send_money:help_delays', 'send_money:help_transfered', 'send_money:prison_list',
+        ]
         links = {}
         request = self.request
         for lang_code, lang_name in settings.LANGUAGES:
