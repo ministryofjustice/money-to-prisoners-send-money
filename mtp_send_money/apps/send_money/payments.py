@@ -105,6 +105,10 @@ class PaymentClient:
                 payment_update['card_number_last_digits'] = card_details['last_digits_card_number']
             if 'expiry_date' in card_details:
                 payment_update['card_expiry_date'] = card_details['expiry_date']
+            if 'card_brand' in card_details:
+                payment_update['card_brand'] = card_details['card_brand']
+            if card_details.get('billing_address'):
+                payment_update['billing_address'] = card_details['billing_address']
         self.update_payment(payment_ref, payment_update)
 
     def get_govuk_payment(self, govuk_id):
