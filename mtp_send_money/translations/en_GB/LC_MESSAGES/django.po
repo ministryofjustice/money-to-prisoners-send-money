@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: mtp-send-money\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-06-21 14:31+0100\n"
+"POT-Creation-Date: 2017-06-21 16:14+0100\n"
 "PO-Revision-Date: 2016-11-04 10:00+0000\n"
 "Last-Translator: Welsh Language Unit <welsh.language.unit.manager@hmcts.gsi.gov.uk>\n"
 "Language-Team: Welsh (http://www.transifex.com/ministry-of-justice/mtp/language/cy/)\n"
@@ -35,17 +35,17 @@ msgstr ""
 msgid "For example, 28/04/1996"
 msgstr ""
 
-#: apps/send_money/context_processors.py:10 templates/base.html:40
+#: apps/send_money/context_processors.py:10 templates/base.html:39
 #: templates/terms.html:17
 msgid "Terms and conditions"
 msgstr ""
 
-#: apps/send_money/context_processors.py:14 templates/base.html:41
+#: apps/send_money/context_processors.py:14 templates/base.html:40
 #: templates/cookies.html:8
 msgid "Cookies"
 msgstr ""
 
-#: apps/send_money/context_processors.py:18 templates/base.html:42
+#: apps/send_money/context_processors.py:18 templates/base.html:41
 msgid "Feedback"
 msgstr ""
 
@@ -112,7 +112,7 @@ msgstr ""
 #: apps/send_money/models.py:8
 #: templates/send_money/bank-transfer-prisoner-details.html:10
 #: templates/send_money/bank-transfer-warning.html:10
-#: templates/send_money/payment-method.html:74
+#: templates/send_money/payment-method.html:73
 msgid "Get a prisoner reference to use in a UK bank transfer"
 msgstr ""
 
@@ -172,24 +172,24 @@ msgstr ""
 msgid "Send money to a prisoner"
 msgstr ""
 
-#: templates/base.html:23
+#: templates/base.html:22
 msgid "Beta"
 msgstr ""
 
-#: templates/base.html:28
+#: templates/base.html:27
 msgid "This is a new service."
 msgstr ""
 
-#: templates/base.html:29
+#: templates/base.html:28
 #, python-format
-msgid "You can <a href=\"%(help_url)s\">find help</a> or <a href=\"%(ticket_url)s\">contact us</a> about this service."
+msgid "<a href=\"%(ticket_url)s\">Contact us</a> about this service."
 msgstr ""
 
-#: templates/base.html:44
+#: templates/base.html:43
 msgid "Built by"
 msgstr ""
 
-#: templates/base.html:46
+#: templates/base.html:45
 msgid "Ministry of Justice"
 msgstr ""
 
@@ -968,7 +968,7 @@ msgid "You can complete your payment here using Mastercard/Visa debit cards"
 msgstr ""
 
 #: templates/send_money/payment-method.html:68
-#: templates/send_money/payment-method.html:78
+#: templates/send_money/payment-method.html:77
 msgid "The money should take up to 3 working days to reach the prisoner"
 msgstr ""
 
@@ -980,24 +980,19 @@ msgstr ""
 msgid "You can make an international payment using a debit card"
 msgstr ""
 
-#: templates/send_money/payment-method.html:72
-#: templates/send_money/payment-method.html:81
-msgid "More help"
-msgstr ""
-
-#: templates/send_money/payment-method.html:76
+#: templates/send_money/payment-method.html:75
 msgid "You’ll get a prisoner reference you can use to make a bank transfer using online banking, your mobile banking app or telephone banking"
 msgstr ""
 
-#: templates/send_money/payment-method.html:77
+#: templates/send_money/payment-method.html:76
 msgid "You can re-use this reference for this prisoner each time you make a transfer"
 msgstr ""
 
-#: templates/send_money/payment-method.html:79
+#: templates/send_money/payment-method.html:78
 msgid "You don’t get email confirmation after your bank transfer."
 msgstr ""
 
-#: templates/send_money/payment-method.html:86
+#: templates/send_money/payment-method.html:84
 msgid "Continue"
 msgstr ""
 
@@ -1021,20 +1016,20 @@ msgstr ""
 msgid "There was a problem"
 msgstr ""
 
-#: templates/send_money/prisoner-details-error-summary.html:22
+#: templates/send_money/prisoner-details-error-summary.html:21
 msgid "Please check:"
 msgstr ""
 
-#: templates/send_money/prisoner-details-error-summary.html:24
+#: templates/send_money/prisoner-details-error-summary.html:23
 msgid "you entered the details correctly"
 msgstr ""
 
-#: templates/send_money/prisoner-details-error-summary.html:27
+#: templates/send_money/prisoner-details-error-summary.html:26
 #, python-format
 msgid "you’re sending money to a <a href=\"%(prison_list_url)s\">public prison</a>"
 msgstr ""
 
-#: templates/send_money/prisoner-details-error-summary.html:32
+#: templates/send_money/prisoner-details-error-summary.html:31
 msgid "the details match those held by the prison - ask the prisoner to check with the wing officer"
 msgstr ""
 

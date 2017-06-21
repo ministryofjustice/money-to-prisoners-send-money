@@ -18,7 +18,6 @@
   <div class="phase-banner-beta">
     <p>
       {% url 'submit_ticket' as ticket_url %}
-      {% url 'send_money:help' as help_url %}
       {% if ENVIRONMENT == 'prod' %}
         <strong class="phase-tag">{% trans 'Beta' %}</strong>
       {% else %}
@@ -27,7 +26,7 @@
       <span>
         {% trans 'This is a new service.' %}
         {% blocktrans trimmed %}
-          You can <a href="{{ help_url }}">find help</a> or <a href="{{ ticket_url }}">contact us</a> about this service.
+          <a href="{{ ticket_url }}">Contact us</a> about this service.
         {% endblocktrans %}
       </span>
     </p>
