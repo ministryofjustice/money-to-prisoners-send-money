@@ -35,19 +35,22 @@
       </p>
       <ul class="list list-bullet">
         <li>
-          <a href="{% url 'send_money:help_bank_transfer' %}">
-            {% trans 'why a bank transfer was returned or didn’t reach the prisoner' %}
-          </a>
+          {% url 'send_money:help_bank_transfer' as help_page_url %}
+          {% blocktrans trimmed %}
+            why a <a href="{{ help_page_url }}">bank transfer</a> was returned or didn’t reach the prisoner
+          {% endblocktrans %}
         </li>
         <li>
-          <a href="{% url 'send_money:help_delays' %}">
-            {% trans 'why a payment has taken longer' %}
-          </a>
+          {% url 'send_money:help_delays' as help_page_url %}
+          {% blocktrans trimmed %}
+            why a <a href="{{ help_page_url }}">payment has taken longer</a>
+          {% endblocktrans %}
         </li>
         <li>
-          <a href="{% url 'send_money:help_transfered' %}">
-            {% trans 'what happens to money sent when a prisoner has been moved or released' %}
-          </a>
+          {% url 'send_money:help_transfered' as help_page_url %}
+          {% blocktrans trimmed %}
+            what happens to money sent when a <a href="{{ help_page_url }}">prisoner has been moved or released</a>
+          {% endblocktrans %}
         </li>
       </ul>
       <p>
