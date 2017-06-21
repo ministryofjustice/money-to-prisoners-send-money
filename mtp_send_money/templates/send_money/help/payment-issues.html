@@ -6,9 +6,7 @@
 
   <nav class="mtp-help-nav">
     <div class="mtp-help-nav__item">
-      {% if return_to %}
-        <a class="link-back" href="{{ return_to }}">{% trans 'Back' %}</a>
-      {% endif %}
+      <a class="link-back" href="{{ site_url }}">{% trans 'Back' %}</a>
     </div>
     <div class="mtp-help-nav__item">
       {% language_switch %}
@@ -37,7 +35,7 @@
         <li>
           {% url 'send_money:help_bank_transfer' as help_page_url %}
           {% blocktrans trimmed %}
-            why a <a href="{{ help_page_url }}">bank transfer</a> was returned or didn’t reach the prisoner
+            why a <a href="{{ help_page_url }}">bank transfer didn’t reach the prisoner</a> or was returned
           {% endblocktrans %}
         </li>
         <li>
