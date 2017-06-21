@@ -18,7 +18,6 @@
       {% endfor %}
       {% if errors.non_field|prisoner_details_not_found %}
         <li class="non-field-error">
-          {% url 'send_money:help' as help_url %}
           {% trans 'Please check:' %}
             <ul class="list list-bullet">
               <li>{% trans 'you entered the details correctly' %}</li>
