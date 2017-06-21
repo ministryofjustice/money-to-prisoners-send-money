@@ -5,7 +5,6 @@ from django.core.cache import cache
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse
 from django.shortcuts import render
-from django.utils.http import is_safe_url
 from django.utils.translation import override as override_language
 from django.views.generic import TemplateView
 from mtp_common.api import retrieve_all_pages
@@ -25,11 +24,8 @@ def help_view(request, page='payment-issues'):
     @param page: page slug
     """
     context = {
-        'return_to': reverse('send_money:choose_method'),
+        'site_url': settings.START_PAGE_URL,
     }
-    return_to = request.META.get('HTTP_REFERER')
-    if is_safe_url(url=return_to, host=request.get_host()) and return_to != request.build_absolute_uri():
-        context['return_to'] = return_to
     return render(request, 'send_money/help/%s.html' % page, context=context)
 
 

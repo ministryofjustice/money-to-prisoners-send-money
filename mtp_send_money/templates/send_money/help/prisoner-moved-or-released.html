@@ -6,12 +6,10 @@
 
   <nav class="mtp-help-nav">
     <div class="mtp-help-nav__item">
-      {% if return_to %}
-        <a class="link-back" href="{{ return_to }}">{% trans 'Back' %}</a>
-      {% endif %}
+      <a class="link-back" href="{{ site_url }}">{% trans 'Back' %}</a>
     </div>
     <div class="mtp-help-nav__item">
-{#      {% language_switch %}#}
+      {% language_switch %}
     </div>
   </nav>
 
