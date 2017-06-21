@@ -1,11 +1,12 @@
-# MTP send-money
+# Send money to a prisoner
+# Copyright (C) Crown copyright (Ministry of Justice)
 msgid ""
 msgstr ""
-"Project-Id-Version: MTP send-money\n"
+"Project-Id-Version: mtp-send-money\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-04-04 11:00+0100\n"
+"POT-Creation-Date: 2017-06-21 14:31+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Igor U <igor.ushkarev@digital.justice.gov.uk>, 2016\n"
+"Last-Translator: Welsh Language Unit <welsh.language.unit.manager@hmcts.gsi.gov.uk>, 2017\n"
 "Language-Team: Welsh (https://www.transifex.com/ministry-of-justice/teams/34553/cy/)\n"
 "Language: cy\n"
 "MIME-Version: 1.0\n"
@@ -15,104 +16,105 @@ msgstr ""
 
 #: apps/feedback/forms.py:10
 msgid "Enter any questions or feedback you may have about this service"
-msgstr ""
+msgstr "Nodwch unrhyw gwestiynau neu adborth sydd gennych am y gwasanaeth hwn bank tra"
 
-#: apps/feedback/forms.py:14 apps/send_money/forms.py:79
+#: apps/feedback/forms.py:14 apps/send_money/forms.py:83
 #: templates/send_money/debit-card-check.html:31
 msgid "Prisoner number"
-msgstr ""
+msgstr "Rhif y carcharor"
 
-#: apps/feedback/forms.py:15 apps/send_money/forms.py:80
+#: apps/feedback/forms.py:15 apps/send_money/forms.py:84
 msgid "For example, A1234BC"
-msgstr ""
+msgstr "Er enghraifft, A1234BC"
 
-#: apps/feedback/forms.py:21 apps/send_money/forms.py:85
+#: apps/feedback/forms.py:21 apps/send_money/forms.py:79
 msgid "Prisoner date of birth"
-msgstr ""
+msgstr "Dyddiad geni y carcharor"
 
 #: apps/feedback/forms.py:22
 msgid "For example, 28/04/1996"
-msgstr ""
+msgstr "Er enghraifft, 28/04/1996"
 
 #: apps/send_money/context_processors.py:10 templates/base.html:40
 #: templates/terms.html:17
 msgid "Terms and conditions"
-msgstr ""
+msgstr "Telerau ac amodau"
 
 #: apps/send_money/context_processors.py:14 templates/base.html:41
 #: templates/cookies.html:8
 msgid "Cookies"
-msgstr ""
+msgstr "Cwcis"
 
 #: apps/send_money/context_processors.py:18 templates/base.html:42
 msgid "Feedback"
-msgstr ""
+msgstr "Adborth"
 
 #: apps/send_money/forms.py:62
 msgid "Please choose how you want to send money"
-msgstr ""
+msgstr "Dewiswch sut yr ydych chi eisiau anfon arian "
 
-#: apps/send_money/forms.py:86
+#: apps/send_money/forms.py:80
 msgid "For example, 28 04 1996"
-msgstr ""
+msgstr "Er enghraifft, 28 04 1996"
 
 #: apps/send_money/forms.py:91 templates/send_money/prison-list.html:33
 msgid "This service is currently unavailable"
-msgstr ""
+msgstr "Nid yw'r gwasanaeth hwn ar gael ar hyn o bryd"
 
 #: apps/send_money/forms.py:92
 msgid "No prisoner matches the details you’ve supplied."
-msgstr ""
+msgstr "Nid oes carcharor sy'n cyfateb i'r manylion a roddwyd gennych. "
 
 #: apps/send_money/forms.py:176
 msgid "Prisoner name"
-msgstr ""
+msgstr "Enw'r carcharor"
 
 #: apps/send_money/forms.py:186
 msgid "The amount you are trying to send is too large."
-msgstr ""
+msgstr "Mae'r swm yr ydych chi'n ceisio ei anfon yn rhy fawr."
 
 #: apps/send_money/forms.py:187
 msgid "Please enter a smaller amount"
-msgstr ""
+msgstr "Dewiswch swm llai "
 
-#: apps/send_money/forms.py:192
-msgid "Amount you are sending"
-msgstr ""
+#: apps/send_money/forms.py:192 templates/send_money/debit-card-check.html:44
+#: templates/send_money/debit-card-check.html:70
+msgid "Amount"
+msgstr "Swm"
 
 #: apps/send_money/forms.py:197
 msgid "Enter as a number"
-msgstr ""
+msgstr "Nodwch ef fel rhif "
 
 #: apps/send_money/forms.py:198
 msgid "Amount should be 1p or more"
-msgstr ""
+msgstr "Dylai'r swm fod yn 1c neu fwy "
 
 #: apps/send_money/forms.py:199
 msgid "Only use 2 decimal places"
-msgstr ""
+msgstr "Defnyddiwch 2 bwynt degol yn unig "
 
 #: apps/send_money/forms.py:207
 msgid "Your email address"
-msgstr ""
+msgstr "Eich cyfeiriad e-bost"
 
 #: apps/send_money/middleware.py:21
 msgid "Could not connect to service, please try again later"
-msgstr ""
+msgstr "Nid oedd yn bosib cysylltu â'r gwasanaeth, rhowch gynnig arall arni yn hwyrach ymlaen"
 
 #: apps/send_money/models.py:7 templates/send_money/debit-card-amount.html:10
 #: templates/send_money/debit-card-check.html:12
 #: templates/send_money/debit-card-prisoner-details.html:10
-#: templates/send_money/payment-method.html:49
+#: templates/send_money/payment-method.html:60
 msgid "Pay now by debit card"
-msgstr ""
+msgstr "Talwch nawr gyda cherdyn debyd"
 
 #: apps/send_money/models.py:8
 #: templates/send_money/bank-transfer-prisoner-details.html:10
 #: templates/send_money/bank-transfer-warning.html:10
-#: templates/send_money/payment-method.html:63
+#: templates/send_money/payment-method.html:74
 msgid "Get a prisoner reference to use in a UK bank transfer"
-msgstr ""
+msgstr "Creu cyfeirnod carcharor i'w ddefnyddio mewn trosglwyddiad banc DU "
 
 #: apps/send_money/templatetags/prisons.py:8
 msgid "Her Majesty’s Prison and Young Offender Institution"
@@ -134,289 +136,282 @@ msgstr ""
 msgid "Immigration Removal Centre"
 msgstr ""
 
-#: apps/send_money/utils.py:54
+#: apps/send_money/templatetags/prisons.py:13
+msgid "Secure Training Centre"
+msgstr ""
+
+#: apps/send_money/utils.py:63
 msgid "Send money to a prisoner: your payment was successful"
-msgstr ""
+msgstr "Anfon arian at garcharor: roedd eich taliad yn llwyddiannus"
 
-#: apps/send_money/utils.py:64
+#: apps/send_money/utils.py:70
 msgid "Incorrect prisoner number format"
-msgstr ""
+msgstr "Fformat anghywir i'r rhif carcharor"
 
-#: apps/send_money/views.py:255
+#: apps/send_money/views.py:257
 #, python-format
 msgid "Send money to a prisoner: Your prisoner reference is %(bank_transfer_reference)s"
-msgstr ""
+msgstr "Anfon arian at garcharor: Eich cyfeirnod carcharor yw %(bank_transfer_reference)s"
 
-#: apps/send_money/views.py:349
+#: apps/send_money/views.py:348
 msgid "Not known"
-msgstr ""
+msgstr "Anhysbys"
 
-#: apps/send_money/views.py:367
+#: apps/send_money/views.py:366
 #, python-format
 msgid "To this prisoner: %(prisoner_number)s"
-msgstr ""
+msgstr "At y carcharor hwn: %(prisoner_number)s"
 
 #: templates/base.html:13
 msgid "Send money to a prisoner - GOV.UK"
-msgstr ""
+msgstr "Anfon arian at garcharor - GOV.UK"
 
 #: templates/base.html:14 templates/send_money/debit-card-failure.html:8
 #: templates/send_money/email/bank-transfer-reference.txt:3
 #: templates/send_money/email/debit-card-confirmation.txt:3
 msgid "Send money to a prisoner"
-msgstr ""
+msgstr "Anfon arian at garcharor"
 
 #: templates/base.html:23
 msgid "Beta"
-msgstr ""
+msgstr "Beta"
 
 #: templates/base.html:28
 msgid "This is a new service."
-msgstr ""
+msgstr "Mae hwn yn wasanaeth newydd. "
 
 #: templates/base.html:29
 #, python-format
 msgid "You can <a href=\"%(help_url)s\">find help</a> or <a href=\"%(ticket_url)s\">contact us</a> about this service."
-msgstr ""
+msgstr "Gallwch <a href=\"%(help_url)s\">gael cymorth</a> neu <a href=\"%(ticket_url)s\">gysylltu â ni</a> am y gwasanaeth hwn."
 
 #: templates/base.html:44
 msgid "Built by"
-msgstr ""
+msgstr "Cynhyrchwyd gan"
 
 #: templates/base.html:46
 msgid "Ministry of Justice"
-msgstr ""
+msgstr "Y Weinyddiaeth Cyfiawnder "
 
 #: templates/cookies.html:11
 msgid "GOV.UK puts small files (known as ‘cookies’) onto your computer to collect information about how you browse the site."
-msgstr ""
+msgstr "Mae GOV.UK yn rhoi ffeiliau bach (o’r enw ‘cwcis’) ar eich cyfrifiadur i gasglu gwybodaeth am sut yr ydych chi’n pori'r wefan"
 
 #: templates/cookies.html:12
 msgid "Cookies are used to:"
-msgstr ""
+msgstr "Fe ddefnyddir cwcis i:"
 
 #: templates/cookies.html:14
 msgid "measure how you use the website so it can be updated and improved based on your needs"
-msgstr ""
+msgstr "asesu sut yr ydych chi’n defnyddio’r wefan er mwyn ei diweddaru a’i gwella ar sail eich anghenion"
 
 #: templates/cookies.html:15
 msgid "remember the notifications you’ve seen so that we don’t show them to you again"
-msgstr ""
+msgstr "cofio’r negeseuon yr ydych chi wedi’u gweld fel na fyddwn ni’n eu dangos i chi eto"
 
 #: templates/cookies.html:19
 msgid "GOV.UK cookies aren’t used to identify you personally."
-msgstr ""
+msgstr "Ni ddefnyddir cwcis GOV.UK i’ch adnabod yn bersonol."
 
 #: templates/cookies.html:22
 msgid "You’ll normally see a message on the site before we store a cookie on your computer."
-msgstr ""
+msgstr "Fel arfer, byddwch chi’n gweld neges ar y wefan cyn i ni storio cwci ar eich cyfrifiadur."
 
 #: templates/cookies.html:24
 msgid "Find out more about <a href=\"http://www.aboutcookies.org/\" rel=\"external\">how to manage cookies</a>."
-msgstr ""
+msgstr "Darganfyddwch mwy am <a href=\"http://www.aboutcookies.org/\" rel=\"external\">sut i reoli cwcis</a>."
 
 #: templates/cookies.html:27
 msgid "How cookies are used on GOV.UK"
-msgstr ""
+msgstr "Sut mae cwcis yn cael eu defnyddio ar GOV.UK"
 
 #: templates/cookies.html:28
 msgid "Measuring website usage (Google Analytics)"
-msgstr ""
+msgstr "Mesur defnydd o’r wefan (Google Analytics)"
 
 #: templates/cookies.html:29
 msgid "We use Google Analytics software to collect information about how you use GOV.UK. We do this to help make sure the site is meeting the needs of its users and to help us make improvements."
-msgstr ""
+msgstr "Rydym yn defnyddio meddalwedd Google Analytics i gasglu gwybodaeth am sut yr ydych chi’n defnyddio GOV.UK. Rydym yn gwneud hyn er mwyn ceisio sicrhau bod y wefan yn cwrdd ag anghenion ei defnyddwyr ac i’n helpu i’w gwella."
 
 #: templates/cookies.html:30
 msgid "Google Analytics stores information about:"
-msgstr ""
+msgstr "Mae Google Analytics yn storio gwybodaeth am:"
 
 #: templates/cookies.html:32
 msgid "the pages you visit on GOV.UK - how long you spend on each GOV.UK page"
-msgstr ""
+msgstr "y tudalennau yr ydych chi’n ymweld â nhw ar GOV.UK - faint o amser rydych yn ei dreulio ar bob tudalen ar GOV.UK"
 
 #: templates/cookies.html:33
 msgid "how you got to the site"
-msgstr ""
+msgstr "sut wnaethoch chi gyrraedd y wefan"
 
 #: templates/cookies.html:34
 msgid "what you click on while you’re visiting the site."
-msgstr ""
+msgstr "ar beth fyddwch chi’n clicio wrth ymweld â’r wefan."
 
 #: templates/cookies.html:40
 #, python-format
 msgid "We don’t collect or store your personal information so this information can’t be used to identify who you are. For more information visit our <a href=\"%(terms_url)s\">Terms and conditions and privacy policy</a> page."
-msgstr ""
+msgstr "Nid ydym yn casglu nac yn storio’ch gwybodaeth bersonol, felly ni ellir defnyddio’r wybodaeth hon i’ch adnabod. Mae yna fwy o wybodaeth ar ein tudalen <a href=\"%(terms_url)s\">Telerau ac amodau a pholisi preifatrwydd</a>."
 
 #: templates/cookies.html:46
 msgid "We don’t allow Google to use or share our analytics data."
-msgstr ""
+msgstr "Nid ydym yn caniatáu i Google ddefnyddio na rhannu ein data dadansoddi."
 
 #: templates/cookies.html:47
 msgid "Google Analytics sets the following cookies:"
-msgstr ""
+msgstr "Mae Google Analytics yn gosod y cwcis canlynol:"
 
 #: templates/cookies.html:51 templates/cookies.html:77
 #: templates/cookies.html:99 templates/send_money/debit-card-check.html:23
 msgid "Name"
-msgstr ""
+msgstr "Enw"
 
 #: templates/cookies.html:52 templates/cookies.html:78
 #: templates/cookies.html:100
 msgid "Purpose"
-msgstr ""
+msgstr "Pwrpas"
 
 #: templates/cookies.html:53 templates/cookies.html:79
 #: templates/cookies.html:101
 msgid "Expires"
-msgstr ""
+msgstr "Dod i ben "
 
 #: templates/cookies.html:58
 msgid "and"
-msgstr ""
+msgstr "a/ac"
 
 #: templates/cookies.html:59
 msgid "This is a google analytics cookie that helps us understand how the service is being used in detail. Your data is anonymised."
-msgstr ""
+msgstr "Mae’r cwci Google Analytics hwn yn ein helpu i weld yn fanwl sut y mae’r gwasanaeth yn cael ei ddefnyddio. Bydd eich data yn ddienw."
 
 #: templates/cookies.html:60
 msgid "2 years"
-msgstr ""
+msgstr "2 flynedd"
 
 #: templates/cookies.html:66
 msgid "You can <a href=\"https://tools.google.com/dlpage/gaoptout\" rel=\"external\">opt out of Google Analytics cookies</a>."
-msgstr ""
+msgstr "Gallwch <a href=\"https://tools.google.com/dlpage/gaoptout\" rel=\"external\">ddewis peidio â derbyn cwcis Google Analytics</a>."
 
 #: templates/cookies.html:69
 msgid "Our introductory message"
-msgstr ""
+msgstr "Ein neges rhagarweiniol"
 
 #: templates/cookies.html:71
 msgid "You may see a pop-up welcome message when you first visit GOV.UK."
-msgstr ""
+msgstr "Mae’n bosibl y byddwch chi’n gweld neges naid sy’n eich croesawu i wefan GOV.UK wrth ei defnyddio am y tro cyntaf. "
 
 #: templates/cookies.html:72
 msgid "We’ll store a cookie so that your computer knows you’ve seen it and knows not to show it again."
-msgstr ""
+msgstr "Byddwn yn storio cwci fel y bydd eich cyfrifiadur yn gwybod eich bod wedi’i gweld ac i beidio â’i dangos eto."
 
 #: templates/cookies.html:85
 msgid "Saves a message to let us know that you have seen our cookie message"
-msgstr ""
+msgstr "Mae’n cadw neges i roi gwybod i ni eich bod wedi gweld ein neges am gwcis"
 
 #: templates/cookies.html:86
 msgid "1 month"
-msgstr ""
+msgstr "1 mis"
 
 #: templates/cookies.html:91
 msgid "Your progress when using the service"
-msgstr ""
+msgstr "Pan fyddwch yn defnyddio'r gwasanaeth"
 
 #: templates/cookies.html:93
 msgid "When you use the “Send money to a prisoner” service, we’ll set a cookie to remember your progress through the forms."
-msgstr ""
+msgstr "Pan fyddwch chi’n defnyddio’r gwasanaeth \"Anfon arian at garcharor\", byddwn yn gosod cwci i gofio sut yr ydych chi’n symud ymlaen drwy’r ffurflenni."
 
 #: templates/cookies.html:94
 msgid "These cookies don’t store your personal data and are deleted once you’ve completed the transaction."
-msgstr ""
+msgstr "Ni fydd y cwcis hyn yn storio’ch data personol a byddant yn cael eu dileu ar ôl i chi gwblhau’r broses."
 
 #: templates/cookies.html:107
 msgid "An identifier for your session"
-msgstr ""
+msgstr "Mae’n cofio sut yr ydych chi wedi symud ymlaen yn ystod y sesiwn"
 
 #: templates/cookies.html:108
 msgid "At the end of the session"
-msgstr ""
+msgstr "Ar ddiwedd y sesiwn "
 
 #: templates/cookies.html:114
 msgid "You can read more about <a href=\"https://www.gov.uk/help/cookies\" rel=\"external\">how cookies are used on gov.uk</a>."
-msgstr ""
+msgstr "Mae yna ragor o wybodaeth am <a href=\"https://www.gov.uk/help/cookies\" rel=\"external\">sut mae cwcis yn cael eu defnyddio ar gov.uk</a>."
 
 #: templates/send_money/bank-transfer-prisoner-details.html:11
 #: templates/send_money/debit-card-prisoner-details.html:11
 msgid "Enter prisoner details"
+msgstr "Nodwch fanylion y carcharor "
+
+#: templates/send_money/bank-transfer-prisoner-details.html:16
+msgid "To make a bank transfer online, you need a prisoner reference number."
 msgstr ""
 
-#: templates/send_money/bank-transfer-prisoner-details.html:15
-msgid "To make a bank transfer online, you need a prisoner reference number. To provide this, we need these details: "
+#: templates/send_money/bank-transfer-prisoner-details.html:17
+msgid "To provide this, we need these details:"
 msgstr ""
 
-#: templates/send_money/bank-transfer-prisoner-details.html:23
+#: templates/send_money/bank-transfer-prisoner-details.html:26
 #: templates/send_money/debit-card-check.html:20
 #: templates/send_money/debit-card-prisoner-details.html:21
 msgid "Prisoner details"
-msgstr ""
+msgstr "Manylion y carcharor"
 
-#: templates/send_money/bank-transfer-prisoner-details.html:32
-#: templates/send_money/debit-card-prisoner-details.html:32
-msgid "Day"
-msgstr ""
-
-#: templates/send_money/bank-transfer-prisoner-details.html:36
-#: templates/send_money/debit-card-prisoner-details.html:36
-msgid "Month"
-msgstr ""
-
-#: templates/send_money/bank-transfer-prisoner-details.html:40
-#: templates/send_money/debit-card-prisoner-details.html:40
-msgid "Year"
-msgstr ""
-
-#: templates/send_money/bank-transfer-prisoner-details.html:59
+#: templates/send_money/bank-transfer-prisoner-details.html:31
 msgid "Get reference"
-msgstr ""
+msgstr "Creu cyfeirnod "
 
 #: templates/send_money/bank-transfer-reference.html:9
 msgid "Your prisoner reference:"
-msgstr ""
+msgstr "Eich cyfeirnod carcharor:"
 
 #: templates/send_money/bank-transfer-reference.html:11
 msgid "Use this reference to make your bank transfer"
-msgstr ""
+msgstr "Defnyddiwch y cyfeirnod hwn i wneud eich trosglwyddiad banc "
 
 #: templates/send_money/bank-transfer-reference.html:15
 #: templates/send_money/debit-card-confirmation.html:14
 msgid "Print this page"
-msgstr ""
+msgstr "Argraffu'r dudalen hon "
 
 #: templates/send_money/bank-transfer-reference.html:17
 msgid "Email me this page"
-msgstr ""
+msgstr "Anfon y dudalen hon ataf drwy e-bost "
 
 #: templates/send_money/bank-transfer-reference.html:27
 msgid "Send me an email"
-msgstr ""
+msgstr "Anfon e-bost ataf "
 
 #: templates/send_money/bank-transfer-reference.html:32
 msgid "Now you can make the bank transfer"
-msgstr ""
+msgstr "Gallwch nawr wneud y trosglwyddiad banc "
 
 #: templates/send_money/bank-transfer-reference.html:35
 msgid "Log into your online banking account, mobile banking app or use your telephone banking, as normal."
-msgstr ""
+msgstr "Mewngofnodwch i'ch cyfrif bancio ar-lein, ap bancio symudol neu defnyddiwch eich gwasanaeth bancio dros y ffôn, yn unol â’r drefn arferol."
 
 #: templates/send_money/bank-transfer-reference.html:39
 #: templates/send_money/email/bank-transfer-reference.html:20
 #: templates/send_money/email/bank-transfer-reference.txt:13
 msgid "Copy and paste these details into the transfer:"
-msgstr ""
+msgstr "Copïwch a gludwch y manylion hyn yn y trosglwyddiad:"
 
 #: templates/send_money/bank-transfer-reference.html:44
 #: templates/send_money/email/bank-transfer-reference.html:24
 #: templates/send_money/email/bank-transfer-reference.txt:15
 msgid "Account number:"
-msgstr ""
+msgstr "Rhif y cyfrif:"
 
 #: templates/send_money/bank-transfer-reference.html:48
 #: templates/send_money/email/bank-transfer-reference.html:28
 #: templates/send_money/email/bank-transfer-reference.txt:16
 msgid "Sort code:"
-msgstr ""
+msgstr "Cod didoli:"
 
 #: templates/send_money/bank-transfer-reference.html:52
 #: templates/send_money/email/bank-transfer-reference.html:32
 #: templates/send_money/email/bank-transfer-reference.txt:17
 msgid "Reference:"
-msgstr ""
+msgstr "Cyfeirnod:"
 
 #: templates/send_money/bank-transfer-reference.html:56
 #: templates/send_money/email/bank-transfer-reference.html:36
@@ -428,19 +423,19 @@ msgstr ""
 #: templates/send_money/email/bank-transfer-reference.html:42
 #: templates/send_money/email/bank-transfer-reference.txt:20
 msgid "All prisons share this bank account."
-msgstr ""
+msgstr "Mae pob carchar yn rhannu'r cyfrif banc hwn."
 
 #: templates/send_money/bank-transfer-reference.html:64
 #: templates/send_money/email/bank-transfer-reference.html:43
 #: templates/send_money/email/bank-transfer-reference.txt:21
 msgid "Please use your prisoner reference to make sure the money goes to the right prisoner."
-msgstr ""
+msgstr "Defnyddiwch eich cyfeirnod carcharor er mwyn sicrhau bod yr arian yn mynd i'r carcharor cywir. "
 
 #: templates/send_money/bank-transfer-reference.html:66
 #: templates/send_money/email/bank-transfer-reference.html:45
 #: templates/send_money/email/bank-transfer-reference.txt:23
 msgid "Remember, you can’t do a bank transfer in-branch and you must use a UK bank account."
-msgstr ""
+msgstr "Cofiwch, ni allwch wneud trosglwyddiad banc yn eich banc ac mae'n rhaid i chi ddefnyddio cyfrif banc DU. "
 
 #: templates/send_money/bank-transfer-reference.html:70
 #: templates/send_money/email/bank-transfer-reference.html:49
@@ -451,157 +446,158 @@ msgstr ""
 #: templates/send_money/bank-transfer-reference.html:71
 #: templates/send_money/email/bank-transfer-reference.html:50
 #: templates/send_money/email/bank-transfer-reference.txt:27
-#: templates/send_money/help.html:60
 msgid "No money is processed at weekends or bank holidays."
-msgstr ""
+msgstr "Ni chaiff arian ei brosesu ar benwythnosau nac ar wyliau banc. "
 
 #: templates/send_money/bank-transfer-reference.html:77
 #, python-format
 msgid "<a href=\"%(help_url)s\">Find further help</a> on how to use the service or <a href=\"%(ticket_url)s\">contact us</a>."
-msgstr ""
+msgstr "<a href=\"%(help_url)s\">Mwy o gymorth</a> ar sut i ddefnyddio'r gwasanaeth neu <a href=\"%(ticket_url)s\">gysylltu â ni</a>."
 
 #: templates/send_money/bank-transfer-warning.html:11
 msgid "Before you continue"
-msgstr ""
+msgstr "Cyn i chi barhau "
 
 #: templates/send_money/bank-transfer-warning.html:15
 msgid "Please note"
-msgstr ""
+msgstr "Dalier sylw"
 
 #: templates/send_money/bank-transfer-warning.html:18
 msgid "Only transfers done using online banking, your mobile banking app or telephone banking will reach the prisoner - you can’t go into a bank branch to transfer money"
-msgstr ""
+msgstr "Dim ond trosglwyddiadau a wnaed gan ddefnyddio bancio ar-lein, eich ap bancio symudol neu wasanaeth bancio dros y ffôn fydd yn cyrraedd y carcharor - ni allwch fynd i'r banc i drosglwyddo arian "
 
 #: templates/send_money/bank-transfer-warning.html:19
 msgid "Only transfers from a UK bank account will reach the prisoner - you can’t transfer money from an international bank account"
-msgstr ""
+msgstr "Dim ond trosglwyddiadau o gyfrif banc DU fydd yn cyrraedd y carcharor - ni allwch drosglwyddo arian o gyfrif banc rhyngwladol "
 
 #: templates/send_money/bank-transfer-warning.html:24
 msgid "I understand"
-msgstr ""
+msgstr "Rwy'n deall"
 
 #: templates/send_money/contact-form-success.html:5
 #: templates/send_money/contact-form.html:12
 msgid "Contact us"
-msgstr ""
+msgstr "Cysylltu â ni"
 
 #: templates/send_money/contact-form-success.html:11
 msgid "Thank you for getting in touch."
-msgstr ""
+msgstr "Diolch yn fawr i chi am gysylltu."
 
 #: templates/send_money/contact-form-success.html:12
 msgid "We will respond to any questions as soon as we can."
-msgstr ""
+msgstr "Byddwn yn ymateb i unrhyw gwestiynau cyn gynted â phosibl. "
 
 #: templates/send_money/contact-form-success.html:15
-#: templates/send_money/contact-form.html:7 templates/send_money/help.html:8
+#: templates/send_money/contact-form.html:7
+#: templates/send_money/help/bank-transfer-issues.html:10
+#: templates/send_money/help/payment-delay.html:10
+#: templates/send_money/help/payment-issues.html:10
+#: templates/send_money/help/prisoner-moved-or-released.html:10
 #: templates/send_money/prison-list.html:9
 msgid "Back"
-msgstr ""
+msgstr "Yn ôl "
 
 #: templates/send_money/contact-form.html:23
 msgid "Your message"
-msgstr ""
+msgstr "Eich neges"
 
 #: templates/send_money/contact-form.html:31
 msgid "Please don’t include your bank details or any other personal information."
-msgstr ""
+msgstr "Peidiwch â chynnwys eich manylion banc nac unrhyw wybodaeth bersonol arall. "
 
 #: templates/send_money/contact-form.html:36
 msgid "If you had difficulties using the service, please enter the prisoner’s details:"
+msgstr "Os cawsoch anhawster i ddefnyddio'r gwasanaeth, nodwch fanylion y carcharor: "
+
+#: templates/send_money/contact-form.html:41
+msgid "Enter your email address if you’d like a reply."
 msgstr ""
 
-#: templates/send_money/contact-form.html:40
-msgid "Enter your email address if you’d like a reply. We won’t use it for anything else."
+#: templates/send_money/contact-form.html:42
+msgid "We won’t use it for anything else."
 msgstr ""
 
-#: templates/send_money/contact-form.html:44
+#: templates/send_money/contact-form.html:47
 msgid "Send"
-msgstr ""
+msgstr "Anfon"
 
 #: templates/send_money/debit-card-amount.html:11
 msgid "Enter amount to send"
-msgstr ""
+msgstr "Nodwch y swm yr ydych eisiau anfon "
 
 #: templates/send_money/debit-card-amount.html:23
-#: templates/send_money/debit-card-check.html:44
-#: templates/send_money/debit-card-check.html:70
-msgid "Amount"
-msgstr ""
-
-#: templates/send_money/debit-card-amount.html:25
 msgid "Please enter the amount in pounds"
-msgstr ""
+msgstr "Nodwch y swm mewn punnoedd "
 
 #: templates/send_money/debit-card-amount.html:48
 msgid "Service charge:"
-msgstr ""
+msgstr "Tâl gwasanaeth:"
 
 #: templates/send_money/debit-card-amount.html:52
 #: templates/send_money/debit-card-amount.html:64
 #, python-format
 msgid "The service charge is %(charge_percentage)s of the amount you’re sending, plus %(charge_fixed)s."
-msgstr ""
+msgstr "Y tâl gwasanaeth yw %(charge_percentage)s o'r swm yr ydych yn anfon, a %(charge_fixed)s ar ben hynny."
 
 #: templates/send_money/debit-card-amount.html:55
 #: templates/send_money/debit-card-amount.html:67
 msgid "This fee is charged by your card provider."
-msgstr ""
+msgstr "Fe godir y ffi hon gan ddarparwr eich cerdyn. "
 
 #: templates/send_money/debit-card-amount.html:58
 msgid "Total to pay:"
-msgstr ""
+msgstr "Cyfanswm i'w dalu:"
 
 #: templates/send_money/debit-card-amount.html:70
 #, python-format
 msgid "For instance, if you want to send %(sample_amount)s, you will be charged %(sample_amount_total_charge)s."
-msgstr ""
+msgstr "Er enghraifft, os ydych eisiau anfon %(sample_amount)s, fe godir ffi o %(sample_amount_total_charge)sarnoch."
 
 #: templates/send_money/debit-card-amount.html:81
 #: templates/send_money/debit-card-check.html:13
 msgid "Check details"
-msgstr ""
+msgstr "Gwirio'r manylion "
 
 #: templates/send_money/debit-card-check.html:6
 msgid "Check details - Send money to a prisoner - GOV.UK"
-msgstr ""
+msgstr "Gwirio'r manylion - Anfon arian at garcharor - GOV.UK"
 
 #: templates/send_money/debit-card-check.html:27
 msgid "Date of birth"
-msgstr ""
+msgstr "Dyddiad geni"
 
 #: templates/send_money/debit-card-check.html:38
 #: templates/send_money/debit-card-check.html:70
 msgid "Change"
-msgstr ""
+msgstr "Newid"
 
 #: templates/send_money/debit-card-check.html:38
 msgid "Name, date of birth or prisoner number"
-msgstr ""
+msgstr "Enw, dyddiad geni neu rif carcharor"
 
 #: templates/send_money/debit-card-check.html:48
 msgid "Total to prisoner"
-msgstr ""
+msgstr "Cyfanswm i'r carcharor"
 
 #: templates/send_money/debit-card-check.html:54
 msgid "Amount to be taken from your account"
-msgstr ""
+msgstr "Swm i'w dynnu o'ch cyfrif "
 
 #: templates/send_money/debit-card-check.html:61
 msgid "Total"
-msgstr ""
+msgstr "Cyfanswm"
 
 #: templates/send_money/debit-card-check.html:76
 msgid "Enter card details"
-msgstr ""
+msgstr "Nodwch fanylion y cerdyn "
 
 #: templates/send_money/debit-card-check.html:79
 msgid "Cancel and delete all details"
-msgstr ""
+msgstr "Canslo a dileu'r holl fanylion "
 
 #: templates/send_money/debit-card-confirmation.html:8
 msgid "Payment successful"
-msgstr ""
+msgstr "Taliad yn llwyddiannus"
 
 #: templates/send_money/debit-card-confirmation.html:9
 msgid "Your confirmation number is"
@@ -609,21 +605,21 @@ msgstr ""
 
 #: templates/send_money/debit-card-confirmation.html:17
 msgid "Payment summary"
-msgstr ""
+msgstr "Crynodeb o'r taliad"
 
 #: templates/send_money/debit-card-confirmation.html:20
 #: templates/send_money/email/debit-card-confirmation.txt:14
 msgid "Payment to"
-msgstr ""
+msgstr "Taliad at"
 
 #: templates/send_money/debit-card-confirmation.html:24
 msgid "Payment amount"
-msgstr ""
+msgstr "Swm y taliad "
 
 #: templates/send_money/debit-card-confirmation.html:28
 #: templates/send_money/email/debit-card-confirmation.txt:16
 msgid "Date payment made"
-msgstr ""
+msgstr "Dyddiad gwneud y taliad "
 
 #: templates/send_money/debit-card-confirmation.html:32
 msgid "Confirmation number"
@@ -631,7 +627,7 @@ msgstr ""
 
 #: templates/send_money/debit-card-confirmation.html:37
 msgid "What happens next"
-msgstr ""
+msgstr "Beth fydd yn digwydd nesaf "
 
 #: templates/send_money/debit-card-confirmation.html:40
 msgid "We’ll email you a copy of this confirmation page."
@@ -649,7 +645,7 @@ msgstr ""
 
 #: templates/send_money/debit-card-confirmation.html:48
 msgid "Take a moment to rate this service"
-msgstr ""
+msgstr "Rhowch ychydig o'ch amser i raddio'r gwasanaeth hwn "
 
 #: templates/send_money/debit-card-failure.html:11
 msgid "We’re sorry, your payment could not be processed on this occasion"
@@ -660,7 +656,7 @@ msgstr ""
 msgid "Your reference number is <strong>%(short_payment_ref)s</strong>"
 msgstr ""
 
-#: templates/send_money/debit-card-prisoner-details.html:58
+#: templates/send_money/debit-card-prisoner-details.html:28
 msgid "Enter amount"
 msgstr ""
 
@@ -732,7 +728,6 @@ msgstr ""
 
 #: templates/send_money/email/debit-card-confirmation.html:16
 #: templates/send_money/email/debit-card-confirmation.txt:9
-#: templates/send_money/help.html:59
 msgid "Money should reach the prisoner’s account in up to 3 working days."
 msgstr ""
 
@@ -762,208 +757,247 @@ msgstr ""
 msgid "Amount paid"
 msgstr ""
 
-#: templates/send_money/help.html:14
-msgid "Help with sending money to a prisoner"
+#: templates/send_money/help/bank-transfer-issues.html:24
+#: templates/send_money/help/payment-delay.html:24
+#: templates/send_money/help/payment-issues.html:24
+#: templates/send_money/help/prisoner-moved-or-released.html:24
+msgid "Help"
 msgstr ""
 
-#: templates/send_money/help.html:21
-msgid "Page contents:"
+#: templates/send_money/help/bank-transfer-issues.html:26
+msgid "A bank transfer was returned or didn’t reach the prisoner"
 msgstr ""
 
-#: templates/send_money/help.html:23
-msgid "When no prisoner matches the details entered"
+#: templates/send_money/help/bank-transfer-issues.html:31
+msgid "If your bank transfer was returned"
 msgstr ""
 
-#: templates/send_money/help.html:24 templates/send_money/help.html:71
-msgid "Help with debit cards"
+#: templates/send_money/help/bank-transfer-issues.html:34
+msgid "The money sent to you was returned because you may have used an incorrect reference."
 msgstr ""
 
-#: templates/send_money/help.html:25 templates/send_money/help.html:83
-msgid "Help with bank transfers"
+#: templates/send_money/help/bank-transfer-issues.html:37
+msgid "If so, you’ll get a refund within 4 working days of making the bank transfer."
 msgstr ""
 
-#: templates/send_money/help.html:27
-msgid "If your money has been returned"
+#: templates/send_money/help/bank-transfer-issues.html:38
+msgid "Your bank statement will show ‘GBS RE NOMS AGENCY’ and the reference will be ‘REFUND’."
 msgstr ""
 
-#: templates/send_money/help.html:28
-msgid "Email confirmation"
+#: templates/send_money/help/bank-transfer-issues.html:41
+msgid "No money will reach the prisoner."
 msgstr ""
 
-#: templates/send_money/help.html:29
-msgid "If a payment doesn’t go through"
+#: templates/send_money/help/bank-transfer-issues.html:45
+msgid "If your bank transfer didn’t reach the prisoner"
 msgstr ""
 
-#: templates/send_money/help.html:38
+#: templates/send_money/help/bank-transfer-issues.html:48
+msgid "It could be because you made a transfer at a bank branch or from an international bank account."
+msgstr ""
+
+#: templates/send_money/help/bank-transfer-issues.html:49
+msgid "If you do this, your payment won’t go through."
+msgstr ""
+
+#: templates/send_money/help/bank-transfer-issues.html:52
+msgid "That means we can’t credit the prisoner and you’ll have to request a refund."
+msgstr ""
+
+#: templates/send_money/help/bank-transfer-issues.html:55
 #, python-format
-msgid "If you read this help section but still have a question about this service, <a href=\"%(ticket_url)s\">contact us</a>."
+msgid "To request a refund, <a href=\"%(contact_url)s\">find the prison address</a> and write to the prison."
 msgstr ""
 
-#: templates/send_money/help.html:44
-msgid "This service is free and secure."
-msgstr ""
-
-#: templates/send_money/help.html:45
-#, python-format
-msgid "It’s available in <a href=\"%(prison_list_url)s\">public prisons in England and Wales</a>."
-msgstr ""
-
-#: templates/send_money/help.html:48
-#, python-format
-msgid "But it is not available in <a href=\"%(url)s\">private prisons</a>."
-msgstr ""
-
-#: templates/send_money/help.html:53
-msgid "You need a bank account to use this service."
-msgstr ""
-
-#: templates/send_money/help.html:54
-#, python-format
-msgid "But you can send money to a prisoner <a href=\"%(url)s\">using a postal order, a cheque or cash</a>."
-msgstr ""
-
-#: templates/send_money/help.html:65
-#, python-format
-msgid "Please check you entered the details correctly and you're sending money to a <a href=\"%(prison_list_url)s\">public prison</a>. You can also check the details match those held by the prison - ask the prisoner to check with the wing officer."
-msgstr ""
-
-#: templates/send_money/help.html:73
-msgid "We currently support Mastercard and Visa debit cards only."
-msgstr ""
-
-#: templates/send_money/help.html:76
-msgid "You can make an international payment using the debit card method."
-msgstr ""
-
-#: templates/send_money/help.html:79
-msgid "Due to security restrictions, some older web browsers are not supported."
-msgstr ""
-
-#: templates/send_money/help.html:80
-msgid "If you can’t connect to the site to pay, try on another computer or try using a newer web browser, such as Chrome, Firefox or Internet Explorer 11 and up."
-msgstr ""
-
-#: templates/send_money/help.html:85
-msgid "You can use the reference you first generated each time you send money to this particular prisoner."
-msgstr ""
-
-#: templates/send_money/help.html:88
-msgid "<strong>If your money has been returned: </strong> You may have used an incorrect reference. If this is the case, you’ll receive a refund within 4 working days of making the transfer. Your bank statement will show ‘GBS RE NOMS AGENCY’ and the reference will be ‘refund’."
-msgstr ""
-
-#: templates/send_money/help.html:94
-msgid "<strong>Email confirmation: </strong> You don’t receive an email confirmation when you do a bank transfer because when you send money using this method, you only generate the reference on the GOV.UK site. Then you use that reference when you make the bank transfer with your bank in the usual way (by mobile app, online and telephone banking). If you want confirmation that the money was sent, you need to ask your bank for this."
-msgstr ""
-
-#: templates/send_money/help.html:101
-msgid "<strong>If a payment doesn’t go through: </strong> When you make a transfer at a bank branch or from an international bank account, your payment won't go through. That means we can't credit the prisoner and you'll have to request a refund. Please follow these steps:"
-msgstr ""
-
-#: templates/send_money/help.html:107
-#, python-format
-msgid "<a href=\"%(url)s\">Find the prison address</a> and write to the prison."
-msgstr ""
-
-#: templates/send_money/help.html:110
+#: templates/send_money/help/bank-transfer-issues.html:60
 msgid "Address your letter to the ‘Business Hub’ and confirm:"
 msgstr ""
 
-#: templates/send_money/help.html:113
+#: templates/send_money/help/bank-transfer-issues.html:64
 msgid "your name"
 msgstr ""
 
-#: templates/send_money/help.html:114
+#: templates/send_money/help/bank-transfer-issues.html:67
 msgid "your address"
 msgstr ""
 
-#: templates/send_money/help.html:115
+#: templates/send_money/help/bank-transfer-issues.html:70
 msgid "the prisoner’s name"
 msgstr ""
 
-#: templates/send_money/help.html:116
+#: templates/send_money/help/bank-transfer-issues.html:73
 msgid "the prisoner number"
 msgstr ""
 
-#: templates/send_money/help.html:117
+#: templates/send_money/help/bank-transfer-issues.html:76
 msgid "the amount and date you paid"
 msgstr ""
 
-#: templates/send_money/help.html:118
+#: templates/send_money/help/bank-transfer-issues.html:79
 msgid "the bank branch where you made the payment"
 msgstr ""
 
-#: templates/send_money/help.html:121
+#: templates/send_money/help/bank-transfer-issues.html:83
 msgid "The prison will send you a refund by cheque."
 msgstr ""
+
+#: templates/send_money/help/bank-transfer-issues.html:87
+#: templates/send_money/help/prisoner-moved-or-released.html:47
+#, python-format
+msgid "If this doesn’t help, please <a href=\"%(feedback_url)s\">contact us</a>."
+msgstr ""
+
+#: templates/send_money/help/payment-delay.html:26
+msgid "A payment has taken longer"
+msgstr ""
+
+#: templates/send_money/help/payment-delay.html:31
+msgid "In almost all cases, the payment reaches the prisoner’s bank account in up to 3 days."
+msgstr ""
+
+#: templates/send_money/help/payment-delay.html:34
+msgid "However, if it seems to be taking longer, it could be because an individual prison has put a payment on hold or the money could be in the prisoner’s account but the prisoner doesn’t know about it yet."
+msgstr ""
+
+#: templates/send_money/help/payment-delay.html:37
+#, python-format
+msgid "If you’re still worried after 7-10 days, please <a href=\"%(contact_url)s\">contact the prison</a>."
+msgstr ""
+
+#: templates/send_money/help/payment-issues.html:26
+msgid "Payment issues"
+msgstr ""
+
+#: templates/send_money/help/payment-issues.html:31
+msgid "If you’ve already sent money but are experiencing problems, we can help."
+msgstr ""
+
+#: templates/send_money/help/payment-issues.html:34
+msgid "Find out:"
+msgstr ""
+
+#: templates/send_money/help/payment-issues.html:39
+#, python-format
+msgid "why a <a href=\"%(help_page_url)s\">bank transfer</a> was returned or didn’t reach the prisoner"
+msgstr ""
+
+#: templates/send_money/help/payment-issues.html:45
+#, python-format
+msgid "why a <a href=\"%(help_page_url)s\">payment has taken longer</a>"
+msgstr ""
+
+#: templates/send_money/help/payment-issues.html:51
+#, python-format
+msgid "what happens to money sent when a <a href=\"%(help_page_url)s\">prisoner has been moved or released</a>"
+msgstr ""
+
+#: templates/send_money/help/payment-issues.html:58
+#, python-format
+msgid "If none of the above help to solve your problem, please <a href=\"%(feedback_url)s\">contact us</a>."
+msgstr ""
+
+#: templates/send_money/help/prisoner-moved-or-released.html:26
+msgid "A prisoner has been moved or released"
+msgstr ""
+
+#: templates/send_money/help/prisoner-moved-or-released.html:31
+msgid "If the prisoner has been:"
+msgstr ""
+
+#: templates/send_money/help/prisoner-moved-or-released.html:35
+#, python-format
+msgid "moved, the money will be transferred to the next prison, whether it’s a public or private prison – if it’s a <a href=\"%(private_prisons_url)s\">private prison</a> the process may take longer"
+msgstr ""
+
+#: templates/send_money/help/prisoner-moved-or-released.html:40
+#, python-format
+msgid "released, they need to <a href=\"%(contact_url)s\">contact the prison</a> and ask the prison to send them the money"
+msgstr ""
+
+#: templates/send_money/includes/prisoner-details-dob.html:9
+msgid "Day"
+msgstr "Diwrnod"
+
+#: templates/send_money/includes/prisoner-details-dob.html:13
+msgid "Month"
+msgstr "Mis"
+
+#: templates/send_money/includes/prisoner-details-dob.html:17
+msgid "Year"
+msgstr "Blwyddyn"
 
 #: templates/send_money/payment-method.html:5
 msgid "Choose payment method - Send money to a prisoner - GOV.UK"
 msgstr ""
 
 #: templates/send_money/payment-method.html:10
-#: templates/send_money/payment-method.html:29
+#: templates/send_money/payment-method.html:36
 msgid "How do you want to send money?"
 msgstr ""
 
 #: templates/send_money/payment-method.html:21
-msgid "Due to a technical issue, pay by debit card is temporarily unavailable."
+msgid "Sending money by debit card is temporarily unavailable"
 msgstr ""
 
 #: templates/send_money/payment-method.html:23
-msgid "Please send money using a bank transfer or come back later."
+msgid "You can come back later or choose to get a prisoner reference to use in a UK bank transfer"
 msgstr ""
 
-#: templates/send_money/payment-method.html:39
+#: templates/send_money/payment-method.html:29
+msgid "Paying by debit card won’t work because we don’t support your device or browser"
+msgstr ""
+
+#: templates/send_money/payment-method.html:31
+msgid "Try another computer or a newer browser, for example, Chrome, Firefox or Internet Explorer 11 and up"
+msgstr ""
+
+#: templates/send_money/payment-method.html:48
 msgid "or"
 msgstr ""
 
-#: templates/send_money/payment-method.html:46
+#: templates/send_money/payment-method.html:56
 msgid "Which is right for me?"
 msgstr ""
 
-#: templates/send_money/payment-method.html:52
-msgid "Temporarily unavailable due to a technical issue"
+#: templates/send_money/payment-method.html:63
+msgid "Temporarily unavailable"
 msgstr ""
 
-#: templates/send_money/payment-method.html:56
+#: templates/send_money/payment-method.html:67
 msgid "You can complete your payment here using Mastercard/Visa debit cards"
 msgstr ""
 
-#: templates/send_money/payment-method.html:57
-#: templates/send_money/payment-method.html:67
+#: templates/send_money/payment-method.html:68
+#: templates/send_money/payment-method.html:78
 msgid "The money should take up to 3 working days to reach the prisoner"
 msgstr ""
 
-#: templates/send_money/payment-method.html:58
+#: templates/send_money/payment-method.html:69
 msgid "You’ll get email confirmation of payment"
-msgstr ""
+msgstr "Fe gewch e-bost i gadarnhau'r taliad "
 
-#: templates/send_money/payment-method.html:59
+#: templates/send_money/payment-method.html:70
 msgid "You can make an international payment using a debit card"
 msgstr ""
 
-#: templates/send_money/payment-method.html:61
-#: templates/send_money/payment-method.html:70
+#: templates/send_money/payment-method.html:72
+#: templates/send_money/payment-method.html:81
 msgid "More help"
 msgstr ""
 
-#: templates/send_money/payment-method.html:65
+#: templates/send_money/payment-method.html:76
 msgid "You’ll get a prisoner reference you can use to make a bank transfer using online banking, your mobile banking app or telephone banking"
 msgstr ""
 
-#: templates/send_money/payment-method.html:66
+#: templates/send_money/payment-method.html:77
 msgid "You can re-use this reference for this prisoner each time you make a transfer"
 msgstr ""
 
-#: templates/send_money/payment-method.html:68
+#: templates/send_money/payment-method.html:79
 msgid "You don’t get email confirmation after your bank transfer."
 msgstr ""
 
-#: templates/send_money/payment-method.html:68
-msgid "Why?"
-msgstr ""
-
-#: templates/send_money/payment-method.html:75
+#: templates/send_money/payment-method.html:86
 msgid "Continue"
 msgstr ""
 
