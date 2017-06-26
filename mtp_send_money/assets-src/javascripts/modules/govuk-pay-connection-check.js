@@ -12,25 +12,36 @@ exports.GOVUKPayConnectionCheck = {
       this.url = this.$container.data('image-url');
       this.connectionFailed = $.proxy(this.connectionFailed, this);
       this.connectionSucceeded = $.proxy(this.connectionSucceeded, this);
-      this.checkConnection();
+      this.checkConnection(1);
     }
   },
 
-  checkConnection: function () {
+  checkConnection: function (retries) {
     var image = new Image();
-    image.onerror = this.connectionFailed;
+    var failed = this.connectionFailed;
+    image.onerror = (function() {failed(retries, false);});
     image.onload = this.connectionSucceeded;
     image.src = this.url;
-    this.timer = setTimeout(this.connectionFailed, this.timeout);
+    this.timer = setTimeout(function() {failed(0, true);}, this.timeout);
   },
 
-  connectionFailed: function () {
+  connectionFailed: function (retries, timeout) {
+    if (retries > 0) {
+      clearTimeout(this.timer);
+      this.checkConnection(retries-1);
+      return;
+    }
     this.$container.show();
     $('#id_debit_card').prop('checked', false).prop('disabled', true).parent().addClass('mtp-grey-choice');
     $('#id_bank_transfer').prop('checked', true);
 
     if (Raven) {
-      var message = 'User agent ' + window.navigator.userAgent + ' cannot load GOV.UK Pay check image ' + this.url;
+      var message = '';
+      if (timeout) {
+        message = 'User agent ' + window.navigator.userAgent + ' timed out loading GOV.UK Pay check image ' + this.url;
+      } else {
+        message = 'User agent ' + window.navigator.userAgent + ' cannot load GOV.UK Pay check image ' + this.url;
+      }
       Raven.captureMessage(message, {level: 'warning'});
     }
   },
