@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: mtp-send-money\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-06-21 16:14+0100\n"
+"POT-Creation-Date: 2017-06-27 10:20+0100\n"
 "PO-Revision-Date: 2016-11-04 10:00+0000\n"
 "Last-Translator: Welsh Language Unit <welsh.language.unit.manager@hmcts.gsi.gov.uk>\n"
 "Language-Team: Welsh (http://www.transifex.com/ministry-of-justice/mtp/language/cy/)\n"
@@ -182,7 +182,7 @@ msgstr ""
 
 #: templates/base.html:28
 #, python-format
-msgid "<a href=\"%(ticket_url)s\">Contact us</a> about this service."
+msgid "<a href=\"%(ticket_url)s\">Contact us</a> if you need help."
 msgstr ""
 
 #: templates/base.html:43
@@ -489,10 +489,10 @@ msgstr ""
 
 #: templates/send_money/contact-form-success.html:15
 #: templates/send_money/contact-form.html:7
-#: templates/send_money/help/bank-transfer-issues.html:10
-#: templates/send_money/help/payment-delay.html:10
-#: templates/send_money/help/payment-issues.html:10
-#: templates/send_money/help/prisoner-moved-or-released.html:10
+#: templates/send_money/help/bank-transfer-issues.html:9
+#: templates/send_money/help/payment-delay.html:9
+#: templates/send_money/help/payment-issues.html:9
+#: templates/send_money/help/prisoner-moved-or-released.html:9
 #: templates/send_money/prison-list.html:9
 msgid "Back"
 msgstr ""
@@ -691,8 +691,20 @@ msgstr ""
 msgid "<a href=\"%(help_url)s\">Help</a> with problems using this service or how to <a href=\"%(feedback_url)s\">contact us</a>."
 msgstr ""
 
-#: templates/send_money/email/bank-transfer-reference.html:59
-#: templates/send_money/email/debit-card-confirmation.html:46
+#: templates/send_money/email/bank-transfer-reference.html:61
+#: templates/send_money/email/debit-card-confirmation.html:48
+msgid "Book a social visit with a prisoner online using the <a href=\"https://www.gov.uk/prison-visits\">Visit someone in prison</a> service."
+msgstr ""
+
+#: templates/send_money/email/bank-transfer-reference.html:64
+#: templates/send_money/email/bank-transfer-reference.txt:33
+#: templates/send_money/email/debit-card-confirmation.html:51
+#: templates/send_money/email/debit-card-confirmation.txt:25
+msgid "It’s the faster and simpler way to plan to see friends and family in prisons in England or Wales."
+msgstr ""
+
+#: templates/send_money/email/bank-transfer-reference.html:67
+#: templates/send_money/email/debit-card-confirmation.html:54
 msgid "Back to the service"
 msgstr ""
 
@@ -706,8 +718,13 @@ msgstr ""
 msgid "Leave feedback or contact us at:"
 msgstr ""
 
-#: templates/send_money/email/bank-transfer-reference.txt:31
-#: templates/send_money/email/debit-card-confirmation.txt:23
+#: templates/send_money/email/bank-transfer-reference.txt:32
+#: templates/send_money/email/debit-card-confirmation.txt:24
+msgid "Book a social visit with a prisoner online using the ‘Visit someone in prison’ service:"
+msgstr ""
+
+#: templates/send_money/email/bank-transfer-reference.txt:35
+#: templates/send_money/email/debit-card-confirmation.txt:27
 msgid "Back to the service:"
 msgstr ""
 
@@ -757,159 +774,159 @@ msgstr ""
 msgid "Amount paid"
 msgstr ""
 
-#: templates/send_money/help/bank-transfer-issues.html:24
-#: templates/send_money/help/payment-delay.html:24
-#: templates/send_money/help/payment-issues.html:24
-#: templates/send_money/help/prisoner-moved-or-released.html:24
+#: templates/send_money/help/bank-transfer-issues.html:22
+#: templates/send_money/help/payment-delay.html:22
+#: templates/send_money/help/payment-issues.html:22
+#: templates/send_money/help/prisoner-moved-or-released.html:22
 msgid "Help"
 msgstr ""
 
-#: templates/send_money/help/bank-transfer-issues.html:26
+#: templates/send_money/help/bank-transfer-issues.html:24
 msgid "A bank transfer was returned or didn’t reach the prisoner"
 msgstr ""
 
-#: templates/send_money/help/bank-transfer-issues.html:31
+#: templates/send_money/help/bank-transfer-issues.html:29
 msgid "If your bank transfer was returned"
 msgstr ""
 
-#: templates/send_money/help/bank-transfer-issues.html:34
+#: templates/send_money/help/bank-transfer-issues.html:32
 msgid "The money sent to you was returned because you may have used an incorrect reference."
 msgstr ""
 
-#: templates/send_money/help/bank-transfer-issues.html:37
+#: templates/send_money/help/bank-transfer-issues.html:35
 msgid "If so, you’ll get a refund within 4 working days of making the bank transfer."
 msgstr ""
 
-#: templates/send_money/help/bank-transfer-issues.html:38
+#: templates/send_money/help/bank-transfer-issues.html:36
 msgid "Your bank statement will show ‘GBS RE NOMS AGENCY’ and the reference will be ‘REFUND’."
 msgstr ""
 
-#: templates/send_money/help/bank-transfer-issues.html:41
+#: templates/send_money/help/bank-transfer-issues.html:39
 msgid "No money will reach the prisoner."
 msgstr ""
 
-#: templates/send_money/help/bank-transfer-issues.html:45
+#: templates/send_money/help/bank-transfer-issues.html:43
 msgid "If your bank transfer didn’t reach the prisoner"
 msgstr ""
 
-#: templates/send_money/help/bank-transfer-issues.html:48
+#: templates/send_money/help/bank-transfer-issues.html:46
 msgid "It could be because you made a transfer at a bank branch or from an international bank account."
 msgstr ""
 
-#: templates/send_money/help/bank-transfer-issues.html:49
+#: templates/send_money/help/bank-transfer-issues.html:47
 msgid "If you do this, your payment won’t go through."
 msgstr ""
 
-#: templates/send_money/help/bank-transfer-issues.html:52
+#: templates/send_money/help/bank-transfer-issues.html:50
 msgid "That means we can’t credit the prisoner and you’ll have to request a refund."
 msgstr ""
 
-#: templates/send_money/help/bank-transfer-issues.html:55
+#: templates/send_money/help/bank-transfer-issues.html:53
 #, python-format
 msgid "To request a refund, <a href=\"%(contact_url)s\">find the prison address</a> and write to the prison."
 msgstr ""
 
-#: templates/send_money/help/bank-transfer-issues.html:60
+#: templates/send_money/help/bank-transfer-issues.html:58
 msgid "Address your letter to the ‘Business Hub’ and confirm:"
 msgstr ""
 
-#: templates/send_money/help/bank-transfer-issues.html:64
+#: templates/send_money/help/bank-transfer-issues.html:62
 msgid "your name"
 msgstr ""
 
-#: templates/send_money/help/bank-transfer-issues.html:67
+#: templates/send_money/help/bank-transfer-issues.html:65
 msgid "your address"
 msgstr ""
 
-#: templates/send_money/help/bank-transfer-issues.html:70
+#: templates/send_money/help/bank-transfer-issues.html:68
 msgid "the prisoner’s name"
 msgstr ""
 
-#: templates/send_money/help/bank-transfer-issues.html:73
+#: templates/send_money/help/bank-transfer-issues.html:71
 msgid "the prisoner number"
 msgstr ""
 
-#: templates/send_money/help/bank-transfer-issues.html:76
+#: templates/send_money/help/bank-transfer-issues.html:74
 msgid "the amount and date you paid"
 msgstr ""
 
-#: templates/send_money/help/bank-transfer-issues.html:79
+#: templates/send_money/help/bank-transfer-issues.html:77
 msgid "the bank branch where you made the payment"
 msgstr ""
 
-#: templates/send_money/help/bank-transfer-issues.html:83
+#: templates/send_money/help/bank-transfer-issues.html:81
 msgid "The prison will send you a refund by cheque."
 msgstr ""
 
-#: templates/send_money/help/bank-transfer-issues.html:87
-#: templates/send_money/help/prisoner-moved-or-released.html:47
+#: templates/send_money/help/bank-transfer-issues.html:85
+#: templates/send_money/help/prisoner-moved-or-released.html:45
 #, python-format
 msgid "If this doesn’t help, please <a href=\"%(feedback_url)s\">contact us</a>."
 msgstr ""
 
-#: templates/send_money/help/payment-delay.html:26
+#: templates/send_money/help/payment-delay.html:24
 msgid "A payment has taken longer"
 msgstr ""
 
-#: templates/send_money/help/payment-delay.html:31
+#: templates/send_money/help/payment-delay.html:29
 msgid "In almost all cases, the payment reaches the prisoner’s bank account in up to 3 days."
 msgstr ""
 
-#: templates/send_money/help/payment-delay.html:34
+#: templates/send_money/help/payment-delay.html:32
 msgid "However, if it seems to be taking longer, it could be because an individual prison has put a payment on hold or the money could be in the prisoner’s account but the prisoner doesn’t know about it yet."
 msgstr ""
 
-#: templates/send_money/help/payment-delay.html:37
+#: templates/send_money/help/payment-delay.html:35
 #, python-format
 msgid "If you’re still worried after 7-10 days, please <a href=\"%(contact_url)s\">contact the prison</a>."
 msgstr ""
 
-#: templates/send_money/help/payment-issues.html:26
+#: templates/send_money/help/payment-issues.html:24
 msgid "Payment issues"
 msgstr ""
 
-#: templates/send_money/help/payment-issues.html:31
+#: templates/send_money/help/payment-issues.html:29
 msgid "If you’ve already sent money but are experiencing problems, we can help."
 msgstr ""
 
-#: templates/send_money/help/payment-issues.html:34
+#: templates/send_money/help/payment-issues.html:32
 msgid "Find out:"
 msgstr ""
 
-#: templates/send_money/help/payment-issues.html:39
+#: templates/send_money/help/payment-issues.html:37
 #, python-format
-msgid "why a <a href=\"%(help_page_url)s\">bank transfer</a> was returned or didn’t reach the prisoner"
+msgid "why a <a href=\"%(help_page_url)s\">bank transfer didn’t reach the prisoner</a> or was returned"
 msgstr ""
 
-#: templates/send_money/help/payment-issues.html:45
+#: templates/send_money/help/payment-issues.html:43
 #, python-format
 msgid "why a <a href=\"%(help_page_url)s\">payment has taken longer</a>"
 msgstr ""
 
-#: templates/send_money/help/payment-issues.html:51
+#: templates/send_money/help/payment-issues.html:49
 #, python-format
 msgid "what happens to money sent when a <a href=\"%(help_page_url)s\">prisoner has been moved or released</a>"
 msgstr ""
 
-#: templates/send_money/help/payment-issues.html:58
+#: templates/send_money/help/payment-issues.html:56
 #, python-format
 msgid "If none of the above help to solve your problem, please <a href=\"%(feedback_url)s\">contact us</a>."
 msgstr ""
 
-#: templates/send_money/help/prisoner-moved-or-released.html:26
+#: templates/send_money/help/prisoner-moved-or-released.html:24
 msgid "A prisoner has been moved or released"
 msgstr ""
 
-#: templates/send_money/help/prisoner-moved-or-released.html:31
+#: templates/send_money/help/prisoner-moved-or-released.html:29
 msgid "If the prisoner has been:"
 msgstr ""
 
-#: templates/send_money/help/prisoner-moved-or-released.html:35
+#: templates/send_money/help/prisoner-moved-or-released.html:33
 #, python-format
 msgid "moved, the money will be transferred to the next prison, whether it’s a public or private prison – if it’s a <a href=\"%(private_prisons_url)s\">private prison</a> the process may take longer"
 msgstr ""
 
-#: templates/send_money/help/prisoner-moved-or-released.html:40
+#: templates/send_money/help/prisoner-moved-or-released.html:38
 #, python-format
 msgid "released, they need to <a href=\"%(contact_url)s\">contact the prison</a> and ask the prison to send them the money"
 msgstr ""
