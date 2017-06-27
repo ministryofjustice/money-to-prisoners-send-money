@@ -20,4 +20,8 @@ GOV.UK - {% trans 'Send money to a prisoner' %}
 
 {% trans 'Help with problems using this service:' %} {{ help_url }}
 {% trans 'Leave feedback or contact us at:' %} {{ feedback_url }}
+
+{% trans 'Book a social visit with a prisoner online using the ‘Visit someone in prison’ service:' %} https://www.gov.uk/prison-visits
+{% trans 'It’s the faster and simpler way to plan to see friends and family in prisons in England or Wales.' %}
+
 {% trans 'Back to the service:' %} {{ site_url }}
