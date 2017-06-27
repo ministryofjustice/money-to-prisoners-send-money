@@ -2,9 +2,9 @@
 # Copyright (C) Crown copyright (Ministry of Justice)
 msgid ""
 msgstr ""
-"Project-Id-Version: mtp-send-money\n"
+"Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-06-27 10:35+0100\n"
+"POT-Creation-Date: 2017-06-27 18:45+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Welsh Language Unit <welsh.language.unit.manager@hmcts.gsi.gov.uk>, 2017\n"
 "Language-Team: Welsh (https://www.transifex.com/ministry-of-justice/teams/34553/cy/)\n"
@@ -51,7 +51,7 @@ msgstr "Adborth"
 
 #: apps/send_money/forms.py:62
 msgid "Please choose how you want to send money"
-msgstr "Dewiswch sut yr ydych chi eisiau anfon arian "
+msgstr "Dewiswch sut yr ydych chi eisiau anfon arian"
 
 #: apps/send_money/forms.py:80
 msgid "For example, 28 04 1996"
@@ -63,7 +63,7 @@ msgstr "Nid yw'r gwasanaeth hwn ar gael ar hyn o bryd"
 
 #: apps/send_money/forms.py:92
 msgid "No prisoner matches the details you’ve supplied."
-msgstr "Nid oes carcharor sy'n cyfateb i'r manylion a roddwyd gennych. "
+msgstr "Nid oes carcharor sy'n cyfateb i'r manylion a roddwyd gennych."
 
 #: apps/send_money/forms.py:176
 msgid "Prisoner name"
@@ -75,7 +75,7 @@ msgstr "Mae'r swm yr ydych chi'n ceisio ei anfon yn rhy fawr."
 
 #: apps/send_money/forms.py:187
 msgid "Please enter a smaller amount"
-msgstr "Nodwch swm llai "
+msgstr "Nodwch swm llai"
 
 #: apps/send_money/forms.py:192 templates/send_money/debit-card-check.html:44
 #: templates/send_money/debit-card-check.html:70
@@ -88,11 +88,11 @@ msgstr "Nodwch ef fel rhif "
 
 #: apps/send_money/forms.py:198
 msgid "Amount should be 1p or more"
-msgstr "Dylai'r swm fod yn 1c neu fwy "
+msgstr "Dylai'r swm fod yn 1c neu fwy"
 
 #: apps/send_money/forms.py:199
 msgid "Only use 2 decimal places"
-msgstr "Defnyddiwch 2 bwynt degol yn unig "
+msgstr "Defnyddiwch 2 bwynt degol yn unig"
 
 #: apps/send_money/forms.py:207
 msgid "Your email address"
@@ -114,7 +114,7 @@ msgstr "Talu nawr gyda cherdyn debyd"
 #: templates/send_money/bank-transfer-warning.html:10
 #: templates/send_money/payment-method.html:73
 msgid "Get a prisoner reference to use in a UK bank transfer"
-msgstr "Creu cyfeirnod carcharor i'w ddefnyddio wrth wneud trosglwyddiad banc DU "
+msgstr "Creu cyfeirnod carcharor i'w ddefnyddio wrth wneud trosglwyddiad banc DU"
 
 #: apps/send_money/templatetags/prisons.py:8
 msgid "Her Majesty’s Prison and Young Offender Institution"
@@ -178,7 +178,7 @@ msgstr "Beta"
 
 #: templates/base.html:27
 msgid "This is a new service."
-msgstr "Mae hwn yn wasanaeth newydd. "
+msgstr "Mae hwn yn wasanaeth newydd."
 
 #: templates/base.html:28
 #, python-format
@@ -191,7 +191,7 @@ msgstr "Cynhyrchwyd gan"
 
 #: templates/base.html:45
 msgid "Ministry of Justice"
-msgstr "Y Weinyddiaeth Cyfiawnder "
+msgstr "Y Weinyddiaeth Cyfiawnder"
 
 #: templates/cookies.html:11
 msgid "GOV.UK puts small files (known as ‘cookies’) onto your computer to collect information about how you browse the site."
@@ -295,11 +295,11 @@ msgstr "Gallwch <a href=\"https://tools.google.com/dlpage/gaoptout\" rel=\"exter
 
 #: templates/cookies.html:69
 msgid "Our introductory message"
-msgstr "Ein neges rhagarweiniol"
+msgstr "Ein neges ragarweiniol"
 
 #: templates/cookies.html:71
 msgid "You may see a pop-up welcome message when you first visit GOV.UK."
-msgstr "Mae’n bosibl y byddwch chi’n gweld neges naid sy’n eich croesawu i wefan GOV.UK wrth ei defnyddio am y tro cyntaf. "
+msgstr "Mae’n bosibl y byddwch chi’n gweld neges naid sy’n eich croesawu i wefan GOV.UK wrth ei defnyddio am y tro cyntaf."
 
 #: templates/cookies.html:72
 msgid "We’ll store a cookie so that your computer knows you’ve seen it and knows not to show it again."
@@ -331,7 +331,7 @@ msgstr "Mae’n cofio sut yr ydych chi wedi symud ymlaen yn ystod y sesiwn"
 
 #: templates/cookies.html:108
 msgid "At the end of the session"
-msgstr "Ar ddiwedd y sesiwn "
+msgstr "Ar ddiwedd y sesiwn"
 
 #: templates/cookies.html:114
 msgid "You can read more about <a href=\"https://www.gov.uk/help/cookies\" rel=\"external\">how cookies are used on gov.uk</a>."
@@ -340,15 +340,15 @@ msgstr "Mae yna ragor o wybodaeth am <a href=\"https://www.gov.uk/help/cookies\"
 #: templates/send_money/bank-transfer-prisoner-details.html:11
 #: templates/send_money/debit-card-prisoner-details.html:11
 msgid "Enter prisoner details"
-msgstr "Nodwch fanylion y carcharor "
+msgstr "Nodwch fanylion y carcharor"
 
 #: templates/send_money/bank-transfer-prisoner-details.html:16
 msgid "To make a bank transfer online, you need a prisoner reference number."
-msgstr "I wneud trosglwyddiad banc ar-lein, rydych angen cyfeirnod carcharor. "
+msgstr "I wneud trosglwyddiad banc ar-lein, rydych angen cyfeirnod carcharor."
 
 #: templates/send_money/bank-transfer-prisoner-details.html:17
 msgid "To provide this, we need these details:"
-msgstr "I ddarparu hyn, rydym angen y manylion hyn: "
+msgstr "I ddarparu hyn, rydym angen y manylion hyn:"
 
 #: templates/send_money/bank-transfer-prisoner-details.html:26
 #: templates/send_money/debit-card-check.html:20
@@ -358,7 +358,7 @@ msgstr "Manylion y carcharor"
 
 #: templates/send_money/bank-transfer-prisoner-details.html:31
 msgid "Get reference"
-msgstr "Creu cyfeirnod "
+msgstr "Creu cyfeirnod"
 
 #: templates/send_money/bank-transfer-reference.html:9
 msgid "Your prisoner reference:"
@@ -366,24 +366,24 @@ msgstr "Eich cyfeirnod carcharor:"
 
 #: templates/send_money/bank-transfer-reference.html:11
 msgid "Use this reference to make your bank transfer"
-msgstr "Defnyddiwch y cyfeirnod hwn i wneud eich trosglwyddiad banc "
+msgstr "Defnyddiwch y cyfeirnod hwn i wneud eich trosglwyddiad banc"
 
 #: templates/send_money/bank-transfer-reference.html:15
 #: templates/send_money/debit-card-confirmation.html:14
 msgid "Print this page"
-msgstr "Argraffu'r dudalen hon "
+msgstr "Argraffu'r dudalen hon"
 
 #: templates/send_money/bank-transfer-reference.html:17
 msgid "Email me this page"
-msgstr "Anfon y dudalen hon ataf drwy e-bost "
+msgstr "Anfon y dudalen hon ataf drwy e-bost"
 
 #: templates/send_money/bank-transfer-reference.html:27
 msgid "Send me an email"
-msgstr "Anfon e-bost ataf "
+msgstr "Anfon e-bost ataf"
 
 #: templates/send_money/bank-transfer-reference.html:32
 msgid "Now you can make the bank transfer"
-msgstr "Gallwch nawr wneud y trosglwyddiad banc "
+msgstr "Gallwch nawr wneud y trosglwyddiad banc"
 
 #: templates/send_money/bank-transfer-reference.html:35
 msgid "Log into your online banking account, mobile banking app or use your telephone banking, as normal."
@@ -429,25 +429,25 @@ msgstr "Mae pob carchar yn rhannu'r cyfrif banc hwn."
 #: templates/send_money/email/bank-transfer-reference.html:43
 #: templates/send_money/email/bank-transfer-reference.txt:21
 msgid "Please use your prisoner reference to make sure the money goes to the right prisoner."
-msgstr "Defnyddiwch eich cyfeirnod carcharor er mwyn sicrhau bod yr arian yn mynd i'r carcharor iawn. "
+msgstr "Defnyddiwch eich cyfeirnod carcharor er mwyn sicrhau bod yr arian yn mynd i'r carcharor cywir."
 
 #: templates/send_money/bank-transfer-reference.html:66
 #: templates/send_money/email/bank-transfer-reference.html:45
 #: templates/send_money/email/bank-transfer-reference.txt:23
 msgid "Remember, you can’t do a bank transfer in-branch and you must use a UK bank account."
-msgstr "Cofiwch, ni allwch wneud trosglwyddiad banc yn eich banc ac mae'n rhaid i chi ddefnyddio cyfrif banc DU. "
+msgstr "Cofiwch, ni allwch wneud trosglwyddiad banc drwy fynd i'ch banc ac mae'n rhaid i chi ddefnyddio cyfrif banc DU."
 
 #: templates/send_money/bank-transfer-reference.html:70
 #: templates/send_money/email/bank-transfer-reference.html:49
 #: templates/send_money/email/bank-transfer-reference.txt:26
 msgid "The money should take up to 3 working days to reach the prisoner."
-msgstr "Dylai'r arian gymryd hyd at 3 diwrnod gwaith i gyrraedd y carcharor. "
+msgstr "Dylai'r arian gymryd hyd at 3 diwrnod gwaith i gyrraedd y carcharor."
 
 #: templates/send_money/bank-transfer-reference.html:71
 #: templates/send_money/email/bank-transfer-reference.html:50
 #: templates/send_money/email/bank-transfer-reference.txt:27
 msgid "No money is processed at weekends or bank holidays."
-msgstr "Ni chaiff arian ei brosesu ar benwythnosau nac ar wyliau banc. "
+msgstr "Ni chaiff arian ei brosesu ar benwythnosau nac ar wyliau banc."
 
 #: templates/send_money/bank-transfer-reference.html:77
 #, python-format
@@ -456,7 +456,7 @@ msgstr "<a href=\"%(help_url)s\">Mwy o gymorth</a> ar sut i ddefnyddio'r gwasana
 
 #: templates/send_money/bank-transfer-warning.html:11
 msgid "Before you continue"
-msgstr "Cyn i chi barhau "
+msgstr "Cyn i chi barhau"
 
 #: templates/send_money/bank-transfer-warning.html:15
 msgid "Please note"
@@ -464,11 +464,11 @@ msgstr "Dalier sylw"
 
 #: templates/send_money/bank-transfer-warning.html:18
 msgid "Only transfers done using online banking, your mobile banking app or telephone banking will reach the prisoner - you can’t go into a bank branch to transfer money"
-msgstr "Dim ond trosglwyddiadau a wnaed gan ddefnyddio bancio ar-lein, eich ap bancio symudol neu wasanaeth bancio dros y ffôn fydd yn cyrraedd y carcharor - ni allwch fynd i'r banc i drosglwyddo arian "
+msgstr "Dim ond trosglwyddiadau a wnaed gan ddefnyddio bancio ar-lein, eich ap bancio symudol neu wasanaeth bancio dros y ffôn fydd yn cyrraedd y carcharor - ni allwch fynd i'r banc i drosglwyddo arian"
 
 #: templates/send_money/bank-transfer-warning.html:19
 msgid "Only transfers from a UK bank account will reach the prisoner - you can’t transfer money from an international bank account"
-msgstr "Dim ond trosglwyddiadau o gyfrif banc DU fydd yn cyrraedd y carcharor - ni allwch drosglwyddo arian o gyfrif banc rhyngwladol "
+msgstr "Dim ond trosglwyddiadau o gyfrif banc DU fydd yn cyrraedd y carcharor - ni allwch drosglwyddo arian o gyfrif banc rhyngwladol"
 
 #: templates/send_money/bank-transfer-warning.html:24
 msgid "I understand"
@@ -485,7 +485,7 @@ msgstr "Diolch yn fawr i chi am gysylltu."
 
 #: templates/send_money/contact-form-success.html:12
 msgid "We will respond to any questions as soon as we can."
-msgstr "Byddwn yn ymateb i unrhyw gwestiynau cyn gynted â phosibl. "
+msgstr "Byddwn yn ymateb i unrhyw gwestiynau cyn gynted â phosibl."
 
 #: templates/send_money/contact-form-success.html:15
 #: templates/send_money/contact-form.html:7
@@ -495,7 +495,7 @@ msgstr "Byddwn yn ymateb i unrhyw gwestiynau cyn gynted â phosibl. "
 #: templates/send_money/help/prisoner-moved-or-released.html:9
 #: templates/send_money/prison-list.html:9
 msgid "Back"
-msgstr "Yn ôl "
+msgstr "Yn ôl"
 
 #: templates/send_money/contact-form.html:23
 msgid "Your message"
@@ -503,19 +503,19 @@ msgstr "Eich neges"
 
 #: templates/send_money/contact-form.html:31
 msgid "Please don’t include your bank details or any other personal information."
-msgstr "Peidiwch â chynnwys eich manylion banc nac unrhyw wybodaeth bersonol arall. "
+msgstr "Peidiwch â chynnwys eich manylion banc nac unrhyw wybodaeth bersonol arall."
 
 #: templates/send_money/contact-form.html:36
 msgid "If you had difficulties using the service, please enter the prisoner’s details:"
-msgstr "Os cawsoch anhawster i ddefnyddio'r gwasanaeth, nodwch fanylion y carcharor: "
+msgstr "Os cawsoch anhawster i ddefnyddio'r gwasanaeth, nodwch fanylion y carcharor:"
 
 #: templates/send_money/contact-form.html:41
 msgid "Enter your email address if you’d like a reply."
-msgstr "Nodwch eich cyfeiriad e-bost os hoffech i ni eich ateb. "
+msgstr "Nodwch eich cyfeiriad e-bost os hoffech i ni eich ateb."
 
 #: templates/send_money/contact-form.html:42
 msgid "We won’t use it for anything else."
-msgstr "Ni fyddwn yn ei ddefnyddio ar gyfer unrhyw beth arall. "
+msgstr "Ni fyddwn yn ei ddefnyddio ar gyfer unrhyw beth arall."
 
 #: templates/send_money/contact-form.html:47
 msgid "Send"
@@ -523,11 +523,11 @@ msgstr "Anfon"
 
 #: templates/send_money/debit-card-amount.html:11
 msgid "Enter amount to send"
-msgstr "Nodwch y swm yr ydych eisiau anfon "
+msgstr "Nodwch y swm yr ydych eisiau anfon"
 
 #: templates/send_money/debit-card-amount.html:23
 msgid "Please enter the amount in pounds"
-msgstr "Nodwch y swm mewn punnoedd "
+msgstr "Nodwch y swm mewn punnoedd"
 
 #: templates/send_money/debit-card-amount.html:48
 msgid "Service charge:"
@@ -542,7 +542,7 @@ msgstr "Y tâl gwasanaeth yw %(charge_percentage)s o'r swm yr ydych yn anfon, a 
 #: templates/send_money/debit-card-amount.html:55
 #: templates/send_money/debit-card-amount.html:67
 msgid "This fee is charged by your card provider."
-msgstr "Fe godir y ffi hon gan ddarparwr eich cerdyn. "
+msgstr "Fe godir y ffi hon gan ddarparwr eich cerdyn."
 
 #: templates/send_money/debit-card-amount.html:58
 msgid "Total to pay:"
@@ -556,7 +556,7 @@ msgstr "Er enghraifft, os ydych eisiau anfon %(sample_amount)s, fe godir ffi o %
 #: templates/send_money/debit-card-amount.html:81
 #: templates/send_money/debit-card-check.html:13
 msgid "Check details"
-msgstr "Gwirio'r manylion "
+msgstr "Gwirio'r manylion"
 
 #: templates/send_money/debit-card-check.html:6
 msgid "Check details - Send money to a prisoner - GOV.UK"
@@ -581,7 +581,7 @@ msgstr "Cyfanswm i'r carcharor"
 
 #: templates/send_money/debit-card-check.html:54
 msgid "Amount to be taken from your account"
-msgstr "Swm i'w dynnu o'ch cyfrif "
+msgstr "Swm i'w dynnu o'ch cyfrif"
 
 #: templates/send_money/debit-card-check.html:61
 msgid "Total"
@@ -589,11 +589,11 @@ msgstr "Cyfanswm"
 
 #: templates/send_money/debit-card-check.html:76
 msgid "Enter card details"
-msgstr "Nodwch fanylion y cerdyn "
+msgstr "Nodwch fanylion y cerdyn"
 
 #: templates/send_money/debit-card-check.html:79
 msgid "Cancel and delete all details"
-msgstr "Canslo a dileu'r holl fanylion "
+msgstr "Canslo a dileu'r holl fanylion"
 
 #: templates/send_money/debit-card-confirmation.html:8
 msgid "Payment successful"
@@ -601,7 +601,7 @@ msgstr "Taliad yn llwyddiannus"
 
 #: templates/send_money/debit-card-confirmation.html:9
 msgid "Your confirmation number is"
-msgstr "Eich rhif cadarnhau yw "
+msgstr "Eich rhif cadarnhau yw"
 
 #: templates/send_money/debit-card-confirmation.html:17
 msgid "Payment summary"
@@ -614,42 +614,42 @@ msgstr "Taliad at"
 
 #: templates/send_money/debit-card-confirmation.html:24
 msgid "Payment amount"
-msgstr "Swm y taliad "
+msgstr "Swm y taliad"
 
 #: templates/send_money/debit-card-confirmation.html:28
 #: templates/send_money/email/debit-card-confirmation.txt:16
 msgid "Date payment made"
-msgstr "Dyddiad gwneud y taliad "
+msgstr "Dyddiad gwneud y taliad"
 
 #: templates/send_money/debit-card-confirmation.html:32
 msgid "Confirmation number"
-msgstr "Rhif cadarnhau "
+msgstr "Rhif cadarnhau"
 
 #: templates/send_money/debit-card-confirmation.html:37
 msgid "What happens next"
-msgstr "Beth fydd yn digwydd nesaf "
+msgstr "Beth fydd yn digwydd nesaf"
 
 #: templates/send_money/debit-card-confirmation.html:40
 msgid "We’ll email you a copy of this confirmation page."
-msgstr "Byddwn yn anfon copi o'r dudalen gadarnhau hon atoch ar e-bost. "
+msgstr "Byddwn yn anfon copi o'r dudalen gadarnhau hon atoch ar e-bost."
 
 #: templates/send_money/debit-card-confirmation.html:41
 msgid "The money will arrive in the prisoner’s account in up to 3 working days."
-msgstr "Bydd yr arian yn cyrraedd cyfrif y carcharor mewn hyd at 3 diwrnod gwaith. "
+msgstr "Bydd yr arian yn cyrraedd cyfrif y carcharor mewn hyd at 3 diwrnod gwaith."
 
 #: templates/send_money/debit-card-confirmation.html:43
 #: templates/send_money/email/debit-card-confirmation.html:18
 #: templates/send_money/email/debit-card-confirmation.txt:11
 msgid "You’ll get a further email when the prisoner’s account has been credited to confirm your money has arrived."
-msgstr "Fe gewch e-bost arall pan fydd cyfrif y carcharor wedi cael ei gredydu i gadarnhau bod eich arian wedi cyrraedd. "
+msgstr "Fe gewch e-bost arall pan fydd cyfrif y carcharor wedi cael ei gredydu i gadarnhau bod eich arian wedi cyrraedd."
 
 #: templates/send_money/debit-card-confirmation.html:48
 msgid "Take a moment to rate this service"
-msgstr "Rhowch ychydig o'ch amser i raddio'r gwasanaeth hwn "
+msgstr "Rhowch ychydig o'ch amser i raddio'r gwasanaeth hwn"
 
 #: templates/send_money/debit-card-failure.html:11
 msgid "We’re sorry, your payment could not be processed on this occasion"
-msgstr "Yn anffodus, nid oedd yn bosib prosesu eich taliad y tro hwn "
+msgstr "Yn anffodus, nid oedd yn bosib prosesu eich taliad y tro hwn"
 
 #: templates/send_money/debit-card-failure.html:13
 #, python-format
@@ -663,7 +663,7 @@ msgstr "Nodwch y swm"
 #: templates/send_money/email/bank-transfer-reference.html:8
 #: templates/send_money/email/bank-transfer-reference.txt:6
 msgid "Send your bank transfer using this prisoner reference:"
-msgstr "Anfonwch eich trosglwyddiad banc gan ddefnyddio'r cyfeirnod carcharor hwn: "
+msgstr "Anfonwch eich trosglwyddiad banc gan ddefnyddio'r cyfeirnod carcharor hwn:"
 
 #: templates/send_money/email/bank-transfer-reference.html:13
 #: templates/send_money/email/bank-transfer-reference.txt:9
@@ -673,17 +673,17 @@ msgstr "Cofiwch:"
 #: templates/send_money/email/bank-transfer-reference.html:14
 #: templates/send_money/email/bank-transfer-reference.txt:9
 msgid "This is just the reference."
-msgstr "Dim ond y cyfeirnod yw hwn. "
+msgstr "Dim ond y cyfeirnod yw hwn."
 
 #: templates/send_money/email/bank-transfer-reference.html:15
 #: templates/send_money/email/bank-transfer-reference.txt:9
 msgid "You have not sent any money yet."
-msgstr "Nid ydych wedi anfon unrhyw arian eto. "
+msgstr "Nid ydych wedi anfon unrhyw arian eto."
 
 #: templates/send_money/email/bank-transfer-reference.html:16
 #: templates/send_money/email/bank-transfer-reference.txt:10
 msgid "You need to log into your online banking account, mobile banking app or use your telephone banking, as usual."
-msgstr "Mae angen i chi fewngofnodi i'ch cyfrif bancio ar-lein, ap bancio symudol neu ddefnyddio eich gwasanaeth bancio dros y ffôn, yn unol â’r drefn arferol. "
+msgstr "Mae angen i chi fewngofnodi i'ch cyfrif bancio ar-lein, ap bancio symudol neu ddefnyddio eich gwasanaeth bancio dros y ffôn, yn unol â’r drefn arferol."
 
 #: templates/send_money/email/bank-transfer-reference.html:55
 #: templates/send_money/email/debit-card-confirmation.html:42
@@ -694,14 +694,14 @@ msgstr "<a href=\"%(help_url)s\">Cymorth</a> gyda phroblemau wrth ddefnyddio'r g
 #: templates/send_money/email/bank-transfer-reference.html:61
 #: templates/send_money/email/debit-card-confirmation.html:48
 msgid "Book a social visit with a prisoner online using the <a href=\"https://www.gov.uk/prison-visits\">Visit someone in prison</a> service."
-msgstr ""
+msgstr "Trefnu ymweliad cymdeithasol gyda carcharor ar-lein gan ddefnyddio'r <a href=\"https://www.gov.uk/prison-visits\">gwasanaeth</a> Ymweld â rhywun yn y carchar."
 
 #: templates/send_money/email/bank-transfer-reference.html:64
 #: templates/send_money/email/bank-transfer-reference.txt:33
 #: templates/send_money/email/debit-card-confirmation.html:51
 #: templates/send_money/email/debit-card-confirmation.txt:25
 msgid "It’s the faster and simpler way to plan to see friends and family in prisons in England or Wales."
-msgstr ""
+msgstr "Dyma'r ffordd gyflymaf a hawsaf i drefnu gweld ffrindiau a theulu sydd mewn carchar yng Nghymru a Lloegr."
 
 #: templates/send_money/email/bank-transfer-reference.html:67
 #: templates/send_money/email/debit-card-confirmation.html:54
@@ -711,7 +711,7 @@ msgstr "Yn ôl i'r gwasanaeth"
 #: templates/send_money/email/bank-transfer-reference.txt:29
 #: templates/send_money/email/debit-card-confirmation.txt:21
 msgid "Help with problems using this service:"
-msgstr "Cymorth gyda phroblemau wrth ddefnyddio'r gwasanaeth hwn: "
+msgstr "Cymorth gyda phroblemau wrth ddefnyddio'r gwasanaeth hwn:"
 
 #: templates/send_money/email/bank-transfer-reference.txt:30
 #: templates/send_money/email/debit-card-confirmation.txt:22
@@ -721,7 +721,7 @@ msgstr "Gadael adborth neu gysylltu â ni yn:"
 #: templates/send_money/email/bank-transfer-reference.txt:32
 #: templates/send_money/email/debit-card-confirmation.txt:24
 msgid "Book a social visit with a prisoner online using the ‘Visit someone in prison’ service:"
-msgstr ""
+msgstr "Trefnu ymweliad cymdeithasol gyda carcharor ar-lein gan ddefnyddio'r gwasanaeth 'Ymweld â rhywun yn y carchar'."
 
 #: templates/send_money/email/bank-transfer-reference.txt:35
 #: templates/send_money/email/debit-card-confirmation.txt:27
@@ -731,12 +731,12 @@ msgstr "Yn ôl i'r gwasanaeth:"
 #: templates/send_money/email/debit-card-confirmation.html:6
 #: templates/send_money/email/debit-card-confirmation.txt:5
 msgid "Dear sender,"
-msgstr "Annwyl anfonwr, "
+msgstr "Annwyl anfonwr,"
 
 #: templates/send_money/email/debit-card-confirmation.html:9
 #: templates/send_money/email/debit-card-confirmation.txt:7
 msgid "Your payment has been successful."
-msgstr "Mae eich taliad wedi bod yn llwyddiannus. "
+msgstr "Mae eich taliad wedi bod yn llwyddiannus."
 
 #: templates/send_money/email/debit-card-confirmation.html:10
 #, python-format
@@ -746,7 +746,7 @@ msgstr "Eich rhif cadarnhau yw <strong>%(short_payment_ref)s</strong>."
 #: templates/send_money/email/debit-card-confirmation.html:16
 #: templates/send_money/email/debit-card-confirmation.txt:9
 msgid "Money should reach the prisoner’s account in up to 3 working days."
-msgstr "Dylai'r arian gyrraedd cyfrif y carcharor mewn hyd at 3 diwrnod gwaith. "
+msgstr "Dylai'r arian gyrraedd cyfrif y carcharor mewn hyd at 3 diwrnod gwaith."
 
 #: templates/send_money/email/debit-card-confirmation.html:24
 msgid "Payment to:"
@@ -763,7 +763,7 @@ msgstr "Dyddiad gwneud y taliad:"
 #: templates/send_money/email/debit-card-confirmation.html:38
 #: templates/send_money/email/debit-card-confirmation.txt:19
 msgid "Thank you for using this service."
-msgstr "Diolch yn fawr i chi am ddefnyddio'r gwasanaeth hwn. "
+msgstr "Diolch yn fawr i chi am ddefnyddio'r gwasanaeth hwn."
 
 #: templates/send_money/email/debit-card-confirmation.txt:7
 #, python-format
@@ -783,7 +783,7 @@ msgstr "Cymorth"
 
 #: templates/send_money/help/bank-transfer-issues.html:24
 msgid "A bank transfer was returned or didn’t reach the prisoner"
-msgstr "Cafodd trosglwyddiad banc ei ddychwelyd neu ni wnaeth gyrraedd y carcharor "
+msgstr "Cafodd trosglwyddiad banc ei ddychwelyd neu ni wnaeth gyrraedd y carcharor"
 
 #: templates/send_money/help/bank-transfer-issues.html:29
 msgid "If your bank transfer was returned"
@@ -791,11 +791,11 @@ msgstr "Os cafodd eich trosglwyddiad banc ei ddychwelyd"
 
 #: templates/send_money/help/bank-transfer-issues.html:32
 msgid "The money sent to you was returned because you may have used an incorrect reference."
-msgstr "Cafodd yr arian a anfonwyd atoch ei ddychwelyd oherwydd efallai eich bod wedi defnyddio cyfeirnod anghywir. "
+msgstr "Cafodd yr arian a anfonwyd atoch ei ddychwelyd oherwydd efallai eich bod wedi defnyddio cyfeirnod anghywir."
 
 #: templates/send_money/help/bank-transfer-issues.html:35
 msgid "If so, you’ll get a refund within 4 working days of making the bank transfer."
-msgstr "Os felly, cewch ad-daliad o fewn 4 diwrnod gwaith o wneud y trosglwyddiad banc. "
+msgstr "Os felly, cewch ad-daliad o fewn 4 diwrnod gwaith o wneud y trosglwyddiad banc."
 
 #: templates/send_money/help/bank-transfer-issues.html:36
 msgid "Your bank statement will show ‘GBS RE NOMS AGENCY’ and the reference will be ‘REFUND’."
@@ -803,15 +803,15 @@ msgstr "Bydd ‘GBS RE NOMS AGENCY’ yn ymddangos ar eich cyfriflen banc a'r cy
 
 #: templates/send_money/help/bank-transfer-issues.html:39
 msgid "No money will reach the prisoner."
-msgstr "Ni fydd arian yn cyrraedd y carcharor. "
+msgstr "Ni fydd arian yn cyrraedd y carcharor."
 
 #: templates/send_money/help/bank-transfer-issues.html:43
 msgid "If your bank transfer didn’t reach the prisoner"
-msgstr "Os na gyrhaeddodd eich trosglwyddiad banc y carcharor "
+msgstr "Os na gyrhaeddodd eich trosglwyddiad banc y carcharor"
 
 #: templates/send_money/help/bank-transfer-issues.html:46
 msgid "It could be because you made a transfer at a bank branch or from an international bank account."
-msgstr "Fe allai hyn fod oherwydd eich bod wedi gwneud trosglwyddiad mewn banc neu o gyfrif banc rhyngwladol. "
+msgstr "Fe allai hyn fod oherwydd eich bod wedi gwneud trosglwyddiad mewn banc neu o gyfrif banc rhyngwladol."
 
 #: templates/send_money/help/bank-transfer-issues.html:47
 msgid "If you do this, your payment won’t go through."
@@ -819,12 +819,12 @@ msgstr "Os byddwch yn gwneud hyn, ni fydd eich taliad yn cael ei brosesu."
 
 #: templates/send_money/help/bank-transfer-issues.html:50
 msgid "That means we can’t credit the prisoner and you’ll have to request a refund."
-msgstr "Golyga hyn nad ydym yn gallu credydu'r carcharor a bydd rhaid i chi ofyn am ad-daliad. "
+msgstr "Golyga hyn nad ydym yn gallu credydu'r carcharor a bydd rhaid i chi ofyn am ad-daliad."
 
 #: templates/send_money/help/bank-transfer-issues.html:53
 #, python-format
 msgid "To request a refund, <a href=\"%(contact_url)s\">find the prison address</a> and write to the prison."
-msgstr "I ofyn am ad-daliad, <a href=\"%(contact_url)s\">darganfyddwch gyfeiriad y carchar</a> ac ysgrifennwch i'r carchar. "
+msgstr "I ofyn am ad-daliad, <a href=\"%(contact_url)s\">darganfyddwch gyfeiriad y carchar</a> ac ysgrifennwch i'r carchar."
 
 #: templates/send_money/help/bank-transfer-issues.html:58
 msgid "Address your letter to the ‘Business Hub’ and confirm:"
@@ -856,7 +856,7 @@ msgstr "y gangen lle gwnaethoch y taliad"
 
 #: templates/send_money/help/bank-transfer-issues.html:81
 msgid "The prison will send you a refund by cheque."
-msgstr "Bydd y carchar yn anfon ad-daliad atoch ar ffurf siec. "
+msgstr "Bydd y carchar yn anfon ad-daliad atoch ar ffurf siec."
 
 #: templates/send_money/help/bank-transfer-issues.html:85
 #: templates/send_money/help/prisoner-moved-or-released.html:45
@@ -866,15 +866,15 @@ msgstr "Os nad yw hyn yn helpu, plîs <a href=\"%(feedback_url)s\">cysylltwch â
 
 #: templates/send_money/help/payment-delay.html:24
 msgid "A payment has taken longer"
-msgstr "Mae taliad wedi cymryd mwy o amser "
+msgstr "Mae taliad wedi cymryd mwy o amser"
 
 #: templates/send_money/help/payment-delay.html:29
 msgid "In almost all cases, the payment reaches the prisoner’s bank account in up to 3 days."
-msgstr "Mewn bron pob achos, bydd y taliad yn cyrraedd cyfrif banc y carcharor mewn hyd at 3 diwrnod. "
+msgstr "Mewn bron pob achos, bydd y taliad yn cyrraedd cyfrif banc y carcharor mewn hyd at 3 diwrnod."
 
 #: templates/send_money/help/payment-delay.html:32
 msgid "However, if it seems to be taking longer, it could be because an individual prison has put a payment on hold or the money could be in the prisoner’s account but the prisoner doesn’t know about it yet."
-msgstr "Fodd bynnag, os yw'n cymryd mwy na hyn, efallai bod carchar penodol yn dal taliad yn ôl neu fe allai'r arian fod yng nghyfrif y carcharor ond nid yw'r carcharor yn gwybod amdano eto. "
+msgstr "Fodd bynnag, os yw'n cymryd mwy na hyn, efallai bod carchar penodol yn dal taliad yn ôl neu fe allai'r arian fod yng nghyfrif y carcharor ond nid yw'r carcharor yn gwybod amdano eto."
 
 #: templates/send_money/help/payment-delay.html:35
 #, python-format
@@ -883,11 +883,11 @@ msgstr "Os ydych dal i boeni ar ôl 7-10 diwrnod, plîs <a href=\"%(contact_url)
 
 #: templates/send_money/help/payment-issues.html:24
 msgid "Payment issues"
-msgstr "Problemau talu "
+msgstr "Problemau talu"
 
 #: templates/send_money/help/payment-issues.html:29
 msgid "If you’ve already sent money but are experiencing problems, we can help."
-msgstr "Os ydych eisoes wedi anfon arian ond eich bod yn cael problemau, yna gallwn helpu. "
+msgstr "Os ydych eisoes wedi anfon arian ond eich bod yn cael problemau, yna gallwn helpu."
 
 #: templates/send_money/help/payment-issues.html:32
 msgid "Find out:"
@@ -958,7 +958,7 @@ msgstr "Ni allwch anfon arian gyda cherdyn debyd ar hyn o bryd"
 
 #: templates/send_money/payment-method.html:23
 msgid "You can come back later or choose to get a prisoner reference to use in a UK bank transfer"
-msgstr "Gallwch ddod yn ôl wedyn neu ddewis greu cyfeirnod carcharor i'w ddefnyddio wrth wneud trosglwyddiad banc DU "
+msgstr "Gallwch ddod yn ôl wedyn neu ddewis greu cyfeirnod carcharor i'w ddefnyddio wrth wneud trosglwyddiad banc DU"
 
 #: templates/send_money/payment-method.html:29
 msgid "Paying by debit card won’t work because we don’t support your device or browser"
@@ -966,7 +966,7 @@ msgstr "Ni fydd talu â cherdyn debyd yn gweithio oherwydd nid ydym yn cefnogi e
 
 #: templates/send_money/payment-method.html:31
 msgid "Try another computer or a newer browser, for example, Chrome, Firefox or Internet Explorer 11 and up"
-msgstr "Defnyddiwch gyfrifiadur arall neu borwr fwy newydd, er enghraifft Chrome, Firefox neu Internet Explorer 11 "
+msgstr "Defnyddiwch gyfrifiadur arall neu borwr fwy newydd, er enghraifft Chrome, Firefox neu Internet Explorer 11"
 
 #: templates/send_money/payment-method.html:48
 msgid "or"
@@ -982,7 +982,7 @@ msgstr "Ddim ar gael ar hyn o bryd"
 
 #: templates/send_money/payment-method.html:67
 msgid "You can complete your payment here using Mastercard/Visa debit cards"
-msgstr "Gallwch gwblhau eich taliad yma gan ddefnyddio cardiau debyd Mastercard/Visa  "
+msgstr "Gallwch gwblhau eich taliad yma gan ddefnyddio cardiau debyd Mastercard/Visa"
 
 #: templates/send_money/payment-method.html:68
 #: templates/send_money/payment-method.html:77
@@ -991,11 +991,11 @@ msgstr "Dylai'r arian gymryd hyd at 3 diwrnod gwaith i gyrraedd y carcharor"
 
 #: templates/send_money/payment-method.html:69
 msgid "You’ll get email confirmation of payment"
-msgstr "Fe gewch e-bost i gadarnhau'r taliad "
+msgstr "Fe gewch e-bost i gadarnhau'r taliad"
 
 #: templates/send_money/payment-method.html:70
 msgid "You can make an international payment using a debit card"
-msgstr "Gallwch wneud taliad rhyngwladol gan ddefnyddio cerdyn debyd "
+msgstr "Gallwch wneud taliad rhyngwladol gan ddefnyddio cerdyn debyd"
 
 #: templates/send_money/payment-method.html:75
 msgid "You’ll get a prisoner reference you can use to make a bank transfer using online banking, your mobile banking app or telephone banking"
@@ -1007,7 +1007,7 @@ msgstr "Gallwch ailddefnyddio'r cyfeirnod hwn ar gyfer y carcharor hwn bob tro y
 
 #: templates/send_money/payment-method.html:78
 msgid "You don’t get email confirmation after your bank transfer."
-msgstr "Ni fyddwch yn cael ebost i gadarnhau eich trosglwyddiad banc. "
+msgstr "Ni fyddwch yn cael ebost i gadarnhau eich trosglwyddiad banc."
 
 #: templates/send_money/payment-method.html:84
 msgid "Continue"
@@ -1015,11 +1015,11 @@ msgstr "Parhau"
 
 #: templates/send_money/prison-list.html:14
 msgid "Public prisons in England and Wales"
-msgstr "Carchardai cyhoeddus yng Nghymru a Lloegr "
+msgstr "Carchardai cyhoeddus yng Nghymru a Lloegr"
 
 #: templates/send_money/prison-list.html:18
 msgid "The ‘Send money to a prisoner’ service is available in the following public prisons, young offender institutions and immigration removal centres in England and Wales."
-msgstr "Mae'r gwasanaeth 'Anfon arian at garcharor' ar gael yn y carchardai cyhoeddus, sefydliadau troseddwyr ifanc a chanolfannau symud mewnfudwyr canlynol yng Nghymru a Lloegr. "
+msgstr "Mae'r gwasanaeth 'Anfon arian at garcharor' ar gael yn y carchardai cyhoeddus, sefydliadau troseddwyr ifanc a chanolfannau symud mewnfudwyr canlynol yng Nghymru a Lloegr."
 
 #: templates/send_money/prison-list.html:23
 msgid "Search"
@@ -1027,7 +1027,7 @@ msgstr "Chwilio"
 
 #: templates/send_money/prison-list.html:26
 msgid "No prisons found"
-msgstr "Ni chanfuwyd unrhyw garchardai "
+msgstr "Ni chanfuwyd unrhyw garchardai"
 
 #: templates/send_money/prisoner-details-error-summary.html:10
 msgid "There was a problem"
@@ -1039,7 +1039,7 @@ msgstr "Gwiriwch:"
 
 #: templates/send_money/prisoner-details-error-summary.html:23
 msgid "you entered the details correctly"
-msgstr "eich bod wedi nodi'r manylion yn gywir "
+msgstr "eich bod wedi nodi'r manylion yn gywir"
 
 #: templates/send_money/prisoner-details-error-summary.html:26
 #, python-format
@@ -1052,15 +1052,15 @@ msgstr "bod y manylion yn cyfateb i'r manylion a gedwir gan y carchar - gofynnwc
 
 #: templates/terms.html:9
 msgid "Terms and conditions and privacy policy"
-msgstr "Telerau ac amodau a pholisi preifatrwydd "
+msgstr "Telerau ac amodau a pholisi preifatrwydd"
 
 #: templates/terms.html:13
 msgid "By using the send money to a prisoner service using your bank account you agree to our privacy policy and to these terms and conditions."
-msgstr "Drwy ddefnyddio'r gwasanaeth anfon arian at garcharor gan ddefnyddio eich cyfrif banc rydych yn cytuno i'n polisi preifatrwydd ac i'r telerau ac amodau hyn. "
+msgstr "Drwy ddefnyddio'r gwasanaeth anfon arian at garcharor gan ddefnyddio eich cyfrif banc rydych yn cytuno i'n polisi preifatrwydd ac i'r telerau ac amodau hyn."
 
 #: templates/terms.html:14
 msgid "Please read them carefully."
-msgstr "Darllenwch nhw'n ofalus. "
+msgstr "Darllenwch nhw'n ofalus."
 
 #: templates/terms.html:19
 msgid "General"
@@ -1072,27 +1072,27 @@ msgstr "Mae’r telerau ac amodau hyn yn effeithio ar eich hawliau a’ch rhwyme
 
 #: templates/terms.html:23
 msgid "They govern your use of, and relationship with, the send money to a prisoner service and information about sending money to prisoners using your bank account."
-msgstr "Maent yn rheoli’r defnydd a wnewch, a'ch perthynas gyda’r gwasanaeth anfon arian at garcharor a gwybodaeth am anfon arian at garcharorion gan ddefnyddio eich cyfrif banc. "
+msgstr "Maent yn rheoli’r defnydd a wnewch, a'ch perthynas gyda’r gwasanaeth anfon arian at garcharor a gwybodaeth am anfon arian at garcharorion gan ddefnyddio eich cyfrif banc."
 
 #: templates/terms.html:24
 msgid "They don’t apply to other services provided by the Ministry of Justice (HM Prison Service), or to any other department or service which is linked to in this service."
-msgstr "Nid ydynt yn berthnasol i wasanaethau eraill a ddarperir gan y Weinyddiaeth Cyfiawnder (Gwasanaeth Carchardai EM), nac i unrhyw adran neu wasanaeth arall sy’n gysylltiedig â’r gwasanaeth hwn. "
+msgstr "Nid ydynt yn berthnasol i wasanaethau eraill a ddarperir gan y Weinyddiaeth Cyfiawnder (Gwasanaeth Carchardai EM), nac i unrhyw adran neu wasanaeth arall sy’n gysylltiedig â’r gwasanaeth hwn."
 
 #: templates/terms.html:27
 msgid "We may occasionally update these terms and conditions."
-msgstr "Mae'n bosib y byddwn o bryd i'w gilydd yn diweddaru'r telerau ac amodau hyn. "
+msgstr "Mae'n bosib y byddwn o bryd i'w gilydd yn diweddaru'r telerau ac amodau hyn."
 
 #: templates/terms.html:28
 msgid "This might happen if there’s a change in the law or to the way this service works."
-msgstr "Gall hyn ddigwydd os bydd newid yn y gyfraith neu i'r ffordd y mae'r gwasanaeth hwn yn gweithio. "
+msgstr "Gall hyn ddigwydd os bydd newid yn y gyfraith neu i'r ffordd y mae'r gwasanaeth hwn yn gweithio."
 
 #: templates/terms.html:29
 msgid "We recommend you check this page regularly for any updates."
-msgstr "Rydym yn argymell eich bod yn gwirio'r dudalen hon yn rheolaidd am unrhyw ddiweddariadau. "
+msgstr "Rydym yn argymell eich bod yn gwirio'r dudalen hon yn rheolaidd am unrhyw ddiweddariadau."
 
 #: templates/terms.html:32
 msgid "If you don’t agree to the terms and conditions and privacy policy set out in this document, you should not send money to prisoners using your bank account."
-msgstr "Os nad ydych yn cytuno â’r telerau ac amodau a’r polisi preifatrwydd sydd yn y ddogfen hon, ni ddylech anfon arian at garcharorion gan ddefnyddio eich cyfrif banc.  "
+msgstr "Os nad ydych yn cytuno â’r telerau ac amodau a’r polisi preifatrwydd sydd yn y ddogfen hon, ni ddylech anfon arian at garcharorion gan ddefnyddio eich cyfrif banc."
 
 #: templates/terms.html:35
 msgid "Applicable law"
@@ -1104,7 +1104,7 @@ msgstr "Bydd y defnydd a wnewch o’r gwasanaeth hwn ac unrhyw anghydfod sy’n 
 
 #: templates/terms.html:46
 msgid "How to use this service responsibly"
-msgstr "Sut i ddefnyddio'r gwasanaeth hwn yn gyfrifol "
+msgstr "Sut i ddefnyddio'r gwasanaeth hwn yn gyfrifol"
 
 #: templates/terms.html:49
 msgid "There are risks in using a shared computer, such as in an internet café, to use this service."
@@ -1120,11 +1120,11 @@ msgstr "Chi sy’n gyfrifol os ydych yn dewis gadael cyfrifiadur heb ei ddiogelu
 
 #: templates/terms.html:54
 msgid "We make every effort to check and test this service whenever we amend or update it."
-msgstr "Byddwn yn gwneud pob ymdrech i wirio a phrofi’r gwasanaeth hwn pryd bynnag y byddwn yn ei ddiwygio neu ei ddiweddaru. "
+msgstr "Byddwn yn gwneud pob ymdrech i wirio a phrofi’r gwasanaeth hwn pryd bynnag y byddwn yn ei ddiwygio neu ei ddiweddaru."
 
 #: templates/terms.html:55
 msgid "However, you must take your own precautions to ensure that the way you access this service does not expose you to the risk of viruses, malicious computer code or other forms of interference which may damage your own computer system."
-msgstr "Fodd bynnag, mae’n rhaid i chi gymryd gofal eich hunan i sicrhau nad yw’r ffordd yr ydych yn cael mynediad i'r gwasanaeth hwn yn eich gadael yn agored i’r perygl o feirysau, cod cyfrifiadur maleisus neu ymyrraeth o fath arall a allai achosi difrod i’ch system gyfrifiadurol eich hunan. "
+msgstr "Fodd bynnag, mae’n rhaid i chi gymryd gofal eich hunan i sicrhau nad yw’r ffordd yr ydych yn cael mynediad i'r gwasanaeth hwn yn eich gadael yn agored i’r perygl o feirysau, cod cyfrifiadur maleisus neu ymyrraeth o fath arall a allai achosi difrod i’ch system gyfrifiadurol eich hunan."
 
 #: templates/terms.html:58
 msgid "You must not misuse our service by knowingly introducing viruses, trojans, worms, logic bombs or other material which is malicious or technologically harmful."
@@ -1136,7 +1136,7 @@ msgstr "Ni ddylech geisio cael mynediad heb awdurdod i'n gwasanaeth, y system ll
 
 #: templates/terms.html:62
 msgid "Privacy policy"
-msgstr "Polisi preifatrwydd "
+msgstr "Polisi preifatrwydd"
 
 #: templates/terms.html:64
 msgid "Information provided by this service"
@@ -1144,15 +1144,15 @@ msgstr "Gwybodaeth a ddarperir gan y gwasanaeth hwn"
 
 #: templates/terms.html:67
 msgid "We work hard to ensure that information about how to send money to a prisoner using your bank account is accurate."
-msgstr "Rydym yn gweithio'n ddiwyd i sicrhau bod gwybodaeth am sut i anfon arian at garcharor gan ddefnyddio eich cyfrif banc yn gywir. "
+msgstr "Rydym yn gweithio'n ddiwyd i sicrhau bod gwybodaeth am sut i anfon arian at garcharor gan ddefnyddio eich cyfrif banc yn gywir."
 
 #: templates/terms.html:68
 msgid "However, we can’t guarantee the accuracy and completeness of any information at all times."
-msgstr "Fodd bynnag, ni allwn warantu bod unrhyw wybodaeth yn gywir ac yn gyflawn bob amser. "
+msgstr "Fodd bynnag, ni allwn warantu bod unrhyw wybodaeth yn gywir ac yn gyflawn bob amser."
 
 #: templates/terms.html:71
 msgid "While we make every effort to ensure this service is accessible at all times, we are not liable if it is unavailable for any period of time."
-msgstr "Er y gwnawn bob ymdrech i sicrhau mynediad at y gwasanaeth hwn bob amser, nid ydym yn atebol os nad yw ar gael am unrhyw gyfnod. "
+msgstr "Er y gwnawn bob ymdrech i sicrhau mynediad at y gwasanaeth hwn bob amser, nid ydym yn atebol os nad yw ar gael am unrhyw gyfnod."
 
 #: templates/terms.html:74
 msgid "How we use your information"
@@ -1160,15 +1160,15 @@ msgstr "Sut rydym yn defnyddio eich gwybodaeth"
 
 #: templates/terms.html:77
 msgid "Sending money to a prisoner using your bank account:"
-msgstr "Anfon arian at garcharor gan ddefnyddio eich cyfrif banc: "
+msgstr "Anfon arian at garcharor gan ddefnyddio eich cyfrif banc:"
 
 #: templates/terms.html:78
 msgid "We use your bank details and the payment reference number you provide to identify the payment sender, as well as the prisoner receiving money."
-msgstr "Rydym yn defnyddio eich manylion banc a'r cyfeirnod talu y byddwch yn ei nodi i adnabod pwy sydd wedi anfon y taliad, yn ogystal â'r carcharor sy'n cael yr arian. "
+msgstr "Rydym yn defnyddio eich manylion banc a'r cyfeirnod talu y byddwch yn ei nodi i adnabod pwy sydd wedi anfon y taliad, yn ogystal â'r carcharor sy'n cael yr arian."
 
 #: templates/terms.html:79
 msgid "Money coming into the prison is monitored for the purposes of crime detection and prevention."
-msgstr "Bydd arian sy'n dod i mewn i'r carchar yn cael ei fonitro er mwyn atal a datrys trosedd. "
+msgstr "Bydd arian sy'n dod i mewn i'r carchar yn cael ei fonitro er mwyn atal a datrys trosedd."
 
 #: templates/terms.html:82
 msgid "You have the right to request details as to the personal information we hold for you; and subsequently request that we correct any personal information if it is found to be inaccurate or out of date."
@@ -1186,7 +1186,7 @@ msgstr "Byddwch angen <a href=\"%(url)s\">Ffurflen Gais Gwrthrych am Wybodaeth</
 
 #: templates/terms.html:87
 msgid "We will not share your information with other organisations unless it is required for the purposes of prevention, detection of crime, apprehension, prosecution, and management of offenders; prevention of terrorism; national security; or required to by law."
-msgstr "Ni fyddwn yn rhannu eich gwybodaeth gyda sefydliadau eraill oni bai fod hynny’n ofynnol er pwrpas atal a datrys trosedd, arestio, erlyn a rheoli troseddwyr; atal terfysgaeth; diogelwch cenedlaethol; neu os yw’n ofynnol o dan y gyfraith.   "
+msgstr "Ni fyddwn yn rhannu eich gwybodaeth gyda sefydliadau eraill oni bai fod hynny’n ofynnol er pwrpas atal a datrys trosedd, arestio, erlyn a rheoli troseddwyr; atal terfysgaeth; diogelwch cenedlaethol; neu os yw’n ofynnol o dan y gyfraith."
 
 #: templates/terms.html:90
 msgid "Separately from the information entered by those using this service, we also collect site-usage information which allows us to see how the service is being used in order to allow us to improve it."
@@ -1194,7 +1194,7 @@ msgstr "Ar wahân i’r wybodaeth y mae’r rhai sy’n defnyddio’r gwasanaeth
 
 #: templates/terms.html:91
 msgid "This information does not contain any personal data, unless feedback is submitted with an email address."
-msgstr "Nid yw'r wybodaeth hon yn cynnwys unrhyw ddata personol, oni bai bod adborth wedi'i gyflwyno gyda chyfeiriad e-bost. "
+msgstr "Nid yw'r wybodaeth hon yn cynnwys unrhyw ddata personol, oni bai bod adborth wedi'i gyflwyno gyda chyfeiriad e-bost."
 
 #: templates/terms.html:94
 msgid "It includes:"
@@ -1210,7 +1210,7 @@ msgstr "eich cyfeiriad IP, a manylion ynghylch pa fersiwn o borwr gwe y gwnaetho
 
 #: templates/terms.html:98
 msgid "information on how you use the site, using cookies and page tagging techniques to help us improve the website"
-msgstr "gwybodaeth ynghylch sut rydych yn defnyddio’r wefan, gan ddefnyddio cwcis a thechnegau tagio tudalen i'n helpu i wella'r wefan "
+msgstr "gwybodaeth ynghylch sut rydych yn defnyddio’r wefan, gan ddefnyddio cwcis a thechnegau tagio tudalen i'n helpu i wella'r wefan"
 
 #: templates/terms.html:101
 msgid "This helps us to:"
@@ -1234,27 +1234,27 @@ msgstr "Ni allwn adnabod pwy ydych chi drwy ddefnyddio eich data."
 
 #: templates/terms.html:110
 msgid "Using other websites"
-msgstr "Defnyddio gwefannau eraill "
+msgstr "Defnyddio gwefannau eraill"
 
 #: templates/terms.html:113
 msgid "These terms and conditions and privacy policy only cover the send money to a prisoner service and information about it."
-msgstr "Mae'r telerau ac amodau hyn a'r polisi preifatrwydd yn berthnasol i'r gwasanaeth anfon arian at garcharor a gwybodaeth amdano yn unig. "
+msgstr "Mae'r telerau ac amodau hyn a'r polisi preifatrwydd yn berthnasol i'r gwasanaeth anfon arian at garcharor a gwybodaeth amdano yn unig."
 
 #: templates/terms.html:116
 msgid "They do not cover links from our website to other third party websites (including bank and building society websites) or any information collected by the parties who own and control those websites or their use of cookies."
-msgstr "Nid ydynt yn berthnasol i ddolenni o'n gwefan ni i wefannau trydydd parti (gan gynnwys gwefannau banciau a chymdeithasau adeiladu) nac unrhyw wybodaeth a gasglwyd gan y partïon sy'n berchen ar, ac sy'n rheoli'r gwefannau hynny nac eu defnydd o gwcis. "
+msgstr "Nid ydynt yn berthnasol i ddolenni o'n gwefan ni i wefannau trydydd parti (gan gynnwys gwefannau banciau a chymdeithasau adeiladu) nac unrhyw wybodaeth a gasglwyd gan y partïon sy'n berchen ar, ac sy'n rheoli'r gwefannau hynny nac eu defnydd o gwcis."
 
 #: templates/terms.html:117
 msgid "Individual organisations operate their own policies regarding the use and sale of personal information and the use of cookies."
-msgstr "Mae gan sefydliadau unigol eu polisïau eu hunain o ran defnyddio a gwerthu gwybodaeth bersonol a'u defnydd o gwcis. "
+msgstr "Mae gan sefydliadau unigol eu polisïau eu hunain o ran defnyddio a gwerthu gwybodaeth bersonol a'u defnydd o gwcis."
 
 #: templates/terms.html:120
 msgid "When sending money to a prisoner using your bank account, we recommend that you refer to the specific terms and conditions and privacy policy of any banking website or service that you use."
-msgstr "Pan fyddwch yn anfon arian at garcharor gan ddefnyddio eich cyfrif banc, rydym yn argymell eich bod yn cyfeirio at delerau ac amodau a pholisi preifatrwydd unrhyw wefan bancio neu wasanaeth y byddwch yn ei ddefnyddio. "
+msgstr "Pan fyddwch yn anfon arian at garcharor gan ddefnyddio eich cyfrif banc, rydym yn argymell eich bod yn cyfeirio at delerau ac amodau a pholisi preifatrwydd unrhyw wefan bancio neu wasanaeth y byddwch yn ei ddefnyddio."
 
 #: templates/terms.html:123
 msgid "Where your data is stored"
-msgstr "Ble mae eich data'n cael ei storio "
+msgstr "Ble mae eich data'n cael ei storio"
 
 #: templates/terms.html:126
 msgid "We store your data on our secure servers in the EEA."
@@ -1270,7 +1270,7 @@ msgstr " Drwy gyflwyno eich data personol, rydych yn cytuno i hyn."
 
 #: templates/terms.html:130
 msgid "We also use other suppliers to provide this service:"
-msgstr "Rydym hefyd yn defnyddio cyflenwyr eraill i ddarparu'r gwasanaeth hwn: "
+msgstr "Rydym hefyd yn defnyddio cyflenwyr eraill i ddarparu'r gwasanaeth hwn:"
 
 #: templates/terms.html:133
 #, python-format
@@ -1279,21 +1279,21 @@ msgstr "<a href=\"%(url)s\">Zendesk</a> i ymdrin ag unrhyw adborth y byddwch yn 
 
 #: templates/terms.html:134
 msgid "Any communication is deleted 2 weeks after the ticket is closed."
-msgstr "Bu unrhyw gyfathrebu yn cael ei ddileu 2 wythnos ar ôl i'r tocyn gael ei gau. "
+msgstr "Bu unrhyw gyfathrebu yn cael ei ddileu 2 wythnos ar ôl i'r tocyn gael ei gau."
 
 #: templates/terms.html:135 templates/terms.html:139
 #, python-format
 msgid "See the <a href=\"%(url)s\">terms &amp; conditions</a> attached to this service."
-msgstr "Gweler y <a href=\"%(url)s\">telerau acamp; amodau</a> sydd ynghlwm â’r gwasanaeth hwn. "
+msgstr "Gweler y <a href=\"%(url)s\">telerau acamp; amodau</a> sydd ynghlwm â’r gwasanaeth hwn."
 
 #: templates/terms.html:138
 #, python-format
 msgid "<a href=\"%(url)s\">GOV.UK Pay</a> to handle any debit card payments you make."
-msgstr "<a href=\"%(url)s\">GOV.UK Pay</a> i ymdrin ag unrhyw daliadau cerdyn debyd y byddwch yn eu gwneud. "
+msgstr "<a href=\"%(url)s\">GOV.UK Pay</a> i ymdrin ag unrhyw daliadau cerdyn debyd y byddwch yn eu gwneud."
 
 #: templates/terms.html:143
 msgid "Keeping your data secure"
-msgstr "Cadw eich data'n ddiogel "
+msgstr "Cadw eich data'n ddiogel"
 
 #: templates/terms.html:146
 msgid "Transmitting information over the internet is generally not completely secure, and we can’t guarantee the security of your data."
@@ -1325,7 +1325,7 @@ msgstr "Ni fyddwn yn rhannu eich gwybodaeth ag unrhyw sefydliad arall at ddibeni
 
 #: templates/terms.html:163
 msgid "Disclosing your information"
-msgstr "Dadlennu eich gwybodaeth "
+msgstr "Dadlennu eich gwybodaeth"
 
 #: templates/terms.html:165
 msgid "We may pass on your personal information if we have a legal obligation to do so."
@@ -1333,7 +1333,7 @@ msgstr "Efallai y byddwn yn anfon eich gwybodaeth bersonol ymlaen os yw’n ddyl
 
 #: templates/terms.html:170
 msgid "This service complies with all principles of the Data Protection Act 1998."
-msgstr "Mae’r gwasanaeth hwn yn cydymffurfio â holl egwyddorion Deddf Diogelu Data 1998. "
+msgstr "Mae’r gwasanaeth hwn yn cydymffurfio â holl egwyddorion Deddf Diogelu Data 1998."
 
 #: templates/terms.html:173
 msgid "Ministry of Justice (MoJ) is the ‘data controller’ for the purposes of the Act."
@@ -1345,7 +1345,7 @@ msgstr "Fodd bynnag, nid yw’r wybodaeth rydych yn ei chofnodi yn y gwasanaeth 
 
 #: templates/terms.html:175
 msgid "No personal data will be used in testing this service."
-msgstr "Ni ddefnyddir unrhyw ddata personol wrth brofi’r gwasanaeth hwn. "
+msgstr "Ni ddefnyddir unrhyw ddata personol wrth brofi’r gwasanaeth hwn."
 
 #: templates/terms.html:178
 msgid "Our hosting provider, and MoJ staff responsible for supporting this service, will have access to the server in which all personal information entered into this service is stored."
@@ -1353,11 +1353,11 @@ msgstr "Bydd gan ein gwesteiwr, a staff y Weinyddiaeth Cyfiawnder sy’n gyfrifo
 
 #: templates/terms.html:179
 msgid "All staff who have access to the secure data have MoJ security clearance."
-msgstr "Mae gan bob aelod staff sydd â mynediad i'r data diogel ganiatâd gan y Weinyddiaeth Cyfiawnder. "
+msgstr "Mae gan bob aelod staff sydd â mynediad i'r data diogel ganiatâd gan y Weinyddiaeth Cyfiawnder."
 
 #: templates/terms.html:182
 msgid "Anyone who believes their personal data is kept within this service has the right to submit a subject access request to the MoJ, who will give details of the information stored on the server."
-msgstr "Mae gan unrhyw un sy’n credu bod ei ddata personol yn cael ei gadw o fewn y gwasanaeth hwn yr hawl i gyflwyno cais gwrthrych am wybodaeth i’r Weinyddiaeth Cyfiawnder, a fydd yn rhoi manylion ynghylch yr wybodaeth sydd wedi’i storio ar y gweinydd. "
+msgstr "Mae gan unrhyw un sy’n credu bod ei ddata personol yn cael ei gadw o fewn y gwasanaeth hwn yr hawl i gyflwyno cais gwrthrych am wybodaeth i’r Weinyddiaeth Cyfiawnder, a fydd yn rhoi manylion ynghylch yr wybodaeth sydd wedi’i storio ar y gweinydd."
 
 #: templates/terms.html:185
 msgid "Disclaimer"
