@@ -19,16 +19,20 @@ exports.GOVUKPayConnectionCheck = {
   checkConnection: function (retries) {
     var image = new Image();
     var failed = this.connectionFailed;
-    image.onerror = (function() {failed(retries, false);});
+    image.onerror = function () {
+      failed(retries, false);
+    };
     image.onload = this.connectionSucceeded;
     image.src = this.url;
-    this.timer = setTimeout(function() {failed(0, true);}, this.timeout);
+    this.timer = setTimeout(function () {
+      failed(0, true);
+    }, this.timeout);
   },
 
   connectionFailed: function (retries, timeout) {
     if (retries > 0) {
       clearTimeout(this.timer);
-      this.checkConnection(retries-1);
+      this.checkConnection(retries - 1);
       return;
     }
     this.$container.show();
