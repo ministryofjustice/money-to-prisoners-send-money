@@ -385,7 +385,7 @@ DebitCardPrisonerDetailsFormTestCase.make_valid_tests([
         }
     },
     {
-        'name': 'short_year',
+        'name': 'another',
         'input_data': {
             'prisoner_name': 'random name',
             'prisoner_number': 'A1234AB',
@@ -414,6 +414,16 @@ DebitCardPrisonerDetailsFormTestCase.make_invalid_tests([
         'name': 'empty_name',
         'input_data': {
             'prisoner_name': '',
+            'prisoner_number': 'A1234AB',
+            'prisoner_dob_0': '5',
+            'prisoner_dob_1': '10',
+            'prisoner_dob_2': '1980',
+        }
+    },
+    {
+        'name': 'card_number',
+        'input_data': {
+            'prisoner_name': '4444333322221111',
             'prisoner_number': 'A1234AB',
             'prisoner_dob_0': '5',
             'prisoner_dob_1': '10',

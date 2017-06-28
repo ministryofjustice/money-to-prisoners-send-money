@@ -17,7 +17,8 @@ from slumber.exceptions import HttpClientError, HttpNotFoundError, SlumberHttpBa
 from send_money.models import PaymentMethod
 from send_money.utils import (
     serialise_amount, unserialise_amount, serialise_date, unserialise_date,
-    get_api_client, validate_prisoner_number, check_payment_service_available
+    RejectCardNumberValidator, validate_prisoner_number,
+    get_api_client, check_payment_service_available,
 )
 
 logger = logging.getLogger('mtp')
@@ -175,6 +176,7 @@ class DebitCardPrisonerDetailsForm(PrisonerDetailsForm):
     prisoner_name = forms.CharField(
         label=_('Prisoner name'),
         max_length=250,
+        validators=[RejectCardNumberValidator()],
     )
 
     @classmethod
