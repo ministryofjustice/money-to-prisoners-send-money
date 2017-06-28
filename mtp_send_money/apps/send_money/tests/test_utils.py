@@ -13,7 +13,7 @@ from send_money.utils import (
     serialise_date, unserialise_date, lenient_unserialise_date,
     format_percentage, currency_format, currency_format_pence,
     clamp_amount, get_service_charge, get_total_charge,
-    validate_prisoner_number, bank_transfer_reference,
+    RejectCardNumberValidator, validate_prisoner_number, bank_transfer_reference,
     api_url, check_payment_service_available,
 )
 
@@ -300,6 +300,27 @@ class ValidationTestCase(unittest.TestCase):
             validate_prisoner_number('')
         with self.assertRaises(ValidationError):
             validate_prisoner_number('1234567')
+
+    def test_card_number_validation(self):
+        validator = RejectCardNumberValidator()
+        invalid = [
+            '4444333322221111',
+            ' 4444333322221111 ',
+            '4444 3333 2222 1111',
+            ' 4444  33332222 1111',
+            'Lorem ipsum 4444333322221111 dolor sit amet',
+            'Lorem ipsum 4444 3333\n2222 1111 dolor sit amet',
+            '4462030000000000',
+            '4917610000000000003',
+            '6759649826438453',
+            '6799990100000000019',
+            '5555555555554444',
+            '5454545454545454',
+            '4917300800000000',
+        ]
+        for sample in invalid:
+            with self.assertRaises(ValidationError, msg='“%s” should raise a card number validation error' % sample):
+                validator(sample)
 
 
 class BankTransferReference(unittest.TestCase):

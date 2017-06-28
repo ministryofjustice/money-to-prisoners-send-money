@@ -2,13 +2,14 @@ from django import forms
 from django.utils.translation import gettext_lazy as _
 from zendesk_tickets.forms import EmailTicketForm
 
-from send_money.utils import validate_prisoner_number
+from send_money.utils import RejectCardNumberValidator, validate_prisoner_number
 
 
 class ContactForm(EmailTicketForm):
     ticket_content = forms.CharField(
         label=_('Enter any questions or feedback you may have about this service'),
         widget=forms.Textarea,
+        validators=[RejectCardNumberValidator()],
     )
     prisoner_number = forms.CharField(
         label=_('Prisoner number'),
@@ -21,4 +22,5 @@ class ContactForm(EmailTicketForm):
         label=_('Prisoner date of birth'),
         help_text=_('For example, 28/04/1996'),
         required=False,
+        validators=[RejectCardNumberValidator()],
     )

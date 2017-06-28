@@ -6,6 +6,7 @@ import re
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
+from django.core.validators import RegexValidator
 from django.utils.dateformat import format as format_date
 from django.utils.dateparse import parse_date
 from django.utils import formats
@@ -68,6 +69,13 @@ def send_notification(email, context):
 def validate_prisoner_number(value):
     if not prisoner_number_re.match(value):
         raise ValidationError(_('Incorrect prisoner number format'), code='invalid')
+
+
+class RejectCardNumberValidator(RegexValidator):
+    regex = r'\d{4}\s*\d{4}\s*\d{4}\s*\d{4}'
+    inverse_match = True
+    code = 'card_number'
+    message = _('Please do not enter your debit card number here')
 
 
 def format_percentage(number, decimals=1, trim_zeros=True):
