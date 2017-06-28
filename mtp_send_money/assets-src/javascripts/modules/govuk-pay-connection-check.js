@@ -37,7 +37,7 @@ exports.GOVUKPayConnectionCheck = {
     if (Raven) {
       Raven.captureMessage(
         'User agent ' + window.navigator.userAgent + ' cannot load GOV.UK Pay check image ' + this.url,
-        {level: 'warning'}
+        {level: 'info'}
       );
     }
   },
