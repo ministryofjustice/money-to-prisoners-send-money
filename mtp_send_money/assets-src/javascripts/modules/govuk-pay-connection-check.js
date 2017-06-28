@@ -4,7 +4,6 @@
 
 exports.GOVUKPayConnectionCheck = {
   selector: '.mtp-govuk-pay-connection-check',
-  timeout: 10000,
 
   init: function () {
     this.$container = $(this.selector);
@@ -20,18 +19,14 @@ exports.GOVUKPayConnectionCheck = {
     var image = new Image();
     var failed = this.connectionFailed;
     image.onerror = function () {
-      failed(retries, false);
+      failed(retries);
     };
     image.onload = this.connectionSucceeded;
     image.src = this.url;
-    this.timer = setTimeout(function () {
-      failed(0, true);
-    }, this.timeout);
   },
 
-  connectionFailed: function (retries, timeout) {
+  connectionFailed: function (retries) {
     if (retries > 0) {
-      clearTimeout(this.timer);
       this.checkConnection(retries - 1);
       return;
     }
@@ -40,18 +35,14 @@ exports.GOVUKPayConnectionCheck = {
     $('#id_bank_transfer').prop('checked', true);
 
     if (Raven) {
-      var message = '';
-      if (timeout) {
-        message = 'User agent ' + window.navigator.userAgent + ' timed out loading GOV.UK Pay check image ' + this.url;
-      } else {
-        message = 'User agent ' + window.navigator.userAgent + ' cannot load GOV.UK Pay check image ' + this.url;
-      }
-      Raven.captureMessage(message, {level: 'warning'});
+      Raven.captureMessage(
+        'User agent ' + window.navigator.userAgent + ' cannot load GOV.UK Pay check image ' + this.url,
+        {level: 'warning'}
+      );
     }
   },
 
   connectionSucceeded: function () {
-    clearTimeout(this.timer);
     this.$container.remove();
     $('#id_debit_card').prop('disabled', false).parent().removeClass('mtp-grey-choice');
   }
