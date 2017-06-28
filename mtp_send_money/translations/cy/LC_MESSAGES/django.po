@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-06-27 18:45+0100\n"
+"POT-Creation-Date: 2017-06-28 15:00+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Welsh Language Unit <welsh.language.unit.manager@hmcts.gsi.gov.uk>, 2017\n"
 "Language-Team: Welsh (https://www.transifex.com/ministry-of-justice/teams/34553/cy/)\n"
@@ -634,16 +634,20 @@ msgid "We’ll email you a copy of this confirmation page."
 msgstr "Byddwn yn anfon copi o'r dudalen gadarnhau hon atoch ar e-bost."
 
 #: templates/send_money/debit-card-confirmation.html:41
+msgid "Please check your spam folder."
+msgstr ""
+
+#: templates/send_money/debit-card-confirmation.html:43
 msgid "The money will arrive in the prisoner’s account in up to 3 working days."
 msgstr "Bydd yr arian yn cyrraedd cyfrif y carcharor mewn hyd at 3 diwrnod gwaith."
 
-#: templates/send_money/debit-card-confirmation.html:43
+#: templates/send_money/debit-card-confirmation.html:45
 #: templates/send_money/email/debit-card-confirmation.html:18
 #: templates/send_money/email/debit-card-confirmation.txt:11
 msgid "You’ll get a further email when the prisoner’s account has been credited to confirm your money has arrived."
 msgstr "Fe gewch e-bost arall pan fydd cyfrif y carcharor wedi cael ei gredydu i gadarnhau bod eich arian wedi cyrraedd."
 
-#: templates/send_money/debit-card-confirmation.html:48
+#: templates/send_money/debit-card-confirmation.html:50
 msgid "Take a moment to rate this service"
 msgstr "Rhowch ychydig o'ch amser i raddio'r gwasanaeth hwn"
 
