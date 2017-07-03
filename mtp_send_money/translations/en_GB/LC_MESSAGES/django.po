@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: mtp-send-money\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-06-28 15:00+0100\n"
+"POT-Creation-Date: 2017-07-03 10:33+0100\n"
 "PO-Revision-Date: 2016-11-04 10:00+0000\n"
 "Last-Translator: Welsh Language Unit <welsh.language.unit.manager@hmcts.gsi.gov.uk>\n"
 "Language-Team: Welsh (http://www.transifex.com/ministry-of-justice/mtp/language/cy/)\n"
@@ -18,20 +18,20 @@ msgstr ""
 msgid "Enter any questions or feedback you may have about this service"
 msgstr ""
 
-#: apps/feedback/forms.py:14 apps/send_money/forms.py:83
+#: apps/feedback/forms.py:15 apps/send_money/forms.py:84
 #: templates/send_money/debit-card-check.html:31
 msgid "Prisoner number"
 msgstr ""
 
-#: apps/feedback/forms.py:15 apps/send_money/forms.py:84
+#: apps/feedback/forms.py:16 apps/send_money/forms.py:85
 msgid "For example, A1234BC"
 msgstr ""
 
-#: apps/feedback/forms.py:21 apps/send_money/forms.py:79
+#: apps/feedback/forms.py:22 apps/send_money/forms.py:80
 msgid "Prisoner date of birth"
 msgstr ""
 
-#: apps/feedback/forms.py:22
+#: apps/feedback/forms.py:23
 msgid "For example, 28/04/1996"
 msgstr ""
 
@@ -49,52 +49,52 @@ msgstr ""
 msgid "Feedback"
 msgstr ""
 
-#: apps/send_money/forms.py:62
+#: apps/send_money/forms.py:63
 msgid "Please choose how you want to send money"
 msgstr ""
 
-#: apps/send_money/forms.py:80
+#: apps/send_money/forms.py:81
 msgid "For example, 28 04 1996"
 msgstr ""
 
-#: apps/send_money/forms.py:91 templates/send_money/prison-list.html:33
+#: apps/send_money/forms.py:92 templates/send_money/prison-list.html:33
 msgid "This service is currently unavailable"
 msgstr ""
 
-#: apps/send_money/forms.py:92
+#: apps/send_money/forms.py:93
 msgid "No prisoner matches the details you’ve supplied."
 msgstr ""
 
-#: apps/send_money/forms.py:176
+#: apps/send_money/forms.py:177
 msgid "Prisoner name"
 msgstr ""
 
-#: apps/send_money/forms.py:186
+#: apps/send_money/forms.py:188
 msgid "The amount you are trying to send is too large."
 msgstr ""
 
-#: apps/send_money/forms.py:187
+#: apps/send_money/forms.py:189
 msgid "Please enter a smaller amount"
 msgstr ""
 
-#: apps/send_money/forms.py:192 templates/send_money/debit-card-check.html:44
+#: apps/send_money/forms.py:194 templates/send_money/debit-card-check.html:44
 #: templates/send_money/debit-card-check.html:70
 msgid "Amount"
 msgstr ""
 
-#: apps/send_money/forms.py:197
+#: apps/send_money/forms.py:199
 msgid "Enter as a number"
 msgstr ""
 
-#: apps/send_money/forms.py:198
+#: apps/send_money/forms.py:200
 msgid "Amount should be 1p or more"
 msgstr ""
 
-#: apps/send_money/forms.py:199
+#: apps/send_money/forms.py:201
 msgid "Only use 2 decimal places"
 msgstr ""
 
-#: apps/send_money/forms.py:207
+#: apps/send_money/forms.py:209
 msgid "Your email address"
 msgstr ""
 
@@ -140,12 +140,16 @@ msgstr ""
 msgid "Secure Training Centre"
 msgstr ""
 
-#: apps/send_money/utils.py:63
+#: apps/send_money/utils.py:64
 msgid "Send money to a prisoner: your payment was successful"
 msgstr ""
 
-#: apps/send_money/utils.py:70
+#: apps/send_money/utils.py:71
 msgid "Incorrect prisoner number format"
+msgstr ""
+
+#: apps/send_money/utils.py:78
+msgid "Please do not enter your debit card number here"
 msgstr ""
 
 #: apps/send_money/views.py:257
@@ -587,11 +591,15 @@ msgstr ""
 msgid "Total"
 msgstr ""
 
-#: templates/send_money/debit-card-check.html:76
+#: templates/send_money/debit-card-check.html:75
+msgid "Please be aware that you will not be able to request a refund once money is sent."
+msgstr ""
+
+#: templates/send_money/debit-card-check.html:80
 msgid "Enter card details"
 msgstr ""
 
-#: templates/send_money/debit-card-check.html:79
+#: templates/send_money/debit-card-check.html:83
 msgid "Cancel and delete all details"
 msgstr ""
 
