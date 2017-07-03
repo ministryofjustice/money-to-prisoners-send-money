@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: mtp-send-money\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-07-03 10:33+0100\n"
+"POT-Creation-Date: 2017-07-03 12:07+0100\n"
 "PO-Revision-Date: 2016-11-04 10:00+0000\n"
 "Last-Translator: Welsh Language Unit <welsh.language.unit.manager@hmcts.gsi.gov.uk>\n"
 "Language-Team: Welsh (http://www.transifex.com/ministry-of-justice/mtp/language/cy/)\n"
@@ -479,7 +479,7 @@ msgid "I understand"
 msgstr ""
 
 #: templates/send_money/contact-form-success.html:5
-#: templates/send_money/contact-form.html:12
+#: templates/send_money/contact-form.html:16
 msgid "Contact us"
 msgstr ""
 
@@ -501,27 +501,51 @@ msgstr ""
 msgid "Back"
 msgstr ""
 
+#: templates/send_money/contact-form.html:14
+#: templates/send_money/help/bank-transfer-issues.html:22
+#: templates/send_money/help/payment-delay.html:22
+#: templates/send_money/help/payment-issues.html:22
+#: templates/send_money/help/prisoner-moved-or-released.html:22
+msgid "Help"
+msgstr ""
+
 #: templates/send_money/contact-form.html:23
+msgid "Help if you’ve already sent money"
+msgstr ""
+
+#: templates/send_money/contact-form.html:28
+msgid "Bank transfer was returned"
+msgstr ""
+
+#: templates/send_money/contact-form.html:33
+msgid "Payment has taken longer than expected"
+msgstr ""
+
+#: templates/send_money/contact-form.html:38
+msgid "Prisoner has been moved or released"
+msgstr ""
+
+#: templates/send_money/contact-form.html:53
 msgid "Your message"
 msgstr ""
 
-#: templates/send_money/contact-form.html:31
+#: templates/send_money/contact-form.html:59
 msgid "Please don’t include your bank details or any other personal information."
 msgstr ""
 
-#: templates/send_money/contact-form.html:36
+#: templates/send_money/contact-form.html:66
 msgid "If you had difficulties using the service, please enter the prisoner’s details:"
 msgstr ""
 
-#: templates/send_money/contact-form.html:41
+#: templates/send_money/contact-form.html:71
 msgid "Enter your email address if you’d like a reply."
 msgstr ""
 
-#: templates/send_money/contact-form.html:42
+#: templates/send_money/contact-form.html:72
 msgid "We won’t use it for anything else."
 msgstr ""
 
-#: templates/send_money/contact-form.html:47
+#: templates/send_money/contact-form.html:77
 msgid "Send"
 msgstr ""
 
@@ -784,13 +808,6 @@ msgstr ""
 
 #: templates/send_money/email/debit-card-confirmation.txt:15
 msgid "Amount paid"
-msgstr ""
-
-#: templates/send_money/help/bank-transfer-issues.html:22
-#: templates/send_money/help/payment-delay.html:22
-#: templates/send_money/help/payment-issues.html:22
-#: templates/send_money/help/prisoner-moved-or-released.html:22
-msgid "Help"
 msgstr ""
 
 #: templates/send_money/help/bank-transfer-issues.html:24
