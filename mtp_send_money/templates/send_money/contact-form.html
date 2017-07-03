@@ -11,43 +11,76 @@
 
   <header>
     {% language_switch %}
-    <h1 class="heading-xlarge">{% trans 'Contact us' %}</h1>
+    <h1 class="heading-xlarge">
+      <span class="heading-secondary">
+        {% trans 'Help' %}
+      </span>
+      {% trans 'Contact us' %}
+    </h1>
   </header>
 
-  <form action="." method="post" id="send-feedback">
-    {% csrf_token %}
+  <div class="mtp-contact-columns">
+    <aside>
+      <p>
+        {% trans 'Help if you’ve already sent money' %}
+      </p>
+      <ul>
+        <li>
+          <a href="{% url 'send_money:help_bank_transfer' %}">
+            {% trans 'Bank transfer was returned' %}
+          </a>
+        </li>
+        <li>
+          <a href="{% url 'send_money:help_delays' %}">
+            {% trans 'Payment has taken longer than expected' %}
+          </a>
+        </li>
+        <li>
+          <a href="{% url 'send_money:help_transfered' %}">
+            {% trans 'Prisoner has been moved or released' %}
+          </a>
+        </li>
+      </ul>
+    </aside>
 
-    {% include 'mtp_common/forms/error-summary.html' with form=form only %}
+    <div class="mtp-contact-form-column">
+      <form action="." method="post" id="send-feedback">
+        {% csrf_token %}
 
-    {{ form.referer }}
+        {% include 'mtp_common/forms/error-summary.html' with form=form only %}
 
-    <fieldset>
-      <legend class="visually-hidden">{% trans 'Your message' %}</legend>
+        {{ form.referer }}
 
-      {% with field=form.ticket_content value=request.GET.message|default:'' %}
-        <div class="form-group {% if field.errors %}form-group-error{% endif %}">
-          {% include 'mtp_common/forms/field-label.html' with field=field only %}
-          {% include 'mtp_common/forms/field-errors.html' with field=field only %}
-          <textarea class="form-control {% if field.errors %}form-control-error{% endif %}" id="{{ field.id_for_label }}" name="{{ field.html_name }}" cols="40" rows="10">{{ field.value|default:value }}</textarea>
-          <p>
-            {% trans 'Please don’t include your bank details or any other personal information.' %}
-          </p>
-        </div>
-      {% endwith %}
+        <fieldset>
+          <legend class="visually-hidden">{% trans 'Your message' %}</legend>
 
-      <h2 class="heading-medium">{% trans 'If you had difficulties using the service, please enter the prisoner’s details:' %}</h2>
-      {% include 'mtp_common/forms/field.html' with field=form.prisoner_number only %}
-      {% include 'mtp_common/forms/field.html' with field=form.prisoner_dob only %}
+          {% with field=form.ticket_content value=request.GET.message|default:'' %}
+            <div class="form-group {% if field.errors %}form-group-error{% endif %}">
+              {% include 'mtp_common/forms/field-label.html' with field=field only %}
+              <span class="form-hint">
+                {% trans 'Please don’t include your bank details or any other personal information.' %}
+              </span>
+              {% include 'mtp_common/forms/field-errors.html' with field=field only %}
+              <textarea class="form-control {% if field.errors %}form-control-error{% endif %}" id="{{ field.id_for_label }}" name="{{ field.html_name }}" cols="40" rows="10">{{ field.value|default:value }}</textarea>
+            </div>
+          {% endwith %}
 
-      <h2 class="heading-medium">
-        {% trans 'Enter your email address if you’d like a reply.' %}
-        {% trans 'We won’t use it for anything else.' %}
-      </h2>
-      {% include 'mtp_common/forms/field.html' with field=form.contact_email value=request.GET.email|default:'' only %}
+          <h2 class="heading-medium">{% trans 'If you had difficulties using the service, please enter the prisoner’s details:' %}</h2>
+          {% include 'mtp_common/forms/field.html' with field=form.prisoner_number only %}
+          {% include 'mtp_common/forms/field.html' with field=form.prisoner_dob only %}
 
-      <div class="form-group">
-        <button type="submit" class="button" name="submit-feedback">{% trans 'Send' %}</button>
-      </div>
-    </fieldset>
-  </form>
+          <h2 class="heading-medium">
+            {% trans 'Enter your email address if you’d like a reply.' %}
+            {% trans 'We won’t use it for anything else.' %}
+          </h2>
+          {% include 'mtp_common/forms/field.html' with field=form.contact_email value=request.GET.email|default:'' only %}
+
+          <div class="form-group">
+            <button type="submit" class="button" name="submit-feedback">{% trans 'Send' %}</button>
+          </div>
+        </fieldset>
+      </form>
+    </div>
+  </div>
+
 {% endblock %}
