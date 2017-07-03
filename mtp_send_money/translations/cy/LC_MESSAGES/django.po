@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-06-28 15:00+0100\n"
+"POT-Creation-Date: 2017-07-03 10:33+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Welsh Language Unit <welsh.language.unit.manager@hmcts.gsi.gov.uk>, 2017\n"
 "Language-Team: Welsh (https://www.transifex.com/ministry-of-justice/teams/34553/cy/)\n"
@@ -18,20 +18,20 @@ msgstr ""
 msgid "Enter any questions or feedback you may have about this service"
 msgstr "Nodwch unrhyw gwestiynau neu adborth sydd gennych am y gwasanaeth hwn"
 
-#: apps/feedback/forms.py:14 apps/send_money/forms.py:83
+#: apps/feedback/forms.py:15 apps/send_money/forms.py:84
 #: templates/send_money/debit-card-check.html:31
 msgid "Prisoner number"
 msgstr "Rhif y carcharor"
 
-#: apps/feedback/forms.py:15 apps/send_money/forms.py:84
+#: apps/feedback/forms.py:16 apps/send_money/forms.py:85
 msgid "For example, A1234BC"
 msgstr "Er enghraifft, A1234BC"
 
-#: apps/feedback/forms.py:21 apps/send_money/forms.py:79
+#: apps/feedback/forms.py:22 apps/send_money/forms.py:80
 msgid "Prisoner date of birth"
 msgstr "Dyddiad geni y carcharor"
 
-#: apps/feedback/forms.py:22
+#: apps/feedback/forms.py:23
 msgid "For example, 28/04/1996"
 msgstr "Er enghraifft, 28/04/1996"
 
@@ -49,52 +49,52 @@ msgstr "Cwcis"
 msgid "Feedback"
 msgstr "Adborth"
 
-#: apps/send_money/forms.py:62
+#: apps/send_money/forms.py:63
 msgid "Please choose how you want to send money"
 msgstr "Dewiswch sut yr ydych chi eisiau anfon arian"
 
-#: apps/send_money/forms.py:80
+#: apps/send_money/forms.py:81
 msgid "For example, 28 04 1996"
 msgstr "Er enghraifft, 28 04 1996"
 
-#: apps/send_money/forms.py:91 templates/send_money/prison-list.html:33
+#: apps/send_money/forms.py:92 templates/send_money/prison-list.html:33
 msgid "This service is currently unavailable"
 msgstr "Nid yw'r gwasanaeth hwn ar gael ar hyn o bryd"
 
-#: apps/send_money/forms.py:92
+#: apps/send_money/forms.py:93
 msgid "No prisoner matches the details you’ve supplied."
 msgstr "Nid oes carcharor sy'n cyfateb i'r manylion a roddwyd gennych."
 
-#: apps/send_money/forms.py:176
+#: apps/send_money/forms.py:177
 msgid "Prisoner name"
 msgstr "Enw'r carcharor"
 
-#: apps/send_money/forms.py:186
+#: apps/send_money/forms.py:188
 msgid "The amount you are trying to send is too large."
 msgstr "Mae'r swm yr ydych chi'n ceisio ei anfon yn rhy fawr."
 
-#: apps/send_money/forms.py:187
+#: apps/send_money/forms.py:189
 msgid "Please enter a smaller amount"
 msgstr "Nodwch swm llai"
 
-#: apps/send_money/forms.py:192 templates/send_money/debit-card-check.html:44
+#: apps/send_money/forms.py:194 templates/send_money/debit-card-check.html:44
 #: templates/send_money/debit-card-check.html:70
 msgid "Amount"
 msgstr "Swm"
 
-#: apps/send_money/forms.py:197
+#: apps/send_money/forms.py:199
 msgid "Enter as a number"
 msgstr "Nodwch ef fel rhif "
 
-#: apps/send_money/forms.py:198
+#: apps/send_money/forms.py:200
 msgid "Amount should be 1p or more"
 msgstr "Dylai'r swm fod yn 1c neu fwy"
 
-#: apps/send_money/forms.py:199
+#: apps/send_money/forms.py:201
 msgid "Only use 2 decimal places"
 msgstr "Defnyddiwch 2 bwynt degol yn unig"
 
-#: apps/send_money/forms.py:207
+#: apps/send_money/forms.py:209
 msgid "Your email address"
 msgstr "Eich cyfeiriad e-bost"
 
@@ -140,13 +140,17 @@ msgstr "Canolfan Symud Mewnfudwyr"
 msgid "Secure Training Centre"
 msgstr "Canolfan Hyfforddi Ddiogel"
 
-#: apps/send_money/utils.py:63
+#: apps/send_money/utils.py:64
 msgid "Send money to a prisoner: your payment was successful"
 msgstr "Anfon arian at garcharor: roedd eich taliad yn llwyddiannus"
 
-#: apps/send_money/utils.py:70
+#: apps/send_money/utils.py:71
 msgid "Incorrect prisoner number format"
 msgstr "Fformat anghywir i'r rhif carcharor"
+
+#: apps/send_money/utils.py:78
+msgid "Please do not enter your debit card number here"
+msgstr ""
 
 #: apps/send_money/views.py:257
 #, python-format
@@ -587,11 +591,15 @@ msgstr "Swm i'w dynnu o'ch cyfrif"
 msgid "Total"
 msgstr "Cyfanswm"
 
-#: templates/send_money/debit-card-check.html:76
+#: templates/send_money/debit-card-check.html:75
+msgid "Please be aware that you will not be able to request a refund once money is sent."
+msgstr ""
+
+#: templates/send_money/debit-card-check.html:80
 msgid "Enter card details"
 msgstr "Nodwch fanylion y cerdyn"
 
-#: templates/send_money/debit-card-check.html:79
+#: templates/send_money/debit-card-check.html:83
 msgid "Cancel and delete all details"
 msgstr "Canslo a dileu'r holl fanylion"
 
