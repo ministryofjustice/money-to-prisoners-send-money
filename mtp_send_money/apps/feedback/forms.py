@@ -7,7 +7,8 @@ from send_money.utils import RejectCardNumberValidator, validate_prisoner_number
 
 class ContactForm(EmailTicketForm):
     ticket_content = forms.CharField(
-        label=_('Enter any questions or feedback you may have about this service'),
+        label=_('Enter questions or feedback about this service'),
+        help_text=_('Don’t include bank details or other personal information'),
         widget=forms.Textarea,
         validators=[RejectCardNumberValidator()],
     )
@@ -23,4 +24,9 @@ class ContactForm(EmailTicketForm):
         help_text=_('For example, 28/04/1996'),
         required=False,
         validators=[RejectCardNumberValidator()],
+    )
+    contact_email = forms.EmailField(
+        label=_('Enter your email address if you’d like a reply'),
+        help_text=_('We won’t use it for anything else'),
+        required=False
     )

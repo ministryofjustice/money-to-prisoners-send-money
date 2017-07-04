@@ -16,34 +16,59 @@
 // contact us page
 
 .mtp-contact-columns {
-  @extend %contain-floats;
+  #send-feedback {
+    margin-right: 5em;
+  }
+
+  #id_ticket_content-label, #id_contact_email-label {
+    @extend .heading-medium;
+    margin-bottom: 0 !important;
+  }
+
+  #id_ticket_content-label {
+    margin-top: 0;
+  }
+
+  #id_ticket_content {
+    width: 100%;
+    resize: vertical;
+  }
 
   aside {
-    margin-bottom: 2em;
+    h2 {
+      display: none;
+    }
 
     p {
       margin-top: 0;
     }
 
     li {
-      margin-bottom: em(8, 19);
+      margin-bottom: 0.4em;
     }
   }
 
-  @include media(desktop) {
-    margin: 0 (-$gutter-half);
+  @include media($min-width: $tablet-breakpoint,  $max-width: $desktop-breakpoint, $ignore-for-ie: true) {
+    #send-feedback {
+      margin-right: 1em;
+    }
+  }
+
+  @include media(mobile, $ignore-for-ie: true) {
+    #send-feedback {
+      margin-right: 0;
+    }
 
     aside {
-      @include grid-column(1/3);
-      float: right !important;
-    }
+      margin-top: 2em;
 
-    .mtp-contact-form-column {
-      @include grid-column(2/3);
+      h2 {
+        display: block;
+      }
+
+      p {
+        display: none;
+      }
     }
   }
-}
-
-#id_ticket_content {
-  width: 100%;
 }
