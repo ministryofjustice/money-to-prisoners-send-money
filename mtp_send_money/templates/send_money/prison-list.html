@@ -3,6 +3,8 @@
 {% load mtp_common %}
 {% load prisons %}
 
+{% block page_title %}{% trans 'Public prisons in England and Wales' %} – {{ block.super }}{% endblock %}
+
 {% block inner_content %}
 
   {% url 'send_money:help' as help_url %}
