@@ -1,6 +1,8 @@
 {% extends 'base.html' %}
 {% load i18n %}
 
+{% block page_title %}{% trans 'Contact us' %} – {{ block.super }}{% endblock %}
+
 {% block inner_content %}
   <h1 class="heading-xlarge">{% trans 'Contact us' %}</h1>
 
