@@ -18,22 +18,24 @@
 
   <h2 class="heading-medium">{% trans 'Payment summary' %}</h2>
   <table class="mtp-table">
-    <tr>
-      <th>{% trans 'Payment to' %}:</th>
-      <td>{{ prisoner_name }}</td>
-    </tr>
-    <tr>
-      <th>{% trans 'Payment amount' %}:</th>
-      <td>{{ amount|currency_format }}</td>
-    </tr>
-    <tr>
-      <th>{% trans 'Date payment made' %}:</th>
-      <td>{% now 'd/m/Y' %}</td>
-    </tr>
-    <tr>
-      <th>{% trans 'Confirmation number' %}:</th>
-      <td>{{ short_payment_ref }}</td>
-    </tr>
+    <tbody>
+      <tr>
+        <th>{% trans 'Payment to' %}:</th>
+        <td>{{ prisoner_name }}</td>
+      </tr>
+      <tr>
+        <th>{% trans 'Payment amount' %}:</th>
+        <td>{{ amount|currency_format }}</td>
+      </tr>
+      <tr>
+        <th>{% trans 'Date payment made' %}:</th>
+        <td>{% now 'd/m/Y' %}</td>
+      </tr>
+      <tr>
+        <th>{% trans 'Confirmation number' %}:</th>
+        <td>{{ short_payment_ref }}</td>
+      </tr>
+    </tbody>
   </table>
 
   <h2 class="heading-medium">{% trans 'What happens next' %}</h2>
