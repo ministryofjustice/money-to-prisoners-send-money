@@ -1,21 +1,24 @@
 {% load i18n %}
 
-<div class="form-group form-date {% if field.errors %}form-group-error{% endif %}">
-  <p>{{ field.label }}</p>
-  {% include 'mtp_common/forms/field-help-text.html' with field=field only %}
-  {% include 'mtp_common/forms/field-errors.html' with field=field only %}
-  <div>
-    <div class="form-date-day {% if field.errors %}form-group-error{% endif %}">
-      <label id="{{ field.auto_id }}_0-label" class="form-label" for="{{ field.auto_id }}_0">{% trans "Day" %}</label>
-      <input class="form-control {% if field.errors %}form-control-error{% endif %}" id="{{ field.auto_id }}_0" name="{{ field.html_name }}_0" value="{{ field.value.0|default:'' }}" type="number" />
+<div class="form-group {% if field.errors %}form-group-error{% endif %}">
+  <fieldset>
+    <legend>{{ field.label }}</legend>
+    {% include 'mtp_common/forms/field-help-text.html' with field=field only %}
+    {% include 'mtp_common/forms/field-errors.html' with field=field only %}
+
+    <div class="form-date">
+      <div class="form-group form-group-day">
+        <label id="{{ field.auto_id }}_0-label" class="form-label" for="{{ field.auto_id }}_0">{% trans 'Day' %}</label>
+        <input class="form-control {% if field.errors %}form-control-error{% endif %}" id="{{ field.auto_id }}_0" name="{{ field.html_name }}_0" value="{{ field.value.0|default:'' }}" type="number" min="1" max="31">
+      </div>
+      <div class="form-group form-group-month">
+        <label id="{{ field.auto_id }}_1-label" class="form-label" for="{{ field.auto_id }}_1">{% trans 'Month' %}</label>
+        <input class="form-control {% if field.errors %}form-control-error{% endif %}" id="{{ field.auto_id }}_1" name="{{ field.html_name }}_1" value="{{ field.value.1|default:'' }}" type="number" min="1" max="12">
+      </div>
+      <div class="form-group form-group-year">
+        <label id="{{ field.auto_id }}_2-label" class="form-label" for="{{ field.auto_id }}_2">{% trans 'Year' %}</label>
+        <input class="form-control {% if field.errors %}form-control-error{% endif %} form-year-field" id="{{ field.auto_id }}_2" name="{{ field.html_name }}_2" value="{{ field.value.2|default:'' }}" type="number" min="0" max="{% now 'Y' %}" data-era-boundary="{{ field.field.fields.2.era_boundary }}" >
+      </div>
     </div>
-    <div class="form-date-month {% if field.errors %}form-group-error{% endif %}">
-      <label id="{{ field.auto_id }}_1-label" class="form-label" for="{{ field.auto_id }}_1">{% trans "Month" %}</label>
-      <input class="form-control {% if field.errors %}form-control-error{% endif %}" id="{{ field.auto_id }}_1" name="{{ field.html_name }}_1" value="{{ field.value.1|default:'' }}" type="number" />
-    </div>
-    <div class="form-date-year {% if field.errors %}form-group-error{% endif %}">
-      <label id="{{ field.auto_id }}_2-label" class="form-label" for="{{ field.auto_id }}_2">{% trans "Year" %}</label>
-      <input class="form-control {% if field.errors %}form-control-error{% endif %} form-year-field" id="{{ field.auto_id }}_2" name="{{ field.html_name }}_2" value="{{ field.value.2|default:'' }}" type="number" data-era-boundary="{{ field.field.fields.2.era_boundary }}" />
-    </div>
-  </div>
+  </fieldset>
 </div>
