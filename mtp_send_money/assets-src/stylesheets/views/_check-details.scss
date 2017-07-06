@@ -1,56 +1,29 @@
 // View-specific styles
 
-.mtp-confirm {
-  width: 65%;
+.mtp-check-details {
+  border-top: 2px solid $border-colour;
+  padding: 1em 0 1.5em;
 
-  @include media(tablet) {
-    width: 100%;
+  .heading-medium {
+    margin: 0 0 0.2em;
   }
 
   @include media(mobile) {
-    width: 100%;
-  }
-
-
-  h2 {
-    font-size: 1.26316em;
-    margin: 0 0 .2em;
-  }
-
-  div div {
-    display: inline-block;
-    margin-top: 2em;
-
-    &.mtp-confirm-fieldset {
-      margin-right: 5%;
-      width: 55%;
-
-      @include media(mobile) {
-        margin-right: 0;
-        width: 100%;
-      }
-    }
-  }
-
-  .mtp-checkgroup {
-    border-top: 2px solid $border-colour;
-    margin-bottom: 1.5em;
-
-    legend {
-      margin-bottom: 0;
-    }
-
-    div {
-      margin-top: .7em;
+    .column-one-third {
+      padding-top: 1em;
     }
   }
 }
 
-.mtp-confirm-change {
-  vertical-align: top;
-  width: 39%;
+.mtp-check-details__confirm {
+  margin-top: 2em;
 
-  @include media(mobile) {
-    width: 100%;
+  input.link {
+    @include core-19;
+    border: none;
+    background: none;
+    margin: .526315em 0 .263157em;
+    padding-left: 0;
+    padding-right: 0;
   }
 }

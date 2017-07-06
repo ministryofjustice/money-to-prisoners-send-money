@@ -14,74 +14,90 @@
     </h1>
   </header>
 
-  <div class="mtp-confirm">
-    <div class="mtp-checkgroup">
-      <div class="mtp-confirm-fieldset">
-        <h2 class="heading-large">{% trans 'Prisoner details' %}</h2>
-        <table class="mtp-table">
-          <tr>
-            <th>{% trans 'Name' %}:</th>
-            <td>{{ prisoner_name }}</td>
-          </tr>
-          <tr>
-            <th>{% trans 'Date of birth' %}:</th>
-            <td>{{ prisoner_dob|prepare_prisoner_dob|date:'d/m/Y' }}</td>
-          </tr>
-          <tr>
-            <th>{% trans 'Prisoner number' %}:</th>
-            <td>{{ prisoner_number }}</td>
-          </tr>
-        </table>
-      </div>
+  <div class="grid-row">
+    <div class="column-two-thirds">
 
-      <div class="mtp-confirm-change">
-        <a href="{{ view.get_prisoner_details_url }}?focus=id_prisoner_name">{% trans 'Change' %} <span class="visually-hidden">{% trans 'Name, date of birth or prisoner number' %}</span></a>
-      </div>
-    </div>
+      <section class="mtp-check-details">
+        <div class="grid-row">
+          <div class="column-two-thirds">
+            <h2 class="heading-medium">{% trans 'Prisoner details' %}</h2>
+            <table class="mtp-table">
+              <tbody>
+                <tr>
+                  <th>{% trans 'Name' %}:</th>
+                  <td>{{ prisoner_name }}</td>
+                </tr>
+                <tr>
+                  <th>{% trans 'Date of birth' %}:</th>
+                  <td>{{ prisoner_dob|prepare_prisoner_dob|date:'d/m/Y' }}</td>
+                </tr>
+                <tr>
+                  <th>{% trans 'Prisoner number' %}:</th>
+                  <td>{{ prisoner_number }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="column-one-third">
+            <a href="{{ view.get_prisoner_details_url }}?focus=id_prisoner_name">
+              {% trans 'Change' %} <span class="visually-hidden">{% trans 'Name, date of birth or prisoner number' %}</span>
+            </a>
+          </div>
+        </div>
+      </section>
 
-    <div class="mtp-checkgroup">
-      <div class="mtp-confirm-fieldset">
-        <h2 class="heading-large">{% trans 'Amount' %}</h2>
-        <table class="mtp-table">
-          {% if service_charged %}
-            <tr>
-              <th>{% trans 'Total to prisoner' %}:</th>
-              <td>
-                {{ amount|currency_format }}
-              </td>
-            </tr>
-            <tr>
-              <th>{% trans 'Amount to be taken from your account' %}:</th>
-              <td>
-                {{ amount|add_service_charge|currency_format }}
-              </td>
-            </tr>
-          {% else %}
-            <tr>
-              <th>{% trans 'Total' %}:</th>
-              <td>
-                {{ amount|currency_format }}
-              </td>
-            </tr>
-          {% endif %}
-        </table>
-      </div>
-      <div class="mtp-confirm-change">
-        <a href="{{ view.get_amount_url }}?focus=id_amount">{% trans 'Change' %}<span class="visually-hidden">{% trans 'Amount' %}</span></a>
-      </div>
-    </div>
+      <section class="mtp-check-details">
+        <div class="grid-row">
+          <div class="column-two-thirds">
+            <h2 class="heading-medium">{% trans 'Amount' %}</h2>
+            <table class="mtp-table">
+              <tbody>
+                {% if service_charged %}
+                  <tr>
+                    <th>{% trans 'Total to prisoner' %}:</th>
+                    <td>
+                      {{ amount|currency_format }}
+                    </td>
+                  </tr>
+                  <tr>
+                    <th>{% trans 'Amount to be taken from your account' %}:</th>
+                    <td>
+                      {{ amount|add_service_charge|currency_format }}
+                    </td>
+                  </tr>
+                {% else %}
+                  <tr>
+                    <th>{% trans 'Total' %}:</th>
+                    <td>
+                      {{ amount|currency_format }}
+                    </td>
+                  </tr>
+                {% endif %}
+              </tbody>
+            </table>
+          </div>
+          <div class="column-one-third">
+            <a href="{{ view.get_amount_url }}?focus=id_amount">
+              {% trans 'Change' %} <span class="visually-hidden">{% trans 'Amount' %}</span>
+            </a>
+          </div>
+        </div>
+      </section>
 
-    <p>
-      {% trans 'Please be aware that you can’t request a refund once money is sent.' %}
-    </p>
+      <p>
+        {% trans 'Please be aware that you can’t request a refund once money is sent.' %}
+      </p>
 
-    <div>
-      <div class="mtp-confirm-change">
-        <a id="id_next_btn" class="button" href="{{ view.get_success_url }}">{% trans 'Enter card details' %}</a>
-      </div>
-      <div class="mtp-confirm-change">
-        <a href="{% url 'send_money:clear_session' %}">{% trans 'Cancel and delete all details' %}</a>
-      </div>
     </div>
   </div>
+
+  <div class="grid-row mtp-check-details__confirm">
+    <form class="column-one-third" action="{{ view.get_success_url }}" method="get">
+      <input class="button" id="id_next_btn" type="submit" value="{% trans 'Enter card details' %}">
+    </form>
+    <form class="column-two-thirds" action="{% url 'send_money:clear_session' %}" method="get">
+      <input class="link" type="submit" value="{% trans 'Cancel and delete all details' %}">
+    </form>
+  </div>
+
 {% endblock %}
