@@ -9,7 +9,6 @@
   require('element-focus').ElementFocus.init();
   require('year-field-completion').YearFieldCompletion.init();
   require('disclosure').Disclosure.init();
-  require('print').Print.init();
 
   require('charges').Charges.init();
   require('govuk-pay-connection-check').GOVUKPayConnectionCheck.init();
