@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-07-06 11:40+0100\n"
+"POT-Creation-Date: 2017-07-18 14:53+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Welsh Language Unit <welsh.language.unit.manager@hmcts.gsi.gov.uk>, 2017\n"
 "Language-Team: Welsh (https://www.transifex.com/ministry-of-justice/teams/34553/cy/)\n"
@@ -23,7 +23,7 @@ msgid "Don’t include bank details or other personal information"
 msgstr "Peidiwch â chynnwys manylion banc nac unrhyw wybodaeth bersonol arall"
 
 #: apps/feedback/forms.py:16 apps/send_money/forms.py:84
-#: templates/send_money/debit-card-check.html:31
+#: templates/send_money/debit-card-check.html:35
 msgid "Prisoner number"
 msgstr "Rhif y carcharor"
 
@@ -47,17 +47,17 @@ msgstr "Nodwch eich cyfeiriad e-bost os hoffech i ni eich ateb"
 msgid "We won’t use it for anything else"
 msgstr "Ni fyddwn yn ei ddefnyddio ar gyfer unrhyw beth arall"
 
-#: apps/send_money/context_processors.py:10 templates/base.html:39
+#: apps/send_money/context_processors.py:10 templates/base.html:40
 #: templates/terms.html:19
 msgid "Terms and conditions"
 msgstr "Telerau ac amodau"
 
-#: apps/send_money/context_processors.py:14 templates/base.html:40
+#: apps/send_money/context_processors.py:14 templates/base.html:41
 #: templates/cookies.html:5 templates/cookies.html:10
 msgid "Cookies"
 msgstr "Cwcis"
 
-#: apps/send_money/context_processors.py:18 templates/base.html:41
+#: apps/send_money/context_processors.py:18 templates/base.html:42
 msgid "Feedback"
 msgstr "Adborth"
 
@@ -89,8 +89,8 @@ msgstr "Mae'r swm yr ydych chi'n ceisio ei anfon yn rhy fawr."
 msgid "Please enter a smaller amount"
 msgstr "Nodwch swm llai"
 
-#: apps/send_money/forms.py:194 templates/send_money/debit-card-check.html:44
-#: templates/send_money/debit-card-check.html:70
+#: apps/send_money/forms.py:194 templates/send_money/debit-card-check.html:52
+#: templates/send_money/debit-card-check.html:81
 msgid "Amount"
 msgstr "Swm"
 
@@ -162,7 +162,7 @@ msgstr "Fformat anghywir i'r rhif carcharor"
 
 #: apps/send_money/utils.py:78
 msgid "Please do not enter your debit card number here"
-msgstr ""
+msgstr "Peidiwch â nodi rhif eich cerdyn debyd yma "
 
 #: apps/send_money/views.py:257
 #, python-format
@@ -178,31 +178,31 @@ msgstr "Anhysbys"
 msgid "To this prisoner: %(prisoner_number)s"
 msgstr "At y carcharor hwn: %(prisoner_number)s"
 
-#: templates/base.html:13 templates/base.html:14
+#: templates/base.html:14 templates/base.html:15
 #: templates/send_money/debit-card-failure.html:8
 #: templates/send_money/email/bank-transfer-reference.txt:3
 #: templates/send_money/email/debit-card-confirmation.txt:3
 msgid "Send money to a prisoner"
 msgstr "Anfon arian at garcharor"
 
-#: templates/base.html:22
+#: templates/base.html:23
 msgid "Beta"
 msgstr "Beta"
 
-#: templates/base.html:27
+#: templates/base.html:28
 msgid "This is a new service."
 msgstr "Mae hwn yn wasanaeth newydd."
 
-#: templates/base.html:28
+#: templates/base.html:29
 #, python-format
 msgid "<a href=\"%(ticket_url)s\">Contact us</a> if you need help."
 msgstr "<a href=\"%(ticket_url)s\">Cysylltwch â ni</a>os ydych angen cymorth."
 
-#: templates/base.html:43
+#: templates/base.html:44
 msgid "Built by"
 msgstr "Cynhyrchwyd gan"
 
-#: templates/base.html:45
+#: templates/base.html:46
 msgid "Ministry of Justice"
 msgstr "Y Weinyddiaeth Cyfiawnder"
 
@@ -276,7 +276,7 @@ msgid "Google Analytics sets the following cookies:"
 msgstr "Mae Google Analytics yn gosod y cwcis canlynol:"
 
 #: templates/cookies.html:53 templates/cookies.html:79
-#: templates/cookies.html:101 templates/send_money/debit-card-check.html:23
+#: templates/cookies.html:101 templates/send_money/debit-card-check.html:27
 msgid "Name"
 msgstr "Enw"
 
@@ -366,7 +366,7 @@ msgid "To provide this, we need these details:"
 msgstr "I ddarparu hyn, rydym angen y manylion canlynol:"
 
 #: templates/send_money/bank-transfer-prisoner-details.html:28
-#: templates/send_money/debit-card-check.html:20
+#: templates/send_money/debit-card-check.html:23
 #: templates/send_money/debit-card-prisoner-details.html:23
 msgid "Prisoner details"
 msgstr "Manylion y carcharor"
@@ -530,7 +530,7 @@ msgstr "Eich neges"
 
 #: templates/send_money/contact-form.html:38
 msgid "If you’re having difficulties using the service, please send:"
-msgstr "Os cawsoch anhawster i ddefnyddio'r gwasanaeth, nodwch fanylion y carcharor:"
+msgstr "Os ydych chi'n cael trafferth defnyddio'r gwasanaeth, anfonwch:"
 
 #: templates/send_money/contact-form.html:47
 msgid "Send"
@@ -539,20 +539,20 @@ msgstr "Anfon"
 #: templates/send_money/contact-form.html:55
 #: templates/send_money/contact-form.html:58
 msgid "Find help if you’ve already sent money but the:"
-msgstr ""
+msgstr "Dod o hyd i gymorth os ydych eisoes wedi anfon arian ond:"
 
 #: templates/send_money/contact-form.html:63
 #: templates/send_money/help/bank-transfer-issues.html:5
 msgid "Bank transfer was returned"
-msgstr ""
+msgstr "Cafodd y trosglwyddiad banc ei ddychwelyd"
 
 #: templates/send_money/contact-form.html:68
 msgid "Payment has taken longer than expected"
-msgstr "Mae taliad wedi cymryd mwy o amser"
+msgstr "Mae taliad wedi cymryd mwy o amser na'r disgwyl"
 
 #: templates/send_money/contact-form.html:73
 msgid "Prisoner has been moved or released"
-msgstr "Mae carcharor wedi cael ei symud neu ryddhau"
+msgstr "Mae'r carcharor wedi cael ei symud neu ryddhau"
 
 #: templates/send_money/debit-card-amount.html:6
 #: templates/send_money/debit-card-amount.html:13
@@ -593,40 +593,40 @@ msgstr "Er enghraifft, os ydych eisiau anfon %(sample_amount)s, fe godir ffi o %
 msgid "Check details"
 msgstr "Gwirio'r manylion"
 
-#: templates/send_money/debit-card-check.html:27
+#: templates/send_money/debit-card-check.html:31
 msgid "Date of birth"
 msgstr "Dyddiad geni"
 
-#: templates/send_money/debit-card-check.html:38
-#: templates/send_money/debit-card-check.html:70
+#: templates/send_money/debit-card-check.html:43
+#: templates/send_money/debit-card-check.html:81
 msgid "Change"
 msgstr "Newid"
 
-#: templates/send_money/debit-card-check.html:38
+#: templates/send_money/debit-card-check.html:43
 msgid "Name, date of birth or prisoner number"
 msgstr "Enw, dyddiad geni neu rif carcharor"
 
-#: templates/send_money/debit-card-check.html:48
+#: templates/send_money/debit-card-check.html:57
 msgid "Total to prisoner"
 msgstr "Cyfanswm i'r carcharor"
 
-#: templates/send_money/debit-card-check.html:54
+#: templates/send_money/debit-card-check.html:63
 msgid "Amount to be taken from your account"
 msgstr "Swm i'w dynnu o'ch cyfrif"
 
-#: templates/send_money/debit-card-check.html:61
+#: templates/send_money/debit-card-check.html:70
 msgid "Total"
 msgstr "Cyfanswm"
 
-#: templates/send_money/debit-card-check.html:75
+#: templates/send_money/debit-card-check.html:88
 msgid "Please be aware that you can’t request a refund once money is sent."
-msgstr ""
+msgstr "Ni allwch ofyn am ad-daliad unwaith y bydd arian wedi'i anfon. "
 
-#: templates/send_money/debit-card-check.html:80
+#: templates/send_money/debit-card-check.html:96
 msgid "Enter card details"
 msgstr "Nodwch fanylion y cerdyn"
 
-#: templates/send_money/debit-card-check.html:83
+#: templates/send_money/debit-card-check.html:99
 msgid "Cancel and delete all details"
 msgstr "Canslo a dileu'r holl fanylion"
 
@@ -643,47 +643,47 @@ msgstr "Eich rhif cadarnhau yw"
 msgid "Payment summary"
 msgstr "Crynodeb o'r taliad"
 
-#: templates/send_money/debit-card-confirmation.html:22
+#: templates/send_money/debit-card-confirmation.html:23
 #: templates/send_money/email/debit-card-confirmation.txt:14
 msgid "Payment to"
 msgstr "Taliad at"
 
-#: templates/send_money/debit-card-confirmation.html:26
+#: templates/send_money/debit-card-confirmation.html:27
 msgid "Payment amount"
 msgstr "Swm y taliad"
 
-#: templates/send_money/debit-card-confirmation.html:30
+#: templates/send_money/debit-card-confirmation.html:31
 #: templates/send_money/email/debit-card-confirmation.txt:16
 msgid "Date payment made"
 msgstr "Dyddiad gwneud y taliad"
 
-#: templates/send_money/debit-card-confirmation.html:34
+#: templates/send_money/debit-card-confirmation.html:35
 msgid "Confirmation number"
 msgstr "Rhif cadarnhau"
 
-#: templates/send_money/debit-card-confirmation.html:39
+#: templates/send_money/debit-card-confirmation.html:41
 msgid "What happens next"
 msgstr "Beth fydd yn digwydd nesaf"
 
-#: templates/send_money/debit-card-confirmation.html:42
+#: templates/send_money/debit-card-confirmation.html:44
 msgid "We’ll email you a copy of this confirmation page."
 msgstr "Byddwn yn anfon copi o'r dudalen gadarnhau hon atoch ar e-bost."
 
-#: templates/send_money/debit-card-confirmation.html:43
-msgid "Please check your spam folder."
-msgstr ""
-
 #: templates/send_money/debit-card-confirmation.html:45
+msgid "Please check your spam folder."
+msgstr "Edrychwch yn eich ffolder negeseuon sbam."
+
+#: templates/send_money/debit-card-confirmation.html:47
 msgid "The money will arrive in the prisoner’s account in up to 3 working days."
 msgstr "Bydd yr arian yn cyrraedd cyfrif y carcharor mewn hyd at 3 diwrnod gwaith."
 
-#: templates/send_money/debit-card-confirmation.html:47
+#: templates/send_money/debit-card-confirmation.html:49
 #: templates/send_money/email/debit-card-confirmation.html:18
 #: templates/send_money/email/debit-card-confirmation.txt:11
 msgid "You’ll get a further email when the prisoner’s account has been credited to confirm your money has arrived."
 msgstr "Fe gewch e-bost arall pan fydd cyfrif y carcharor wedi cael ei gredydu i gadarnhau bod eich arian wedi cyrraedd."
 
-#: templates/send_money/debit-card-confirmation.html:52
+#: templates/send_money/debit-card-confirmation.html:54
 msgid "Take a moment to rate this service"
 msgstr "Rhowch ychydig o'ch amser i raddio'r gwasanaeth hwn"
 
@@ -967,15 +967,15 @@ msgstr "symud, bydd yr arian yn cael ei drosglwyddo i'r carchar nesaf, pa un a y
 msgid "released, they need to <a href=\"%(contact_url)s\">contact the prison</a> and ask the prison to send them the money"
 msgstr "rhyddhau, bydd angen iddynt <a href=\"%(contact_url)s\">gysylltu â'r carchar</a> a gofyn i'r carchar anfon yr arian atynt"
 
-#: templates/send_money/includes/prisoner-details-dob.html:9
+#: templates/send_money/includes/prisoner-details-dob.html:11
 msgid "Day"
 msgstr "Diwrnod"
 
-#: templates/send_money/includes/prisoner-details-dob.html:13
+#: templates/send_money/includes/prisoner-details-dob.html:15
 msgid "Month"
 msgstr "Mis"
 
-#: templates/send_money/includes/prisoner-details-dob.html:17
+#: templates/send_money/includes/prisoner-details-dob.html:19
 msgid "Year"
 msgstr "Blwyddyn"
 
