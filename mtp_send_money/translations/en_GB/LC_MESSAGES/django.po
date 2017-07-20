@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: mtp-send-money\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-07-18 14:53+0100\n"
+"POT-Creation-Date: 2017-07-20 16:29+0100\n"
 "PO-Revision-Date: 2016-11-04 10:00+0000\n"
 "Last-Translator: Welsh Language Unit <welsh.language.unit.manager@hmcts.gsi.gov.uk>\n"
 "Language-Team: Welsh (http://www.transifex.com/ministry-of-justice/mtp/language/cy/)\n"
@@ -456,7 +456,7 @@ msgstr ""
 #: templates/send_money/bank-transfer-reference.html:72
 #: templates/send_money/email/bank-transfer-reference.html:49
 #: templates/send_money/email/bank-transfer-reference.txt:26
-msgid "The money should take up to 3 working days to reach the prisoner."
+msgid "The money should take up to 3 working days to reach the prisoner’s account."
 msgstr ""
 
 #: templates/send_money/bank-transfer-reference.html:73
@@ -1019,7 +1019,7 @@ msgstr ""
 
 #: templates/send_money/payment-method.html:68
 #: templates/send_money/payment-method.html:77
-msgid "The money should take up to 3 working days to reach the prisoner"
+msgid "The money should take up to 3 working days to reach the prisoner’s account"
 msgstr ""
 
 #: templates/send_money/payment-method.html:69
@@ -1039,7 +1039,7 @@ msgid "You can re-use this reference for this prisoner each time you make a tran
 msgstr ""
 
 #: templates/send_money/payment-method.html:78
-msgid "You don’t get email confirmation after your bank transfer."
+msgid "You don’t get email confirmation after your bank transfer"
 msgstr ""
 
 #: templates/send_money/payment-method.html:84
