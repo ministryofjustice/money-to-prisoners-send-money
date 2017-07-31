@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-07-20 16:29+0100\n"
+"POT-Creation-Date: 2017-07-31 12:52+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Welsh Language Unit <welsh.language.unit.manager@hmcts.gsi.gov.uk>, 2017\n"
 "Language-Team: Welsh (https://www.transifex.com/ministry-of-justice/teams/34553/cy/)\n"
@@ -457,7 +457,7 @@ msgstr "Cofiwch, ni allwch wneud trosglwyddiad banc drwy fynd i'ch banc ac mae'n
 #: templates/send_money/email/bank-transfer-reference.html:49
 #: templates/send_money/email/bank-transfer-reference.txt:26
 msgid "The money should take up to 3 working days to reach the prisoner’s account."
-msgstr ""
+msgstr "Dylai'r arian gymryd hyd at 3 diwrnod gwaith i gyrraedd cyfrif y carcharor."
 
 #: templates/send_money/bank-transfer-reference.html:73
 #: templates/send_money/email/bank-transfer-reference.html:50
@@ -1020,7 +1020,7 @@ msgstr "Gallwch gwblhau eich taliad yma gan ddefnyddio cardiau debyd Mastercard/
 #: templates/send_money/payment-method.html:68
 #: templates/send_money/payment-method.html:77
 msgid "The money should take up to 3 working days to reach the prisoner’s account"
-msgstr ""
+msgstr "Dylai'r arian gymryd hyd at 3 diwrnod gwaith i gyrraedd cyfrif y carcharor"
 
 #: templates/send_money/payment-method.html:69
 msgid "You’ll get email confirmation of payment"
