@@ -429,9 +429,6 @@ class DebitCardConfirmationView(TemplateView):
                 )
             if not self.success:
                 return redirect(build_view_url(self.request, DebitCardCheckView.url_name))
-
-            if 'nomis_integration_available' not in kwargs:
-                kwargs['nomis_integration_available'] = payment_client.is_nomis_integration_available(payment)
         except OAuth2Error:
             logger.exception('Authentication error while processing %s' % payment_ref)
         except SlumberHttpBaseException as error:
