@@ -76,19 +76,6 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
                 status=200
             )
             rsps.add(
-                rsps.GET,
-                api_url('/prisoner_validity/'),
-                json={
-                    'count': 1,
-                    'results': [{
-                        'prisoner_number': 'A1409AE',
-                        'prisoner_dob': '1989-21-01',
-                        'nomis_integrated_prison': False
-                    }]
-                },
-                status=200
-            )
-            rsps.add(
                 rsps.PATCH,
                 api_url('/payments/%s/' % 'wargle-1111'),
                 status=200,
