@@ -1,10 +1,10 @@
-# Send money to a prisoner
+# Prisoner money
 # Copyright (C) Crown copyright (Ministry of Justice)
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-07-31 12:52+0100\n"
+"POT-Creation-Date: 2017-08-10 14:38+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Welsh Language Unit <welsh.language.unit.manager@hmcts.gsi.gov.uk>, 2017\n"
 "Language-Team: Welsh (https://www.transifex.com/ministry-of-justice/teams/34553/cy/)\n"
@@ -153,8 +153,8 @@ msgid "Secure Training Centre"
 msgstr "Canolfan Hyfforddi Ddiogel"
 
 #: apps/send_money/utils.py:64
-msgid "Send money to a prisoner: your payment was successful"
-msgstr "Anfon arian at garcharor: roedd eich taliad yn llwyddiannus"
+msgid "Send money to someone in prison: your payment was successful"
+msgstr "Anfon arian at rywun sydd yn y carchar: roedd eich taliad yn llwyddiannus"
 
 #: apps/send_money/utils.py:71
 msgid "Incorrect prisoner number format"
@@ -166,14 +166,14 @@ msgstr "Peidiwch â nodi rhif eich cerdyn debyd yma "
 
 #: apps/send_money/views.py:257
 #, python-format
-msgid "Send money to a prisoner: Your prisoner reference is %(bank_transfer_reference)s"
-msgstr "Anfon arian at garcharor: Eich cyfeirnod carcharor yw %(bank_transfer_reference)s"
+msgid "Send money to someone in prison: Your prisoner reference is %(bank_transfer_reference)s"
+msgstr "Anfon arian at rywun sydd yn y carchar: Eich cyfeirnod carcharor yw %(bank_transfer_reference)s"
 
-#: apps/send_money/views.py:348
+#: apps/send_money/views.py:349
 msgid "Not known"
 msgstr "Anhysbys"
 
-#: apps/send_money/views.py:366
+#: apps/send_money/views.py:367
 #, python-format
 msgid "To this prisoner: %(prisoner_number)s"
 msgstr "At y carcharor hwn: %(prisoner_number)s"
@@ -182,8 +182,8 @@ msgstr "At y carcharor hwn: %(prisoner_number)s"
 #: templates/send_money/debit-card-failure.html:8
 #: templates/send_money/email/bank-transfer-reference.txt:3
 #: templates/send_money/email/debit-card-confirmation.txt:3
-msgid "Send money to a prisoner"
-msgstr "Anfon arian at garcharor"
+msgid "Send money to someone in prison"
+msgstr "Anfon arian at rywun sydd yn y carchar"
 
 #: templates/base.html:23
 msgid "Beta"
@@ -331,8 +331,8 @@ msgid "Your progress when using the service"
 msgstr "Eich cynnydd pan fyddwch yn defnyddio'r gwasanaeth"
 
 #: templates/cookies.html:95
-msgid "When you use the “Send money to a prisoner” service, we’ll set a cookie to remember your progress through the forms."
-msgstr "Pan fyddwch chi’n defnyddio’r gwasanaeth \"Anfon arian at garcharor\", byddwn yn gosod cwci ar eich cyfrifiadur i gofio sut yr ydych chi’n symud ymlaen drwy’r ffurflenni."
+msgid "When you use the “Send money to someone in prison” service, we’ll set a cookie to remember your progress through the forms."
+msgstr "Pan fyddwch chi’n defnyddio’r gwasanaeth \"Anfon arian at rywun sydd yn y carchar\", byddwn yn gosod cwci ar eich cyfrifiadur i gofio sut yr ydych chi’n symud ymlaen drwy’r ffurflenni."
 
 #: templates/cookies.html:96
 msgid "These cookies don’t store your personal data and are deleted once you’ve completed the transaction."
@@ -644,7 +644,7 @@ msgid "Payment summary"
 msgstr "Crynodeb o'r taliad"
 
 #: templates/send_money/debit-card-confirmation.html:23
-#: templates/send_money/email/debit-card-confirmation.txt:14
+#: templates/send_money/email/debit-card-confirmation.txt:12
 msgid "Payment to"
 msgstr "Taliad at"
 
@@ -653,7 +653,7 @@ msgid "Payment amount"
 msgstr "Swm y taliad"
 
 #: templates/send_money/debit-card-confirmation.html:31
-#: templates/send_money/email/debit-card-confirmation.txt:16
+#: templates/send_money/email/debit-card-confirmation.txt:14
 msgid "Date payment made"
 msgstr "Dyddiad gwneud y taliad"
 
@@ -677,13 +677,13 @@ msgstr "Edrychwch yn eich ffolder negeseuon sbam."
 msgid "The money will arrive in the prisoner’s account in up to 3 working days."
 msgstr "Bydd yr arian yn cyrraedd cyfrif y carcharor mewn hyd at 3 diwrnod gwaith."
 
-#: templates/send_money/debit-card-confirmation.html:49
-#: templates/send_money/email/debit-card-confirmation.html:18
-#: templates/send_money/email/debit-card-confirmation.txt:11
+#: templates/send_money/debit-card-confirmation.html:48
+#: templates/send_money/email/debit-card-confirmation.html:17
+#: templates/send_money/email/debit-card-confirmation.txt:10
 msgid "You’ll get a further email when the prisoner’s account has been credited to confirm your money has arrived."
 msgstr "Fe gewch e-bost arall pan fydd cyfrif y carcharor wedi cael ei gredydu i gadarnhau bod eich arian wedi cyrraedd."
 
-#: templates/send_money/debit-card-confirmation.html:54
+#: templates/send_money/debit-card-confirmation.html:52
 msgid "Take a moment to rate this service"
 msgstr "Rhowch ychydig o'ch amser i raddio'r gwasanaeth hwn"
 
@@ -726,45 +726,45 @@ msgid "You need to log into your online banking account, mobile banking app or u
 msgstr "Mae angen i chi fewngofnodi i'ch cyfrif bancio ar-lein, ap bancio symudol neu ddefnyddio eich gwasanaeth bancio dros y ffôn, yn unol â’r drefn arferol."
 
 #: templates/send_money/email/bank-transfer-reference.html:55
-#: templates/send_money/email/debit-card-confirmation.html:42
+#: templates/send_money/email/debit-card-confirmation.html:40
 #, python-format
 msgid "<a href=\"%(help_url)s\">Help</a> with problems using this service or how to <a href=\"%(feedback_url)s\">contact us</a>."
 msgstr "<a href=\"%(help_url)s\">Cymorth</a> gyda phroblemau wrth ddefnyddio'r gwasanaeth hwn neu sut i <a href=\"%(feedback_url)s\">gysylltu â ni</a>."
 
 #: templates/send_money/email/bank-transfer-reference.html:61
-#: templates/send_money/email/debit-card-confirmation.html:48
+#: templates/send_money/email/debit-card-confirmation.html:46
 msgid "Book a social visit with a prisoner online using the <a href=\"https://www.gov.uk/prison-visits\">Visit someone in prison</a> service."
 msgstr "Trefnu ymweliad cymdeithasol gyda charcharor ar-lein gan ddefnyddio'r <a href=\"https://www.gov.uk/prison-visits\">gwasanaeth</a> Ymweld â rhywun yn y carchar."
 
 #: templates/send_money/email/bank-transfer-reference.html:64
 #: templates/send_money/email/bank-transfer-reference.txt:33
-#: templates/send_money/email/debit-card-confirmation.html:51
-#: templates/send_money/email/debit-card-confirmation.txt:25
+#: templates/send_money/email/debit-card-confirmation.html:49
+#: templates/send_money/email/debit-card-confirmation.txt:23
 msgid "It’s the faster and simpler way to plan to see friends and family in prisons in England or Wales."
 msgstr "Dyma'r ffordd gyflymaf a hawsaf i drefnu gweld ffrindiau a theulu sydd mewn carchar yng Nghymru a Lloegr."
 
 #: templates/send_money/email/bank-transfer-reference.html:67
-#: templates/send_money/email/debit-card-confirmation.html:54
+#: templates/send_money/email/debit-card-confirmation.html:52
 msgid "Back to the service"
 msgstr "Yn ôl i'r gwasanaeth"
 
 #: templates/send_money/email/bank-transfer-reference.txt:29
-#: templates/send_money/email/debit-card-confirmation.txt:21
+#: templates/send_money/email/debit-card-confirmation.txt:19
 msgid "Help with problems using this service:"
 msgstr "Cymorth gyda phroblemau wrth ddefnyddio'r gwasanaeth hwn:"
 
 #: templates/send_money/email/bank-transfer-reference.txt:30
-#: templates/send_money/email/debit-card-confirmation.txt:22
+#: templates/send_money/email/debit-card-confirmation.txt:20
 msgid "Leave feedback or contact us at:"
 msgstr "Gadael adborth neu gysylltu â ni yn:"
 
 #: templates/send_money/email/bank-transfer-reference.txt:32
-#: templates/send_money/email/debit-card-confirmation.txt:24
+#: templates/send_money/email/debit-card-confirmation.txt:22
 msgid "Book a social visit with a prisoner online using the ‘Visit someone in prison’ service:"
 msgstr "Trefnu ymweliad cymdeithasol gyda charcharor ar-lein gan ddefnyddio'r gwasanaeth 'Ymweld â rhywun yn y carchar'."
 
 #: templates/send_money/email/bank-transfer-reference.txt:35
-#: templates/send_money/email/debit-card-confirmation.txt:27
+#: templates/send_money/email/debit-card-confirmation.txt:25
 msgid "Back to the service:"
 msgstr "Yn ôl i'r gwasanaeth:"
 
@@ -788,20 +788,20 @@ msgstr "Eich rhif cadarnhau yw <strong>%(short_payment_ref)s</strong>."
 msgid "Money should reach the prisoner’s account in up to 3 working days."
 msgstr "Dylai'r arian gyrraedd cyfrif y carcharor mewn hyd at 3 diwrnod gwaith."
 
-#: templates/send_money/email/debit-card-confirmation.html:24
+#: templates/send_money/email/debit-card-confirmation.html:22
 msgid "Payment to:"
 msgstr "Taliad at:"
 
-#: templates/send_money/email/debit-card-confirmation.html:28
+#: templates/send_money/email/debit-card-confirmation.html:26
 msgid "Amount paid:"
 msgstr "Swm a dalwyd:"
 
-#: templates/send_money/email/debit-card-confirmation.html:32
+#: templates/send_money/email/debit-card-confirmation.html:30
 msgid "Date payment made:"
 msgstr "Dyddiad gwneud y taliad:"
 
-#: templates/send_money/email/debit-card-confirmation.html:38
-#: templates/send_money/email/debit-card-confirmation.txt:19
+#: templates/send_money/email/debit-card-confirmation.html:36
+#: templates/send_money/email/debit-card-confirmation.txt:17
 msgid "Thank you for using this service."
 msgstr "Diolch yn fawr i chi am ddefnyddio'r gwasanaeth hwn."
 
@@ -810,7 +810,7 @@ msgstr "Diolch yn fawr i chi am ddefnyddio'r gwasanaeth hwn."
 msgid "Your confirmation number is %(short_payment_ref)s."
 msgstr "Eich rhif cadarnhau yw %(short_payment_ref)s."
 
-#: templates/send_money/email/debit-card-confirmation.txt:15
+#: templates/send_money/email/debit-card-confirmation.txt:13
 msgid "Amount paid"
 msgstr "Swm a dalwyd"
 
@@ -1052,8 +1052,8 @@ msgid "Public prisons in England and Wales"
 msgstr "Carchardai cyhoeddus yng Nghymru a Lloegr"
 
 #: templates/send_money/prison-list.html:20
-msgid "The ‘Send money to a prisoner’ service is available in the following public prisons, young offender institutions and immigration removal centres in England and Wales."
-msgstr "Mae'r gwasanaeth 'Anfon arian at garcharor' ar gael yn y carchardai cyhoeddus, sefydliadau troseddwyr ifanc a chanolfannau symud mewnfudwyr canlynol yng Nghymru a Lloegr."
+msgid "The ‘Send money to someone in prison’ service is available in the following public prisons, young offender institutions and immigration removal centres in England and Wales."
+msgstr "Mae'r gwasanaeth 'Anfon arian at rywun sydd yn y carchar' ar gael yn y carchardai cyhoeddus, sefydliadau troseddwyr ifanc a chanolfannau symud mewnfudwyr canlynol yng Nghymru a Lloegr."
 
 #: templates/send_money/prison-list.html:25
 msgid "Search"
@@ -1089,8 +1089,8 @@ msgid "Terms and conditions and privacy policy"
 msgstr "Telerau ac amodau a pholisi preifatrwydd"
 
 #: templates/terms.html:15
-msgid "By using the send money to a prisoner service using your bank account you agree to our privacy policy and to these terms and conditions."
-msgstr "Drwy ddefnyddio'r gwasanaeth anfon arian at garcharor gan ddefnyddio eich cyfrif banc rydych yn cytuno i'n polisi preifatrwydd ac i'r telerau ac amodau hyn."
+msgid "By using the ‘Send money to someone in prison’ service using your bank account you agree to our privacy policy and to these terms and conditions."
+msgstr "Drwy ddefnyddio'r gwasanaeth 'Anfon arian at rywun sydd yn y carchar' gan ddefnyddio eich cyfrif banc rydych yn cytuno i'n polisi preifatrwydd ac i'r telerau ac amodau hyn."
 
 #: templates/terms.html:16
 msgid "Please read them carefully."
@@ -1105,7 +1105,7 @@ msgid "These terms and conditions affect your rights and liabilities under the l
 msgstr "Mae’r telerau ac amodau hyn yn effeithio ar eich hawliau a’ch rhwymedigaethau dan y gyfraith."
 
 #: templates/terms.html:25
-msgid "They govern your use of, and relationship with, the send money to a prisoner service and information about sending money to prisoners using your bank account."
+msgid "They govern your use of, and relationship with, the ‘Send money to someone in prison’ service and information about sending money to prisoners using your bank account."
 msgstr "Maent yn rheoli’r defnydd a wnewch, a'ch perthynas gyda’r gwasanaeth anfon arian at garcharor a gwybodaeth am anfon arian at garcharorion gan ddefnyddio eich cyfrif banc."
 
 #: templates/terms.html:26
@@ -1271,7 +1271,7 @@ msgid "Using other websites"
 msgstr "Defnyddio gwefannau eraill"
 
 #: templates/terms.html:115
-msgid "These terms and conditions and privacy policy only cover the send money to a prisoner service and information about it."
+msgid "These terms and conditions and privacy policy only cover the ‘Send money to someone in prison’ service and information about it."
 msgstr "Mae'r telerau ac amodau hyn a'r polisi preifatrwydd yn berthnasol i'r gwasanaeth anfon arian at garcharor a gwybodaeth amdano yn unig."
 
 #: templates/terms.html:118

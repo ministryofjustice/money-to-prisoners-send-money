@@ -1,10 +1,10 @@
-# Send money to a prisoner
+# Prisoner money
 # Copyright (C) Crown copyright (Ministry of Justice)
 msgid ""
 msgstr ""
 "Project-Id-Version: mtp-send-money\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-07-31 12:52+0100\n"
+"POT-Creation-Date: 2017-08-10 14:38+0100\n"
 "PO-Revision-Date: 2016-11-04 10:00+0000\n"
 "Last-Translator: Welsh Language Unit <welsh.language.unit.manager@hmcts.gsi.gov.uk>\n"
 "Language-Team: Welsh (http://www.transifex.com/ministry-of-justice/mtp/language/cy/)\n"
@@ -153,7 +153,7 @@ msgid "Secure Training Centre"
 msgstr ""
 
 #: apps/send_money/utils.py:64
-msgid "Send money to a prisoner: your payment was successful"
+msgid "Send money to someone in prison: your payment was successful"
 msgstr ""
 
 #: apps/send_money/utils.py:71
@@ -166,14 +166,14 @@ msgstr ""
 
 #: apps/send_money/views.py:257
 #, python-format
-msgid "Send money to a prisoner: Your prisoner reference is %(bank_transfer_reference)s"
+msgid "Send money to someone in prison: Your prisoner reference is %(bank_transfer_reference)s"
 msgstr ""
 
-#: apps/send_money/views.py:348
+#: apps/send_money/views.py:349
 msgid "Not known"
 msgstr ""
 
-#: apps/send_money/views.py:366
+#: apps/send_money/views.py:367
 #, python-format
 msgid "To this prisoner: %(prisoner_number)s"
 msgstr ""
@@ -182,7 +182,7 @@ msgstr ""
 #: templates/send_money/debit-card-failure.html:8
 #: templates/send_money/email/bank-transfer-reference.txt:3
 #: templates/send_money/email/debit-card-confirmation.txt:3
-msgid "Send money to a prisoner"
+msgid "Send money to someone in prison"
 msgstr ""
 
 #: templates/base.html:23
@@ -331,7 +331,7 @@ msgid "Your progress when using the service"
 msgstr ""
 
 #: templates/cookies.html:95
-msgid "When you use the “Send money to a prisoner” service, we’ll set a cookie to remember your progress through the forms."
+msgid "When you use the “Send money to someone in prison” service, we’ll set a cookie to remember your progress through the forms."
 msgstr ""
 
 #: templates/cookies.html:96
@@ -644,7 +644,7 @@ msgid "Payment summary"
 msgstr ""
 
 #: templates/send_money/debit-card-confirmation.html:23
-#: templates/send_money/email/debit-card-confirmation.txt:14
+#: templates/send_money/email/debit-card-confirmation.txt:12
 msgid "Payment to"
 msgstr ""
 
@@ -653,7 +653,7 @@ msgid "Payment amount"
 msgstr ""
 
 #: templates/send_money/debit-card-confirmation.html:31
-#: templates/send_money/email/debit-card-confirmation.txt:16
+#: templates/send_money/email/debit-card-confirmation.txt:14
 msgid "Date payment made"
 msgstr ""
 
@@ -677,13 +677,13 @@ msgstr ""
 msgid "The money will arrive in the prisoner’s account in up to 3 working days."
 msgstr ""
 
-#: templates/send_money/debit-card-confirmation.html:49
-#: templates/send_money/email/debit-card-confirmation.html:18
-#: templates/send_money/email/debit-card-confirmation.txt:11
+#: templates/send_money/debit-card-confirmation.html:48
+#: templates/send_money/email/debit-card-confirmation.html:17
+#: templates/send_money/email/debit-card-confirmation.txt:10
 msgid "You’ll get a further email when the prisoner’s account has been credited to confirm your money has arrived."
 msgstr ""
 
-#: templates/send_money/debit-card-confirmation.html:54
+#: templates/send_money/debit-card-confirmation.html:52
 msgid "Take a moment to rate this service"
 msgstr ""
 
@@ -726,45 +726,45 @@ msgid "You need to log into your online banking account, mobile banking app or u
 msgstr ""
 
 #: templates/send_money/email/bank-transfer-reference.html:55
-#: templates/send_money/email/debit-card-confirmation.html:42
+#: templates/send_money/email/debit-card-confirmation.html:40
 #, python-format
 msgid "<a href=\"%(help_url)s\">Help</a> with problems using this service or how to <a href=\"%(feedback_url)s\">contact us</a>."
 msgstr ""
 
 #: templates/send_money/email/bank-transfer-reference.html:61
-#: templates/send_money/email/debit-card-confirmation.html:48
+#: templates/send_money/email/debit-card-confirmation.html:46
 msgid "Book a social visit with a prisoner online using the <a href=\"https://www.gov.uk/prison-visits\">Visit someone in prison</a> service."
 msgstr ""
 
 #: templates/send_money/email/bank-transfer-reference.html:64
 #: templates/send_money/email/bank-transfer-reference.txt:33
-#: templates/send_money/email/debit-card-confirmation.html:51
-#: templates/send_money/email/debit-card-confirmation.txt:25
+#: templates/send_money/email/debit-card-confirmation.html:49
+#: templates/send_money/email/debit-card-confirmation.txt:23
 msgid "It’s the faster and simpler way to plan to see friends and family in prisons in England or Wales."
 msgstr ""
 
 #: templates/send_money/email/bank-transfer-reference.html:67
-#: templates/send_money/email/debit-card-confirmation.html:54
+#: templates/send_money/email/debit-card-confirmation.html:52
 msgid "Back to the service"
 msgstr ""
 
 #: templates/send_money/email/bank-transfer-reference.txt:29
-#: templates/send_money/email/debit-card-confirmation.txt:21
+#: templates/send_money/email/debit-card-confirmation.txt:19
 msgid "Help with problems using this service:"
 msgstr ""
 
 #: templates/send_money/email/bank-transfer-reference.txt:30
-#: templates/send_money/email/debit-card-confirmation.txt:22
+#: templates/send_money/email/debit-card-confirmation.txt:20
 msgid "Leave feedback or contact us at:"
 msgstr ""
 
 #: templates/send_money/email/bank-transfer-reference.txt:32
-#: templates/send_money/email/debit-card-confirmation.txt:24
+#: templates/send_money/email/debit-card-confirmation.txt:22
 msgid "Book a social visit with a prisoner online using the ‘Visit someone in prison’ service:"
 msgstr ""
 
 #: templates/send_money/email/bank-transfer-reference.txt:35
-#: templates/send_money/email/debit-card-confirmation.txt:27
+#: templates/send_money/email/debit-card-confirmation.txt:25
 msgid "Back to the service:"
 msgstr ""
 
@@ -788,20 +788,20 @@ msgstr ""
 msgid "Money should reach the prisoner’s account in up to 3 working days."
 msgstr ""
 
-#: templates/send_money/email/debit-card-confirmation.html:24
+#: templates/send_money/email/debit-card-confirmation.html:22
 msgid "Payment to:"
 msgstr ""
 
-#: templates/send_money/email/debit-card-confirmation.html:28
+#: templates/send_money/email/debit-card-confirmation.html:26
 msgid "Amount paid:"
 msgstr ""
 
-#: templates/send_money/email/debit-card-confirmation.html:32
+#: templates/send_money/email/debit-card-confirmation.html:30
 msgid "Date payment made:"
 msgstr ""
 
-#: templates/send_money/email/debit-card-confirmation.html:38
-#: templates/send_money/email/debit-card-confirmation.txt:19
+#: templates/send_money/email/debit-card-confirmation.html:36
+#: templates/send_money/email/debit-card-confirmation.txt:17
 msgid "Thank you for using this service."
 msgstr ""
 
@@ -810,7 +810,7 @@ msgstr ""
 msgid "Your confirmation number is %(short_payment_ref)s."
 msgstr ""
 
-#: templates/send_money/email/debit-card-confirmation.txt:15
+#: templates/send_money/email/debit-card-confirmation.txt:13
 msgid "Amount paid"
 msgstr ""
 
@@ -1052,7 +1052,7 @@ msgid "Public prisons in England and Wales"
 msgstr ""
 
 #: templates/send_money/prison-list.html:20
-msgid "The ‘Send money to a prisoner’ service is available in the following public prisons, young offender institutions and immigration removal centres in England and Wales."
+msgid "The ‘Send money to someone in prison’ service is available in the following public prisons, young offender institutions and immigration removal centres in England and Wales."
 msgstr ""
 
 #: templates/send_money/prison-list.html:25
@@ -1089,7 +1089,7 @@ msgid "Terms and conditions and privacy policy"
 msgstr ""
 
 #: templates/terms.html:15
-msgid "By using the send money to a prisoner service using your bank account you agree to our privacy policy and to these terms and conditions."
+msgid "By using the ‘Send money to someone in prison’ service using your bank account you agree to our privacy policy and to these terms and conditions."
 msgstr ""
 
 #: templates/terms.html:16
@@ -1105,7 +1105,7 @@ msgid "These terms and conditions affect your rights and liabilities under the l
 msgstr ""
 
 #: templates/terms.html:25
-msgid "They govern your use of, and relationship with, the send money to a prisoner service and information about sending money to prisoners using your bank account."
+msgid "They govern your use of, and relationship with, the ‘Send money to someone in prison’ service and information about sending money to prisoners using your bank account."
 msgstr ""
 
 #: templates/terms.html:26
@@ -1271,7 +1271,7 @@ msgid "Using other websites"
 msgstr ""
 
 #: templates/terms.html:115
-msgid "These terms and conditions and privacy policy only cover the send money to a prisoner service and information about it."
+msgid "These terms and conditions and privacy policy only cover the ‘Send money to someone in prison’ service and information about it."
 msgstr ""
 
 #: templates/terms.html:118

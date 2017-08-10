@@ -254,7 +254,8 @@ class BankTransferReferenceView(BankTransferFlow, SendMoneyFormView):
         context.pop('view', None)
         send_email(
             email, 'send_money/email/bank-transfer-reference.txt',
-            gettext('Send money to a prisoner: Your prisoner reference is %(bank_transfer_reference)s') % context,
+            gettext('Send money to someone in prison: '
+                    'Your prisoner reference is %(bank_transfer_reference)s') % context,
             context=context, html_template='send_money/email/bank-transfer-reference.html'
         )
         return super().form_valid(form)
