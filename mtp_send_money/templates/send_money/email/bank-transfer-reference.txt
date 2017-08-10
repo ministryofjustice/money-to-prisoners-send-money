@@ -1,6 +1,6 @@
 {% load i18n %}
 {% load send_money %}
-GOV.UK - {% trans 'Send money to a prisoner' %}
+GOV.UK - {% trans 'Send money to someone in prison' %}
 
 
 {% trans 'Send your bank transfer using this prisoner reference:' %}  {{ bank_transfer_reference }}
