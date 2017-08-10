@@ -1014,7 +1014,7 @@ msgid "Temporarily unavailable"
 msgstr ""
 
 #: templates/send_money/payment-method.html:67
-msgid "You can complete your payment here using Mastercard/Visa debit cards"
+msgid "You can complete your payment here using Mastercard, Visa and Maestro debit cards"
 msgstr ""
 
 #: templates/send_money/payment-method.html:68

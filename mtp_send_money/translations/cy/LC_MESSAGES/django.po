@@ -1014,8 +1014,8 @@ msgid "Temporarily unavailable"
 msgstr "Ddim ar gael ar hyn o bryd"
 
 #: templates/send_money/payment-method.html:67
-msgid "You can complete your payment here using Mastercard/Visa debit cards"
-msgstr "Gallwch gwblhau eich taliad yma gan ddefnyddio cardiau debyd Mastercard/Visa"
+msgid "You can complete your payment here using Mastercard, Visa and Maestro debit cards"
+msgstr "Gallwch gwblhau eich taliad yma gan ddefnyddio cardiau debyd Mastercard/Visa/Maestro"
 
 #: templates/send_money/payment-method.html:68
 #: templates/send_money/payment-method.html:77
