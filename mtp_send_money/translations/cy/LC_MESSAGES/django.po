@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-08-10 14:38+0100\n"
+"POT-Creation-Date: 2017-08-31 14:43+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Welsh Language Unit <welsh.language.unit.manager@hmcts.gsi.gov.uk>, 2017\n"
 "Language-Team: Welsh (https://www.transifex.com/ministry-of-justice/teams/34553/cy/)\n"
@@ -1272,7 +1272,7 @@ msgstr "Defnyddio gwefannau eraill"
 
 #: templates/terms.html:115
 msgid "These terms and conditions and privacy policy only cover the ‘Send money to someone in prison’ service and information about it."
-msgstr "Mae'r telerau ac amodau hyn a'r polisi preifatrwydd yn berthnasol i'r gwasanaeth anfon arian at garcharor a gwybodaeth amdano yn unig."
+msgstr "Mae'r telerau ac amodau hyn a'r polisi preifatrwydd yn berthnasol i'r gwasanaeth 'Anfon arian at rywun sydd yn y carchar' a gwybodaeth amdano yn unig."
 
 #: templates/terms.html:118
 msgid "They do not cover links from our website to other third party websites (including bank and building society websites) or any information collected by the parties who own and control those websites or their use of cookies."
