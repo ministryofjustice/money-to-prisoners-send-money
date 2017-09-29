@@ -185,10 +185,6 @@ msgstr ""
 msgid "Send money to someone in prison"
 msgstr ""
 
-#: templates/base.html:23
-msgid "Beta"
-msgstr ""
-
 #: templates/base.html:28
 msgid "This is a new service."
 msgstr ""
