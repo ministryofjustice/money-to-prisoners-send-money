@@ -185,10 +185,6 @@ msgstr "At y carcharor hwn: %(prisoner_number)s"
 msgid "Send money to someone in prison"
 msgstr "Anfon arian at rywun sydd yn y carchar"
 
-#: templates/base.html:23
-msgid "Beta"
-msgstr "Beta"
-
 #: templates/base.html:28
 msgid "This is a new service."
 msgstr "Mae hwn yn wasanaeth newydd."
