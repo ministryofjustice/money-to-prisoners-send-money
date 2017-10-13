@@ -1,21 +1,21 @@
 from django.core.urlresolvers import reverse
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext
 
 
-def support_links(request):
+def support_links(_):
     return {
         'support_links': [
             {
                 'url': reverse('terms'),
-                'title': _('Terms and conditions'),
+                'title': gettext('Terms and conditions'),
             },
             {
                 'url': reverse('cookies'),
-                'title': _('Cookies'),
+                'title': gettext('Cookies'),
             },
             {
                 'url': reverse('submit_ticket'),
-                'title': _('Feedback'),
+                'title': gettext('Feedback'),
             },
         ]
     }
