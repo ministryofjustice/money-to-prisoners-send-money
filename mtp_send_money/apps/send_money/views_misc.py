@@ -25,13 +25,13 @@ def help_view(request, page='payment-issues'):
     @param page: page slug
     """
     context = {
-        'return_to': settings.START_PAGE_URL,
+        'breadcrumbs_back': settings.START_PAGE_URL,
     }
     return_to = request.META.get('HTTP_REFERER') or ''
     return_to_within_site = is_safe_url(url=return_to, host=request.get_host())
     return_to_same_page = return_to.split('?')[0] == request.build_absolute_uri().split('?')[0]
     if page != 'payment-issues' and return_to_within_site and not return_to_same_page:
-        context['return_to'] = return_to
+        context['breadcrumbs_back'] = return_to
     return render(request, 'send_money/help/%s.html' % page, context=context)
 
 
@@ -54,6 +54,7 @@ def prison_list_view(request):
         except (SlumberHttpBaseException, RequestException, OAuth2Error, ValueError):
             logger.exception('Could not look up prison list')
     return render(request, 'send_money/prison-list.html', context={
+        'breadcrumbs_back': reverse('send_money:help'),
         'prison_list': prison_list,
         'stop_words': sorted([
             # NB: these are output into a regular expression so must have special characters escaped
