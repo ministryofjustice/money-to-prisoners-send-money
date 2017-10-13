@@ -4,7 +4,6 @@
   require('polyfills').Polyfills.init();
   require('placeholder-polyfill').PlaceholderPolyfill.init();
 
-  require('proposition-header').PropositionHeader.init();
   require('analytics').Analytics.init();
   require('element-focus').ElementFocus.init();
   require('year-field-completion').YearFieldCompletion.init();
