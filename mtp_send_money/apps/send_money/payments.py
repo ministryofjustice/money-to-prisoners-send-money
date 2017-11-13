@@ -1,5 +1,6 @@
 from datetime import datetime, time, timedelta
 import logging
+from urllib.parse import quote_plus as url_quote
 
 from django.conf import settings
 from django.core.exceptions import ValidationError
@@ -54,14 +55,14 @@ class PaymentClient:
         from slumber.exceptions import HttpNotFoundError
         try:
             if payment_ref:
-                return self.client.payments(payment_ref).get()
+                return self.client.payments(url_quote(payment_ref)).get()
         except HttpNotFoundError:
             pass
 
     def update_payment(self, payment_ref, payment_update):
         if not payment_ref:
             raise ValueError('payment_ref must be provided')
-        self.client.payments(payment_ref).patch(payment_update)
+        self.client.payments(url_quote(payment_ref)).patch(payment_update)
 
     def check_govuk_payment_succeeded(self, payment, govuk_payment, context):
         if govuk_payment is None:
