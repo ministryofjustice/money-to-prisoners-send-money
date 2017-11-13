@@ -11,7 +11,8 @@ from mtp_common.test_utils.functional_tests import FunctionalTestCase
 import responses
 
 from send_money.models import PaymentMethod
-from send_money.utils import govuk_url
+from send_money.tests import mock_auth
+from send_money.utils import api_url, govuk_url
 
 
 class SendMoneyFunctionalTestCase(FunctionalTestCase):
@@ -212,22 +213,23 @@ class SendMoneyFeedbackPages(SendMoneyFunctionalTestCase):
                    GOVUK_PAY_URL='https://pay.gov.local/v1',
                    GOVUK_PAY_AUTH_TOKEN='15a21a56-817a-43d4-bf8d-f01f298298e8')
 class SendMoneyConfirmationPage(SendMoneyFunctionalTestCase):
-    @mock.patch('send_money.payments.get_api_client')
-    def test_success_page(self, mocked_client):
+    def test_success_page(self):
+        ref = 'f469ec29-fb86-40db-a9e0-6faa409533be'
         processor_id = '3'
-        mocked_client().payments().get.return_value = {
-            'uuid': 'wargle-blargle',
-            'processor_id': processor_id,
-            'recipient_name': 'James Bond',
-            'amount': 2000,
-            'status': 'pending',
-            'created': datetime.datetime.now().isoformat() + 'Z',
-            'prisoner_number': 'A5544CD',
-            'prisoner_dob': '1992-12-05'
-        }
         with responses.RequestsMock() as rsps, self.patch_view_chain_form_checking():
+            mock_auth(rsps)
+            rsps.add(rsps.GET, api_url('/payments/%s/' % ref), json={
+                'uuid': ref,
+                'processor_id': processor_id,
+                'recipient_name': 'James Bond',
+                'amount': 2000,
+                'status': 'pending',
+                'created': datetime.datetime.now().isoformat() + 'Z',
+                'prisoner_number': 'A5544CD',
+                'prisoner_dob': '1992-12-05'
+            })
             rsps.add(rsps.GET, govuk_url('/payments/%s' % processor_id), json={
-                'reference': 'wargle-blargle',
+                'reference': ref,
                 'state': {'status': 'success', 'finished': True},
                 'amount': 2000,
                 'payment_id': processor_id,
@@ -236,29 +238,29 @@ class SendMoneyConfirmationPage(SendMoneyFunctionalTestCase):
                     'events': {'href': govuk_url('/payments/%s/events' % processor_id), 'method': 'GET'}
                 }
             })
+            rsps.add(rsps.PATCH, api_url('/payments/%s/' % ref))
 
-            self.driver.get(self.live_server_url + '/en-gb/debit-card/confirmation/?payment_ref=REF12345')
+            self.driver.get(self.live_server_url + '/en-gb/debit-card/confirmation/?payment_ref=' + ref)
         self.assertInSource('Payment successful')
-        self.assertInSource('<strong>REF12345</strong>')
+        self.assertInSource('<strong>F469EC29</strong>')
         self.assertInSource('James Bond')
         self.assertInSource('£20')
         self.assertInSource('Print this page')
 
     @unittest.skip('error pages handled by gov.uk')
-    @mock.patch('send_money.views.get_api_client')
-    def test_failure_page(self, mocked_client):
+    def test_failure_page(self):
         processor_id = '3'
-        mocked_client().payments().get.return_value = {
-            'uuid': 'wargle-blargle',
-            'processor_id': processor_id,
-            'recipient_name': 'James Bond',
-            'amount': 2000,
-            'status': 'pending',
-            'created': datetime.datetime.now().isoformat() + 'Z',
-            'prisoner_number': 'A5544CD',
-            'prisoner_dob': '1992-12-05'
-        }
         with responses.RequestsMock() as rsps:
+            rsps.add(rsps.GET, api_url('/payments/'), json={
+                'uuid': 'wargle-blargle',
+                'processor_id': processor_id,
+                'recipient_name': 'James Bond',
+                'amount': 2000,
+                'status': 'pending',
+                'created': datetime.datetime.now().isoformat() + 'Z',
+                'prisoner_number': 'A5544CD',
+                'prisoner_dob': '1992-12-05'
+            })
             rsps.add(rsps.GET, govuk_url('/payments/%s' % processor_id), json={
                 'state': {'status': 'failed'}
             })

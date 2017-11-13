@@ -9,16 +9,16 @@ from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator
 from django.utils.translation import gettext, gettext_lazy as _
 from form_error_reporting import GARequestErrorReportingMixin
+from mtp_common.auth.exceptions import HttpNotFoundError
 from mtp_common.forms.fields import SplitDateField
 from oauthlib.oauth2 import OAuth2Error, TokenExpiredError
 from requests.exceptions import RequestException
-from slumber.exceptions import HttpClientError, HttpNotFoundError, SlumberHttpBaseException
 
 from send_money.models import PaymentMethod
 from send_money.utils import (
     serialise_amount, unserialise_amount, serialise_date, unserialise_date,
     RejectCardNumberValidator, validate_prisoner_number,
-    get_api_client, check_payment_service_available,
+    get_api_session, check_payment_service_available,
 )
 
 logger = logging.getLogger('mtp')
@@ -93,19 +93,19 @@ class PrisonerDetailsForm(SendMoneyForm):
         'not_found': _('No prisoner matches the details you’ve supplied.'),
     }
 
-    shared_api_client_lock = threading.RLock()
-    shared_api_client = None
+    shared_api_session_lock = threading.RLock()
+    shared_api_session = None
 
     @classmethod
     def get_prison_set(cls):
         return set()
 
     @classmethod
-    def get_api_client(cls, reconnect=False):
-        with cls.shared_api_client_lock:
-            if reconnect or not cls.shared_api_client:
-                cls.shared_api_client = get_api_client()
-            return cls.shared_api_client
+    def get_api_session(cls, reconnect=False):
+        with cls.shared_api_session_lock:
+            if reconnect or not cls.shared_api_session:
+                cls.shared_api_session = get_api_session()
+            return cls.shared_api_session
 
     def __init__(self, **kwargs):
         if isinstance((kwargs.get('data') or {}).get('prisoner_dob'), datetime.date):
@@ -118,16 +118,16 @@ class PrisonerDetailsForm(SendMoneyForm):
         super().__init__(**kwargs)
 
     def lookup_prisoner(self, **filters):
-        api_client = self.get_api_client()
+        session = self.get_api_session()
         try:
-            return api_client.prisoner_validity().get(**filters)
+            return session.get('/prisoner_validity/', params=filters).json()
         except TokenExpiredError:
             pass
-        except HttpClientError as e:
+        except RequestException as e:
             if e.response.status_code != 401:
                 raise
-        api_client = self.get_api_client(reconnect=True)
-        return api_client.prisoner_validity().get(**filters)
+        session = self.get_api_session(reconnect=True)
+        return session.get('/prisoner_validity/', params=filters).json()
 
     def clean_prisoner_number(self):
         prisoner_number = self.cleaned_data.get('prisoner_number')
@@ -151,7 +151,7 @@ class PrisonerDetailsForm(SendMoneyForm):
             prisoner = prisoners['results'][0]
             return prisoner and prisoner['prisoner_number'] == prisoner_number \
                 and prisoner['prisoner_dob'] == prisoner_dob
-        except (HttpNotFoundError, KeyError, IndexError, AssertionError):
+        except (HttpNotFoundError, KeyError, IndexError, ValueError, AssertionError):
             pass
         return False
 
@@ -159,7 +159,7 @@ class PrisonerDetailsForm(SendMoneyForm):
         try:
             if not self.errors and not self.is_prisoner_known():
                 raise ValidationError(self.error_messages['not_found'], code='not_found')
-        except (SlumberHttpBaseException, RequestException, OAuth2Error):
+        except (RequestException, OAuth2Error):
             logger.exception('Could not look up prisoner validity')
             raise ValidationError(self.error_messages['connection'], code='connection')
         return self.cleaned_data

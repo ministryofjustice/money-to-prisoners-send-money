@@ -8,12 +8,11 @@ from django.shortcuts import render
 from django.utils.http import is_safe_url
 from django.utils.translation import override as override_language
 from django.views.generic import TemplateView
-from mtp_common.api import retrieve_all_pages
+from mtp_common.api import retrieve_all_pages_for_path
 from oauthlib.oauth2 import OAuth2Error
 from requests import RequestException
-from slumber.exceptions import SlumberHttpBaseException
 
-from send_money.utils import get_api_client
+from send_money.utils import get_api_session
 
 logger = logging.getLogger('mtp')
 
@@ -42,8 +41,8 @@ def prison_list_view(request):
     prison_list = cache.get('prison_list')
     if not prison_list:
         try:
-            client = get_api_client()
-            prison_list = retrieve_all_pages(client.prisons.get, exclude_empty_prisons=True)
+            session = get_api_session()
+            prison_list = retrieve_all_pages_for_path(session, '/prisons/', exclude_empty_prisons=True)
             prison_list = [
                 prison['name']
                 for prison in sorted(prison_list, key=lambda prison: prison['short_name'])
@@ -51,7 +50,7 @@ def prison_list_view(request):
             if not prison_list:
                 raise ValueError('Empty prison list')
             cache.set('prison_list', prison_list, timeout=60 * 60)
-        except (SlumberHttpBaseException, RequestException, OAuth2Error, ValueError):
+        except (RequestException, OAuth2Error, ValueError):
             logger.exception('Could not look up prison list')
     return render(request, 'send_money/prison-list.html', context={
         'breadcrumbs_back': reverse('send_money:help'),

@@ -8,13 +8,14 @@ from django.core.validators import validate_email
 from django.utils import timezone
 from django.utils.dateparse import parse_datetime, parse_date
 from django.utils.functional import cached_property
-from mtp_common.api import retrieve_all_pages
+from mtp_common.api import retrieve_all_pages_for_path
+from mtp_common.auth.exceptions import HttpNotFoundError
 import requests
 from requests.exceptions import RequestException
 
 from send_money.exceptions import GovUkPaymentStatusException
 from send_money.utils import (
-    get_api_client, govuk_headers, govuk_url, send_notification
+    get_api_session, govuk_headers, govuk_url, send_notification
 )
 
 logger = logging.getLogger('mtp')
@@ -38,31 +39,30 @@ def is_active_payment(payment):
 class PaymentClient:
 
     @cached_property
-    def client(self):
-        return get_api_client()
+    def api_session(self):
+        return get_api_session()
 
     def create_payment(self, new_payment):
-        api_response = self.client.payments.post(new_payment)
+        api_response = self.api_session.post('/payments/', json=new_payment).json()
         return api_response['uuid']
 
     def get_incomplete_payments(self):
         an_hour_ago = timezone.now() - timedelta(hours=1)
-        return retrieve_all_pages(
-            self.client.payments.get, modified__lt=an_hour_ago.isoformat()
+        return retrieve_all_pages_for_path(
+            self.api_session, '/payments/', modified__lt=an_hour_ago.isoformat()
         )
 
     def get_payment(self, payment_ref):
-        from slumber.exceptions import HttpNotFoundError
         try:
             if payment_ref:
-                return self.client.payments(url_quote(payment_ref)).get()
+                return self.api_session.get('/payments/%s/' % url_quote(payment_ref)).json()
         except HttpNotFoundError:
             pass
 
     def update_payment(self, payment_ref, payment_update):
         if not payment_ref:
             raise ValueError('payment_ref must be provided')
-        self.client.payments(url_quote(payment_ref)).patch(payment_update)
+        self.api_session.patch('/payments/%s/' % url_quote(payment_ref), json=payment_update)
 
     def check_govuk_payment_succeeded(self, payment, govuk_payment, context):
         if govuk_payment is None:
