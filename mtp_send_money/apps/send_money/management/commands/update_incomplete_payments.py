@@ -4,8 +4,7 @@ import logging
 from django.conf import settings
 from django.core.management import BaseCommand
 from oauthlib.oauth2 import OAuth2Error
-from requests.exceptions import RequestException, Timeout as RequestsTimeout
-from slumber.exceptions import SlumberHttpBaseException
+from requests.exceptions import RequestException
 
 from send_money.exceptions import GovUkPaymentStatusException
 from send_money.payments import PaymentClient
@@ -40,17 +39,8 @@ class Command(BaseCommand):
                     logger.exception(
                         'Scheduled job: Authentication error while processing %s' % payment_ref
                     )
-                except SlumberHttpBaseException as error:
-                    error_message = 'Scheduled job: Error while processing %s' % payment_ref
-                    if hasattr(error, 'content'):
-                        error_message += '\nReceived: %s' % error.content
-                    logger.exception(error_message)
-                except RequestsTimeout:
-                    logger.exception(
-                        'Scheduled job: GOV.UK Pay payment check timed out for %s' % payment_ref
-                    )
                 except RequestException as error:
-                    error_message = 'Scheduled job: GOV.UK Pay payment check failed for %s' % payment_ref
+                    error_message = 'Scheduled job: Payment check failed for ref %s' % payment_ref
                     if hasattr(error, 'response') and hasattr(error.response, 'content'):
                         error_message += '\nReceived: %s' % error.response.content
                     logger.exception(error_message)

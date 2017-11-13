@@ -14,7 +14,7 @@ from send_money.forms import (
 )
 from send_money.models import PaymentMethod
 from send_money.tests import mock_auth, patch_gov_uk_pay_availability_check
-from send_money.utils import api_url, get_api_client
+from send_money.utils import api_url, get_api_session
 
 logger = logging.getLogger('mtp')
 
@@ -96,8 +96,8 @@ PaymentMethodChoiceFormTestCase.make_invalid_tests(
 class PrisonerDetailsFormTestCase(FormTestCase):
     def assertFormValid(self, form):  # noqa
         with responses.RequestsMock() as rsps, \
-                mock.patch('send_money.forms.PrisonerDetailsForm.get_api_client') as mocked_api_client:
-            mocked_api_client.side_effect = get_api_client
+                mock.patch('send_money.forms.PrisonerDetailsForm.get_api_session') as mocked_api_session:
+            mocked_api_session.side_effect = get_api_session
             mock_auth(rsps)
             rsps.add(
                 rsps.GET,
@@ -139,13 +139,13 @@ class BankTransferPrisonerDetailsFormTestCase(PrisonerDetailsFormTestCase):
         })
         create_session_calls = []
 
-        def mocked_get_api_client(reconnect=False):
+        def mocked_get_api_session(reconnect=False):
             create_session_calls.append(reconnect)
-            return get_api_client()
+            return get_api_session()
 
         with responses.RequestsMock() as rsps, \
-                mock.patch('send_money.forms.PrisonerDetailsForm.get_api_client') as mocked_api_client:
-            mocked_api_client.side_effect = mocked_get_api_client
+                mock.patch('send_money.forms.PrisonerDetailsForm.get_api_session') as mocked_api_session:
+            mocked_api_session.side_effect = mocked_get_api_session
             rsps.add(
                 rsps.POST,
                 REQUEST_TOKEN_URL,
@@ -185,16 +185,17 @@ class BankTransferPrisonerDetailsFormTestCase(PrisonerDetailsFormTestCase):
             self.assertTrue(form.is_valid())
         self.assertSequenceEqual(create_session_calls, [False, True])
 
-    @mock.patch('send_money.forms.get_api_client')
-    def test_validation_check_concurrency(self, mocked_api_client):
+    @mock.patch('send_money.forms.get_api_session')
+    def test_validation_check_concurrency(self, mocked_api_session):
         form_class = self.form_class
+        form_class.shared_api_session = None
         lock = threading.RLock()
         finished = threading.Event()
         concurrency = 5
         runs = 0
         successes = 0
 
-        def delayed_response(**_):
+        def delayed_response():
             logger.debug('Call to API takes 1 second')
             time.sleep(1)
             logger.debug('API call returning')
@@ -206,9 +207,9 @@ class BankTransferPrisonerDetailsFormTestCase(PrisonerDetailsFormTestCase):
                 }]
             }
 
-        mocked_api_call = mocked_api_client().prisoner_validity().get
+        mocked_api_call = mocked_api_session().get().json
         mocked_api_call.side_effect = delayed_response
-        setup_call_count = mocked_api_client.call_count
+        setup_call_count = mocked_api_session.call_count
 
         class TestThread(threading.Thread):
             def run(self):
@@ -232,8 +233,8 @@ class BankTransferPrisonerDetailsFormTestCase(PrisonerDetailsFormTestCase):
             for _ in range(concurrency):
                 TestThread().start()
         finished.wait()
-        self.assertEqual(mocked_api_client.call_count, setup_call_count + 1, 'get_api_client called more than once, '
-                                                                             'but the response should be shared')
+        self.assertEqual(mocked_api_session.call_count, setup_call_count + 1, 'get_api_session called more than once, '
+                                                                              'but the response should be shared')
         self.assertEqual(mocked_api_call.call_count, concurrency, 'validity should be called once for each thread')
         self.assertEqual(successes, concurrency, 'all threads should report valid forms')
 

@@ -122,15 +122,15 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
             call_command('update_incomplete_payments')
 
             self.assertEqual(
-                json.loads(rsps.calls[-5].request.body)['email'],
+                json.loads(rsps.calls[-5].request.body.decode())['email'],
                 'success_sender@outside.local'
             )
             self.assertEqual(
-                json.loads(rsps.calls[-4].request.body)['received_at'],
+                json.loads(rsps.calls[-4].request.body.decode())['received_at'],
                 '2016-10-27T15:11:05+00:00'
             )
             self.assertEqual(
-                json.loads(rsps.calls[-1].request.body)['status'],
+                json.loads(rsps.calls[-1].request.body.decode())['status'],
                 'failed'
             )
 
@@ -176,7 +176,7 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
 
             call_command('update_incomplete_payments')
 
-            self.assertEqual(rsps.calls[3].request.body, '{"status": "failed"}')
+            self.assertEqual(rsps.calls[3].request.body.decode(), '{"status": "failed"}')
 
     @override_settings(ENVIRONMENT='prod')  # because non-prod environments don't send to @outside.local
     def test_update_incomplete_payments_doesnt_resend_sent_email(self):
@@ -294,7 +294,7 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
             call_command('update_incomplete_payments')
 
             self.assertEqual(
-                json.loads(rsps.calls[-1].request.body)['received_at'],
+                json.loads(rsps.calls[-1].request.body.decode())['received_at'],
                 received_at
             )
 

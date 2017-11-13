@@ -21,10 +21,10 @@ logger = logging.getLogger('mtp')
 prisoner_number_re = re.compile(r'^[a-z]\d\d\d\d[a-z]{2}$', re.IGNORECASE)
 
 
-def get_api_client():
-    return api_client.get_authenticated_connection(
+def get_api_session():
+    return api_client.get_authenticated_api_session(
         settings.SHARED_API_USERNAME,
-        settings.SHARED_API_PASSWORD
+        settings.SHARED_API_PASSWORD,
     )
 
 

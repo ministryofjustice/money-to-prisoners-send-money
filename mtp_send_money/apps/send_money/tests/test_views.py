@@ -17,7 +17,7 @@ import responses
 
 from send_money.models import PaymentMethod
 from send_money.tests import mock_auth, patch_gov_uk_pay_availability_check, patch_govuk_pay_connection_check
-from send_money.utils import api_url, govuk_url
+from send_money.utils import api_url, govuk_url, get_api_session
 
 
 class BaseTestCase(SimpleTestCase):
@@ -372,43 +372,56 @@ class BankTransferPrisonerDetailsTestCase(BankTransferFlowTestCase):
         form = response.context['form']
         self.assertTrue(form.errors)
 
-    @mock.patch('send_money.forms.PrisonerDetailsForm.get_api_client')
-    def test_search_not_limited_to_specific_prisons(self, mocked_api_client):
+    @override_settings(BANK_TRANSFER_PRISONS='')
+    @mock.patch('send_money.forms.PrisonerDetailsForm.get_api_session')
+    def test_search_not_limited_to_specific_prisons(self, mocked_api_session):
+        mocked_api_session.side_effect = get_api_session
         self.choose_bank_transfer_payment_method()
 
-        mocked_api_call = mocked_api_client().prisoner_validity().get
-        mocked_api_call.return_value = {
-            'count': 0,
-            'results': []
-        }
-        self.client.post(self.url, data={
-            'prisoner_number': 'A1231DE',
-            'prisoner_dob_0': '4',
-            'prisoner_dob_1': '10',
-            'prisoner_dob_2': '1980',
-        }, follow=True)
-        self.assertEqual(mocked_api_call.call_count, 1)
-        mocked_api_call.assert_called_with(prisoner_number='A1231DE', prisoner_dob='1980-10-04')
+        with responses.RequestsMock() as rsps:
+            mock_auth(rsps)
+            rsps.add(
+                rsps.GET,
+                api_url('/prisoner_validity/') + '?prisoner_number=A1231DE'
+                                                 '&prisoner_dob=1980-10-04',
+                match_querystring=True,
+                json={
+                    'count': 0,
+                    'results': []
+                },
+            )
+            self.client.post(self.url, data={
+                'prisoner_number': 'A1231DE',
+                'prisoner_dob_0': '4',
+                'prisoner_dob_1': '10',
+                'prisoner_dob_2': '1980',
+            }, follow=True)
 
     @override_settings(BANK_TRANSFER_PRISONS='DEF,ABC')
-    @mock.patch('send_money.forms.PrisonerDetailsForm.get_api_client')
-    def test_can_limit_search_to_specific_prisons(self, mocked_api_client):
+    @mock.patch('send_money.forms.PrisonerDetailsForm.get_api_session')
+    def test_can_limit_search_to_specific_prisons(self, mocked_api_session):
+        mocked_api_session.side_effect = get_api_session
         self.choose_bank_transfer_payment_method()
 
-        mocked_api_call = mocked_api_client().prisoner_validity().get
-        mocked_api_call.return_value = {
-            'count': 0,
-            'results': []
-        }
-        self.client.post(self.url, data={
-            'prisoner_number': 'A1231DE',
-            'prisoner_dob_0': '4',
-            'prisoner_dob_1': '10',
-            'prisoner_dob_2': '1980',
-        }, follow=True)
-        self.assertEqual(mocked_api_call.call_count, 1)
-        mocked_api_call.assert_called_with(prisoner_number='A1231DE', prisoner_dob='1980-10-04',
-                                           prisons='ABC,DEF')
+        with responses.RequestsMock() as rsps:
+            mock_auth(rsps)
+            rsps.add(
+                rsps.GET,
+                api_url('/prisoner_validity/') + '?prisoner_number=A1231DE'
+                                                 '&prisoner_dob=1980-10-04'
+                                                 '&prisons=ABC,DEF',
+                match_querystring=True,
+                json={
+                    'count': 0,
+                    'results': []
+                },
+            )
+            self.client.post(self.url, data={
+                'prisoner_number': 'A1231DE',
+                'prisoner_dob_0': '4',
+                'prisoner_dob_1': '10',
+                'prisoner_dob_2': '1980',
+            }, follow=True)
 
 
 @patch_gov_uk_pay_availability_check()
@@ -616,45 +629,58 @@ class DebitCardPrisonerDetailsTestCase(DebitCardFlowTestCase):
         self.assertTrue(form.errors)
         self.assertEqual(mocked_is_prisoner_known.call_count, 0)
 
-    @mock.patch('send_money.forms.PrisonerDetailsForm.get_api_client')
-    def test_search_not_limited_to_specific_prisons(self, mocked_api_client):
+    @override_settings(DEBIT_CARD_PRISONS='')
+    @mock.patch('send_money.forms.PrisonerDetailsForm.get_api_session')
+    def test_search_not_limited_to_specific_prisons(self, mocked_api_session):
+        mocked_api_session.side_effect = get_api_session
         self.choose_debit_card_payment_method()
 
-        mocked_api_call = mocked_api_client().prisoner_validity().get
-        mocked_api_call.return_value = {
-            'count': 0,
-            'results': []
-        }
-        self.client.post(self.url, data={
-            'prisoner_name': 'john smith',
-            'prisoner_number': 'A1231DE',
-            'prisoner_dob_0': '4',
-            'prisoner_dob_1': '10',
-            'prisoner_dob_2': '1980',
-        }, follow=True)
-        self.assertEqual(mocked_api_call.call_count, 1)
-        mocked_api_call.assert_called_with(prisoner_number='A1231DE', prisoner_dob='1980-10-04')
+        with responses.RequestsMock() as rsps:
+            mock_auth(rsps)
+            rsps.add(
+                rsps.GET,
+                api_url('/prisoner_validity/') + '?prisoner_number=A1231DE'
+                                                 '&prisoner_dob=1980-10-04',
+                match_querystring=True,
+                json={
+                    'count': 0,
+                    'results': []
+                },
+            )
+            self.client.post(self.url, data={
+                'prisoner_name': 'john smith',
+                'prisoner_number': 'A1231DE',
+                'prisoner_dob_0': '4',
+                'prisoner_dob_1': '10',
+                'prisoner_dob_2': '1980',
+            }, follow=True)
 
     @override_settings(DEBIT_CARD_PRISONS='DEF,ABC,ZZZ')
-    @mock.patch('send_money.forms.PrisonerDetailsForm.get_api_client')
-    def test_can_limit_search_to_specific_prisons(self, mocked_api_client):
+    @mock.patch('send_money.forms.PrisonerDetailsForm.get_api_session')
+    def test_can_limit_search_to_specific_prisons(self, mocked_api_session):
+        mocked_api_session.side_effect = get_api_session
         self.choose_debit_card_payment_method()
 
-        mocked_api_call = mocked_api_client().prisoner_validity().get
-        mocked_api_call.return_value = {
-            'count': 0,
-            'results': []
-        }
-        self.client.post(self.url, data={
-            'prisoner_name': 'john smith',
-            'prisoner_number': 'A1231DE',
-            'prisoner_dob_0': '4',
-            'prisoner_dob_1': '10',
-            'prisoner_dob_2': '1980',
-        }, follow=True)
-        self.assertEqual(mocked_api_call.call_count, 1)
-        mocked_api_call.assert_called_with(prisoner_number='A1231DE', prisoner_dob='1980-10-04',
-                                           prisons='ABC,DEF,ZZZ')
+        with responses.RequestsMock() as rsps:
+            mock_auth(rsps)
+            rsps.add(
+                rsps.GET,
+                api_url('/prisoner_validity/') + '?prisoner_number=A1231DE'
+                                                 '&prisoner_dob=1980-10-04'
+                                                 '&prisons=ABC,DEF,ZZZ',
+                match_querystring=True,
+                json={
+                    'count': 0,
+                    'results': []
+                },
+            )
+            self.client.post(self.url, data={
+                'prisoner_name': 'john smith',
+                'prisoner_number': 'A1231DE',
+                'prisoner_dob_0': '4',
+                'prisoner_dob_1': '10',
+                'prisoner_dob_2': '1980',
+            }, follow=True)
 
 
 @patch_gov_uk_pay_availability_check()
@@ -790,13 +816,13 @@ class DebitCardPaymentTestCase(DebitCardFlowTestCase):
             with self.patch_prisoner_details_check():
                 response = self.client.get(self.url, follow=False)
 
-            # check amount and service charge submitted to api, uses slumber so body is str
-            payment_request = json.loads(rsps.calls[1].request.body)
+            # check amount and service charge submitted to api
+            payment_request = json.loads(rsps.calls[1].request.body.decode('utf8'))
             self.assertEqual(payment_request['amount'], 1700)
             self.assertEqual(payment_request['service_charge'], 61)
             self.assertEqual(payment_request['ip_address'], None)  # only forwarded-for IP is recorded
 
-            # check total charge submitted to govuk, uses requests so body is bytes
+            # check total charge submitted to govuk
             govuk_request = json.loads(rsps.calls[2].request.body.decode('utf8'))
             self.assertEqual(govuk_request['amount'], 1761)
 
@@ -880,11 +906,11 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
             response = self.client.get(self.url, data={'payment_ref': ''}, follow=True)
         self.assertOnPage(response, 'choose_method')
 
-    @mock.patch('send_money.payments.PaymentClient.client')
-    def test_confirmation_escapes_reference_param(self, mocked_api_client):
-        from slumber.exceptions import HttpNotFoundError
+    @mock.patch('send_money.payments.PaymentClient.api_session')
+    def test_confirmation_escapes_reference_param(self, mocked_api_session):
+        from mtp_common.auth.exceptions import HttpNotFoundError
 
-        mocked_api_client.payments().get.side_effect = HttpNotFoundError
+        mocked_api_session.get.side_effect = HttpNotFoundError
 
         self.choose_debit_card_payment_method()
         self.fill_in_prisoner_details()
@@ -892,7 +918,7 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
 
         with self.patch_prisoner_details_check():
             self.client.get(self.url, data={'payment_ref': '../service-availability/'})
-        mocked_api_client.payments.assert_called_with('..%2Fservice-availability%2F')
+        mocked_api_session.get.assert_called_with('/payments/..%2Fservice-availability%2F/')
 
     @override_settings(ENVIRONMENT='prod')  # because non-prod environments don't send to @outside.local
     def test_confirmation(self):
