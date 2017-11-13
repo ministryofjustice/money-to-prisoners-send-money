@@ -880,6 +880,20 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
             response = self.client.get(self.url, data={'payment_ref': ''}, follow=True)
         self.assertOnPage(response, 'choose_method')
 
+    @mock.patch('send_money.payments.PaymentClient.client')
+    def test_confirmation_escapes_reference_param(self, mocked_api_client):
+        from slumber.exceptions import HttpNotFoundError
+
+        mocked_api_client.payments().get.side_effect = HttpNotFoundError
+
+        self.choose_debit_card_payment_method()
+        self.fill_in_prisoner_details()
+        self.fill_in_amount()
+
+        with self.patch_prisoner_details_check():
+            self.client.get(self.url, data={'payment_ref': '../service-availability/'})
+        mocked_api_client.payments.assert_called_with('..%2Fservice-availability%2F')
+
     @override_settings(ENVIRONMENT='prod')  # because non-prod environments don't send to @outside.local
     def test_confirmation(self):
         self.choose_debit_card_payment_method()
