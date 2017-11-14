@@ -7,9 +7,10 @@ from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
 from django.core.validators import RegexValidator
+from django.utils import formats
+from django.utils.cache import add_never_cache_headers, patch_cache_control
 from django.utils.dateformat import format as format_date
 from django.utils.dateparse import parse_date
-from django.utils import formats
 from django.utils.encoding import force_text
 from django.utils.translation import gettext, gettext_lazy as _
 from mtp_common.auth import api_client, urljoin
@@ -205,3 +206,19 @@ def site_url(path):
 def get_link_by_rel(data, rel):
     if rel in data['_links']:
         return data['_links'][rel]['href']
+
+
+def make_response_cacheable(response):
+    """
+    Allow response to be public and cached for an hour
+    """
+    patch_cache_control(response, public=True, max_age=3600)
+    return response
+
+
+def make_response_uncacheable(response):
+    """
+    Prevent all clients caching response
+    """
+    add_never_cache_headers(response)
+    return response

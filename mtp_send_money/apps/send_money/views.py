@@ -21,7 +21,8 @@ from send_money.exceptions import GovUkPaymentStatusException
 from send_money.models import PaymentMethod
 from send_money.payments import is_active_payment, PaymentClient
 from send_money.utils import (
-    bank_transfer_reference, can_load_govuk_pay_image, get_service_charge, get_link_by_rel, site_url
+    bank_transfer_reference, can_load_govuk_pay_image, get_service_charge, get_link_by_rel, site_url,
+    make_response_uncacheable,
 )
 
 logger = logging.getLogger('mtp')
@@ -77,7 +78,8 @@ class SendMoneyView(View):
         if (method_choice and self.payment_method and
                 method_choice['payment_method'] != self.payment_method.name):
             return redirect(build_view_url(self.request, PaymentMethodChoiceView.url_name))
-        return super().dispatch(request, *args, **kwargs)
+        response = super().dispatch(request, *args, **kwargs)
+        return make_response_uncacheable(response)
 
 
 class SendMoneyFormView(SendMoneyView, FormView):
@@ -394,7 +396,8 @@ class DebitCardConfirmationView(TemplateView):
     def dispatch(self, request, *args, **kwargs):
         if not settings.SHOW_DEBIT_CARD_OPTION:
             raise Http404('Debit cards are not available')
-        return super().dispatch(request, *args, **kwargs)
+        response = super().dispatch(request, *args, **kwargs)
+        return make_response_uncacheable(response)
 
     def get(self, request, *args, **kwargs):
         payment_ref = self.request.GET.get('payment_ref')

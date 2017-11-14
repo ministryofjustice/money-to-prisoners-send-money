@@ -12,7 +12,7 @@ from mtp_common.api import retrieve_all_pages_for_path
 from oauthlib.oauth2 import OAuth2Error
 from requests import RequestException
 
-from send_money.utils import get_api_session
+from send_money.utils import get_api_session, make_response_cacheable
 
 logger = logging.getLogger('mtp')
 
@@ -31,7 +31,8 @@ def help_view(request, page='payment-issues'):
     return_to_same_page = return_to.split('?')[0] == request.build_absolute_uri().split('?')[0]
     if page != 'payment-issues' and return_to_within_site and not return_to_same_page:
         context['breadcrumbs_back'] = return_to
-    return render(request, 'send_money/help/%s.html' % page, context=context)
+    response = render(request, 'send_money/help/%s.html' % page, context=context)
+    return make_response_cacheable(response)
 
 
 def prison_list_view(request):
@@ -52,7 +53,7 @@ def prison_list_view(request):
             cache.set('prison_list', prison_list, timeout=60 * 60)
         except (RequestException, OAuth2Error, ValueError):
             logger.exception('Could not look up prison list')
-    return render(request, 'send_money/prison-list.html', context={
+    response = render(request, 'send_money/prison-list.html', context={
         'breadcrumbs_back': reverse('send_money:help'),
         'prison_list': prison_list,
         'stop_words': sorted([
@@ -64,6 +65,7 @@ def prison_list_view(request):
             'secure', 'training',
         ]),
     })
+    return make_response_cacheable(response)
 
 
 def robots_txt_view(request):
@@ -75,7 +77,8 @@ def robots_txt_view(request):
         robots_txt = 'User-agent: *\nDisallow: /'
     else:
         robots_txt = 'Sitemap: %s' % request.build_absolute_uri(reverse('sitemap_xml'))
-    return HttpResponse(robots_txt, content_type='text/plain')
+    response = HttpResponse(robots_txt, content_type='text/plain')
+    return make_response_cacheable(response)
 
 
 class SitemapXMLView(TemplateView):
@@ -114,3 +117,7 @@ class SitemapXMLView(TemplateView):
 
     def get_context_data(self, **kwargs):
         return super().get_context_data(links=self.make_links(), **kwargs)
+
+    def get(self, request, *args, **kwargs):
+        response = super().get(request, *args, **kwargs)
+        return make_response_cacheable(response)

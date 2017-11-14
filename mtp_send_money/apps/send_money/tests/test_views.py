@@ -11,6 +11,8 @@ from django.core import mail
 from django.core.urlresolvers import reverse
 from django.test import override_settings
 from django.test.testcases import SimpleTestCase
+from django.utils.cache import get_max_age
+from django.utils.translation import override as override_lang
 from mtp_common.test_utils import silence_logger
 from requests import ConnectionError
 import responses
@@ -25,6 +27,10 @@ class BaseTestCase(SimpleTestCase):
 
     def assertOnPage(self, response, url_name):  # noqa
         self.assertContains(response, '<!-- %s -->' % url_name)
+
+    def assertResponseNotCacheable(self, response):  # noqa
+        self.assertTrue(response.has_header('Cache-Control'), msg='response has no cache control header')
+        self.assertIn('no-cache', response['Cache-Control'], msg='response is not private')
 
 
 class PaymentOptionAvailabilityTestCase(BaseTestCase):
@@ -128,6 +134,7 @@ class ChooseMethodViewTestCase(BaseTestCase):
     def test_shows_all_payment_options(self):
         response = self.client.get(self.url, follow=True)
         self.assertOnPage(response, 'choose_method')
+        self.assertResponseNotCacheable(response)
         content = response.content.decode('utf8')
         for method in PaymentMethod:
             self.assertIn('id_%s' % method.name, content)
@@ -280,6 +287,7 @@ class BankTransferWarningTestCase(BankTransferFlowTestCase):
     def test_warning_page_shows(self):
         response = self.choose_bank_transfer_payment_method()
         self.assertOnPage(response, 'bank_transfer_warning')
+        self.assertResponseNotCacheable(response)
 
 
 @patch_gov_uk_pay_availability_check()
@@ -296,6 +304,7 @@ class BankTransferPrisonerDetailsTestCase(BankTransferFlowTestCase):
 
         response = self.client.get(self.url, follow=True)
         self.assertOnPage(response, 'prisoner_details_bank')
+        self.assertResponseNotCacheable(response)
 
     def test_can_skip_back_to_payment_choice_page(self):
         self.choose_bank_transfer_payment_method()
@@ -438,6 +447,7 @@ class BankTransferReferenceTestCase(BankTransferFlowTestCase):
 
         response = self.fill_in_prisoner_details()
         self.assertOnPage(response, 'bank_transfer')
+        self.assertResponseNotCacheable(response)
 
     def test_bank_transfer_page_clears_session_after_delay(self):
         with self.settings(CONFIRMATION_EXPIRES=0):
@@ -563,6 +573,7 @@ class DebitCardPrisonerDetailsTestCase(DebitCardFlowTestCase):
 
         response = self.client.post(self.url, follow=True)
         self.assertOnPage(response, 'prisoner_details_debit')
+        self.assertResponseNotCacheable(response)
         form = response.context['form']
         self.assertTrue(form.errors)
         self.assertEqual(mocked_is_prisoner_known.call_count, 0)
@@ -697,6 +708,7 @@ class DebitCardAmountTestCase(DebitCardFlowTestCase):
     def test_send_money_page_shows_no_service_charge(self):
         self.choose_debit_card_payment_method()
         response = self.fill_in_prisoner_details()
+        self.assertResponseNotCacheable(response)
 
         self.assertNotContains(response, 'mtp-charges-charges')  # an element class
 
@@ -753,6 +765,7 @@ class DebitCardCheckTestCase(DebitCardFlowTestCase):
         self.choose_debit_card_payment_method()
         self.fill_in_prisoner_details()
         response = self.fill_in_amount()
+        self.assertResponseNotCacheable(response)
 
         content = response.content.decode('utf8')
         self.assertIn('John Smith', content)
@@ -958,6 +971,7 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
                     self.url, {'payment_ref': self.ref}, follow=False
                 )
             self.assertContains(response, 'success')
+            self.assertResponseNotCacheable(response)
 
             # check session is cleared
             for key in self.complete_session_keys:
@@ -1202,3 +1216,20 @@ class PrisonList(SimpleTestCase):
         response = response.content.decode(response.charset)
         self.assertIn('Prison 2', response)
         self.assertLess(response.index('Prison 1'), response.index('Prison 2'))
+
+
+class PlainViewTestCase(SimpleTestCase):
+    def test_plain_views_are_cacheable(self):
+        view_names = [
+            'send_money:help', 'send_money:prison_list',
+            'send_money:help_bank_transfer', 'send_money:help_delays', 'send_money:help_transfered',
+            'terms', 'cookies',
+            'js-i18n',
+            'sitemap_xml',
+        ]
+        for view_name in view_names:
+            response = self.client.get(reverse(view_name))
+            self.assertGreaterEqual(get_max_age(response), 3600)
+            with override_lang('cy'):
+                response = self.client.get(reverse(view_name))
+                self.assertGreaterEqual(get_max_age(response), 3600)
