@@ -3,28 +3,25 @@ from django.conf.urls import include, url
 from django.conf.urls.i18n import i18n_patterns
 from django.template.response import TemplateResponse
 from django.views.decorators.cache import cache_control
-from django.views.generic import TemplateView
 from django.views.generic.base import RedirectView
 from django.views.i18n import JavaScriptCatalog
 from moj_irat.views import HealthcheckView, PingJsonView
 
+from send_money.utils import make_response_cacheable
 from send_money.views_misc import SitemapXMLView, robots_txt_view
 
+
+def cacheable_template(template):
+    return lambda request: make_response_cacheable(TemplateResponse(request, template))
+
+
 urlpatterns = i18n_patterns(
-    url(r'^', include('send_money.urls', namespace='send_money',)),
+    url(r'^', include('send_money.urls', namespace='send_money')),
 
     url(r'^', include('feedback.urls')),
 
-    url(
-        r'^terms/$',
-        TemplateView.as_view(template_name='terms.html'),
-        name='terms',
-    ),
-    url(
-        r'^cookies/$',
-        TemplateView.as_view(template_name='cookies.html'),
-        name='cookies',
-    ),
+    url(r'^terms/$', cacheable_template('terms.html'), name='terms'),
+    url(r'^cookies/$', cacheable_template('cookies.html'), name='cookies'),
 
     url(r'^js-i18n.js$', cache_control(public=True, max_age=86400)(JavaScriptCatalog.as_view()), name='js-i18n'),
 
