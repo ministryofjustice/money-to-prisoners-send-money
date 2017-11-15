@@ -2,9 +2,9 @@ import logging
 
 from django.conf import settings
 from django.core.cache import cache
-from django.core.urlresolvers import reverse
 from django.http import HttpResponse
 from django.shortcuts import render
+from django.urls import reverse
 from django.utils.http import is_safe_url
 from django.utils.translation import override as override_language
 from django.views.generic import TemplateView

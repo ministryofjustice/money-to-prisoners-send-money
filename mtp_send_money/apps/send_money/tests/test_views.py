@@ -8,9 +8,9 @@ from xml.etree import ElementTree
 
 from django.conf import settings
 from django.core import mail
-from django.core.urlresolvers import reverse
 from django.test import override_settings
 from django.test.testcases import SimpleTestCase
+from django.urls import reverse
 from django.utils.cache import get_max_age
 from django.utils.translation import override as override_lang
 from mtp_common.test_utils import silence_logger
@@ -1218,8 +1218,13 @@ class PrisonList(SimpleTestCase):
         self.assertLess(response.index('Prison 1'), response.index('Prison 2'))
 
 
-class PlainViewTestCase(SimpleTestCase):
-    def test_plain_views_are_cacheable(self):
+class PlainViewTestCase(BaseTestCase):
+    @mock.patch('send_money.views_misc.get_api_session')
+    def test_plain_views_are_cacheable(self, mocked_api_session):
+        mocked_api_session().get().json.return_value = {
+            'count': 1,
+            'results': [{'nomis_id': 'AAA', 'short_name': 'Prison', 'name': 'HMP Prison'}],
+        }
         view_names = [
             'send_money:help', 'send_money:prison_list',
             'send_money:help_bank_transfer', 'send_money:help_delays', 'send_money:help_transfered',
@@ -1233,3 +1238,14 @@ class PlainViewTestCase(SimpleTestCase):
             with override_lang('cy'):
                 response = self.client.get(reverse(view_name))
                 self.assertGreaterEqual(get_max_age(response), 3600)
+
+    def test_feedback_views_are_uncacheable(self):
+        view_names = [
+            'submit_ticket', 'feedback_success',
+            'healthcheck_json', 'ping_json',
+        ]
+        with responses.RequestsMock() as rsps:
+            rsps.add(rsps.GET, '%s/%s' % (settings.API_URL, 'healthcheck.json'), json={})
+            for view_name in view_names:
+                response = self.client.get(reverse(view_name))
+                self.assertResponseNotCacheable(response)
