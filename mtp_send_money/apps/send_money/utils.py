@@ -5,10 +5,10 @@ import re
 
 from django.conf import settings
 from django.core.exceptions import ValidationError
-from django.core.urlresolvers import reverse
 from django.core.validators import RegexValidator
+from django.urls import reverse
 from django.utils import formats
-from django.utils.cache import add_never_cache_headers, patch_cache_control
+from django.utils.cache import patch_cache_control
 from django.utils.dateformat import format as format_date
 from django.utils.dateparse import parse_date
 from django.utils.encoding import force_text
@@ -213,12 +213,4 @@ def make_response_cacheable(response):
     Allow response to be public and cached for an hour
     """
     patch_cache_control(response, public=True, max_age=3600)
-    return response
-
-
-def make_response_uncacheable(response):
-    """
-    Prevent all clients caching response
-    """
-    add_never_cache_headers(response)
     return response

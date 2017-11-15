@@ -47,12 +47,12 @@ INSTALLED_APPS += PROJECT_APPS
 
 WSGI_APPLICATION = 'mtp_send_money.wsgi.application'
 ROOT_URLCONF = 'mtp_send_money.urls'
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
     'mtp_common.auth.csrf.CsrfViewMiddleware',
-    'send_money.middleware.SendMoneyAuthenticationMiddleware',
+    'send_money.middleware.SendMoneyMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.security.SecurityMiddleware',
