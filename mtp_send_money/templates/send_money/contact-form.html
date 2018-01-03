@@ -1,14 +1,8 @@
-{% extends 'base.html' %}
+{% extends 'mtp_common/feedback/submit_feedback.html' %}
 {% load i18n %}
 {% load mtp_common %}
 
-{% block page_title %}{% trans 'Contact us' %} – {{ block.super }}{% endblock %}
-
-{% block inner_content %}
-  {% if return_to %}
-    <a class="link-back" href="{{ return_to }}">{% trans 'Back' %}</a>
-  {% endif %}
-
+{% block get_help_heading %}
   <header>
     <h1 class="heading-xlarge">
       <span class="heading-secondary">
@@ -17,10 +11,15 @@
       {% trans 'Contact us' %}
     </h1>
   </header>
+{% endblock %}
+
+{% block get_help_leading %}{% endblock %}
+
+{% block get_help_form %}
 
   <div class="grid-row mtp-contact-columns">
     <div class="column-two-thirds">
-      <form action="." method="post" id="send-feedback">
+      <form action="." method="post" id="mtp-feedback-form">
         {% include 'mtp_common/forms/error-summary.html' with form=form only %}
 
         <fieldset>

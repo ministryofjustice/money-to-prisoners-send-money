@@ -1,7 +1,7 @@
 // contact us page
 
 .mtp-contact-columns {
-  #send-feedback {
+  #mtp-feedback-form {
     margin-right: 5em;
   }
 
@@ -34,13 +34,13 @@
   }
 
   @include media($min-width: $tablet-breakpoint,  $max-width: $desktop-breakpoint, $ignore-for-ie: true) {
-    #send-feedback {
+    #mtp-feedback-form {
       margin-right: 1em;
     }
   }
 
   @include media(mobile, $ignore-for-ie: true) {
-    #send-feedback {
+    #mtp-feedback-form {
       margin-right: 0;
     }
 
