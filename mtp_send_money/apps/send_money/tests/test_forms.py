@@ -129,7 +129,7 @@ class BankTransferPrisonerDetailsFormTestCase(PrisonerDetailsFormTestCase):
     form_class = BankTransferPrisonerDetailsForm
 
     def test_session_expiry(self):
-        from mtp_common.auth.api_client import REQUEST_TOKEN_URL
+        from mtp_common.auth.api_client import get_request_token_url
 
         form = self.form_class(data={
             'prisoner_number': 'A1234AB',
@@ -148,7 +148,7 @@ class BankTransferPrisonerDetailsFormTestCase(PrisonerDetailsFormTestCase):
             mocked_api_session.side_effect = mocked_get_api_session
             rsps.add(
                 rsps.POST,
-                REQUEST_TOKEN_URL,
+                get_request_token_url(),
                 json={
                     'token_type': 'Bearer',
                     'scope': 'read write',
@@ -160,7 +160,7 @@ class BankTransferPrisonerDetailsFormTestCase(PrisonerDetailsFormTestCase):
             )
             rsps.add(
                 rsps.POST,
-                REQUEST_TOKEN_URL,
+                get_request_token_url(),
                 json={
                     'token_type': 'Bearer',
                     'scope': 'read write',

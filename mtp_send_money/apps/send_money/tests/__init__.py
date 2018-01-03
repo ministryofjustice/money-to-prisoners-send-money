@@ -1,7 +1,7 @@
 from unittest import mock
 
 from django.utils.crypto import get_random_string
-from mtp_common.auth.api_client import REQUEST_TOKEN_URL
+from mtp_common.auth.api_client import get_request_token_url
 
 
 def mock_auth(rsps):
@@ -10,7 +10,7 @@ def mock_auth(rsps):
     """
     rsps.add(
         rsps.POST,
-        REQUEST_TOKEN_URL,
+        get_request_token_url(),
         json={
             'access_token': get_random_string(length=30),
             'refresh_token': get_random_string(length=30),
