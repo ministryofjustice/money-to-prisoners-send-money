@@ -14,8 +14,18 @@ from send_money.utils import api_url, govuk_url
 
 
 @override_settings(GOVUK_PAY_URL='https://pay.gov.local/v1')
-@override_settings(RUN_CLEANUP_TASKS=True)
 class UpdateIncompletePaymentsTestCase(SimpleTestCase):
+    def setUp(self):
+        super().setUp()
+        self.mocked_is_first_instance = mock.patch(
+            'send_money.management.commands.update_incomplete_payments.is_first_instance',
+            return_value=True
+        )
+        self.mocked_is_first_instance.start()
+
+    def tearDown(self):
+        self.mocked_is_first_instance.stop()
+        super().tearDown()
 
     @override_settings(ENVIRONMENT='prod')  # because non-prod environments don't send to @outside.local
     def test_update_incomplete_payments(self):
@@ -119,7 +129,7 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
                 status=200,
             )
 
-            call_command('update_incomplete_payments')
+            call_command('update_incomplete_payments', verbosity=0)
 
             self.assertEqual(
                 json.loads(rsps.calls[-5].request.body.decode())['email'],
@@ -174,7 +184,7 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
                 status=200,
             )
 
-            call_command('update_incomplete_payments')
+            call_command('update_incomplete_payments', verbosity=0)
 
             self.assertEqual(rsps.calls[3].request.body.decode(), '{"status": "failed"}')
 
@@ -208,7 +218,7 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
                 status=200,
             )
 
-            call_command('update_incomplete_payments')
+            call_command('update_incomplete_payments', verbosity=0)
 
             self.assertEqual(len(mail.outbox), 0)
 
@@ -234,7 +244,7 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
                 status=200
             )
 
-            call_command('update_incomplete_payments')
+            call_command('update_incomplete_payments', verbosity=0)
 
             self.assertEqual(len(mail.outbox), 0)
 
@@ -291,7 +301,7 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
                 status=200,
             )
 
-            call_command('update_incomplete_payments')
+            call_command('update_incomplete_payments', verbosity=0)
 
             self.assertEqual(
                 json.loads(rsps.calls[-1].request.body.decode())['received_at'],

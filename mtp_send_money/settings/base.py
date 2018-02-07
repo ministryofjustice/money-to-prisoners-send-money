@@ -276,8 +276,6 @@ MAILGUN_FROM_ADDRESS = os.environ.get('MAILGUN_FROM_ADDRESS', '')
 if MAILGUN_FROM_ADDRESS:
     DEFAULT_FROM_EMAIL = MAILGUN_FROM_ADDRESS
 
-RUN_CLEANUP_TASKS = os.environ.get('RUN_CLEANUP_TASKS', 'False') == 'True'
-
 try:
     from .local import *  # noqa
 except ImportError:
