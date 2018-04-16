@@ -327,7 +327,7 @@ class BankTransferReference(unittest.TestCase):
     def test_bank_transfer_reference(self):
         self.assertEqual(
             bank_transfer_reference('AB1234AB', datetime.date(1980, 1, 4)),
-            'AB1234AB/04/01/1980',
+            'AB1234AB/04/01/80',
         )
 
 
