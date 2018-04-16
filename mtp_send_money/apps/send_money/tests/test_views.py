@@ -481,7 +481,7 @@ class BankTransferReferenceTestCase(BankTransferFlowTestCase):
         self.choose_bank_transfer_payment_method()
 
         response = self.fill_in_prisoner_details()
-        bank_transfer_reference = 'A1231DE/04/10/1980'
+        bank_transfer_reference = 'A1231DE/04/10/80'
         self.assertContains(response, bank_transfer_reference)
         self.assertEqual(response.context['bank_transfer_reference'], bank_transfer_reference)
 
