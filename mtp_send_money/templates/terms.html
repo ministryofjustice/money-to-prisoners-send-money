@@ -2,20 +2,18 @@
 {% load i18n %}
 {% load mtp_common %}
 
-{% block page_title %}{% trans 'Terms and conditions and privacy policy' %} – {{ block.super }}{% endblock %}
+{% block page_title %}{% trans 'Terms and conditions' %} – {{ block.super }}{% endblock %}
 
 {% block inner_content %}
 
 <header>
-  <h1 class="heading-xlarge">{% trans 'Terms and conditions and privacy policy' %}</h1>
+  <h1 class="heading-xlarge">{% trans 'Terms and conditions' %}</h1>
 </header>
 
 <p>
   {% trans 'By using the ‘Send money to someone in prison’ service using your bank account you agree to our privacy policy and to these terms and conditions.' %}
   {% trans 'Please read them carefully.' %}
 </p>
-
-<h2 class="heading-large">{% trans 'Terms and conditions' %}</h2>
 
 <h3 class="heading-small">{% trans 'General' %}</h3>
 
@@ -47,7 +45,7 @@
 <h3 class="heading-small">{% trans 'How to use this service responsibly' %}</h3>
 
 <p>
-  {% trans 'There are risks in using a shared computer, such as in an internet café, to use this service.' %}
+  {% trans 'There are risks in using a shared computer, for example in an internet café, to use this service.' %}
   {% trans 'It’s your responsibility to be aware of these risks and to avoid using any computer which may leave your personal information accessible to others.' %}
   {% trans 'You are responsible if you choose to leave a computer unprotected while in the process of sending money to a prisoner.' %}
 </p>
@@ -60,127 +58,27 @@
   {% trans 'You must not attempt to gain unauthorised access to our service, the system on which our service is stored or any server, computer or database connected to our service. You must not attack our site via a denial-of-service attack or a distributed denial-of-service attack.' %}
 </p>
 
-<h2 class="heading-large">{% trans 'Privacy policy' %}</h2>
-
-<h3 class="heading-small">{% trans 'Information provided by this service' %}</h3>
+<h3 class="heading-small">{% trans 'Complaints' %}</h3>
 
 <p>
-  {% trans 'We work hard to ensure that information about how to send money to a prisoner using your bank account is accurate.' %}
-  {% trans 'However, we can’t guarantee the accuracy and completeness of any information at all times.' %}
-</p>
-<p>
-  {% trans 'While we make every effort to ensure this service is accessible at all times, we are not liable if it is unavailable for any period of time.' %}
+  {% trans 'When we ask you for information, we will keep to the law.' %}
 </p>
 
-<h3 class="heading-small">{% trans 'How we use your information' %}</h3>
-
 <p>
-  {% trans 'Sending money to a prisoner using your bank account:' %}
-  {% trans 'We use your bank details and the payment reference number you provide to identify the payment sender, as well as the prisoner receiving money.' %}
-  {% trans 'Money coming into the prison is monitored for the purposes of crime detection and prevention.' %}
-</p>
-<p>
-  {% trans 'You have the right to request details as to the personal information we hold for you; and subsequently request that we correct any personal information if it is found to be inaccurate or out of date.' %}
-  {% blocktrans with url='https://www.gov.uk/government/organisations/ministry-of-justice/about/personal-information-charter' %}To request your personal data please read the instructions in the <a href="{{ url }}">Personal Information Charter</a>.{% endblocktrans %}
-  {% blocktrans with url='https://www.gov.uk/government/uploads/system/uploads/attachment_data/file/443730/subject-access-request-form.pdf' %}You will need a <a href="{{ url }}">Subject Access Request form</a>.{% endblocktrans %}
-</p>
-<p>
-  {% trans 'We will not share your information with other organisations unless it is required for the purposes of prevention, detection of crime, apprehension, prosecution, and management of offenders; prevention of terrorism; national security; or required to by law.' %}
-</p>
-<p>
-  {% trans 'Separately from the information entered by those using this service, we also collect site-usage information which allows us to see how the service is being used in order to allow us to improve it.' %}
-  {% trans 'This information does not contain any personal data, unless feedback is submitted with an email address.' %}
+  {% trans 'If you think your information has been handled incorrectly, email the Information Commissioner at <a href="https://ico.org.uk/">www.ico.org.uk</a> for independent advice about data protection.' %}
 </p>
 
-<p>{% trans 'It includes:' %}</p>
-<ul class="list list-bullet">
-  <li>{% trans 'questions, queries or feedback you leave, including your email address if you send a message via feedback' %}</li>
-  <li>{% trans 'your IP address, and details of which version of web browser you used' %}</li>
-  <li>{% trans 'information on how you use the site, using cookies and page tagging techniques to help us improve the website' %}</li>
-</ul>
-
-<p>{% trans 'This helps us to:' %}</p>
-<ul class="list list-bullet">
-  <li>{% trans 'improve the site by monitoring how you use it' %}</li>
-  <li>{% trans 'respond to any feedback you send us, if you’ve asked us to' %}</li>
-  <li>{% trans 'provide you with information about local services if you want it' %}</li>
-</ul>
-
-<p>{% trans 'We can’t personally identify you using your data.' %}</p>
-
-<h3 class="heading-small">{% trans 'Using other websites' %}</h3>
-
 <p>
-  {% trans 'These terms and conditions and privacy policy only cover the ‘Send money to someone in prison’ service and information about it.' %}
-</p>
-<p>
-  {% trans 'They do not cover links from our website to other third party websites (including bank and building society websites) or any information collected by the parties who own and control those websites or their use of cookies.' %}
-  {% trans 'Individual organisations operate their own policies regarding the use and sale of personal information and the use of cookies.' %}
-</p>
-<p>
-  {% trans 'When sending money to a prisoner using your bank account, we recommend that you refer to the specific terms and conditions and privacy policy of any banking website or service that you use.' %}
+  {% trans 'You can also call on 0303 123 1113 or write to:' %}
 </p>
 
-<h3 class="heading-small">{% trans 'Where your data is stored' %}</h3>
-
 <p>
-  {% trans 'We store your data on our secure servers in the EEA.' %}
-  {% trans 'However, feedback may be stored outside of the EEA, where it could be viewed by our staff or suppliers.' %}
-  {% trans 'By submitting your personal data, you agree to this.' %}
-</p>
-<p>{% trans 'We also use other suppliers to provide this service:' %}</p>
-<ul class="list list-bullet">
-  <li>
-    {% blocktrans with url='https://www.zendesk.com/' %}<a href="{{ url }}">Zendesk</a> to handle any feedback that you leave.{% endblocktrans %}
-    {% trans 'Any communication is deleted 2 weeks after the ticket is closed.' %}
-    {% blocktrans with url='https://www.zendesk.com/company/terms/' %}See the <a href="{{ url }}">terms &amp; conditions</a> attached to this service.{% endblocktrans %}
-  </li>
-  <li>
-    {% blocktrans with url='https://www.gov.uk/government/publications/govuk-pay/govuk-pay' %}<a href="{{ url }}">GOV.UK Pay</a> to handle any debit card payments you make.{% endblocktrans %}
-    {% blocktrans with url='https://www.payments.service.gov.uk/privacy' %}See the <a href="{{ url }}">terms &amp; conditions</a> attached to this service.{% endblocktrans %}
-  </li>
-</ul>
-
-<h3 class="heading-small">{% trans 'Keeping your data secure' %}</h3>
-
-<p>
-  {% trans 'Transmitting information over the internet is generally not completely secure, and we can’t guarantee the security of your data.' %}
-  {% trans 'We do however use SSL in order to encrypt all data transferred to and received from our server.' %}
-  {% trans 'SSL is an industry standard encryption of the communication between your browser and the server.' %}
-</p>
-<p>
-  {% trans 'We take data security very seriously and we take every step to ensure that your data remains private and secure.' %}
-</p>
-
-<h3>{% trans 'Any data you transmit is at your own risk' %}</h3>
-
-<p>
-  {% trans 'We have procedures and security features in place to try and keep your data secure once we receive it.' %}
-</p>
-<p>
-  {% trans 'We won’t share your information with any other organisations for marketing, market research or commercial purposes, and we don’t pass on your details to other websites.' %}
-</p>
-
-<h3 class="heading-small">{% trans 'Disclosing your information' %}</h3>
-
-<p>{% trans 'We may pass on your personal information if we have a legal obligation to do so.' %}</p>
-
-<h3 class="heading-small">Data Protection Act 1998</h3>
-
-<p>
-  {% trans 'This service complies with all principles of the Data Protection Act 1998.' %}
-</p>
-<p>
-  {% trans 'Ministry of Justice (MoJ) is the ‘data controller’ for the purposes of the Act.' %}
-  {% trans 'However, the information you enter into this service is not automatically transmitted to the Ministry of Justice, but is stored in a secure database.' %}
-  {% trans 'No personal data will be used in testing this service.' %}
-</p>
-<p>
-  {% trans 'Our hosting provider, and MoJ staff responsible for supporting this service, will have access to the server in which all personal information entered into this service is stored.' %}
-  {% trans 'All staff who have access to the secure data have MoJ security clearance.' %}
-</p>
-<p>
-  {% trans 'Anyone who believes their personal data is kept within this service has the right to submit a subject access request to the MoJ, who will give details of the information stored on the server.' %}
+  Information Commissioner’s Office<br />
+  Wycliffe House<br />
+  Water Lane<br />
+  Wilmslow<br />
+  Cheshire<br />
+  SK9 5AF<br />
 </p>
 
 <h3 class="heading-small">{% trans 'Disclaimer' %}</h3>

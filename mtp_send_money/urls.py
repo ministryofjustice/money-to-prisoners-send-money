@@ -21,6 +21,7 @@ urlpatterns = i18n_patterns(
     url(r'^', include('feedback.urls')),
 
     url(r'^terms/$', cacheable_template('terms.html'), name='terms'),
+    url(r'^privacy/$', cacheable_template('privacy.html'), name='privacy'),
     url(r'^cookies/$', cacheable_template('cookies.html'), name='cookies'),
 
     url(r'^js-i18n.js$', cache_control(public=True, max_age=86400)(JavaScriptCatalog.as_view()), name='js-i18n'),
