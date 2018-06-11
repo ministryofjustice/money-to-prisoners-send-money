@@ -63,7 +63,8 @@ def send_notification(email, context):
     send_email(
         email, 'send_money/email/debit-card-confirmation.txt',
         gettext('Send money to someone in prison: your payment was successful'),
-        context=context, html_template='send_money/email/debit-card-confirmation.html'
+        context=context, html_template='send_money/email/debit-card-confirmation.html',
+        anymail_tags=['dc-received'],
     )
 
 
