@@ -43,9 +43,9 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
                             'recipient_name': 'John',
                             'amount': 1700,
                             'status': 'pending',
-                            'created': datetime.now().isoformat() + 'Z',
+                            'modified': datetime.now().isoformat() + 'Z',
                             'prisoner_number': 'A1409AE',
-                            'prisoner_dob': '1989-01-21'
+                            'prisoner_dob': '1989-01-21',
                         },
                         {
                             'uuid': 'wargle-2222',
@@ -53,9 +53,9 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
                             'recipient_name': 'Tom',
                             'amount': 2000,
                             'status': 'pending',
-                            'created': datetime.now().isoformat() + 'Z',
+                            'modified': datetime.now().isoformat() + 'Z',
                             'prisoner_number': 'A1234GJ',
-                            'prisoner_dob': '1954-04-17'
+                            'prisoner_dob': '1954-04-17',
                         },
                         {
                             'uuid': 'wargle-3333',
@@ -63,9 +63,9 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
                             'recipient_name': 'Harry',
                             'amount': 500,
                             'status': 'pending',
-                            'created': datetime.now().isoformat() + 'Z',
+                            'modified': datetime.now().isoformat() + 'Z',
                             'prisoner_number': 'A5544CD',
-                            'prisoner_dob': '1992-12-05'
+                            'prisoner_dob': '1992-12-05',
                         },
                     ]
                 },
@@ -156,7 +156,7 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
                 'amount': 1700,
                 'status': 'pending',
                 'email': 'success_sender@outside.local',
-                'created': datetime.now().isoformat() + 'Z',
+                'modified': datetime.now().isoformat() + 'Z',
                 'prisoner_number': 'A1409AE',
                 'prisoner_dob': '1989-01-21'
             }

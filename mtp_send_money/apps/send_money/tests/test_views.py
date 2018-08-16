@@ -900,10 +900,10 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
         'recipient_name': 'John',
         'amount': 1700,
         'status': 'pending',
-        'created': datetime.datetime.now().isoformat() + 'Z',
+        'modified': datetime.datetime.now().isoformat() + 'Z',
         'received_at': datetime.datetime.now().isoformat() + 'Z',
         'prisoner_number': 'A1409AE',
-        'prisoner_dob': '1989-01-21'
+        'prisoner_dob': '1989-01-21',
     }
 
     def test_cannot_access_directly(self):
