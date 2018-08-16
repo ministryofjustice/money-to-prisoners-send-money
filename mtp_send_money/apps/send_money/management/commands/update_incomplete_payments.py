@@ -1,7 +1,10 @@
+from datetime import timedelta
 from decimal import Decimal
 import logging
 
 from django.core.management import BaseCommand
+from django.utils import timezone
+from django.utils.dateparse import parse_datetime
 from mtp_common.stack import StackException, InstanceNotInAsgException, is_first_instance
 from oauthlib.oauth2 import OAuth2Error
 from requests.exceptions import RequestException
@@ -35,7 +38,15 @@ class Command(BaseCommand):
     def perform_update(self):
         payment_client = PaymentClient()
         payments = payment_client.get_incomplete_payments()
+        one_day_ago = timezone.now() - timedelta(days=1)
         for payment in payments:
+            modified = parse_datetime(payment['modified'])
+            if modified < one_day_ago:
+                logger.warning(
+                    'Payment %s was last modified at %s and is still pending' %
+                    (payment['uuid'], modified.isoformat())
+                )
+
             payment_ref = payment['uuid']
             govuk_id = payment['processor_id']
             context = {
