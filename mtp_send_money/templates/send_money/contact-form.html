@@ -25,6 +25,10 @@
         <fieldset>
           <legend class="visually-hidden">{% trans 'Your message' %}</legend>
 
+          <div class="hidden">
+            {% include 'mtp_common/forms/field.html' with field=form.subject only %}
+          </div>
+
           {% with field=form.ticket_content value=request.GET.message|default:'' %}
             <div class="form-group {% if field.errors %}form-group-error{% endif %}">
               {% include 'mtp_common/forms/field-label.html' with field=field only %}

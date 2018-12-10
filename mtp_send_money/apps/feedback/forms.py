@@ -1,4 +1,5 @@
 from django import forms
+from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 from zendesk_tickets.forms import EmailTicketForm
 
@@ -30,3 +31,13 @@ class ContactForm(EmailTicketForm):
         help_text=_('We won’t use it for anything else'),
         required=False
     )
+    # `subject` is a hidden honeypot field to try and lessen bot spam
+    subject = forms.CharField(
+        label='What is the subject of your enquiry?',
+        required=False,
+    )
+
+    def clean(self):
+        if self.cleaned_data['subject']:
+            raise ValidationError(_('The service is currently unavailable'))
+        return self.cleaned_data
