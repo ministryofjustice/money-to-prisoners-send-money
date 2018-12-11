@@ -10,7 +10,7 @@ from django.urls import reverse
 from django.utils import timezone
 from django.utils.dateformat import format as format_date
 from django.utils.dateparse import parse_datetime
-from django.utils.translation import gettext, gettext_lazy as _
+from django.utils.translation import get_language, gettext, gettext_lazy as _
 from django.views.generic import FormView, TemplateView, View
 from mtp_common.tasks import send_email
 from oauthlib.oauth2 import OAuth2Error
@@ -369,6 +369,8 @@ class DebitCardPaymentView(DebitCardFlow):
                     build_view_url(self.request, DebitCardConfirmationView.url_name)
                 ) + '?payment_ref=' + payment_ref,
             }
+            if get_language() == 'cy':
+                new_govuk_payment['language'] = 'cy'
             govuk_payment = payment_client.create_govuk_payment(payment_ref, new_govuk_payment)
             if govuk_payment:
                 return redirect(get_link_by_rel(govuk_payment, 'next_url'))

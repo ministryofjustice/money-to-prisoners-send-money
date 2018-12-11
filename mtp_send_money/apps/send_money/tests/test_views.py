@@ -10,7 +10,7 @@ from django.conf import settings
 from django.core import mail
 from django.test import override_settings
 from django.test.testcases import SimpleTestCase
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.utils.cache import get_max_age
 from django.utils.translation import override as override_lang
 from mtp_common.test_utils import silence_logger
@@ -23,7 +23,7 @@ from send_money.utils import api_url, govuk_url, get_api_session
 
 
 class BaseTestCase(SimpleTestCase):
-    root_url = '/en-gb/'
+    root_url = reverse_lazy('send_money:choose_method')
 
     def assertOnPage(self, response, url_name):  # noqa
         self.assertContains(response, '<!-- %s -->' % url_name)
@@ -109,7 +109,7 @@ class PaymentOptionAvailabilityTestCase(BaseTestCase):
 @patch_gov_uk_pay_availability_check()
 @patch_govuk_pay_connection_check()
 class ChooseMethodViewTestCase(BaseTestCase):
-    url = '/en-gb/'
+    url = reverse_lazy('send_money:choose_method')
 
     @override_settings(SHOW_BANK_TRANSFER_OPTION=False,
                        SHOW_DEBIT_CARD_OPTION=False)
@@ -204,7 +204,7 @@ class ChooseMethodViewTestCase(BaseTestCase):
 @mock.patch('send_money.forms.check_payment_service_available', mock.Mock(return_value=(False, 'Scheduled work')))
 @patch_govuk_pay_connection_check()
 class PaymentServiceUnavailableChooseMethodViewTestCase(BaseTestCase):
-    url = '/en-gb/'
+    url = reverse_lazy('send_money:choose_method')
 
     @override_settings(SHOW_BANK_TRANSFER_OPTION=True,
                        SHOW_DEBIT_CARD_OPTION=True)
@@ -271,7 +271,7 @@ class BankTransferFlowTestCase(BaseTestCase):
 @patch_gov_uk_pay_availability_check()
 @patch_govuk_pay_connection_check()
 class BankTransferWarningTestCase(BankTransferFlowTestCase):
-    url = '/en-gb/bank-transfer/warning/'
+    url = reverse_lazy('send_money:bank_transfer_warning')
 
     def test_cannot_access_directly(self):
         response = self.client.get(self.url, follow=True)
@@ -293,7 +293,7 @@ class BankTransferWarningTestCase(BankTransferFlowTestCase):
 @patch_gov_uk_pay_availability_check()
 @patch_govuk_pay_connection_check()
 class BankTransferPrisonerDetailsTestCase(BankTransferFlowTestCase):
-    url = '/en-gb/bank-transfer/details/'
+    url = reverse_lazy('send_money:prisoner_details_bank')
 
     def test_cannot_access_directly(self):
         response = self.client.get(self.url, follow=True)
@@ -436,7 +436,7 @@ class BankTransferPrisonerDetailsTestCase(BankTransferFlowTestCase):
 @patch_gov_uk_pay_availability_check()
 @patch_govuk_pay_connection_check()
 class BankTransferReferenceTestCase(BankTransferFlowTestCase):
-    url = '/en-gb/bank-transfer/reference/'
+    url = reverse_lazy('send_money:bank_transfer')
 
     def test_cannot_access_directly(self):
         response = self.client.get(self.url, follow=True)
@@ -537,7 +537,7 @@ class DebitCardFlowTestCase(BaseTestCase):
 @patch_gov_uk_pay_availability_check()
 @patch_govuk_pay_connection_check()
 class DebitCardPrisonerDetailsTestCase(DebitCardFlowTestCase):
-    url = '/en-gb/debit-card/details/'
+    url = reverse_lazy('send_money:prisoner_details_debit')
 
     def test_cannot_access_directly(self):
         response = self.client.get(self.url, follow=True)
@@ -697,7 +697,7 @@ class DebitCardPrisonerDetailsTestCase(DebitCardFlowTestCase):
 @patch_gov_uk_pay_availability_check()
 @patch_govuk_pay_connection_check()
 class DebitCardAmountTestCase(DebitCardFlowTestCase):
-    url = '/en-gb/debit-card/amount/'
+    url = reverse_lazy('send_money:send_money_debit')
 
     def test_cannot_access_directly(self):
         response = self.client.get(self.url, follow=True)
@@ -753,7 +753,7 @@ class DebitCardAmountTestCase(DebitCardFlowTestCase):
 @patch_gov_uk_pay_availability_check()
 @patch_govuk_pay_connection_check()
 class DebitCardCheckTestCase(DebitCardFlowTestCase):
-    url = '/en-gb/debit-card/check/'
+    url = reverse_lazy('send_money:check_details')
 
     def test_cannot_access_directly(self):
         response = self.client.get(self.url, follow=True)
@@ -785,7 +785,7 @@ class DebitCardCheckTestCase(DebitCardFlowTestCase):
                    SERVICE_CHARGE_FIXED=Decimal('0.20'),
                    GOVUK_PAY_URL='https://pay.gov.local/v1')
 class DebitCardPaymentTestCase(DebitCardFlowTestCase):
-    url = '/en-gb/debit-card/payment/'
+    url = reverse_lazy('send_money:debit_card')
     payment_process_path = '/take'
 
     def test_cannot_access_directly(self):
@@ -839,10 +839,50 @@ class DebitCardPaymentTestCase(DebitCardFlowTestCase):
             govuk_request = json.loads(rsps.calls[2].request.body.decode('utf8'))
             self.assertEqual(govuk_request['amount'], 1761)
 
+            self.assertNotIn('language', govuk_request)
+
             self.assertRedirects(
                 response, govuk_url(self.payment_process_path),
                 fetch_redirect_response=False
             )
+
+    def test_debit_card_payment_in_welsh(self):
+        self.choose_debit_card_payment_method()
+        self.fill_in_prisoner_details()
+        self.fill_in_amount()
+
+        with override_lang('cy'), responses.RequestsMock() as rsps:
+            ref = 'fd00835a-fd4b-11e8-800a-320012cc40c0'
+            mock_auth(rsps)
+            rsps.add(
+                rsps.POST,
+                api_url('/payments/'),
+                json={'uuid': ref},
+                status=201,
+            )
+            rsps.add(
+                rsps.POST,
+                govuk_url('/payments/'),
+                json={
+                    'payment_id': 'abc',
+                    '_links': {
+                        'next_url': {
+                            'method': 'GET',
+                            'href': govuk_url(self.payment_process_path),
+                        }
+                    }
+                },
+                status=201
+            )
+            rsps.add(
+                rsps.PATCH,
+                api_url('/payments/%s/' % ref),
+                status=200,
+            )
+            with self.patch_prisoner_details_check():
+                self.client.get(self.url, follow=False)
+            govuk_request = json.loads(rsps.calls[2].request.body.decode('utf8'))
+            self.assertEqual(govuk_request['language'], 'cy')
 
     def test_debit_card_payment_handles_api_errors(self):
         self.choose_debit_card_payment_method()
@@ -891,7 +931,7 @@ class DebitCardPaymentTestCase(DebitCardFlowTestCase):
                    SERVICE_CHARGE_FIXED=Decimal('0.20'),
                    GOVUK_PAY_URL='https://pay.gov.local/v1')
 class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
-    url = '/en-gb/debit-card/confirmation/'
+    url = reverse_lazy('send_money:confirmation')
     ref = 'wargle-blargle'
     processor_id = '3'
     payment_data = {
