@@ -144,6 +144,92 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
                 'failed'
             )
 
+    @override_settings(ENVIRONMENT='prod')  # because non-prod environments don't send to @outside.local
+    def test_update_incomplete_payments_extracts_card_details(self):
+        with responses.RequestsMock() as rsps:
+            mock_auth(rsps)
+            rsps.add(
+                rsps.GET,
+                api_url('/payments/'),
+                json={
+                    'count': 1,
+                    'results': [
+                        {
+                            'uuid': 'wargle-1111',
+                            'processor_id': 1,
+                            'recipient_name': 'John',
+                            'amount': 1700,
+                            'status': 'pending',
+                            'modified': datetime.now().isoformat() + 'Z',
+                            'prisoner_number': 'A1409AE',
+                            'prisoner_dob': '1989-01-21',
+                        },
+                    ]
+                },
+                status=200,
+            )
+            rsps.add(
+                rsps.GET,
+                govuk_url('/payments/%s/' % 1),
+                json={
+                    'reference': 'wargle-1111',
+                    'state': {'status': 'success'},
+                    'settlement_summary': {
+                        'capture_submit_time': '2016-10-27T15:11:05Z',
+                        'captured_date': '2016-10-27'
+                    },
+                    'card_details': {
+                        'card_brand': 'Visa',
+                        'last_digits_card_number': '1111',
+                        'first_digits_card_number': '100002',
+                        'cardholder_name': 'Jack Halls',
+                        'expiry_date': '11/18',
+                        'billing_address': {
+                            'line1': '102 Petty France',
+                            'line2': '',
+                            'postcode': 'SW1H9AJ',
+                            'city': 'London',
+                            'country': 'GB'
+                        },
+                    },
+                    'email': 'success_sender@outside.local',
+                },
+                status=200
+            )
+            rsps.add(
+                rsps.PATCH,
+                api_url('/payments/%s/' % 'wargle-1111'),
+                status=200,
+            )
+            rsps.add(
+                rsps.PATCH,
+                api_url('/payments/%s/' % 'wargle-1111'),
+                status=200,
+            )
+
+            call_command('update_incomplete_payments', verbosity=0)
+            api_patch = json.loads(rsps.calls[-1].request.body.decode())
+
+        api_patch.pop('received_at')
+        api_patch.pop('status')
+        self.assertDictEqual(
+            api_patch,
+            {
+                'cardholder_name': 'Jack Halls',
+                'card_brand': 'Visa',
+                'card_number_first_digits': '100002',
+                'card_number_last_digits': '1111',
+                'card_expiry_date': '11/18',
+                'billing_address': {
+                    'line1': '102 Petty France',
+                    'line2': '',
+                    'city': 'London',
+                    'postcode': 'SW1H9AJ',
+                    'country': 'GB',
+                },
+            },
+        )
+
     ref = 'wargle-1111'
     processor_id = '1'
     payment_data = {
