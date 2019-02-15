@@ -47,6 +47,7 @@ def prison_list_view(request):
             prison_list = [
                 prison['name']
                 for prison in sorted(prison_list, key=lambda prison: prison['short_name'])
+                if not prison.get('private_estate')
             ]
             if not prison_list:
                 raise ValueError('Empty prison list')
