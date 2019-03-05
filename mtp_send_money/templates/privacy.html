@@ -25,14 +25,12 @@
   {% trans 'This policy explains:' %}
 </p>
 
-<p>
-  <ul class="list list-number">
-    <li>{% trans 'How we store your data' %}</li>
-    <li>{% trans 'What we do with it' %}</li>
-    <li>{% trans 'How to get a copy of your personal data' %}</li>
-    <li>{% trans 'What to do if you think we’ve done something wrong' %}</li>
-  </ul>
-</p>
+<ul class="list list-number">
+  <li>{% trans 'How we store your data' %}</li>
+  <li>{% trans 'What we do with it' %}</li>
+  <li>{% trans 'How to get a copy of your personal data' %}</li>
+  <li>{% trans 'What to do if you think we’ve done something wrong' %}</li>
+</ul>
 
 <p>
   {% trans 'This service is managed by HMPPS, an agency of the Ministry of Justice (MOJ). MOJ is the data controller for the personal information we hold.' %}
@@ -66,25 +64,21 @@
   {% trans 'It includes:' %}
 </p>
 
-<p>
-  <ul class="list list-bullet">
-    <li>{% trans 'your name, postal address, email address, bank details, your IP address and details about your contact in prison' %}</li>
-    <li>{% trans 'questions, queries or feedback you leave' %}</li>
-    <li>{% trans 'information on how you use the site, using cookies and page tagging techniques (Google Analytics) to help us improve it' %}</li>
-  </ul>
-</p>
+<ul class="list list-bullet">
+  <li>{% trans 'your name, postal address, email address, bank details, your IP address and details about your contact in prison' %}</li>
+  <li>{% trans 'questions, queries or feedback you leave' %}</li>
+  <li>{% trans 'information on how you use the site, using cookies and page tagging techniques (Google Analytics) to help us improve it' %}</li>
+</ul>
 
 <p>
   {% trans 'This helps us to:' %}
 </p>
 
-<p>
-  <ul class="list list-bullet">
-    <li>{% trans 'complete the transaction' %}</li>
-    <li>{% trans 'improve the site by monitoring how you use it' %}</li>
-    <li>{% trans 'respond to feedback, if you’ve asked for some' %}</li>
-  </ul>
-</p>
+<ul class="list list-bullet">
+  <li>{% trans 'complete the transaction' %}</li>
+  <li>{% trans 'improve the site by monitoring how you use it' %}</li>
+  <li>{% trans 'respond to feedback, if you’ve asked for some' %}</li>
+</ul>
 
 <h3 class="heading-small">{% trans 'Purpose of processing and the lawful basis for the process' %}</h3>
 
@@ -105,23 +99,21 @@
   {% trans 'The organisations we share your personal information with are:' %}
 </p>
 
-<p>
-  <ul class="list list-bullet">
-    <li>
-      {% blocktrans with gov_url='https://www.gov.uk/government/publications/govuk-pay/govuk-pay' wp_url='https://www.worldpay.com' %}<a href="{{ gov_url }}">GOV.UK Pay</a> and <a href="{{ wp_url }}">WorldPay</a> if the payment is made by debit card.{% endblocktrans %}
-      {% trans 'This facilitates making a payment.' %}
-      {% blocktrans with url='https://www.payments.service.gov.uk/privacy' %}See the <a href="{{ url }}">privacy policy</a>.{% endblocktrans %}
-    </li>
-    <li>
-      {% blocktrans with url='https://www.zendesk.com/' %}<a href="{{ url }}">Zendesk</a> to handle any feedback that you leave.{% endblocktrans %}
-      {% blocktrans with url='https://www.zendesk.com/company/terms/' %}See the <a href="{{ url }}">terms &amp; conditions</a> attached to this service.{% endblocktrans %}
-    </li>
-    <li>
-      {% blocktrans with url='https://www.mailgun.com/' %}<a href="{{ url }}">Mailgun</a> to send emails.{% endblocktrans %}
-      {% blocktrans with url='https://www.mailgun.com/privacy-policy' %}See the <a href="{{ url }}">privacy policy</a>.{% endblocktrans %}
-    </li>
-  </ul>
-</p>
+<ul class="list list-bullet">
+  <li>
+    {% blocktrans with gov_url='https://www.gov.uk/government/publications/govuk-pay/govuk-pay' wp_url='https://www.worldpay.com' %}<a href="{{ gov_url }}">GOV.UK Pay</a> and <a href="{{ wp_url }}">WorldPay</a> if the payment is made by debit card.{% endblocktrans %}
+    {% trans 'This facilitates making a payment.' %}
+    {% blocktrans with url='https://www.payments.service.gov.uk/privacy' %}See the <a href="{{ url }}">privacy policy</a>.{% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans with url='https://www.zendesk.com/' %}<a href="{{ url }}">Zendesk</a> to handle any feedback that you leave.{% endblocktrans %}
+    {% blocktrans with url='https://www.zendesk.com/company/terms/' %}See the <a href="{{ url }}">terms &amp; conditions</a> attached to this service.{% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans with url='https://www.mailgun.com/' %}<a href="{{ url }}">Mailgun</a> to send emails.{% endblocktrans %}
+    {% blocktrans with url='https://www.mailgun.com/privacy-policy' %}See the <a href="{{ url }}">privacy policy</a>.{% endblocktrans %}
+  </li>
+</ul>
 
 <h3 class="heading-small">{% trans 'Details of transfers to third country and safeguards' %}</h3>
 
@@ -180,27 +172,23 @@
   {% trans 'We promise to:' %}
 </p>
 
-<p>
-  <ul class="list list-bullet">
-    <li>{% trans 'tell you why we need your data' %}</li>
-    <li>{% trans 'only ask for the data we need' %}</li>
-    <li>{% trans 'make sure we don’t keep data longer than necessary' %}</li>
-    <li>{% trans 'keep your personal data away from commercial use, without your consent' %}</li>
-    <li>{% trans 'protect your data and make sure no unauthorised person has access to it' %}</li>
-    <li>{% trans 'only share your data where appropriate and necessary, for legitimate purposes' %}</li>
-  </ul>
-</p>
+<ul class="list list-bullet">
+  <li>{% trans 'tell you why we need your data' %}</li>
+  <li>{% trans 'only ask for the data we need' %}</li>
+  <li>{% trans 'make sure we don’t keep data longer than necessary' %}</li>
+  <li>{% trans 'keep your personal data away from commercial use, without your consent' %}</li>
+  <li>{% trans 'protect your data and make sure no unauthorised person has access to it' %}</li>
+  <li>{% trans 'only share your data where appropriate and necessary, for legitimate purposes' %}</li>
+</ul>
 
 <p>
   {% trans 'We also promise you can:' %}
 </p>
 
-<p>
-  <ul class="list list-bullet">
-    <li>{% trans 'request to correct, stop processing or erase your personal data' %}</li>
-    <li>{% trans 'make a complaint with the supervisory authority' %}</li>
-  </ul>
-</p>
+<ul class="list list-bullet">
+  <li>{% trans 'request to correct, stop processing or erase your personal data' %}</li>
+  <li>{% trans 'make a complaint with the supervisory authority' %}</li>
+</ul>
 
 <h3 class="heading-small">{% trans 'More information' %}</h3>
 
@@ -208,15 +196,13 @@
   {% trans 'You can get more details on:' %}
 </p>
 
-<p>
-  <ul class="list list-bullet">
-    <li>{% trans 'agreements we have for sharing data with other organisations' %}</li>
-    <li>{% trans 'when we pass on data without telling you, for example, in prevention or detection of a crime or to produce anonymous statistics' %}</li>
-    <li>{% trans 'how staff collect, use or delete your data' %}</li>
-    <li>{% trans 'how we keep data accurate and updated' %}</li>
-    <li>{% trans 'how to make a complaint' %}</li>
-  </ul>
-</p>
+<ul class="list list-bullet">
+  <li>{% trans 'agreements we have for sharing data with other organisations' %}</li>
+  <li>{% trans 'when we pass on data without telling you, for example, in prevention or detection of a crime or to produce anonymous statistics' %}</li>
+  <li>{% trans 'how staff collect, use or delete your data' %}</li>
+  <li>{% trans 'how we keep data accurate and updated' %}</li>
+  <li>{% trans 'how to make a complaint' %}</li>
+</ul>
 
 <p>
   {% blocktrans with email='data.compliance@justice.gov.uk' %}To find out about any of this issues, please email <a href="mailto:{{ email }}">{{ email }}</a> or contact the:{% endblocktrans %}
