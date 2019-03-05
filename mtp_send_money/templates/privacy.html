@@ -96,7 +96,7 @@
 <p>
   {% trans 'We sometimes need to share the personal information we process with the individual themselves and also with other organisations.' %}
   {% trans 'Where this is necessary we will comply with all aspects of the data laws.' %}
-  {% trans 'The organisations we share your personal information with are:' %}
+  {% trans 'We share your personal information with:' %}
 </p>
 
 <ul class="list list-bullet">
@@ -112,6 +112,11 @@
   <li>
     {% blocktrans with url='https://www.mailgun.com/' %}<a href="{{ url }}">Mailgun</a> to send emails.{% endblocktrans %}
     {% blocktrans with url='https://www.mailgun.com/privacy-policy' %}See the <a href="{{ url }}">privacy policy</a>.{% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans trimmed with url='https://www.justice.gov.uk/about/hmps/contracted-out' %}
+      Selected individuals employed in the <a href="{{ url }}">private prison estate</a>.
+    {% endblocktrans %}
   </li>
 </ul>
 
