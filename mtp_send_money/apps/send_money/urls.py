@@ -1,11 +1,12 @@
 from django.conf.urls import url
+from django.views.generic import TemplateView
 
 from send_money.views import (
     clear_session_view,
     PaymentMethodChoiceView,
     BankTransferWarningView, BankTransferPrisonerDetailsView, BankTransferReferenceView,
     DebitCardPrisonerDetailsView, DebitCardAmountView, DebitCardCheckView,
-    DebitCardPaymentView, DebitCardConfirmationView
+    DebitCardPaymentView, DebitCardConfirmationView,
 )
 from send_money.views_misc import help_view, prison_list_view
 
@@ -40,6 +41,7 @@ urlpatterns = [
     url(r'^help/prisoner-moved-or-released/$', help_view, kwargs={'page': 'prisoner-moved-or-released'},
         name='help_transfered'),
     url(r'^help/prisons/$', prison_list_view, name='prison_list'),
+    url(r'^help/faq/$', TemplateView.as_view(template_name='send_money/help/faq.html'), name='faq'),
 
     url(r'^clear-session/$', clear_session_view, name='clear_session'),
 ]

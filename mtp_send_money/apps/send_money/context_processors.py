@@ -1,9 +1,11 @@
+from django.conf import settings
 from django.urls import reverse
 from django.utils.translation import gettext
 
 
-def support_links(_):
+def links(_):
     return {
+        'site_url': settings.START_PAGE_URL,
         'support_links': [
             {
                 'url': reverse('terms'),
@@ -17,5 +19,5 @@ def support_links(_):
                 'url': reverse('submit_ticket'),
                 'title': gettext('Feedback'),
             },
-        ]
+        ],
     }

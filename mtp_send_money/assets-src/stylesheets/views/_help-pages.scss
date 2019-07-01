@@ -57,3 +57,17 @@
     }
   }
 }
+
+// faq page
+
+.mtp-qna {
+  margin-top: 4em;
+
+  dt {
+    @include bold-24;
+  }
+
+  dd {
+    margin-bottom: 3em;
+  }
+}
