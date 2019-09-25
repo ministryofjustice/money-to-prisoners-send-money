@@ -51,6 +51,7 @@ ROOT_URLCONF = 'mtp_send_money.urls'
 MIDDLEWARE = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.locale.LocaleMiddleware',
+    'mtp_common.cp_migration.middleware.CloudPlatformMigrationMiddleware',
     'django.middleware.common.CommonMiddleware',
     'mtp_common.auth.csrf.CsrfViewMiddleware',
     'send_money.middleware.SendMoneyMiddleware',
@@ -278,6 +279,8 @@ ANYMAIL = {
 MAILGUN_FROM_ADDRESS = os.environ.get('MAILGUN_FROM_ADDRESS', '')
 if MAILGUN_FROM_ADDRESS:
     DEFAULT_FROM_EMAIL = MAILGUN_FROM_ADDRESS
+
+CLOUD_PLATFORM_MIGRATION_MODE = os.environ.get('CLOUD_PLATFORM_MIGRATION_MODE', '')
 
 try:
     from .local import *  # noqa
