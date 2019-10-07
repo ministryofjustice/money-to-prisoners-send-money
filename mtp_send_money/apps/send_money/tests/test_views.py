@@ -144,17 +144,15 @@ class ChooseMethodViewTestCase(BaseTestCase):
     @override_settings(SHOW_BANK_TRANSFER_OPTION=True,
                        SHOW_DEBIT_CARD_OPTION=True,
                        ENABLE_PAYMENT_CHOICE_EXPERIMENT=False)
-    def test_option_preselected_if_returning_to_page(self):
+    def test_session_reset_if_returning_to_page(self):
         response = self.client.post(self.url, data={
             'payment_method': PaymentMethod.debit_card.name
         }, follow=True)
         self.assertOnPage(response, 'prisoner_details_debit')
         response = self.client.get(self.url, follow=True)
         content = response.content.decode('utf8')
-        self.assertIn('checked', content)
-        # when experiment is off, the bank transfer is the second option so 'checked' must come first
-        self.assertLess(content.index('checked'),
-                        content.index('id_%s' % PaymentMethod.bank_transfer.name))
+        self.assertNotIn('checked', content)
+        self.assertContains(response, 'How do you want to send money?')
 
     @override_settings(SHOW_BANK_TRANSFER_OPTION=True,
                        SHOW_DEBIT_CARD_OPTION=True)
@@ -199,38 +197,6 @@ class ChooseMethodViewTestCase(BaseTestCase):
             self.assertLess(content.find('id_bank_transfer'),
                             content.find('id_debit_card'),
                             'Bank transfer option should appear first according to experiment')
-
-
-@mock.patch('send_money.forms.check_payment_service_available', mock.Mock(return_value=(False, 'Scheduled work')))
-@patch_govuk_pay_connection_check()
-class PaymentServiceUnavailableChooseMethodViewTestCase(BaseTestCase):
-    url = '/en-gb/'
-
-    @override_settings(SHOW_BANK_TRANSFER_OPTION=True,
-                       SHOW_DEBIT_CARD_OPTION=True)
-    def test_gov_uk_service_unavailable_disables_choice(self):
-        response = self.client.get(self.url, follow=True)
-        self.assertContains(response, 'disabled')
-
-    @override_settings(SHOW_BANK_TRANSFER_OPTION=True,
-                       SHOW_DEBIT_CARD_OPTION=True)
-    def test_gov_uk_service_unavailable_can_show_message_to_users(self):
-        response = self.client.get(self.url, follow=True)
-        self.assertContains(response, 'Scheduled work')
-
-    @override_settings(SHOW_BANK_TRANSFER_OPTION=True,
-                       SHOW_DEBIT_CARD_OPTION=True)
-    def test_gov_uk_service_unavailable_always_goes_to_bank_transfer(self):
-        # no post data
-        response = self.client.post(self.url, follow=True)
-        self.assertOnPage(response, 'bank_transfer_warning')
-
-        # debit card chosen
-        self.client.post(self.root_url, data={
-            'payment_method': PaymentMethod.debit_card.name
-        }, follow=True)
-        self.assertOnPage(response, 'bank_transfer_warning')
-
 
 # BANK TRANSFER FLOW
 
@@ -311,7 +277,7 @@ class BankTransferPrisonerDetailsTestCase(BankTransferFlowTestCase):
 
         response = self.client.get(self.root_url, follow=True)
         self.assertOnPage(response, 'choose_method')
-        self.assertContains(response, 'checked')
+        self.assertContains(response, 'Get a prisoner reference to use in a UK bank transfer')
 
     @mock.patch('send_money.forms.BankTransferPrisonerDetailsForm.is_prisoner_known')
     def test_displays_errors_for_dropped_api_connection(self, mocked_is_prisoner_known):
@@ -1145,6 +1111,106 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
                     self.url, {'payment_ref': self.ref}, follow=False
                 )
             self.assertRedirects(response, '/en-gb/', fetch_redirect_response=False)
+
+
+@mock.patch(
+    'send_money.forms.check_payment_service_available',
+    mock.Mock(
+        return_value=(False, 'Scheduled work'),
+    ),
+)
+@patch_govuk_pay_connection_check()
+class PaymentServiceUnavailableTestCase(DebitCardFlowTestCase):
+    choose_method_url = '/en-gb/'
+
+    def test_gov_uk_service_unavailable_disables_choice(self):
+        response = self.client.get(self.choose_method_url, follow=True)
+        self.assertContains(response, 'disabled')
+
+    def test_gov_uk_service_unavailable_can_show_message_to_users(self):
+        response = self.client.get(self.choose_method_url, follow=True)
+        self.assertContains(response, 'Scheduled work')
+
+    def test_gov_uk_service_unavailable_always_goes_to_bank_transfer(self):
+        # no post data
+        response = self.client.post(self.choose_method_url, follow=True)
+        self.assertOnPage(response, 'bank_transfer_warning')
+
+        # debit card chosen
+        self.client.post(self.choose_method_url, data={
+            'payment_method': PaymentMethod.debit_card.name
+        }, follow=True)
+        self.assertOnPage(response, 'bank_transfer_warning')
+
+    @override_settings(
+        ENVIRONMENT='prod',  # because non-prod environments don't send to @outside.local
+        GOVUK_PAY_URL='https://pay.gov.local/v1',
+    )
+    def test_payment_can_complete_if_started_before_debit_card_payment_is_disabled(self):
+        """
+        Test that if a debit card payment starts before the card payment option is disabled,
+        the system allows the user to complete the payment whilst stopping new payments from starting.
+        """
+        payment_ref = 'wargle-blargle'
+        processor_id = '3'
+
+        # make debit card available only for the first form to simulate the start of the payment process
+        # before this payment option is turned off
+        with mock.patch(
+            'send_money.forms.check_payment_service_available',
+            mock.Mock(
+                return_value=(True, None),
+            ),
+        ):
+            self.choose_debit_card_payment_method()
+
+        self.fill_in_prisoner_details()
+        self.fill_in_amount()
+
+        with responses.RequestsMock() as rsps:
+            mock_auth(rsps)
+            rsps.add(
+                rsps.GET,
+                api_url(f'/payments/{payment_ref}/'),
+                json={
+                    'uuid': payment_ref,
+                    'processor_id': processor_id,
+                    'recipient_name': 'John',
+                    'amount': 1700,
+                    'status': 'pending',
+                    'modified': f'{datetime.datetime.now().isoformat()}Z',
+                    'received_at': f'{datetime.datetime.now().isoformat()}Z',
+                    'prisoner_number': 'A1409AE',
+                    'prisoner_dob': '1989-01-21',
+                },
+                status=200,
+            )
+            rsps.add(
+                rsps.GET,
+                govuk_url(f'/payments/{processor_id}/'),
+                json={
+                    'reference': payment_ref,
+                    'state': {'status': 'success'},
+                    'email': 'sender@outside.local',
+                    'settlement_summary': {
+                        'capture_submit_time': None,
+                        'captured_date': None,
+                    },
+                },
+                status=200,
+            )
+            rsps.add(
+                rsps.PATCH,
+                api_url(f'/payments/{payment_ref}/'),
+                status=200,
+            )
+            with self.patch_prisoner_details_check():
+                response = self.client.get(
+                    reverse('send_money:confirmation'),
+                    {'payment_ref': payment_ref},
+                    follow=False,
+                )
+            self.assertContains(response, 'success')
 
 
 class SitemapTestCase(SimpleTestCase):

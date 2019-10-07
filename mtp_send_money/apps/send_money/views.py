@@ -123,6 +123,10 @@ class PaymentMethodChoiceView(SendMoneyFormView):
         self.set_experiment_cookie = None
 
     def dispatch(self, request, *args, **kwargs):
+        # reset the session so that we can start fresh
+        if not request.session.is_empty():
+            request.session.flush()
+
         if settings.SHOW_BANK_TRANSFER_OPTION and settings.SHOW_DEBIT_CARD_OPTION:
             response = super().dispatch(request, *args, **kwargs)
             if self.set_experiment_cookie is not None:
@@ -171,8 +175,12 @@ class PaymentMethodChoiceView(SendMoneyFormView):
         return context_data
 
     def get_form_kwargs(self):
-        kwargs = super().get_form_kwargs()
-        kwargs['show_bank_transfer_first'] = self.show_bank_transfer_first
+        kwargs = {
+            **super().get_form_kwargs(),
+
+            'show_bank_transfer_first': self.show_bank_transfer_first,
+            'check_debit_card_payment_availability': True,
+        }
         return kwargs
 
     def form_valid(self, form):
