@@ -5,6 +5,8 @@
 {% block page_title %}{% trans 'How do you want to send money?' %} – {{ block.super }}{% endblock %}
 
 {% block inner_content %}
+  {% notifications_box request 'send_money_landing' %}
+
   <header>
     <h1 class="heading-xlarge">{% trans 'How do you want to send money?' %}</h1>
   </header>
