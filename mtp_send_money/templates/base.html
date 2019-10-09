@@ -2,6 +2,24 @@
 {% load i18n %}
 {% load mtp_common %}
 
+{% block cookie_message %}{% endblock %}
+{% block body_start %}
+  {% if not actioned_cookie_prompt %}
+    <aside class="mtp-cookie-prompt">
+      <p>
+        {% trans 'This service uses cookies which are essential for the site to work.' %}
+        {% trans 'We also use non-essential cookies to help us improve your experience.' %}
+        {% trans 'Do you accept these non-essential cookies?' %}
+      </p>
+      <form action="{% url 'cookies' %}" method="post">
+        {% csrf_token %}
+        <button class="button" type="submit" name="accept_cookies" value="yes">{% trans 'Accept cookies' %}</button>
+        <button class="button" type="submit" name="accept_cookies" value="no">{% trans 'Reject cookies' %}</button>
+        <a class="mtp-cancel-button" href="{% url 'cookies' %}">{% trans 'View more information' %}</a>
+      </form>
+    </aside>
+  {% endif %}
+{% endblock %}
 
 {% block body_end %}
   <script src="{% url 'js-i18n' %}?{{ APP_GIT_COMMIT_SHORT }}"></script>
