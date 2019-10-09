@@ -16,7 +16,7 @@ from send_money.utils import api_url
 
 @patch_notifications()
 @patch_gov_uk_pay_availability_check()
-class CookiePromptTestCase(BaseTestCase):
+class PerformanceCookiesTestCase(BaseTestCase):
     def test_prompt_visible_without_cookie(self):
         response = self.client.get(reverse('send_money:choose_method'))
         self.assertContains(response, 'mtp-cookie-prompt')
@@ -29,6 +29,12 @@ class CookiePromptTestCase(BaseTestCase):
         self.client.cookies[CookiePolicy.cookie_name] = '{"usage":false}'
         response = self.client.get(reverse('send_money:choose_method'))
         self.assertNotContains(response, 'mtp-cookie-prompt')
+
+    @override_settings(GOOGLE_ANALYTICS_ID='ABC123')
+    def test_performance_analytics_on_by_default(self):
+        response = self.client.get(reverse('send_money:choose_method'))
+        self.assertContains(response, 'ABC123')
+        self.assertNotContains(response, 'govuk_shared.send')
 
     @override_settings(GOOGLE_ANALYTICS_ID='ABC123')
     def test_performace_cookies_can_be_accepted(self):
@@ -47,6 +53,19 @@ class CookiePromptTestCase(BaseTestCase):
         response = self.client.get(reverse('send_money:choose_method'))
         self.assertNotContains(response, 'mtp-cookie-prompt')
         self.assertNotContains(response, 'ABC123')
+
+    @override_settings(GOOGLE_ANALYTICS_ID='ABC123', GOOGLE_ANALYTICS_GDS_ID='GDS321')
+    def test_gds_performance_analytics_on_by_default(self):
+        response = self.client.get(reverse('send_money:choose_method'))
+        self.assertContains(response, 'GDS321')
+        self.assertContains(response, 'govuk_shared.send')
+
+    @override_settings(GOOGLE_ANALYTICS_ID='ABC123', GOOGLE_ANALYTICS_GDS_ID='GDS321')
+    def test_gds_performance_analytics_can_be_rejected(self):
+        self.client.post(reverse('cookies'), data={'accept_cookies': 'no'})
+        response = self.client.get(reverse('send_money:choose_method'))
+        self.assertNotContains(response, 'GDS321')
+        self.assertNotContains(response, 'govuk_shared.send')
 
 
 class SitemapTestCase(BaseTestCase):

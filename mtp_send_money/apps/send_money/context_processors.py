@@ -4,9 +4,10 @@ from django.utils.translation import gettext
 from mtp_common.utils import CookiePolicy
 
 
-def actioned_cookie_prompt(request):
+def analytics(request):
     return {
         'actioned_cookie_prompt': CookiePolicy.cookie_name in request.COOKIES,
+        'GOOGLE_ANALYTICS_GDS_ID': settings.GOOGLE_ANALYTICS_GDS_ID,
     }
 
 
