@@ -133,7 +133,7 @@ class SitemapXMLView(TemplateView):
         ]
         links = {}
         request = self.request
-        for lang_code, _ in settings.LANGUAGES:
+        for lang_code, _lang_name in settings.LANGUAGES:
             with override_language(lang_code):
                 links[lang_code] = {
                     url_name: request.build_absolute_uri(reverse(url_name))
