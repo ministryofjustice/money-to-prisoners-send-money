@@ -8,7 +8,7 @@ from django.views.i18n import JavaScriptCatalog
 from moj_irat.views import HealthcheckView, PingJsonView
 
 from send_money.utils import make_response_cacheable
-from send_money.views_misc import SitemapXMLView, robots_txt_view
+from send_money.views_misc import CookiesView, SitemapXMLView, robots_txt_view
 
 
 def cacheable_template(template):
@@ -22,7 +22,7 @@ urlpatterns = i18n_patterns(
 
     url(r'^terms/$', cacheable_template('terms.html'), name='terms'),
     url(r'^privacy/$', cacheable_template('privacy.html'), name='privacy'),
-    url(r'^cookies/$', cacheable_template('cookies.html'), name='cookies'),
+    url(r'^cookies/$', CookiesView.as_view(), name='cookies'),
 
     url(r'^js-i18n.js$', cache_control(public=True, max_age=86400)(JavaScriptCatalog.as_view()), name='js-i18n'),
 

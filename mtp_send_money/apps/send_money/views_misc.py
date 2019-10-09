@@ -1,14 +1,18 @@
+import datetime
 import logging
 
+from django import forms
 from django.conf import settings
 from django.core.cache import cache
 from django.http import HttpResponse
 from django.shortcuts import render
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
+from django.utils import timezone
 from django.utils.http import is_safe_url
-from django.utils.translation import override as override_language
-from django.views.generic import TemplateView
+from django.utils.translation import gettext_lazy as _, override as override_language
+from django.views.generic import FormView, TemplateView
 from mtp_common.api import retrieve_all_pages_for_path
+from mtp_common.utils import CookiePolicy
 from oauthlib.oauth2 import OAuth2Error
 from requests import RequestException
 
@@ -66,6 +70,40 @@ def prison_list_view(request):
         ]),
     })
     return make_response_cacheable(response)
+
+
+class CookiesForm(forms.Form):
+    accept_cookies = forms.ChoiceField(label=_('Accept cookies to improve the service'), choices=(
+        ('yes', _('Yes')),
+        ('no', _('No')),
+    ))
+
+
+class CookiesView(FormView):
+    form_class = CookiesForm
+    template_name = 'cookies.html'
+    success_url = reverse_lazy('cookies')
+
+    def get_initial(self):
+        initial = super().get_initial()
+        cookie_policy = CookiePolicy(self.request)
+        initial['accept_cookies'] = 'yes' if cookie_policy.usage else 'no'
+        return initial
+
+    def form_valid(self, form):
+        if self.request.is_ajax():
+            response = HttpResponse('{}')
+        else:
+            response = super().form_valid(form)
+        if form.cleaned_data['accept_cookies'] == 'yes':
+            cookie_policy = '{"usage":true}'
+        else:
+            cookie_policy = '{"usage":false}'
+        expires = timezone.now() + datetime.timedelta(days=365)
+        response.set_cookie('cookie_policy', cookie_policy, expires=expires, secure=True, httponly=True)
+        # NB: `seen_cookie_message` is used by givuk-template JS which is not editable
+        response.set_cookie('seen_cookie_message', 'yes', expires=expires, secure=True, httponly=False)
+        return response
 
 
 def robots_txt_view(request):

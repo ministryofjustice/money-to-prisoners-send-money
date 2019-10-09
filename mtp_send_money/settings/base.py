@@ -117,6 +117,7 @@ TEMPLATES = [
                 'mtp_common.context_processors.analytics',
                 'mtp_common.context_processors.app_environment',
                 'mtp_common.context_processors.govuk_localisation',
+                'send_money.context_processors.actioned_cookie_prompt',
                 'send_money.context_processors.links',
                 'mtp_common.analytics.default_genericised_pageview',
             ],
