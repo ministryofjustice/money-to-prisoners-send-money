@@ -84,6 +84,11 @@ class CookiesView(FormView):
     template_name = 'cookies.html'
     success_url = reverse_lazy('cookies')
 
+    def get_context_data(self, **kwargs):
+        context_data = super().get_context_data(**kwargs)
+        context_data['cookie_policy_cookie_name'] = CookiePolicy.cookie_name
+        return context_data
+
     def get_initial(self):
         initial = super().get_initial()
         cookie_policy = CookiePolicy(self.request)
@@ -100,8 +105,8 @@ class CookiesView(FormView):
         else:
             cookie_policy = '{"usage":false}'
         expires = timezone.now() + datetime.timedelta(days=365)
-        response.set_cookie('cookie_policy', cookie_policy, expires=expires, secure=True, httponly=True)
-        # NB: `seen_cookie_message` is used by givuk-template JS which is not editable
+        response.set_cookie(CookiePolicy.cookie_name, cookie_policy, expires=expires, secure=True, httponly=True)
+        # NB: `seen_cookie_message` is used by govuk-template JS which is not editable
         response.set_cookie('seen_cookie_message', 'yes', expires=expires, secure=True, httponly=False)
         return response
 
