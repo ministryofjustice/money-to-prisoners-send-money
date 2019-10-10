@@ -36,6 +36,17 @@
       border-bottom-color: $text-colour;
     }
   }
+
+  @include media(mobile) {
+    .button {
+      width: 40%;
+    }
+
+    .mtp-cancel-button {
+      display: block;
+      margin-top: 1em;
+    }
+  }
 }
 
 #id_accept_cookies-wrapper {
