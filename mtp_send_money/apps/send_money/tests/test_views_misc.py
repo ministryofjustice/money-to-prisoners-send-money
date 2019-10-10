@@ -7,6 +7,7 @@ from django.test import override_settings
 from django.urls import reverse
 from django.utils.cache import get_max_age
 from django.utils.translation import override as override_lang
+from mtp_common.utils import CookiePolicy
 import responses
 
 from send_money.tests import BaseTestCase, mock_auth, patch_notifications, patch_gov_uk_pay_availability_check
@@ -21,18 +22,18 @@ class CookiePromptTestCase(BaseTestCase):
         self.assertContains(response, 'mtp-cookie-prompt')
 
     def test_prompt_not_visible_when_cookie_policy_is_set(self):
-        self.client.cookies['cookie_policy'] = '{"usage":true}'
+        self.client.cookies[CookiePolicy.cookie_name] = '{"usage":true}'
         response = self.client.get(reverse('send_money:choose_method'))
         self.assertNotContains(response, 'mtp-cookie-prompt')
 
-        self.client.cookies['cookie_policy'] = '{"usage":false}'
+        self.client.cookies[CookiePolicy.cookie_name] = '{"usage":false}'
         response = self.client.get(reverse('send_money:choose_method'))
         self.assertNotContains(response, 'mtp-cookie-prompt')
 
     @override_settings(GOOGLE_ANALYTICS_ID='ABC123')
     def test_performace_cookies_can_be_accepted(self):
         response = self.client.post(reverse('cookies'), data={'accept_cookies': 'yes'})
-        cookie = response.cookies.get('cookie_policy').value
+        cookie = response.cookies.get(CookiePolicy.cookie_name).value
         self.assertDictEqual(json.loads(cookie), {'usage': True})
         response = self.client.get(reverse('send_money:choose_method'))
         self.assertNotContains(response, 'mtp-cookie-prompt')
@@ -41,7 +42,7 @@ class CookiePromptTestCase(BaseTestCase):
     @override_settings(GOOGLE_ANALYTICS_ID='ABC123')
     def test_performace_cookies_can_be_rejected(self):
         response = self.client.post(reverse('cookies'), data={'accept_cookies': 'no'})
-        cookie = response.cookies.get('cookie_policy').value
+        cookie = response.cookies.get(CookiePolicy.cookie_name).value
         self.assertDictEqual(json.loads(cookie), {'usage': False})
         response = self.client.get(reverse('send_money:choose_method'))
         self.assertNotContains(response, 'mtp-cookie-prompt')

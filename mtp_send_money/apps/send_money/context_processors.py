@@ -1,11 +1,12 @@
 from django.conf import settings
 from django.urls import reverse
 from django.utils.translation import gettext
+from mtp_common.utils import CookiePolicy
 
 
 def actioned_cookie_prompt(request):
     return {
-        'actioned_cookie_prompt': 'cookie_policy' in request.COOKIES,
+        'actioned_cookie_prompt': CookiePolicy.cookie_name in request.COOKIES,
     }
 
 
