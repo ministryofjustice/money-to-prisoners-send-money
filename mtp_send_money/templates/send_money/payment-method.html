@@ -21,7 +21,7 @@
         <h1 class="heading-medium error-summary-heading">
           {{ form.payment_method.field.message_to_users|default:_('Sending money by debit card is temporarily unavailable') }}
         </h1>
-        <p>{% trans 'You can come back later or choose to get a prisoner reference to use in a UK bank transfer' %}</p>
+        <p>{% trans 'Try again later or get a prisoner reference to send money by UK bank transfer' %}</p>
 
       </div>
     {% elif check_govuk_pay_connection %}
