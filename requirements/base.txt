@@ -2,7 +2,7 @@
 # NB: this is not the complete set needed to run the app
 Django>=1.11,<2
 django-anymail[mailgun]~=3.0
-requests>=2.12,<3
+requests>=2.22,<3
 transifex-client>=0.12
 
 django-form-error-reporting>=0.7
