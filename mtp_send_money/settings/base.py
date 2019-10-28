@@ -117,7 +117,7 @@ TEMPLATES = [
                 'mtp_common.context_processors.analytics',
                 'mtp_common.context_processors.app_environment',
                 'mtp_common.context_processors.govuk_localisation',
-                'send_money.context_processors.actioned_cookie_prompt',
+                'send_money.context_processors.analytics',
                 'send_money.context_processors.links',
                 'mtp_common.analytics.default_genericised_pageview',
             ],
@@ -240,6 +240,7 @@ SERVICE_CHARGE_FIXED = Decimal(
 )  # always use `Decimal` in pounds
 
 GOOGLE_ANALYTICS_ID = os.environ.get('GOOGLE_ANALYTICS_ID', None)
+GOOGLE_ANALYTICS_GDS_ID = os.environ.get('GOOGLE_ANALYTICS_GDS_ID', None)
 
 REQUEST_PAGE_SIZE = 500
 
