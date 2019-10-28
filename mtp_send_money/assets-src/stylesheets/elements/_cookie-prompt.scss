@@ -7,7 +7,7 @@
   @include core-19;
 
   display: none;
-  padding: $gutter-half 0 $gutter;
+  padding: $gutter 0 (2 * $gutter);
   color: $green;
 
   .js-enabled & {
@@ -24,8 +24,8 @@
 
   .button {
     border: 2px solid $green;
-    color: $green;
-    background-color: #fff;
+    color: #fff;
+    background-color: $green;
     box-shadow: none;
 
     &:focus {
@@ -33,7 +33,6 @@
       color: $text-colour;
       background: $focus-colour;
       border-color: $focus-colour;
-      border-bottom-color: $text-colour;
     }
   }
 
