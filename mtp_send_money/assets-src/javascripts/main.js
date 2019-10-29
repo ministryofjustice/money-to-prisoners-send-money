@@ -10,7 +10,6 @@
   require('disclosure').Disclosure.init();
   require('notifications').Notifications.init();
 
-  require('cookie-prompt').CookiePrompt.init();
   require('charges').Charges.init();
   require('govuk-pay-connection-check').GOVUKPayConnectionCheck.init();
   require('experiments').Experiments.init();

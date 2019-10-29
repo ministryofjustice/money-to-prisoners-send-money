@@ -4,7 +4,7 @@ from django import forms
 from django.conf import settings
 from django.core.cache import cache
 from django.http import HttpResponse
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 from django.urls import reverse, reverse_lazy
 from django.utils.http import is_safe_url
 from django.utils.translation import gettext_lazy as _, override as override_language
@@ -75,6 +75,7 @@ class CookiesForm(forms.Form):
         ('yes', _('Yes')),
         ('no', _('No')),
     ))
+    next = forms.CharField(label=_('Page to show next'), required=False)
 
 
 class CookiesView(FormView):
@@ -94,8 +95,9 @@ class CookiesView(FormView):
         return initial
 
     def form_valid(self, form):
-        if self.request.is_ajax():
-            response = HttpResponse('{}')
+        success_url = form.cleaned_data['next']
+        if success_url and is_safe_url(success_url, host=self.request.get_host()):
+            response = redirect(success_url)
         else:
             response = super().form_valid(form)
         cookie_policy_accepted = form.cleaned_data['accept_cookies'] == 'yes'

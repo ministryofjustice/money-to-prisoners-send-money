@@ -67,6 +67,21 @@ class PerformanceCookiesTestCase(BaseTestCase):
         self.assertContains(response, 'GDS321')
         self.assertContains(response, 'govuk_shared.send')
 
+    @override_settings(GOOGLE_ANALYTICS_ID='ABC123')
+    def test_cookie_prompt_safely_redirects_back(self):
+        for safe_page in ['send_money:choose_method', 'send_money:help']:
+            response = self.client.post(reverse('cookies'), data={
+                'accept_cookies': 'yes',
+                'next': reverse(safe_page),
+            }, follow=True)
+            self.assertOnPage(response, safe_page.split(':')[-1])
+
+        response = self.client.post(reverse('cookies'), data={
+            'accept_cookies': 'yes',
+            'next': 'http://example.com/',
+        }, follow=True)
+        self.assertOnPage(response, 'cookies')
+
 
 class SitemapTestCase(BaseTestCase):
     name_space = {

@@ -13,6 +13,7 @@
       </p>
       <form action="{% url 'cookies' %}" method="post">
         {% csrf_token %}
+        <input type="hidden" name="next" value="{{ request.get_full_path }}" />
         <button class="button" type="submit" name="accept_cookies" value="yes">{% trans 'Accept cookies' %}</button>
         <button class="button" type="submit" name="accept_cookies" value="no">{% trans 'Reject cookies' %}</button>
         <a class="mtp-cancel-button" href="{% url 'cookies' %}">{% trans 'View more information' %}</a>
