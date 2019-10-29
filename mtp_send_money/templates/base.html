@@ -2,6 +2,43 @@
 {% load i18n %}
 {% load mtp_common %}
 
+{% block cookie_message %}{% endblock %}
+{% block body_start %}
+  {% if not actioned_cookie_prompt %}
+    <aside class="mtp-cookie-prompt">
+      <p>
+        {% trans 'This service uses cookies which are essential for the site to work.' %}
+        {% trans 'We also use non-essential cookies to help us improve your experience.' %}
+        {% trans 'Do you accept these non-essential cookies?' %}
+      </p>
+      <form action="{% url 'cookies' %}" method="post">
+        {% csrf_token %}
+        <input type="hidden" name="next" value="{{ request.get_full_path }}" />
+        <button class="button" type="submit" name="accept_cookies" value="yes">{% trans 'Accept cookies' %}</button>
+        <button class="button" type="submit" name="accept_cookies" value="no">{% trans 'Reject cookies' %}</button>
+        <a class="mtp-cancel-button" href="{% url 'cookies' %}">{% trans 'View more information' %}</a>
+      </form>
+    </aside>
+  {% endif %}
+{% endblock %}
+
+{% block google_analytics_end %}
+  {% if GOOGLE_ANALYTICS_GDS_ID %}
+    ga('create', '{{ GOOGLE_ANALYTICS_GDS_ID }}', 'auto', 'govuk_shared', {'allowLinker': true});
+    ga('govuk_shared.require', 'linker');
+    ga('govuk_shared.linker.set', 'anonymizeIp', true);
+    ga('govuk_shared.linker.set', 'allowAdFeatures', false);
+    ga('govuk_shared.linker:autoLink', ['www.gov.uk']);
+    {% with default_ga_data=default_google_analytics_pageview %}
+    {% with ga_data=google_analytics_pageview|default:default_ga_data %}
+      {% for key, value in ga_data.items %}
+        {% if value %}ga('govuk_shared.set', '{{ key }}', '{{ value }}');{% endif %}
+      {% endfor %}
+    {% endwith %}
+    {% endwith %}
+    ga('govuk_shared.send', 'pageview');
+  {% endif %}
+{% endblock %}
 
 {% block body_end %}
   <script src="{% url 'js-i18n' %}?{{ APP_GIT_COMMIT_SHORT }}"></script>

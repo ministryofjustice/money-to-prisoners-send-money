@@ -1,0 +1,53 @@
+#global-cookie-message {
+  display: none !important;
+}
+
+.mtp-cookie-prompt {
+  @extend %site-width-container;
+  @include core-19;
+
+  display: none;
+  padding: $gutter 0 (2 * $gutter);
+  color: $green;
+
+  .js-enabled & {
+    display: block;
+  }
+
+  form a.mtp-cancel-button {
+    color: $green;
+
+    &:visited {
+      color: darken($green, 10%);
+    }
+  }
+
+  .button {
+    border: 2px solid $green;
+    color: #fff;
+    background-color: $green;
+    box-shadow: none;
+
+    &:focus {
+      outline: none;
+      color: $text-colour;
+      background: $focus-colour;
+      border-color: $focus-colour;
+    }
+  }
+
+  @include media(mobile) {
+    .button {
+      width: 40%;
+    }
+
+    .mtp-cancel-button {
+      display: block;
+      margin-top: 1em;
+    }
+  }
+}
+
+#id_accept_cookies-wrapper {
+  margin-top: $gutter-half;
+}

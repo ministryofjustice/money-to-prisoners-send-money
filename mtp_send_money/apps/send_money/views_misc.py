@@ -1,13 +1,15 @@
 import logging
 
+from django import forms
 from django.conf import settings
 from django.core.cache import cache
 from django.http import HttpResponse
-from django.shortcuts import render
-from django.urls import reverse
+from django.shortcuts import redirect, render
+from django.urls import reverse, reverse_lazy
 from django.utils.http import is_safe_url
-from django.utils.translation import override as override_language
-from django.views.generic import TemplateView
+from django.utils.translation import gettext_lazy as _, override as override_language
+from django.views.generic import FormView, TemplateView
+from mtp_common.analytics import AnalyticsPolicy
 from mtp_common.api import retrieve_all_pages_for_path
 from oauthlib.oauth2 import OAuth2Error
 from requests import RequestException
@@ -68,6 +70,41 @@ def prison_list_view(request):
     return make_response_cacheable(response)
 
 
+class CookiesForm(forms.Form):
+    accept_cookies = forms.ChoiceField(label=_('Accept cookies to improve the service'), choices=(
+        ('yes', _('Yes')),
+        ('no', _('No')),
+    ))
+    next = forms.CharField(label=_('Page to show next'), required=False)
+
+
+class CookiesView(FormView):
+    form_class = CookiesForm
+    template_name = 'cookies.html'
+    success_url = reverse_lazy('cookies')
+
+    def get_context_data(self, **kwargs):
+        context_data = super().get_context_data(**kwargs)
+        context_data['cookie_policy_cookie_name'] = AnalyticsPolicy.cookie_name
+        return context_data
+
+    def get_initial(self):
+        initial = super().get_initial()
+        cookie_policy_accepted = AnalyticsPolicy(self.request).is_cookie_policy_accepted(self.request)
+        initial['accept_cookies'] = 'yes' if cookie_policy_accepted else 'no'
+        return initial
+
+    def form_valid(self, form):
+        success_url = form.cleaned_data['next']
+        if success_url and is_safe_url(success_url, host=self.request.get_host()):
+            response = redirect(success_url)
+        else:
+            response = super().form_valid(form)
+        cookie_policy_accepted = form.cleaned_data['accept_cookies'] == 'yes'
+        AnalyticsPolicy(self.request).set_cookie_policy(response, cookie_policy_accepted)
+        return response
+
+
 def robots_txt_view(request):
     """
     robots.txt - blocks access on non-prod and refers to sitemap.xml
@@ -95,7 +132,7 @@ class SitemapXMLView(TemplateView):
         ]
         links = {}
         request = self.request
-        for lang_code, _ in settings.LANGUAGES:
+        for lang_code, _lang_name in settings.LANGUAGES:
             with override_language(lang_code):
                 links[lang_code] = {
                     url_name: request.build_absolute_uri(reverse(url_name))

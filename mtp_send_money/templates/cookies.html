@@ -9,109 +9,143 @@
     <h1 class="heading-xlarge">{% trans 'Cookies' %}</h1>
   </header>
 
-  <p>{% trans 'GOV.UK puts small files (known as ‘cookies’) onto your computer to collect information about how you browse the site.' %}</p>
-  <p>{% trans 'Cookies are used to:' %}</p>
-  <ul class="list list-bullet">
-    <li>{% trans 'measure how you use the website so it can be updated and improved based on your needs' %}</li>
-    <li>{% trans 'remember the notifications you’ve seen so that we don’t show them to you again' %}</li>
-  </ul>
+  <div class="grid-row">
+    <div class="column-two-thirds">
+      {% include 'mtp_common/forms/error-summary.html' with form=form only %}
 
-  <div class="panel panel-border-wide">
-    <p>{% trans 'GOV.UK cookies aren’t used to identify you personally.' %}</p>
+      <p>{% trans 'We put small files (known as ‘cookies’) onto your computer or mobile device when you visit this website.' %}</p>
+      <p>{% trans 'Cookies are used to:' %}</p>
+      <ul class="list list-bullet">
+        <li>{% trans 'measure how you use this website so it can be updated and improved based on your needs' %}</li>
+        <li>{% trans 'remember your progress through our service' %}</li>
+        <li>{% trans 'remember the settings you’ve chosen' %}</li>
+      </ul>
+
+      <p>
+        {% trans 'Cookies on ‘Send money to someone in prison’ are not used for advertising or marketing.' %}
+      </p>
+
+      <p>
+        {% trans 'You can read more about <a href="https://www.gov.uk/help/cookies" rel="external">how cookies are used throughout GOV.UK</a>.' %}
+      </p>
+
+      <h2 class="heading-large">{% trans 'Cookies we use to improve our service' %}</h2>
+      <p>
+        {% trans 'We use Google Analytics to measure how you use this website so we can improve it based on your needs.' %}
+        {% trans 'We do not allow Google to use or share the data about how you use it.' %}
+      </p>
+      <form method="post">
+        {% csrf_token %}
+
+        <div class="form-group">
+          <fieldset class="inline">
+            <legend>
+              {% trans 'Do you agree to the Ministry of Justice and other UK government departments using Google Analytics to help improve the ‘Send money to someone in prison’ service?' %}
+            </legend>
+            {% include 'mtp_common/forms/radio-field.html' with field=form.accept_cookies only %}
+            <input class="button" type="submit" value="{% trans 'Save changes' %}">
+          </fieldset>
+        </div>
+      </form>
+
+      <p>{% trans 'Google Analytics stores information about:' %}</p>
+      <ul class="list list-bullet">
+        <li>{% trans 'the pages you visit in this service' %}</li>
+        <li>{% trans 'how long you spend on each page' %}</li>
+        <li>{% trans 'how you got to the site' %}</li>
+        <li>{% trans 'what you click on while you’re visiting the site' %}</li>
+      </ul>
+      <p>{% trans 'Google Analytics does <strong>NOT</strong> store:' %}</p>
+      <ul class="list list-bullet">
+        <li>{% trans 'any of your personal details, for example, your name' %}</li>
+        <li>{% trans 'what you enter into pages on this site' %}</li>
+      </ul>
+
+      <p>{% trans 'Google Analytics sets the following cookies:' %}</p>
+      <table>
+        <thead>
+          <tr>
+            <th>{% trans 'Name' %}</th>
+            <th>{% trans 'Purpose' %}</th>
+            <th>{% trans 'Expires' %}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>_ga</code>, <code>_gat</code> {% trans 'and' %} <code>_gid</code></td>
+            <td>{% trans 'Lets Google Analytics know which pages you visit' %}</td>
+            <td>{% trans 'Up to 2 years' %}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2 class="heading-large">{% trans 'Essential cookies' %}</h2>
+      <p>
+        {% trans 'These cookies need to be on to allow you to use this service.' %}
+      </p>
+      <p>
+        {% url 'terms' as terms_url %}
+        {% url 'privacy' as privacy_url %}
+        {% blocktrans trimmed %}
+          For more information visit our <a href="{{ terms_url }}">terms and conditions</a> and <a href="{{ privacy_url }}">privacy policy</a>.
+        {% endblocktrans %}
+      </p>
+
+      <h3 class="heading-medium">{% trans 'Your progress when using the service' %}</h3>
+      <p>
+        {% trans 'When you use the ‘Send money to someone in prison’ service, we’ll set cookies to remember your progress through this site.' %}
+        {% trans 'These cookies don’t store your personal data and are deleted when you close this website.' %}
+      </p>
+      <table>
+        <thead>
+          <tr>
+            <th>{% trans 'Name' %}</th>
+            <th>{% trans 'Purpose' %}</th>
+            <th>{% trans 'Expires' %}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>sessionid</code></td>
+            <td>{% trans 'Saves your progress through the service' %}</td>
+            <td>{% trans 'When you close this website' %}</td>
+          </tr>
+          <tr>
+            <td><code>csrftoken</code></td>
+            <td>{% trans 'Ensures your forms are kept private' %}</td>
+            <td>{% trans 'When you close this website' %}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3 class="heading-medium">{% trans 'Settings you’ve chosen' %}</h3>
+      <p>
+        {% trans 'When you use the ‘Send money to someone in prison’ service, we’ll set cookies to remember settings you change.' %}
+        {% trans 'These cookies don’t store any personal data, but will be saved on your computer or mobile for some time.' %}
+      </p>
+      <table>
+        <thead>
+          <tr>
+            <th>{% trans 'Name' %}</th>
+            <th>{% trans 'Purpose' %}</th>
+            <th>{% trans 'Expires' %}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>{{ cookie_policy_cookie_name }}</code></td>
+            <td>{% trans 'Saves the choices you make about cookies on this page' %}</td>
+            <td>{% trans '1 year' %}</td>
+          </tr>
+          <tr>
+            <td><code>seen_cookie_message</code></td>
+            <td>{% trans 'Saves a message to let us know that you have seen our cookie message' %}</td>
+            <td>{% trans '1 year' %}</td>
+          </tr>
+        </tbody>
+      </table>
+
+    </div>
   </div>
 
-  <p>{% trans 'You’ll normally see a message on the site before we store a cookie on your computer.' %}</p>
-  <p>
-    {% trans 'Find out more about <a href="http://www.aboutcookies.org/" rel="external">how to manage cookies</a>.' %}
-  </p>
-
-  <h2 class="heading-large">{% trans 'How cookies are used on GOV.UK' %}</h2>
-  <h3 class="heading-medium">{% trans 'Measuring website usage (Google Analytics)' %}</h3>
-  <p>{% trans 'We use Google Analytics software to collect information about how you use GOV.UK. We do this to help make sure the site is meeting the needs of its users and to help us make improvements.' %}</p>
-  <p>{% trans 'Google Analytics stores information about:' %}</p>
-  <ul class="list list-bullet">
-    <li>{% trans 'the pages you visit on GOV.UK - how long you spend on each GOV.UK page' %}</li>
-    <li>{% trans 'how you got to the site' %}</li>
-    <li>{% trans 'what you click on while you’re visiting the site.' %}</li>
-  </ul>
-
-  <div class="panel panel-border-wide">
-    <p>
-      {% url 'terms' as terms_url %}
-      {% blocktrans trimmed %}
-        We don’t collect or store your personal information so this information can’t be used to identify who you are. For more information visit our <a href="{{ terms_url }}">Terms and conditions and privacy policy</a> page.
-      {% endblocktrans %}
-    </p>
-  </div>
-
-  <p>{% trans 'We don’t allow Google to use or share our analytics data.' %}</p>
-  <p>{% trans 'Google Analytics sets the following cookies:' %}</p>
-  <table>
-    <thead>
-      <tr>
-        <th>{% trans 'Name' %}</th>
-        <th>{% trans 'Purpose' %}</th>
-        <th>{% trans 'Expires' %}</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><code>_ga</code> {% trans 'and' %} <code>_gat</code></td>
-        <td>{% trans 'This is a google analytics cookie that helps us understand how the service is being used in detail. Your data is anonymised.' %}</td>
-        <td>{% trans '2 years' %}</td>
-      </tr>
-    </tbody>
-  </table>
-
-  <p>
-    {% trans 'You can <a href="https://tools.google.com/dlpage/gaoptout" rel="external">opt out of Google Analytics cookies</a>.' %}
-  </p>
-
-  <h3 class="heading-medium">{% trans 'Our introductory message' %}</h3>
-  <p>
-    {% trans 'You may see a pop-up welcome message when you first visit GOV.UK.' %}
-    {% trans 'We’ll store a cookie so that your computer knows you’ve seen it and knows not to show it again.' %}
-  </p>
-  <table>
-    <thead>
-      <tr>
-        <th>{% trans 'Name' %}</th>
-        <th>{% trans 'Purpose' %}</th>
-        <th>{% trans 'Expires' %}</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><code>seen_cookie_message</code></td>
-        <td>{% trans 'Saves a message to let us know that you have seen our cookie message' %}</td>
-        <td>{% trans '1 month' %}</td>
-      </tr>
-    </tbody>
-  </table>
-
-  <h3 class="heading-medium">{% trans 'Your progress when using the service' %}</h3>
-  <p>
-    {% trans 'When you use the “Send money to someone in prison” service, we’ll set a cookie to remember your progress through the forms.' %}
-    {% trans 'These cookies don’t store your personal data and are deleted once you’ve completed the transaction.' %}
-  </p>
-  <table>
-    <thead>
-      <tr>
-        <th>{% trans 'Name' %}</th>
-        <th>{% trans 'Purpose' %}</th>
-        <th>{% trans 'Expires' %}</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><code>sessionid</code></td>
-        <td>{% trans 'An identifier for your session' %}</td>
-        <td>{% trans 'At the end of the session' %}</td>
-      </tr>
-    </tbody>
-  </table>
-
-  <p>
-    {% trans 'You can read more about <a href="https://www.gov.uk/help/cookies" rel="external">how cookies are used on gov.uk</a>.' %}
-  </p>
 {% endblock %}
