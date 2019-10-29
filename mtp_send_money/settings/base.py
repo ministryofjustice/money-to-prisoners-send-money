@@ -119,7 +119,6 @@ TEMPLATES = [
                 'mtp_common.context_processors.govuk_localisation',
                 'send_money.context_processors.analytics',
                 'send_money.context_processors.links',
-                'mtp_common.analytics.default_genericised_pageview',
             ],
         },
     },
@@ -239,6 +238,7 @@ SERVICE_CHARGE_FIXED = Decimal(
     os.environ.get('SERVICE_CHARGE_FIXED', '0')
 )  # always use `Decimal` in pounds
 
+ANALYTICS_REQUIRED = os.environ.get('ANALYTICS_REQUIRED', 'False') == 'True'
 GOOGLE_ANALYTICS_ID = os.environ.get('GOOGLE_ANALYTICS_ID', None)
 GOOGLE_ANALYTICS_GDS_ID = os.environ.get('GOOGLE_ANALYTICS_GDS_ID', None)
 
@@ -253,7 +253,7 @@ ZENDESK_CUSTOM_FIELDS = {
     'referer': 26047167,
     'username': 29241738,
     'user_agent': 23791776,
-    'contact_email': 30769508
+    'contact_email': 30769508,
 }
 
 SHOW_BANK_TRANSFER_OPTION = os.environ.get('SHOW_BANK_TRANSFER_OPTION', 'True') == 'True'

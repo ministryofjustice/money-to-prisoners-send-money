@@ -7,7 +7,7 @@ from django.test import override_settings
 from django.urls import reverse
 from django.utils.cache import get_max_age
 from django.utils.translation import override as override_lang
-from mtp_common.utils import CookiePolicy
+from mtp_common.analytics import AnalyticsPolicy
 import responses
 
 from send_money.tests import BaseTestCase, mock_auth, patch_notifications, patch_gov_uk_pay_availability_check
@@ -22,24 +22,24 @@ class PerformanceCookiesTestCase(BaseTestCase):
         self.assertContains(response, 'mtp-cookie-prompt')
 
     def test_prompt_not_visible_when_cookie_policy_is_set(self):
-        self.client.cookies[CookiePolicy.cookie_name] = '{"usage":true}'
+        self.client.cookies[AnalyticsPolicy.cookie_name] = '{"usage":true}'
         response = self.client.get(reverse('send_money:choose_method'))
         self.assertNotContains(response, 'mtp-cookie-prompt')
 
-        self.client.cookies[CookiePolicy.cookie_name] = '{"usage":false}'
+        self.client.cookies[AnalyticsPolicy.cookie_name] = '{"usage":false}'
         response = self.client.get(reverse('send_money:choose_method'))
         self.assertNotContains(response, 'mtp-cookie-prompt')
 
     @override_settings(GOOGLE_ANALYTICS_ID='ABC123')
-    def test_performance_analytics_on_by_default(self):
+    def test_performance_analytics_off_by_default(self):
         response = self.client.get(reverse('send_money:choose_method'))
-        self.assertContains(response, 'ABC123')
+        self.assertNotContains(response, 'ABC123')
         self.assertNotContains(response, 'govuk_shared.send')
 
     @override_settings(GOOGLE_ANALYTICS_ID='ABC123')
     def test_performace_cookies_can_be_accepted(self):
         response = self.client.post(reverse('cookies'), data={'accept_cookies': 'yes'})
-        cookie = response.cookies.get(CookiePolicy.cookie_name).value
+        cookie = response.cookies.get(AnalyticsPolicy.cookie_name).value
         self.assertDictEqual(json.loads(cookie), {'usage': True})
         response = self.client.get(reverse('send_money:choose_method'))
         self.assertNotContains(response, 'mtp-cookie-prompt')
@@ -48,24 +48,24 @@ class PerformanceCookiesTestCase(BaseTestCase):
     @override_settings(GOOGLE_ANALYTICS_ID='ABC123')
     def test_performace_cookies_can_be_rejected(self):
         response = self.client.post(reverse('cookies'), data={'accept_cookies': 'no'})
-        cookie = response.cookies.get(CookiePolicy.cookie_name).value
+        cookie = response.cookies.get(AnalyticsPolicy.cookie_name).value
         self.assertDictEqual(json.loads(cookie), {'usage': False})
         response = self.client.get(reverse('send_money:choose_method'))
         self.assertNotContains(response, 'mtp-cookie-prompt')
         self.assertNotContains(response, 'ABC123')
 
     @override_settings(GOOGLE_ANALYTICS_ID='ABC123', GOOGLE_ANALYTICS_GDS_ID='GDS321')
-    def test_gds_performance_analytics_on_by_default(self):
-        response = self.client.get(reverse('send_money:choose_method'))
-        self.assertContains(response, 'GDS321')
-        self.assertContains(response, 'govuk_shared.send')
-
-    @override_settings(GOOGLE_ANALYTICS_ID='ABC123', GOOGLE_ANALYTICS_GDS_ID='GDS321')
-    def test_gds_performance_analytics_can_be_rejected(self):
-        self.client.post(reverse('cookies'), data={'accept_cookies': 'no'})
+    def test_gds_performance_analytics_off_by_default(self):
         response = self.client.get(reverse('send_money:choose_method'))
         self.assertNotContains(response, 'GDS321')
         self.assertNotContains(response, 'govuk_shared.send')
+
+    @override_settings(GOOGLE_ANALYTICS_ID='ABC123', GOOGLE_ANALYTICS_GDS_ID='GDS321')
+    def test_gds_performance_analytics_can_be_accepted(self):
+        self.client.post(reverse('cookies'), data={'accept_cookies': 'yes'})
+        response = self.client.get(reverse('send_money:choose_method'))
+        self.assertContains(response, 'GDS321')
+        self.assertContains(response, 'govuk_shared.send')
 
 
 class SitemapTestCase(BaseTestCase):

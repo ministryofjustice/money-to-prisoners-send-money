@@ -1,12 +1,12 @@
 from django.conf import settings
 from django.urls import reverse
 from django.utils.translation import gettext
-from mtp_common.utils import CookiePolicy
+from mtp_common.analytics import AnalyticsPolicy
 
 
 def analytics(request):
     return {
-        'actioned_cookie_prompt': CookiePolicy.cookie_name in request.COOKIES,
+        'actioned_cookie_prompt': AnalyticsPolicy.cookie_name in request.COOKIES,
         'GOOGLE_ANALYTICS_GDS_ID': settings.GOOGLE_ANALYTICS_GDS_ID,
     }
 

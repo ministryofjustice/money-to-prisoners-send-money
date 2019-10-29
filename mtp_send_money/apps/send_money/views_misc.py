@@ -1,4 +1,3 @@
-import datetime
 import logging
 
 from django import forms
@@ -7,12 +6,11 @@ from django.core.cache import cache
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.urls import reverse, reverse_lazy
-from django.utils import timezone
 from django.utils.http import is_safe_url
 from django.utils.translation import gettext_lazy as _, override as override_language
 from django.views.generic import FormView, TemplateView
+from mtp_common.analytics import AnalyticsPolicy
 from mtp_common.api import retrieve_all_pages_for_path
-from mtp_common.utils import CookiePolicy
 from oauthlib.oauth2 import OAuth2Error
 from requests import RequestException
 
@@ -86,13 +84,13 @@ class CookiesView(FormView):
 
     def get_context_data(self, **kwargs):
         context_data = super().get_context_data(**kwargs)
-        context_data['cookie_policy_cookie_name'] = CookiePolicy.cookie_name
+        context_data['cookie_policy_cookie_name'] = AnalyticsPolicy.cookie_name
         return context_data
 
     def get_initial(self):
         initial = super().get_initial()
-        cookie_policy = CookiePolicy(self.request)
-        initial['accept_cookies'] = 'yes' if cookie_policy.usage else 'no'
+        cookie_policy_accepted = AnalyticsPolicy(self.request).is_cookie_policy_accepted(self.request)
+        initial['accept_cookies'] = 'yes' if cookie_policy_accepted else 'no'
         return initial
 
     def form_valid(self, form):
@@ -100,14 +98,8 @@ class CookiesView(FormView):
             response = HttpResponse('{}')
         else:
             response = super().form_valid(form)
-        if form.cleaned_data['accept_cookies'] == 'yes':
-            cookie_policy = '{"usage":true}'
-        else:
-            cookie_policy = '{"usage":false}'
-        expires = timezone.now() + datetime.timedelta(days=365)
-        response.set_cookie(CookiePolicy.cookie_name, cookie_policy, expires=expires, secure=True, httponly=True)
-        # NB: `seen_cookie_message` is used by govuk-template JS which is not editable
-        response.set_cookie('seen_cookie_message', 'yes', expires=expires, secure=True, httponly=False)
+        cookie_policy_accepted = form.cleaned_data['accept_cookies'] == 'yes'
+        AnalyticsPolicy(self.request).set_cookie_policy(response, cookie_policy_accepted)
         return response
 
 
