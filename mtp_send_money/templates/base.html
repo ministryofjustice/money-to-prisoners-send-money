@@ -9,6 +9,8 @@
       <p>
         {% trans 'This service uses cookies which are essential for the site to work.' %}
         {% trans 'We also use non-essential cookies to help us improve your experience.' %}
+      </p>
+      <p>
         {% trans 'Do you accept these non-essential cookies?' %}
       </p>
       <form action="{% url 'cookies' %}" method="post">

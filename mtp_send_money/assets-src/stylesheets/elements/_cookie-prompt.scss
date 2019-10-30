@@ -7,8 +7,12 @@
   @include core-19;
 
   display: none;
-  padding: $gutter 0 (2 * $gutter);
+  padding: (1.5 * $gutter) 0 (2 * $gutter);
   color: $green;
+
+  @include media(mobile) {
+    padding: $gutter 0 (1.5 * $gutter);
+  }
 
   .js-enabled & {
     display: block;
