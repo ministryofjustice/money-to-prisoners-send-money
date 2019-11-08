@@ -28,8 +28,8 @@
   {% if GOOGLE_ANALYTICS_GDS_ID %}
     ga('create', '{{ GOOGLE_ANALYTICS_GDS_ID }}', 'auto', 'govuk_shared', {'allowLinker': true});
     ga('govuk_shared.require', 'linker');
-    ga('govuk_shared.linker.set', 'anonymizeIp', true);
-    ga('govuk_shared.linker.set', 'allowAdFeatures', false);
+    ga('govuk_shared.set', 'anonymizeIp', true);
+    ga('govuk_shared.set', 'allowAdFeatures', false);
     ga('govuk_shared.linker:autoLink', ['www.gov.uk']);
     {% with default_ga_data=default_google_analytics_pageview %}
     {% with ga_data=google_analytics_pageview|default:default_ga_data %}
