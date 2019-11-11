@@ -101,6 +101,8 @@ class PaymentClient:
         if card_details:
             if 'cardholder_name' in card_details:
                 payment_update['cardholder_name'] = card_details['cardholder_name']
+            if 'first_digits_card_number' in card_details:
+                payment_update['card_number_first_digits'] = card_details['first_digits_card_number']
             if 'last_digits_card_number' in card_details:
                 payment_update['card_number_last_digits'] = card_details['last_digits_card_number']
             if 'expiry_date' in card_details:
