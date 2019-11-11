@@ -98,6 +98,8 @@ class PaymentClient:
         if success:
             received_at = self.get_govuk_capture_time(govuk_payment)
             payment_update['received_at'] = received_at.isoformat()
+        if govuk_payment and govuk_payment.get('provider_id'):
+            payment_update['worldpay_id'] = govuk_payment['provider_id']
         if card_details:
             if 'cardholder_name' in card_details:
                 payment_update['cardholder_name'] = card_details['cardholder_name']
