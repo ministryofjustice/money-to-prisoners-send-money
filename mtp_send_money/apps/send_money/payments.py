@@ -1,3 +1,4 @@
+import enum
 from datetime import datetime, time, timedelta
 import logging
 from urllib.parse import quote_plus as url_quote
@@ -19,6 +20,20 @@ from send_money.utils import (
 )
 
 logger = logging.getLogger('mtp')
+
+
+class PaymentStatus(enum.Enum):
+    created = 'Created',
+    started = 'Started'
+    submitted = 'Submitted'
+    capturable = 'Capturable'  # in delayed capture
+    success = 'Success'
+    failed = 'Failed'
+    cancelled = 'Cancelled'
+    error = 'Error'
+
+    def finished(self):
+        return self in [self.success, self.failed, self.cancelled, self.error]
 
 
 def is_active_payment(payment):
@@ -64,30 +79,103 @@ class PaymentClient:
             raise ValueError('payment_ref must be provided')
         self.api_session.patch('/payments/%s/' % url_quote(payment_ref), json=payment_update)
 
-    def check_govuk_payment_succeeded(self, payment, govuk_payment, context):
-        if govuk_payment is None:
-            return False
+    def parse_govuk_payment_status(self, govuk_payment):
+        """
+        :return: PaymentStatus in the govuk_payment dict.
+        """
+        if not govuk_payment:
+            return None
 
-        govuk_status = govuk_payment['state']['status']
-        email = govuk_payment.get('email')
+        try:
+            return PaymentStatus[
+                govuk_payment['state']['status']
+            ]
+        except KeyError:
+            raise GovUkPaymentStatusException(
+                f"Unknown status: {govuk_payment['state']['status']}",
+            )
 
-        if govuk_status not in ('success', 'error', 'cancelled', 'failed'):
-            raise GovUkPaymentStatusException('Incomplete status: %s' % govuk_status)
+    def check_govuk_payment_status(self, payment, govuk_payment, context):
+        """
+        Returns a PaymentStatus for the GOV.UK payment govuk_payment.
+        If the status is 'success' or 'capturable' and the MTP payment doesn't have any email,
+        it updates the email field on record and sends an email to the user.
 
-        if govuk_status == 'error':
+        :return: PaymentStatus for the GOV.UK payment govuk_payment
+        :param payment: dict with MTP payment details as returned by the MTP API
+        :param govuk_payment: dict with GOV.UK payment details as returned by the GOV.UK Pay API
+        :param context: dict with extra variable to be used in constructing any email message
+        """
+        govuk_status = self.parse_govuk_payment_status(govuk_payment)
+        if not govuk_status:
+            return
+
+        if govuk_status == PaymentStatus.error:
             logger.error(
                 'GOV.UK Pay returned an error for %(govuk_id)s: %(code)s %(msg)s' %
-                {'govuk_id': govuk_payment['payment_id'],
-                 'code': govuk_payment['state']['code'],
-                 'msg': govuk_payment['state']['message']}
+                {
+                    'govuk_id': govuk_payment['payment_id'],
+                    'code': govuk_payment['state']['code'],
+                    'msg': govuk_payment['state']['message'],
+                },
             )
-        success = govuk_status == 'success'
 
-        if success and email and not payment.get('email'):
-            send_notification(email, context)
+        successfulish = govuk_status in [PaymentStatus.success, PaymentStatus.capturable]
+        email = govuk_payment.get('email')
+        if successfulish and email and not payment.get('email'):
             self.update_payment(payment['uuid'], {'email': email})
+            payment['email'] = email
 
-        return success
+            if govuk_status == PaymentStatus.success:
+                send_notification(email, context)
+
+        return govuk_status
+
+    def check_govuk_payment_succeeded(self, payment, govuk_payment, context):
+        """
+        Returns True if the payment govuk_payment was successful.
+        If the govuk status is 'success' or 'capturable' and the MTP payment doesn't have any email,
+        it updates the email field on the record and sends an email to the user.
+
+        :return: True if the payment govuk_payment was successful, False otherwise
+        :raise GovUkPaymentStatusException: if govuk_payment is not in a finished state
+        :param payment: dict with MTP payment details as returned by the MTP API
+        :param govuk_payment: dict with GOV.UK payment details as returned by the GOV.UK Pay API
+        :param context: dict with extra variable to be used in constructing email body
+        """
+        govuk_status = self.check_govuk_payment_status(payment, govuk_payment, context)
+
+        if govuk_status is None:
+            return False
+
+        if not govuk_status.finished():
+            raise GovUkPaymentStatusException(f'Incomplete status: {govuk_status}')
+
+        return govuk_status == PaymentStatus.success
+
+    def capture_payment(self, govuk_payment, context):
+        """
+        Captures and finalises a payment in status 'capturable' and sends a confirmation email to the user.
+
+        :raise HTTPError: if GOV.UK Pay returns a 4xx or 5xx response
+        """
+        govuk_status = self.parse_govuk_payment_status(govuk_payment)
+        if govuk_status is None or govuk_status.finished():
+            return
+
+        govuk_id = govuk_payment['payment_id']
+        response = requests.post(
+            govuk_url(f'/payments/{govuk_id}/capture'),
+            headers=govuk_headers(),
+            timeout=15,
+        )
+
+        response.raise_for_status()
+
+        email = govuk_payment.get('email')
+        send_notification(email, context)
+
+        govuk_payment['state']['status'] = PaymentStatus.success.name
 
     def update_completed_payment(self, payment_ref, govuk_payment, success):
         card_details = govuk_payment.get('card_details') if govuk_payment else None
