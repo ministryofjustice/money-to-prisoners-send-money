@@ -17,9 +17,8 @@ from oauthlib.oauth2 import OAuth2Error
 from requests.exceptions import RequestException
 
 from send_money import forms as send_money_forms
-from send_money.exceptions import GovUkPaymentStatusException
 from send_money.models import PaymentMethod
-from send_money.payments import is_active_payment, PaymentClient
+from send_money.payments import is_active_payment, PaymentClient, PaymentStatus
 from send_money.utils import (
     bank_transfer_reference, can_load_govuk_pay_image, get_service_charge, get_link_by_rel, site_url,
 )
@@ -393,10 +392,10 @@ class DebitCardConfirmationView(TemplateView):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.success = False
+        self.status = PaymentStatus.failed
 
     def get_template_names(self):
-        if self.success:
+        if self.status == PaymentStatus.success:
             return ['send_money/debit-card-confirmation.html']
         return ['send_money/debit-card-failure.html']
 
@@ -414,8 +413,14 @@ class DebitCardConfirmationView(TemplateView):
             # check payment status
             payment_client = PaymentClient()
             payment = payment_client.get_payment(payment_ref)
+
+            # only continue if:
+            # - the MTP payment is in pending (it moves to the 'taken' state by the cronjob x mins after
+            #   the gov.uk payment succeeds)
+            #   OR
+            # - the MTP payment is in the 'taken' state (by the cronjob x mins after the gov.uk payment succeeded)
+            #   but only for a limited period of time
             if not payment or not is_active_payment(payment):
-                # bail out if accessed without specifying a payment in pending state
                 return clear_session_view(request)
 
             kwargs.update({
@@ -424,25 +429,38 @@ class DebitCardConfirmationView(TemplateView):
             })
 
             if payment['status'] == 'taken':
-                self.success = True
+                self.status = PaymentStatus.success
             else:
                 # check gov.uk payment status
                 govuk_id = payment['processor_id']
                 govuk_payment = payment_client.get_govuk_payment(govuk_id)
-                self.success = payment_client.check_govuk_payment_succeeded(
+
+                # check payment and send confirmation email if successful
+                self.status = payment_client.check_govuk_payment_status(
                     payment, govuk_payment, kwargs
                 )
-            if not self.success:
-                return redirect(build_view_url(self.request, DebitCardCheckView.url_name))
+
+                # if status is error, failed or cancelled, redirect back to the start
+                # as GOV.UK Pay has already shown an error page.
+                if self.status.finished_and_failed():
+                    return redirect(build_view_url(self.request, DebitCardCheckView.url_name))
+
+                # here status can be either created, started, submitted, success, capturable
+
+                # treat statuses created, started, submitted as failed as they should have
+                # never got here
+                if self.status.is_awaiting_user_input():
+                    self.status = PaymentStatus.failed
+
         except OAuth2Error:
             logger.exception('Authentication error while processing %s' % payment_ref)
+            self.status = PaymentStatus.failed
         except RequestException as error:
             error_message = 'Payment check failed for ref %s' % payment_ref
             if hasattr(error, 'response') and hasattr(error.response, 'content'):
                 error_message += '\nReceived: %s' % error.response.content
             logger.exception(error_message)
-        except GovUkPaymentStatusException:
-            logger.exception('GOV.UK Pay payment status incomplete for %s' % payment_ref)
+            self.status = PaymentStatus.failed
 
         response = super().get(request, *args, **kwargs)
         request.session.flush()
