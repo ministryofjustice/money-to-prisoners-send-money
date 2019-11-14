@@ -35,6 +35,12 @@ class PaymentStatus(enum.Enum):
     def finished(self):
         return self in [self.success, self.failed, self.cancelled, self.error]
 
+    def finished_and_failed(self):
+        return self.finished() and self != self.success
+
+    def is_awaiting_user_input(self):
+        return self in [self.created, self.started, self.submitted]
+
 
 def is_active_payment(payment):
     if payment['status'] == 'pending':

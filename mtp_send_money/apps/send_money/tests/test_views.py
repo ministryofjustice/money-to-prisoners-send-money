@@ -873,7 +873,7 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
         response = self.client.get(self.url, follow=True)
         self.assertOnPage(response, 'choose_method')
 
-    def test_confirmation_redirects_if_no_reference_param(self):
+    def test_redirects_if_no_reference_param(self):
         self.choose_debit_card_payment_method()
         self.fill_in_prisoner_details()
         self.fill_in_amount()
@@ -883,7 +883,7 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
         self.assertOnPage(response, 'choose_method')
 
     @mock.patch('send_money.payments.PaymentClient.api_session')
-    def test_confirmation_escapes_reference_param(self, mocked_api_session):
+    def test_escapes_reference_param(self, mocked_api_session):
         from mtp_common.auth.exceptions import HttpNotFoundError
 
         mocked_api_session.get.side_effect = HttpNotFoundError
@@ -897,7 +897,13 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
         mocked_api_session.get.assert_called_with('/payments/..%2Fservice-availability%2F/')
 
     @override_settings(ENVIRONMENT='prod')  # because non-prod environments don't send to @outside.local
-    def test_confirmation(self):
+    def test_success_confirmation(self):
+        """
+        Test that if the GOV.UK payment is in status 'success', the view:
+        - updates the MTP payment record with the email address provided by GOV.UK Pay
+        - sends a confirmation email
+        - shows a confirmation page
+        """
         self.choose_debit_card_payment_method()
         self.fill_in_prisoner_details()
         self.fill_in_amount()
@@ -944,7 +950,11 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
             self.assertTrue('WARGLE-B' in mail.outbox[0].body)
             self.assertTrue('£17' in mail.outbox[0].body)
 
-    def test_confirmation_handles_api_update_errors(self):
+    def test_handles_api_update_errors(self):
+        """
+        Test that if the MTP API call returns 500, the view shows a generic error page
+        and no email is sent.
+        """
         self.choose_debit_card_payment_method()
         self.fill_in_prisoner_details()
         self.fill_in_amount()
@@ -960,14 +970,21 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
                 response = self.client.get(
                     self.url, {'payment_ref': self.ref}, follow=False
                 )
-            self.assertContains(response, 'your payment could not be processed')
-            self.assertContains(response, self.ref[:8].upper())
 
-            # check session is cleared
-            for key in self.complete_session_keys:
-                self.assertNotIn(key, self.client.session)
+        self.assertContains(response, 'your payment could not be processed')
+        self.assertContains(response, self.ref[:8].upper())
 
-    def test_confirmation_handles_govuk_errors(self):
+        self.assertEqual(len(mail.outbox), 0)
+
+        # check session is cleared
+        for key in self.complete_session_keys:
+            self.assertNotIn(key, self.client.session)
+
+    def test_handles_govuk_errors(self):
+        """
+        Test that if the GOV.UK API call returns 500, the view shows a generic error page
+        and no email is sent.
+        """
         self.choose_debit_card_payment_method()
         self.fill_in_prisoner_details()
         self.fill_in_amount()
@@ -989,15 +1006,22 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
                 response = self.client.get(
                     self.url, {'payment_ref': self.ref}, follow=False
                 )
-            self.assertContains(response, 'your payment could not be processed')
-            self.assertContains(response, self.ref[:8].upper())
 
-            # check session is cleared
-            for key in self.complete_session_keys:
-                self.assertNotIn(key, self.client.session)
+        self.assertContains(response, 'your payment could not be processed')
+        self.assertContains(response, self.ref[:8].upper())
 
-    @override_settings(ENVIRONMENT='prod')  # because non-prod environments don't send to @outside.local
-    def test_confirmation_handles_rejected_card(self):
+        self.assertEqual(len(mail.outbox), 0)
+
+        # check session is cleared
+        for key in self.complete_session_keys:
+            self.assertNotIn(key, self.client.session)
+
+    def test_handles_rejected_card(self):
+        """
+        Test that if the GOV.UK payment is in status 'failed' (e.g. the card was rejected),
+        the view redirects to a few steps back in the journey so that the user can try again
+        as GOV.UK Pay has already shown an error page.
+        """
         self.choose_debit_card_payment_method()
         self.fill_in_prisoner_details()
         self.fill_in_amount()
@@ -1024,15 +1048,22 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
                 response = self.client.get(
                     self.url, {'payment_ref': self.ref}, follow=True
                 )
-            self.assertOnPage(response, 'check_details')
 
-            # check session is kept
-            for key in self.complete_session_keys:
-                self.assertIn(key, self.client.session)
-            self.assertEqual(len(mail.outbox), 0)
+        self.assertOnPage(response, 'check_details')
 
-    @override_settings(ENVIRONMENT='prod')  # because non-prod environments don't send to @outside.local
-    def test_confirmation_refreshes_for_recently_completed_payments(self):
+        self.assertEqual(len(mail.outbox), 0)
+
+        # check session is kept
+        for key in self.complete_session_keys:
+            self.assertIn(key, self.client.session)
+        self.assertEqual(len(mail.outbox), 0)
+
+    def test_handles_payments_in_error(self):
+        """
+        Test that if the GOV.UK payment is in status 'error' (e.g. Pay could contact Woldpay)
+        the view redirects to a few steps back in the journey so that the user can try again
+        as GOV.UK Pay has already shown an error page.
+        """
         self.choose_debit_card_payment_method()
         self.fill_in_prisoner_details()
         self.fill_in_amount()
@@ -1042,18 +1073,120 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
             rsps.add(
                 rsps.GET,
                 api_url('/payments/%s/' % self.ref),
-                json=dict(self.payment_data, status='taken'),
+                json=self.payment_data,
+                status=200,
+            )
+            rsps.add(
+                rsps.GET,
+                govuk_url('/payments/%s/' % self.processor_id),
+                json={
+                    'reference': 'wargle-blargle',
+                    'state': {
+                        'status': 'error',
+                        'code': 'code',
+                        'message': 'message',
+                    },
+                    'payment_id': 1,
+                    'email': 'sender@outside.local',
+                },
+                status=200
+            )
+            with self.patch_prisoner_details_check(), silence_logger():
+                response = self.client.get(
+                    self.url, {'payment_ref': self.ref}, follow=True
+                )
+
+        self.assertOnPage(response, 'check_details')
+
+        self.assertEqual(len(mail.outbox), 0)
+
+        # check session is kept
+        for key in self.complete_session_keys:
+            self.assertIn(key, self.client.session)
+        self.assertEqual(len(mail.outbox), 0)
+
+    def test_handles_payments_cancelled_by_us(self):
+        """
+        Test that if the GOV.UK payment is in status 'cancelled' because we cancelled it
+        (if the user cancels the payment, the actual GOV.UK status is 'failed')
+        the view redirects to a few steps back in the journey so that the user can try again
+        as GOV.UK Pay has already shown an error page.
+
+        NOTE: this never happens at the moment but it could with the introduction of delayed
+        capture and it might need to change.
+        """
+        self.choose_debit_card_payment_method()
+        self.fill_in_prisoner_details()
+        self.fill_in_amount()
+
+        with responses.RequestsMock() as rsps:
+            mock_auth(rsps)
+            rsps.add(
+                rsps.GET,
+                api_url('/payments/%s/' % self.ref),
+                json=self.payment_data,
+                status=200,
+            )
+            rsps.add(
+                rsps.GET,
+                govuk_url('/payments/%s/' % self.processor_id),
+                json={
+                    'reference': 'wargle-blargle',
+                    'state': {'status': 'cancelled'},
+                    'email': 'sender@outside.local',
+                },
+                status=200
+            )
+            with self.patch_prisoner_details_check(), silence_logger():
+                response = self.client.get(
+                    self.url, {'payment_ref': self.ref}, follow=True
+                )
+
+        self.assertOnPage(response, 'check_details')
+
+        self.assertEqual(len(mail.outbox), 0)
+
+        # check session is kept
+        for key in self.complete_session_keys:
+            self.assertIn(key, self.client.session)
+        self.assertEqual(len(mail.outbox), 0)
+
+    def test_refreshes_for_recently_completed_payments(self):
+        """
+        Test that if the user refreshes the page after the MTP payment was moved to the 'taken' status
+        by the cronjob x mins after the GOV.UK payment succeeded, the user sees a success confirmation
+        page and no email is sent.
+        """
+        self.choose_debit_card_payment_method()
+        self.fill_in_prisoner_details()
+        self.fill_in_amount()
+
+        with responses.RequestsMock() as rsps:
+            mock_auth(rsps)
+            rsps.add(
+                rsps.GET,
+                api_url('/payments/%s/' % self.ref),
+                json={
+                    **self.payment_data,
+                    'status': 'taken',
+                },
                 status=200,
             )
             with self.patch_prisoner_details_check(), silence_logger():
                 response = self.client.get(
                     self.url, {'payment_ref': self.ref}, follow=False
                 )
-            self.assertContains(response, 'success')
-            # check no new email sent
-            self.assertEqual(len(mail.outbox), 0)
 
-    def test_confirmation_redirects_for_old_payments(self):
+        self.assertContains(response, 'success')
+        # check no new email sent
+        self.assertEqual(len(mail.outbox), 0)
+
+    def test_redirects_for_old_payments(self):
+        """
+        Test that if the user refreshes the page a long time after the MTP payment was moved to the 'taken' status
+        by the cronjob x mins after the GOV.UK payment succeeded, the user is redirected to the
+        start of the journey.
+        """
         self.choose_debit_card_payment_method()
         self.fill_in_prisoner_details()
         self.fill_in_amount()
@@ -1067,12 +1200,13 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
             rsps.add(
                 rsps.GET,
                 api_url('/payments/%s/' % self.ref),
-                json=dict(
-                    self.payment_data,
-                    status='taken',
-                    created=payment_time,
-                    received_at=payment_time,
-                ),
+                json={
+                    **self.payment_data,
+
+                    'status': 'taken',
+                    'created': payment_time,
+                    'received_at': payment_time,
+                },
                 status=200,
             )
             with self.patch_prisoner_details_check(), silence_logger():
@@ -1081,7 +1215,12 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
                 )
             self.assertRedirects(response, '/en-gb/', fetch_redirect_response=False)
 
-    def test_confirmation_redirects_for_old_failed_payments(self):
+    def test_redirects_for_old_failed_payments(self):
+        """
+        Test that if the user click on the 'Continue' button on GOV.UK Pay to return to
+        our service a long time after it failed, the view redirects to the start of the
+        journey as Pay has already shown an error page.
+        """
         self.choose_debit_card_payment_method()
         self.fill_in_prisoner_details()
         self.fill_in_amount()
@@ -1095,12 +1234,13 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
             rsps.add(
                 rsps.GET,
                 api_url('/payments/%s/' % self.ref),
-                json=dict(
-                    self.payment_data,
-                    status='failed',
-                    created=payment_time,
-                    received_at=None,
-                ),
+                json={
+                    **self.payment_data,
+
+                    'status': 'failed',
+                    'created': payment_time,
+                    'received_at': None,
+                },
                 status=200,
             )
             with self.patch_prisoner_details_check(), silence_logger():
