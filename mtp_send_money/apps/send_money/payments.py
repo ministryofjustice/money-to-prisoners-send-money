@@ -145,18 +145,23 @@ class PaymentClient:
         email = govuk_payment.get('email')
         should_update_email = email and not payment.get('email')
 
-        if govuk_status == PaymentStatus.success and should_update_email:
-            # send successful email if it's the first time we get the sender's email address
-            send_notification(email, context)
-        elif govuk_status == PaymentStatus.capturable:
+        if govuk_status == PaymentStatus.capturable:
+            # TODO: also update other payment details so that the API can decide if to
+            # delay the capture or not
+            if should_update_email:
+                self.update_payment(payment['uuid'], {'email': email})
+                payment['email'] = email
+
             if self.should_be_automatically_captured(payment):
                 # capture payment and send successful email
                 govuk_status = self.capture_govuk_payment(govuk_payment, context)
+        elif govuk_status == PaymentStatus.success:
+            if should_update_email:
+                self.update_payment(payment['uuid'], {'email': email})
+                payment['email'] = email
 
-        # update email if necessary
-        if should_update_email:
-            self.update_payment(payment['uuid'], {'email': email})
-            payment['email'] = email
+                # send successful email if it's the first time we get the sender's email address
+                send_notification(email, context)
 
         return govuk_status
 
