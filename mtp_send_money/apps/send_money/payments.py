@@ -151,7 +151,7 @@ class PaymentClient:
         elif govuk_status == PaymentStatus.capturable:
             if self.should_be_automatically_captured(payment):
                 # capture payment and send successful email
-                govuk_status = self.capture_payment(govuk_payment, context)
+                govuk_status = self.capture_govuk_payment(govuk_payment, context)
 
         # update email if necessary
         if should_update_email:
@@ -160,7 +160,7 @@ class PaymentClient:
 
         return govuk_status
 
-    def capture_payment(self, govuk_payment, context):
+    def capture_govuk_payment(self, govuk_payment, context):
         """
         Captures and finalises a payment in status 'capturable' and sends a confirmation email to the user.
 

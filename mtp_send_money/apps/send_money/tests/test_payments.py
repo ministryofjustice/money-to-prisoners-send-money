@@ -16,9 +16,9 @@ from send_money.utils import api_url, govuk_url
     GOVUK_PAY_URL='https://pay.gov.local/v1',
     ENVIRONMENT='prod',  # because non-prod environments don't send to @outside.local
 )
-class CapturePaymentTestCase(SimpleTestCase):
+class CaptureGovukPaymentTestCase(SimpleTestCase):
     """
-    Tests related to the capture_payment method.
+    Tests related to the capture_govuk_payment method.
     """
 
     def test_capture(self):
@@ -50,7 +50,7 @@ class CapturePaymentTestCase(SimpleTestCase):
                 status=204,
             )
 
-            returned_status = client.capture_payment(govuk_payment, context)
+            returned_status = client.capture_govuk_payment(govuk_payment, context)
 
         self.assertEqual(returned_status, PaymentStatus.success)
         self.assertEqual(
@@ -65,7 +65,7 @@ class CapturePaymentTestCase(SimpleTestCase):
         )
 
         # try to capture the payment again, nothing should happen
-        client.capture_payment(govuk_payment, context)
+        client.capture_govuk_payment(govuk_payment, context)
         self.assertEqual(len(mail.outbox), 1)
 
     def test_do_nothing_if_payment_in_finished_state(self):
@@ -88,7 +88,7 @@ class CapturePaymentTestCase(SimpleTestCase):
             context = {}
 
             client = PaymentClient()
-            returned_status = client.capture_payment(govuk_payment, context)
+            returned_status = client.capture_govuk_payment(govuk_payment, context)
             self.assertEqual(returned_status, status)
 
             self.assertEqual(len(mail.outbox), 0)
@@ -101,7 +101,7 @@ class CapturePaymentTestCase(SimpleTestCase):
 
         govuk_payment = {}
         context = {}
-        returned_status = client.capture_payment(govuk_payment, context)
+        returned_status = client.capture_govuk_payment(govuk_payment, context)
         self.assertEqual(returned_status, None)
 
         self.assertEqual(len(mail.outbox), 0)
@@ -128,7 +128,7 @@ class CapturePaymentTestCase(SimpleTestCase):
             )
 
             with self.assertRaises(HTTPError) as e:
-                client.capture_payment(govuk_payment, context)
+                client.capture_govuk_payment(govuk_payment, context)
 
             self.assertEqual(
                 e.exception.response.status_code,
@@ -157,7 +157,7 @@ class CapturePaymentTestCase(SimpleTestCase):
             )
 
             with self.assertRaises(HTTPError) as e:
-                client.capture_payment(govuk_payment, context)
+                client.capture_govuk_payment(govuk_payment, context)
 
             self.assertEqual(
                 e.exception.response.status_code,
