@@ -1,9 +1,3 @@
-"""
-Django settings for mtp_send_money project.
-
-For the full list of settings and their values, see
-https://docs.djangoproject.com/en/1.9/ref/settings/
-"""
 from decimal import Decimal
 from functools import partial
 import os
