@@ -142,21 +142,20 @@ class PaymentClient:
         if not successfulish:
             return govuk_status
 
-        email = govuk_payment.get('email')
-        should_update_email = email and not payment.get('email')
-
         if govuk_status == PaymentStatus.capturable:
-            # TODO: also update other payment details so that the API can decide if to
-            # delay the capture or not
-            if should_update_email:
-                self.update_payment(payment['uuid'], {'email': email})
-                payment['email'] = email
+            # update payment so that we can work out if it has to be delayed
+            payment_attr_updates = self.get_completion_payment_attr_updates(payment, govuk_payment)
+            if payment_attr_updates:
+                self.update_payment(payment['uuid'], payment_attr_updates)
+                payment.update(payment_attr_updates)
 
             if self.should_be_automatically_captured(payment):
                 # capture payment and send successful email
                 govuk_status = self.capture_govuk_payment(govuk_payment, context)
         elif govuk_status == PaymentStatus.success:
-            if should_update_email:
+            # TODO consider updating other attrs using `get_completion_payment_attr_updates`
+            email = govuk_payment.get('email')
+            if email and not payment.get('email'):
                 self.update_payment(payment['uuid'], {'email': email})
                 payment['email'] = email
 
@@ -164,6 +163,58 @@ class PaymentClient:
                 send_notification(email, context)
 
         return govuk_status
+
+    def get_completion_payment_attr_updates(self, payment, govuk_payment):
+        """
+        Returns a dict of completion related attribute names and values extracted from govuk_payment
+        that can be used to update payment.
+        If an attribute is already set on payment or not set in govuk_payment, it will not be
+        included in the returned value.
+        """
+        payment = payment or {}
+        govuk_payment = govuk_payment or {}
+
+        def get_attr(attr_name):
+            def wrapper(govuk_payment):
+                return govuk_payment.get(attr_name)
+            return wrapper
+
+        def get_card_details_attr_value(govuk_card_details_attr_name):
+            def wrapper(govuk_payment):
+                card_details = govuk_payment.get('card_details', {})
+                return card_details.get(govuk_card_details_attr_name)
+            return wrapper
+
+        # (
+        #   payment attribute name,
+        #   callable to get the value from a govuk payment
+        # )
+        attrs_mapping = [
+            ('email', get_attr('email')),
+            ('worldpay_id', get_attr('provider_id')),
+            ('cardholder_name', get_card_details_attr_value('cardholder_name')),
+            ('card_number_first_digits', get_card_details_attr_value('first_digits_card_number')),
+            ('card_number_last_digits', get_card_details_attr_value('last_digits_card_number')),
+            ('card_expiry_date', get_card_details_attr_value('expiry_date')),
+            ('card_brand', get_card_details_attr_value('card_brand')),
+            ('billing_address', get_card_details_attr_value('billing_address')),
+        ]
+
+        attr_updates = {}
+        for payment_attr_name, govuk_payment_attr_func in attrs_mapping:
+            payment_attr_value = payment.get(payment_attr_name)
+            if payment_attr_value:  # don't override existing values
+                continue
+
+            govuk_payment_attr_value = govuk_payment_attr_func(govuk_payment)
+
+            # no value or hasn't changed
+            if not govuk_payment_attr_value or govuk_payment_attr_value == payment_attr_value:
+                continue
+
+            attr_updates[payment_attr_name] = govuk_payment_attr_value
+
+        return attr_updates
 
     def capture_govuk_payment(self, govuk_payment, context):
         """
@@ -192,30 +243,13 @@ class PaymentClient:
         return govuk_status
 
     def update_completed_payment(self, payment_ref, govuk_payment, success):
-        card_details = govuk_payment.get('card_details') if govuk_payment else None
-
-        payment_update = {
-            'status': 'taken' if success else 'failed'
-        }
+        payment_attr_updates = self.get_completion_payment_attr_updates({}, govuk_payment)
+        payment_attr_updates['status'] = 'taken' if success else 'failed'
         if success:
             received_at = self.get_govuk_capture_time(govuk_payment)
-            payment_update['received_at'] = received_at.isoformat()
-        if govuk_payment and govuk_payment.get('provider_id'):
-            payment_update['worldpay_id'] = govuk_payment['provider_id']
-        if card_details:
-            if 'cardholder_name' in card_details:
-                payment_update['cardholder_name'] = card_details['cardholder_name']
-            if 'first_digits_card_number' in card_details:
-                payment_update['card_number_first_digits'] = card_details['first_digits_card_number']
-            if 'last_digits_card_number' in card_details:
-                payment_update['card_number_last_digits'] = card_details['last_digits_card_number']
-            if 'expiry_date' in card_details:
-                payment_update['card_expiry_date'] = card_details['expiry_date']
-            if 'card_brand' in card_details:
-                payment_update['card_brand'] = card_details['card_brand']
-            if card_details.get('billing_address'):
-                payment_update['billing_address'] = card_details['billing_address']
-        self.update_payment(payment_ref, payment_update)
+            payment_attr_updates['received_at'] = received_at.isoformat()
+
+        self.update_payment(payment_ref, payment_attr_updates)
 
     def get_govuk_payment(self, govuk_id):
         response = requests.get(
@@ -266,7 +300,7 @@ class PaymentClient:
         except (KeyError, TypeError):
             pass
         raise GovUkPaymentStatusException(
-            'Capture date not yet available for payment %s' % govuk_payment['reference']
+            'Capture date not yet available for payment %s' % govuk_payment.get('reference')
         )
 
     def create_govuk_payment(self, payment_ref, new_govuk_payment):
