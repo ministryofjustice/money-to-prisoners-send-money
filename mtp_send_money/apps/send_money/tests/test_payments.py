@@ -1,3 +1,4 @@
+import json
 from unittest import mock
 
 from django.core import mail
@@ -252,7 +253,7 @@ class CompletePaymentIfNecessaryTestCase(SimpleTestCase):
         Test that if the govuk payment is in 'capturable' state, the MTP payment record
         doesn't have the email field filled in and the payment should not be automatically captured:
 
-        - the MTP payment record is patched with the email value
+        - the MTP payment record is patched with the card details attributes
         - the method returns PaymentStatus.capturable
         - no email is sent
         """
@@ -267,6 +268,15 @@ class CompletePaymentIfNecessaryTestCase(SimpleTestCase):
                 'status': PaymentStatus.capturable.name,
             },
             'email': 'sender@example.com',
+            'provider_id': '123456789',
+            'card_details': {
+                'cardholder_name': 'John Doe',
+                'first_digits_card_number': '1234',
+                'last_digits_card_number': '987',
+                'expiry_date': '01/20',
+                'card_brand': 'visa',
+                'billing_address': 'Buckingham Palace SW1A 1AA',
+            },
         }
         context = {
             'prisoner_name': 'John Doe',
@@ -279,7 +289,7 @@ class CompletePaymentIfNecessaryTestCase(SimpleTestCase):
 
             mock_auth(rsps)
 
-            # API call related to updating the email address on the payment record
+            # API call related to updating the email address and card details
             rsps.add(
                 rsps.PATCH,
                 api_url(f'/payments/{payment["uuid"]}/'),
@@ -288,6 +298,20 @@ class CompletePaymentIfNecessaryTestCase(SimpleTestCase):
 
             status = client.complete_payment_if_necessary(payment, govuk_payment, context)
 
+            payment_patch_body = json.loads(rsps.calls[-1].request.body.decode())
+            self.assertDictEqual(
+                payment_patch_body,
+                {
+                    'email': 'sender@example.com',
+                    'worldpay_id': '123456789',
+                    'cardholder_name': 'John Doe',
+                    'card_number_first_digits': '1234',
+                    'card_number_last_digits': '987',
+                    'card_expiry_date': '01/20',
+                    'card_brand': 'visa',
+                    'billing_address': 'Buckingham Palace SW1A 1AA',
+                }
+            )
         self.assertEqual(status, PaymentStatus.capturable)
         self.assertEqual(len(mail.outbox), 0)
 
@@ -297,7 +321,7 @@ class CompletePaymentIfNecessaryTestCase(SimpleTestCase):
         doesn't have the email field filled in and the payment should be automatically captured:
 
         - the method captures the payment
-        - the MTP payment record is patched with the email value
+        - the MTP payment record is patched with the card details attributes
         - a confirmation email is sent
         - the method returns PaymentStatus.success
         """
@@ -312,6 +336,15 @@ class CompletePaymentIfNecessaryTestCase(SimpleTestCase):
                 'status': PaymentStatus.capturable.name,
             },
             'email': 'sender@example.com',
+            'provider_id': '123456789',
+            'card_details': {
+                'cardholder_name': 'John Doe',
+                'first_digits_card_number': '1234',
+                'last_digits_card_number': '987',
+                'expiry_date': '01/20',
+                'card_brand': 'visa',
+                'billing_address': 'Buckingham Palace SW1A 1AA',
+            },
         }
         context = {
             'prisoner_name': 'John Doe',
@@ -324,21 +357,35 @@ class CompletePaymentIfNecessaryTestCase(SimpleTestCase):
 
             mock_auth(rsps)
 
-            rsps.add(
-                rsps.POST,
-                govuk_url(f'/payments/{govuk_payment["payment_id"]}/capture/'),
-                status=204,
-            )
-
-            # API call related to updating the email address on the payment record
+            # API call related to updating the email address and card details
             rsps.add(
                 rsps.PATCH,
                 api_url(f'/payments/{payment["uuid"]}/'),
                 status=200,
             )
 
+            rsps.add(
+                rsps.POST,
+                govuk_url(f'/payments/{govuk_payment["payment_id"]}/capture/'),
+                status=204,
+            )
+
             status = client.complete_payment_if_necessary(payment, govuk_payment, context)
 
+            payment_patch_body = json.loads(rsps.calls[-2].request.body.decode())
+            self.assertDictEqual(
+                payment_patch_body,
+                {
+                    'email': 'sender@example.com',
+                    'worldpay_id': '123456789',
+                    'cardholder_name': 'John Doe',
+                    'card_number_first_digits': '1234',
+                    'card_number_last_digits': '987',
+                    'card_expiry_date': '01/20',
+                    'card_brand': 'visa',
+                    'billing_address': 'Buckingham Palace SW1A 1AA',
+                }
+            )
         self.assertEqual(status, PaymentStatus.success)
         self.assertEqual(len(mail.outbox), 1)
 
@@ -366,7 +413,7 @@ class CompletePaymentIfNecessaryTestCase(SimpleTestCase):
                 responses.RequestsMock() as rsps, \
                 silence_logger():
 
-            # the 'capturable' status triggers an update on payment.email
+            # the 'capturable' status triggers an update on payment email and card details
             mock_auth(rsps)
             rsps.add(
                 rsps.PATCH,
@@ -405,3 +452,90 @@ class CompletePaymentIfNecessaryTestCase(SimpleTestCase):
 
         self.assertEqual(status, None)
         self.assertEqual(len(mail.outbox), 0)
+
+
+class GetCompletionPaymentAttrUpdatesTestCase(SimpleTestCase):
+    """
+    Tests related to the get_completion_payment_attr_updates method
+    """
+
+    def test_with_none_govuk_payment(self):
+        """
+        Test that it returns {} if the passed in govuk payment is falsy.
+        """
+        client = PaymentClient()
+
+        payment = {
+            'worldpay_id': '123456789',
+            'card_brand': 'visa',
+        }
+        govuk_payment = None
+        attr_updates = client.get_completion_payment_attr_updates(payment, govuk_payment)
+
+        self.assertEqual(attr_updates, {})
+
+    def test_with_none_payment(self):
+        """
+        Test that it returns the non-falsy attrs in govuk_payment if the passed-in payment is falsy.
+        """
+        client = PaymentClient()
+
+        payment = None
+        govuk_payment = {
+            'email': 'some@email.com',
+            'provider_id': '',
+            'card_details': {
+                'cardholder_name': None,
+                'card_brand': 'visa',
+            },
+            'extra_attribute': 'some-value',
+        }
+        attr_updates = client.get_completion_payment_attr_updates(payment, govuk_payment)
+
+        self.assertEqual(
+            attr_updates,
+            {
+                'email': 'some@email.com',
+                'card_brand': 'visa',
+            }
+        )
+
+    def test_get(self):
+        """
+        Test that the completion values in govuk_payment that are not already set in payment
+        are returned.
+        """
+        client = PaymentClient()
+
+        payment = {
+            'email': 'existing@email.com',  # shouldn't get overridden
+            'worldpay_id': '',  # should get updated
+            'cardholder_name': None,  # should get updated
+            'card_brand': 'visa',  # hasn't changed so should be ignored
+        }
+        govuk_payment = {
+            'email': 'some@email.com',  # should be ignored
+            'provider_id': '123456789',  # should be used
+            'card_details': {
+                'cardholder_name': 'John Doe',
+                'first_digits_card_number': '1234',
+                'last_digits_card_number': '987',
+                'expiry_date': '01/20',
+                'card_brand': 'visa',  # hasn't changed so should be ignored
+                'billing_address': 'Buckingham Palace SW1A 1AA',
+            },
+            'extra_attribute': 'some-value',
+        }
+        attr_updates = client.get_completion_payment_attr_updates(payment, govuk_payment)
+
+        self.assertEqual(
+            attr_updates,
+            {
+                'worldpay_id': '123456789',
+                'cardholder_name': 'John Doe',
+                'card_number_first_digits': '1234',
+                'card_number_last_digits': '987',
+                'card_expiry_date': '01/20',
+                'billing_address': 'Buckingham Palace SW1A 1AA',
+            }
+        )

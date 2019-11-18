@@ -219,6 +219,7 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
                 'cardholder_name': 'Jack Halls',
                 'card_brand': 'Visa',
                 'worldpay_id': '11112222-1111-2222-3333-111122223333',
+                'email': 'success_sender@outside.local',
                 'card_number_first_digits': '100002',
                 'card_number_last_digits': '1111',
                 'card_expiry_date': '11/18',
@@ -415,6 +416,7 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
                 {
                     'status': 'taken',
                     'received_at': '2016-10-27T15:11:05+00:00',
+                    'email': 'success_sender@outside.local',
                 },
             )
 
