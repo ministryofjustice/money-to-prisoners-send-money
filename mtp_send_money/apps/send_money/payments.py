@@ -101,11 +101,22 @@ class PaymentClient:
                 f"Unknown status: {govuk_payment['state']['status']}",
             )
 
-    def check_govuk_payment_status(self, payment, govuk_payment, context):
+    def should_be_automatically_captured(self, payment):
+        # TODO: work out if payment needs to be delayed and and save result via API
+        return True
+
+    def complete_payment_if_necessary(self, payment, govuk_payment, context):
         """
-        Returns a PaymentStatus for the GOV.UK payment govuk_payment.
+        Completes a payment if necessary and returns the resulting PaymentStatus.
+
         If the status is 'success' or 'capturable' and the MTP payment doesn't have any email,
         it updates the email field on record and sends an email to the user.
+
+        If the status is 'capturable' and the payment should be automatically captured, this method
+        captures and returns the new status.
+
+        If a payment is captured or it's found in success state for the first time, an email
+        to the sender is sent.
 
         :return: PaymentStatus for the GOV.UK payment govuk_payment
         :param payment: dict with MTP payment details as returned by the MTP API
@@ -127,39 +138,34 @@ class PaymentClient:
             )
 
         successfulish = govuk_status in [PaymentStatus.success, PaymentStatus.capturable]
-        email = govuk_payment.get('email')
-        if successfulish and email and not payment.get('email'):
-            self.update_payment(payment['uuid'], {'email': email})
-            payment['email'] = email
+        # if nothing can be done, exist immediately
+        if not successfulish:
+            return govuk_status
 
-            if govuk_status == PaymentStatus.success:
+        email = govuk_payment.get('email')
+        should_update_email = email and not payment.get('email')
+
+        if govuk_status == PaymentStatus.capturable:
+            # TODO: also update other payment details so that the API can decide if to
+            # delay the capture or not
+            if should_update_email:
+                self.update_payment(payment['uuid'], {'email': email})
+                payment['email'] = email
+
+            if self.should_be_automatically_captured(payment):
+                # capture payment and send successful email
+                govuk_status = self.capture_govuk_payment(govuk_payment, context)
+        elif govuk_status == PaymentStatus.success:
+            if should_update_email:
+                self.update_payment(payment['uuid'], {'email': email})
+                payment['email'] = email
+
+                # send successful email if it's the first time we get the sender's email address
                 send_notification(email, context)
 
         return govuk_status
 
-    def check_govuk_payment_succeeded(self, payment, govuk_payment, context):
-        """
-        Returns True if the payment govuk_payment was successful.
-        If the govuk status is 'success' or 'capturable' and the MTP payment doesn't have any email,
-        it updates the email field on the record and sends an email to the user.
-
-        :return: True if the payment govuk_payment was successful, False otherwise
-        :raise GovUkPaymentStatusException: if govuk_payment is not in a finished state
-        :param payment: dict with MTP payment details as returned by the MTP API
-        :param govuk_payment: dict with GOV.UK payment details as returned by the GOV.UK Pay API
-        :param context: dict with extra variable to be used in constructing email body
-        """
-        govuk_status = self.check_govuk_payment_status(payment, govuk_payment, context)
-
-        if govuk_status is None:
-            return False
-
-        if not govuk_status.finished():
-            raise GovUkPaymentStatusException(f'Incomplete status: {govuk_status}')
-
-        return govuk_status == PaymentStatus.success
-
-    def capture_payment(self, govuk_payment, context):
+    def capture_govuk_payment(self, govuk_payment, context):
         """
         Captures and finalises a payment in status 'capturable' and sends a confirmation email to the user.
 
@@ -167,7 +173,7 @@ class PaymentClient:
         """
         govuk_status = self.parse_govuk_payment_status(govuk_payment)
         if govuk_status is None or govuk_status.finished():
-            return
+            return govuk_status
 
         govuk_id = govuk_payment['payment_id']
         response = requests.post(
@@ -181,7 +187,9 @@ class PaymentClient:
         email = govuk_payment.get('email')
         send_notification(email, context)
 
-        govuk_payment['state']['status'] = PaymentStatus.success.name
+        govuk_status = PaymentStatus.success
+        govuk_payment['state']['status'] = govuk_status.name
+        return govuk_status
 
     def update_completed_payment(self, payment_ref, govuk_payment, success):
         card_details = govuk_payment.get('card_details') if govuk_payment else None

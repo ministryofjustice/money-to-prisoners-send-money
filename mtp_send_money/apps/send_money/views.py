@@ -436,7 +436,7 @@ class DebitCardConfirmationView(TemplateView):
                 govuk_payment = payment_client.get_govuk_payment(govuk_id)
 
                 # check payment and send confirmation email if successful
-                self.status = payment_client.check_govuk_payment_status(
+                self.status = payment_client.complete_payment_if_necessary(
                     payment, govuk_payment, kwargs
                 )
 

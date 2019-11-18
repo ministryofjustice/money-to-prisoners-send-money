@@ -360,6 +360,131 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
         })
 
     @override_settings(ENVIRONMENT='prod')  # because non-prod environments don't send to @outside.local
+    def test_captured_payment_with_captured_date_gets_updated(self):
+        payment_id = 'payment-id'
+        govuk_payment_data = {
+            'payment_id': payment_id,
+            'reference': self.ref,
+            'state': {'status': 'capturable'},
+            'email': 'success_sender@outside.local',
+        }
+        with responses.RequestsMock() as rsps:
+            mock_auth(rsps)
+            rsps.add(
+                rsps.GET,
+                api_url('/payments/'),
+                json=self.payment_data,
+                status=200,
+            )
+            rsps.add(
+                rsps.GET,
+                govuk_url(f'/payments/{self.processor_id}/'),
+                json=govuk_payment_data,
+                status=200,
+            )
+            rsps.add(
+                rsps.POST,
+                govuk_url(f'/payments/{payment_id}/capture/'),
+                status=204,
+            )
+            rsps.add(
+                rsps.GET,
+                govuk_url(f'/payments/{self.processor_id}/'),
+                json={
+                    **govuk_payment_data,
+                    'state': {'status': 'success'},
+                    'settlement_summary': {
+                        'capture_submit_time': '2016-10-27T15:11:05Z',
+                        'captured_date': '2016-10-27',
+                    },
+                },
+                status=200,
+            )
+            rsps.add(
+                rsps.PATCH,
+                api_url(f'/payments/{self.ref}/'),
+                status=200,
+            )
+
+            call_command('update_incomplete_payments', verbosity=0)
+
+            self.assertEqual(len(mail.outbox), 1)
+
+            self.assertEqual(
+                json.loads(rsps.calls[-1].request.body.decode()),
+                {
+                    'status': 'taken',
+                    'received_at': '2016-10-27T15:11:05+00:00',
+                },
+            )
+
+    @override_settings(ENVIRONMENT='prod')  # because non-prod environments don't send to @outside.local
+    def _test_captured_payment_doesnt_get_updated_before_capture(self, settlement_summary):
+        payment_id = 'payment-id'
+        govuk_payment_data = {
+            'payment_id': payment_id,
+            'reference': self.ref,
+            'state': {'status': 'capturable'},
+            'email': 'success_sender@outside.local',
+        }
+        with responses.RequestsMock() as rsps:
+            mock_auth(rsps)
+            rsps.add(
+                rsps.GET,
+                api_url('/payments/'),
+                json=self.payment_data,
+                status=200,
+            )
+            rsps.add(
+                rsps.GET,
+                govuk_url(f'/payments/{self.processor_id}/'),
+                json=govuk_payment_data,
+                status=200,
+            )
+            rsps.add(
+                rsps.POST,
+                govuk_url(f'/payments/{payment_id}/capture/'),
+                status=204,
+            )
+            rsps.add(
+                rsps.GET,
+                govuk_url(f'/payments/{self.processor_id}/'),
+                json={
+                    **govuk_payment_data,
+                    'state': {'status': 'success'},
+                    'settlement_summary': settlement_summary,
+                },
+                status=200,
+            )
+
+            call_command('update_incomplete_payments', verbosity=0)
+
+        self.assertEqual(len(mail.outbox), 1)
+
+    def test_captured_payment_doesnt_get_updated_with_missing_captured_date(self):
+        self._test_captured_payment_doesnt_get_updated_before_capture({
+            'capture_submit_time': '2016-10-27T15:11:05Z',
+        })
+
+    def test_captured_payment_doesnt_get_updated_with_null_capture_time(self):
+        self._test_captured_payment_doesnt_get_updated_before_capture({
+            'capture_submit_time': '2016-10-27T15:11:05Z',
+            'captured_date': None
+        })
+
+    def test_captured_payment_doesnt_get_updated_with_blank_capture_time(self):
+        self._test_captured_payment_doesnt_get_updated_before_capture({
+            'capture_submit_time': '2016-10-27T15:11:05Z',
+            'captured_date': ''
+        })
+
+    def test_captured_payment_doesnt_get_updated_with_invalid_capture_time(self):
+        self._test_captured_payment_doesnt_get_updated_before_capture({
+            'capture_submit_time': '2016-10-27T15:11:05Z',
+            'captured_date': '2015'
+        })
+
+    @override_settings(ENVIRONMENT='prod')  # because non-prod environments don't send to @outside.local
     def _test_received_at_date_matches_captured_date(self, capture_submit_time, captured_date, received_at):
         with responses.RequestsMock() as rsps:
             mock_auth(rsps)
