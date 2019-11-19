@@ -231,6 +231,11 @@ NOMS_HOLDING_ACCOUNT_SORT_CODE = os.environ.get('NOMS_HOLDING_ACCOUNT_SORT_CODE'
 
 ENABLE_PAYMENT_CHOICE_EXPERIMENT = os.environ.get('ENABLE_PAYMENT_CHOICE_EXPERIMENT', 'True') == 'True'
 
+# 0 to disable delayed capture
+# 100 to enable delayed capture for all payments
+# x to enable delayed capture for x% payments
+PAYMENT_DELAYED_CAPTURE_ROLLOUT_PERCENTAGE = os.environ.get('PAYMENT_DELAYED_CAPTURE_ROLLOUT_PERCENTAGE', '0')
+
 SERVICE_CHARGE_PERCENTAGE = Decimal(
     os.environ.get('SERVICE_CHARGE_PERCENTAGE', '0')
 )  # always use `Decimal` percentage
