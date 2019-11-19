@@ -40,6 +40,37 @@ def clear_session_view(request):
     return redirect(build_view_url(request, PaymentMethodChoiceView.url_name))
 
 
+def should_be_captured_delayed():
+    """
+    Util function to roll out delayed payment capture gradually in order to limit damage caused by unknown problems.
+    Returns True if the payment should be created with delayed_capture == True with a chance in
+    percentage uqual to settings.PAYMENT_DELAYED_CAPTURE_ROLLOUT_PERCENTAGE.
+
+    TODO remove (and always delay) or allow just an on/off value when happy and confident that things are
+    working fine.
+    """
+    try:
+        rollout_perc = int(settings.PAYMENT_DELAYED_CAPTURE_ROLLOUT_PERCENTAGE)
+        if rollout_perc < 0 or rollout_perc > 100:
+            raise ValueError()
+    except ValueError:
+        logger.error(
+            'PAYMENT_DELAYED_CAPTURE_ROLLOUT_PERCENTAGE should be a number between 0 and 100, '
+            f'found {settings.PAYMENT_DELAYED_CAPTURE_ROLLOUT_PERCENTAGE} instead. '
+            'Disabling delayed capture for now.'
+        )
+        rollout_perc = 0
+
+    if rollout_perc == 0:
+        return False
+
+    if rollout_perc == 100:
+        return True
+
+    chance = random.randint(1, 100)
+    return chance <= rollout_perc
+
+
 class SendMoneyView(View):
     previous_view = None
     payment_method = None
@@ -369,6 +400,7 @@ class DebitCardPaymentView(DebitCardFlow):
             failure_context['short_payment_ref'] = payment_ref[:8]
 
             new_govuk_payment = {
+                'delayed_capture': should_be_captured_delayed(),
                 'amount': amount_pence + service_charge_pence,
                 'reference': payment_ref,
                 'description': gettext('To this prisoner: %(prisoner_number)s' % prisoner_details),
@@ -376,6 +408,9 @@ class DebitCardPaymentView(DebitCardFlow):
                     build_view_url(self.request, DebitCardConfirmationView.url_name)
                 ) + '?payment_ref=' + payment_ref,
             }
+            if new_govuk_payment['delayed_capture']:
+                logger.info(f'Starting delayed capture for {payment_ref}')
+
             govuk_payment = payment_client.create_govuk_payment(payment_ref, new_govuk_payment)
             if govuk_payment:
                 return redirect(get_link_by_rel(govuk_payment, 'next_url'))

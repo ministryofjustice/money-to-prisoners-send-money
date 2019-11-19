@@ -8,6 +8,7 @@ from unittest import mock
 from django.conf import settings
 from django.core import mail
 from django.test import override_settings
+from django.test.testcases import SimpleTestCase
 from django.urls import reverse
 from mtp_common.test_utils import silence_logger
 from requests import ConnectionError
@@ -18,6 +19,7 @@ from send_money.tests import (
     BaseTestCase, mock_auth,
     patch_notifications, patch_gov_uk_pay_availability_check, patch_govuk_pay_connection_check,
 )
+from send_money.views import should_be_captured_delayed
 from send_money.utils import api_url, govuk_url, get_api_session
 
 
@@ -806,6 +808,57 @@ class DebitCardPaymentTestCase(DebitCardFlowTestCase):
                 fetch_redirect_response=False
             )
 
+    @mock.patch('send_money.views.should_be_captured_delayed', mock.Mock(return_value=True))
+    def test_debit_card_payment_with_delayed_capture(self):
+        """
+        Test that if the payment should have delayed capture, the view calls the GOV.UK API
+        create payment endpoint with delayed_capture == True.
+        """
+        self.choose_debit_card_payment_method()
+        self.fill_in_prisoner_details()
+        self.fill_in_amount()
+
+        with responses.RequestsMock() as rsps:
+            ref = 'wargle-blargle'
+            processor_id = '3'
+            mock_auth(rsps)
+            rsps.add(
+                rsps.POST,
+                api_url('/payments/'),
+                json={'uuid': ref},
+                status=201,
+            )
+            rsps.add(
+                rsps.POST,
+                govuk_url('/payments/'),
+                json={
+                    'payment_id': processor_id,
+                    '_links': {
+                        'next_url': {
+                            'method': 'GET',
+                            'href': govuk_url(self.payment_process_path),
+                        }
+                    }
+                },
+                status=201
+            )
+            rsps.add(
+                rsps.PATCH,
+                api_url(f'/payments/{ref}/'),
+                status=200,
+            )
+            with self.patch_prisoner_details_check():
+                response = self.client.get(self.url, follow=False)
+
+            # check delayed param in govuk pay call
+            govuk_request = json.loads(rsps.calls[2].request.body.decode('utf8'))
+            self.assertEqual(govuk_request['delayed_capture'], True)
+
+            self.assertRedirects(
+                response, govuk_url(self.payment_process_path),
+                fetch_redirect_response=False
+            )
+
     def test_debit_card_payment_handles_api_errors(self):
         self.choose_debit_card_payment_method()
         self.fill_in_prisoner_details()
@@ -938,6 +991,71 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
             with self.patch_prisoner_details_check():
                 response = self.client.get(
                     self.url, {'payment_ref': self.ref}, follow=False
+                )
+            self.assertContains(response, 'success')
+            self.assertResponseNotCacheable(response)
+
+            # check session is cleared
+            for key in self.complete_session_keys:
+                self.assertNotIn(key, self.client.session)
+
+            self.assertEqual('Send money to someone in prison: your payment was successful', mail.outbox[0].subject)
+            self.assertTrue('WARGLE-B' in mail.outbox[0].body)
+            self.assertTrue('£17' in mail.outbox[0].body)
+
+    @override_settings(ENVIRONMENT='prod')  # because non-prod environments don't send to @outside.local
+    @mock.patch('send_money.payments.PaymentClient.should_be_automatically_captured', mock.Mock(return_value=True))
+    def test_automatically_captures_payment(self):
+        """
+        Test that if the GOV.UK payment is in status 'capturable' and the payment should be
+        automatically captured, the view:
+        - updates the MTP payment record with the email address and other details provided by GOV.UK Pay
+        - captures the payment
+        - sends a confirmation email
+        - shows a confirmation page
+        """
+        self.choose_debit_card_payment_method()
+        self.fill_in_prisoner_details()
+        self.fill_in_amount()
+
+        with responses.RequestsMock() as rsps:
+            mock_auth(rsps)
+            rsps.add(
+                rsps.GET,
+                api_url(f'/payments/{self.ref}/'),
+                json=self.payment_data,
+                status=200,
+            )
+            rsps.add(
+                rsps.GET,
+                govuk_url(f'/payments/{self.processor_id}/'),
+                json={
+                    'payment_id': self.processor_id,
+                    'reference': 'wargle-blargle',
+                    'state': {'status': 'capturable'},
+                    'email': 'sender@outside.local',
+                    'settlement_summary': {
+                        'capture_submit_time': None,
+                        'captured_date': None,
+                    },
+                },
+                status=200,
+            )
+            rsps.add(
+                rsps.PATCH,
+                api_url('/payments/%s/' % 'wargle-blargle'),
+                status=200,
+            )
+            rsps.add(
+                rsps.POST,
+                govuk_url(f'/payments/{self.processor_id}/capture/'),
+                status=204,
+            )
+            with self.patch_prisoner_details_check():
+                response = self.client.get(
+                    self.url,
+                    {'payment_ref': self.ref},
+                    follow=False,
                 )
             self.assertContains(response, 'success')
             self.assertResponseNotCacheable(response)
@@ -1349,3 +1467,112 @@ class PaymentServiceUnavailableTestCase(DebitCardFlowTestCase):
                     follow=False,
                 )
             self.assertContains(response, 'success')
+
+
+class ShouldBeCapturedDelayed(SimpleTestCase):
+    """
+    Tests related to the should_be_captured_delayed function.
+
+    Note: the tests try a few times to exclude any randomness.
+    """
+
+    @override_settings(PAYMENT_DELAYED_CAPTURE_ROLLOUT_PERCENTAGE='0')
+    def test_false_if_0(self):
+        """
+        Test that if settings.PAYMENT_DELAYED_CAPTURE_ROLLOUT_PERCENTAGE == 0, the
+        method always returns False.
+        """
+        for _ in range(10):
+            self.assertEqual(
+                should_be_captured_delayed(),
+                False,
+            )
+
+    @override_settings(PAYMENT_DELAYED_CAPTURE_ROLLOUT_PERCENTAGE='100')
+    def test_true_if_100(self):
+        """
+        Test that if settings.PAYMENT_DELAYED_CAPTURE_ROLLOUT_PERCENTAGE == 100, the
+        method always returns True.
+        """
+        for _ in range(10):
+            self.assertEqual(
+                should_be_captured_delayed(),
+                True,
+            )
+
+    @override_settings(PAYMENT_DELAYED_CAPTURE_ROLLOUT_PERCENTAGE='invalid')
+    def test_invalid_value_disables_delay(self):
+        """
+        Test that if settings.PAYMENT_DELAYED_CAPTURE_ROLLOUT_PERCENTAGE == invalid value,
+        the method always returns False.
+        """
+        with self.assertLogs('mtp', level='ERROR') as cm:
+            self.assertEqual(
+                should_be_captured_delayed(),
+                False,
+            )
+
+        self.assertEqual(
+            cm.output,
+            [
+                'ERROR:mtp:PAYMENT_DELAYED_CAPTURE_ROLLOUT_PERCENTAGE should be a number between 0 and 100, '
+                'found invalid instead. Disabling delayed capture for now.'
+            ]
+        )
+
+    @override_settings(PAYMENT_DELAYED_CAPTURE_ROLLOUT_PERCENTAGE='-1')
+    def test_negative_value_disables_delay(self):
+        """
+        Test that if settings.PAYMENT_DELAYED_CAPTURE_ROLLOUT_PERCENTAGE == -1,
+        the method always returns False.
+        """
+        with self.assertLogs('mtp', level='ERROR') as cm:
+            self.assertEqual(
+                should_be_captured_delayed(),
+                False,
+            )
+
+        self.assertEqual(
+            cm.output,
+            [
+                'ERROR:mtp:PAYMENT_DELAYED_CAPTURE_ROLLOUT_PERCENTAGE should be a number between 0 and 100, '
+                'found -1 instead. Disabling delayed capture for now.'
+            ]
+        )
+
+    @override_settings(PAYMENT_DELAYED_CAPTURE_ROLLOUT_PERCENTAGE='101')
+    def test_too_big_value_disables_delay(self):
+        """
+        Test that if settings.PAYMENT_DELAYED_CAPTURE_ROLLOUT_PERCENTAGE == 101,
+        the method always returns False.
+        """
+        with self.assertLogs('mtp', level='ERROR') as cm:
+            self.assertEqual(
+                should_be_captured_delayed(),
+                False,
+            )
+
+        self.assertEqual(
+            cm.output,
+            [
+                'ERROR:mtp:PAYMENT_DELAYED_CAPTURE_ROLLOUT_PERCENTAGE should be a number between 0 and 100, '
+                'found 101 instead. Disabling delayed capture for now.'
+            ]
+        )
+
+    @override_settings(PAYMENT_DELAYED_CAPTURE_ROLLOUT_PERCENTAGE='50')
+    def test_chance(self):
+        """
+        Test that if settings.PAYMENT_DELAYED_CAPTURE_ROLLOUT_PERCENTAGE == 50,
+        the method returns True about 50% of the time.
+        """
+        chance = {
+            True: 0,
+            False: 0,
+        }
+        for _ in range(100):
+            chance[should_be_captured_delayed()] += 1
+
+        # we can't accurately check the figures
+        self.assertTrue(chance[True] > 0)
+        self.assertTrue(chance[False] > 0)
