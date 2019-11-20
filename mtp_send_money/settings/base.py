@@ -55,6 +55,7 @@ INSTALLED_APPS = (
 PROJECT_APPS = (
     'anymail',
     'mtp_common',
+    'mtp_common.metrics',
     'send_money',
     'zendesk_tickets'
 )
@@ -78,6 +79,9 @@ MIDDLEWARE = (
 
 HEALTHCHECKS = []
 AUTODISCOVER_HEALTHCHECKS = True
+
+METRICS_USER = os.environ.get('METRICS_USER', 'prom')
+METRICS_PASS = os.environ.get('METRICS_PASS', 'prom')
 
 # security tightening
 # some overridden in prod/docker settings where SSL is ensured
