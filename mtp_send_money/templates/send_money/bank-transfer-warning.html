@@ -3,30 +3,65 @@
 {% load mtp_common %}
 {% load send_money %}
 
-{% block page_title %}{% trans 'Before you continue' %} – {{ block.super }}{% endblock %}
+{% block page_title %}{% trans 'Get a prisoner reference to make your UK bank transfer' %} – {{ block.super }}{% endblock %}
 
 {% block inner_content %}
-  <header>
-    <h1 class="heading-xlarge">
-      <span class="heading-secondary">{% trans 'Get a prisoner reference to use in a UK bank transfer' %}</span>
-      {% trans 'Before you continue' %}
-    </h1>
-  </header>
+  <div class="grid-row">
+    <div class="column-two-thirds">
 
-  <div class="mtp-bank-transfer-warning">
-    <strong>{% trans 'You can:' %}</strong>
-    <ul class="list list-bullet">
-      <li>{% trans 'make a bank transfer using online banking, your mobile banking app or telephone banking from a UK bank account' %}</li>
-    </ul>
-    <strong>{% trans 'You can’t:' %}</strong>
-     <ul class="list list-bullet">
-      <li>{% trans 'go into a bank branch to transfer money' %}</li>
-      <li>{% trans 'transfer money from a bank account outside the UK' %}</li>
-      <li>{% trans 'make a payment by CHAPS' %}</li>
-    </ul>
+      <header>
+        <h1 class="heading-xlarge">
+          {% trans 'Get a prisoner reference to make your UK bank transfer' %}
+        </h1>
+      </header>
+
+      <p>
+        {% trans 'You’ll get a prisoner reference so you can make a bank transfer using:' %}
+      </p>
+      <ul class="list list-bullet">
+        <li>
+          {% trans 'online banking' %}
+        </li>
+        <li>
+          {% trans 'mobile banking app' %}
+        </li>
+        <li>
+          {% trans 'telephone banking' %}
+        </li>
+      </ul>
+      <p>
+        {% trans 'You can re-use this reference for this prisoner each time you make a transfer.' %}
+        {% trans 'The money should take around 3 days to reach the prisoner’s account.' %}
+        {% trans 'You won’t get email confirmation after your bank transfer.' %}
+      </p>
+
+      <strong>
+        {% trans 'You can’t' %}
+      </strong>
+      <ul class="list list-bullet">
+        <li>
+          {% trans 'go into a bank branch to transfer money' %}
+        </li>
+        <li>
+          {% trans 'transfer money from a bank account outside the UK' %}
+        </li>
+        <li>
+          {% trans 'make a payment by CHAPS' %}
+        </li>
+      </ul>
+
+      <aside class="panel panel-border-wide">
+        {% url 'send_money:choose_method' as choose_method_url %}
+        {% blocktrans trimmed with action=_('Paying by debit card')|wraplink:choose_method_url %}
+          {{ action }} is the fastest, simplest and most reliable way of sending money to a prisoner - and it’s free
+        {% endblocktrans %}
+      </aside>
+
+      <br />
+      <p>
+        <a id="id_next_btn" class="button" href="{{ view.get_success_url }}">{% trans 'Continue' %}</a>
+      </p>
+
+    </div>
   </div>
-
-  <p>
-    <a id="id_next_btn" class="button" href="{{ view.get_success_url }}">{% trans 'I understand' %}</a>
-  </p>
 {% endblock %}

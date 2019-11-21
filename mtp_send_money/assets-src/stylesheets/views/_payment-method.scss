@@ -1,47 +1,5 @@
-// View-specific styles
-
-.mtp-grey-choice {
-  color: #696969;
-  cursor: default;
-
-  input {
-    cursor: default;
-  }
-}
-
-.mtp-grey-text {
-  color: #696969;
-
-  &.mtp-debit-header {
-    padding-bottom: 0;
-  }
-}
-
-.mtp-debit-unavailable {
-  color: $error-colour;
-  margin-top: 0;
-  padding-top: 0;
-}
-
-// govuk elements overrides
-
-.mtp-payment-choice {
-
-  .form-block {
-    padding-left: 0.4em;
-  }
-}
-
-.mtp-payment-help__container {
-  margin-bottom: 30px;
-  margin-top: 25px;
-  padding-left: 0.4em;
-
-  .mtp-disclosure__contents {
-    padding-left: 30px;
-  }
-
-  ol {
-    margin-bottom: 5px;
-  }
+.mtp-link-button {
+  border: 0;
+  background: transparent;
+  padding: 0;
 }

@@ -65,8 +65,6 @@ class ChooseMethodViewTestCase(BaseTestCase):
         content = response.content.decode('utf8')
         for method in PaymentMethod:
             self.assertIn('id_%s' % method.name, content)
-            self.assertIn(str(method.value), content)
-        self.assertNotIn('checked', content)
 
     def test_session_reset_if_returning_to_page(self):
         response = self.client.post(self.url, data={
@@ -76,7 +74,7 @@ class ChooseMethodViewTestCase(BaseTestCase):
         response = self.client.get(self.url, follow=True)
         content = response.content.decode('utf8')
         self.assertNotIn('checked', content)
-        self.assertContains(response, 'How do you want to send money?')
+        self.assertContains(response, 'Pay now by debit card')
 
     def test_choice_must_be_made_before_proceeding(self):
         response = self.client.post(self.url)
@@ -163,7 +161,6 @@ class BankTransferPrisonerDetailsTestCase(BankTransferFlowTestCase):
 
         response = self.client.get(self.root_url, follow=True)
         self.assertOnPage(response, 'choose_method')
-        self.assertContains(response, 'Get a prisoner reference to use in a UK bank transfer')
 
     @mock.patch('send_money.forms.BankTransferPrisonerDetailsForm.is_prisoner_known')
     def test_displays_errors_for_dropped_api_connection(self, mocked_is_prisoner_known):

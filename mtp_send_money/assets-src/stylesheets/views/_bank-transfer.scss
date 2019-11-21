@@ -1,15 +1,5 @@
 // View-specific styles
 
-.mtp-bank-transfer-warning {
-  padding-bottom: 15px;
-  padding-top: 10px;
-  width: auto;
-
-  @include media(desktop) {
-    max-width: 580px;
-  }
-}
-
 .mtp-bank-transfer-instructions {
   width: 55%;
 
