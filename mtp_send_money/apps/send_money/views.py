@@ -4,7 +4,6 @@ import logging
 import random
 
 from django.conf import settings
-from django.http import Http404
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.utils import timezone
@@ -143,23 +142,11 @@ class PaymentMethodChoiceView(SendMoneyFormView):
     template_name = 'send_money/payment-method.html'
     form_class = send_money_forms.PaymentMethodChoiceForm
 
-    @classmethod
-    def is_form_enabled(cls):
-        return settings.SHOW_BANK_TRANSFER_OPTION and settings.SHOW_DEBIT_CARD_OPTION
-
     def dispatch(self, request, *args, **kwargs):
         # reset the session so that we can start fresh
         if not request.session.is_empty():
             request.session.flush()
-
-        if settings.SHOW_BANK_TRANSFER_OPTION and settings.SHOW_DEBIT_CARD_OPTION:
-            response = super().dispatch(request, *args, **kwargs)
-            return response
-        if settings.SHOW_BANK_TRANSFER_OPTION:
-            return redirect(build_view_url(self.request, BankTransferWarningView.url_name))
-        if settings.SHOW_DEBIT_CARD_OPTION:
-            return redirect(build_view_url(self.request, DebitCardPrisonerDetailsView.url_name))
-        return redirect('submit_ticket')
+        return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context_data = super().get_context_data(**kwargs)
@@ -190,11 +177,6 @@ class PaymentMethodChoiceView(SendMoneyFormView):
 
 class BankTransferFlow(SendMoneyView):
     payment_method = PaymentMethod.bank_transfer
-
-    def dispatch(self, request, *args, **kwargs):
-        if not settings.SHOW_BANK_TRANSFER_OPTION:
-            raise Http404('Bank transfers are not available')
-        return super().dispatch(request, *args, **kwargs)
 
 
 class BankTransferWarningView(BankTransferFlow, TemplateView):
@@ -268,11 +250,6 @@ class DebitCardFlowException(Exception):
 
 class DebitCardFlow(SendMoneyView):
     payment_method = PaymentMethod.debit_card
-
-    def dispatch(self, request, *args, **kwargs):
-        if not settings.SHOW_DEBIT_CARD_OPTION:
-            raise Http404('Debit cards are not available')
-        return super().dispatch(request, *args, **kwargs)
 
 
 class DebitCardPrisonerDetailsView(DebitCardFlow, SendMoneyFormView):
@@ -392,11 +369,6 @@ class DebitCardConfirmationView(TemplateView):
         if self.status == PaymentStatus.capturable:
             return ['send_money/debit-card-on-hold.html']
         return ['send_money/debit-card-failure.html']
-
-    def dispatch(self, request, *args, **kwargs):
-        if not settings.SHOW_DEBIT_CARD_OPTION:
-            raise Http404('Debit cards are not available')
-        return super().dispatch(request, *args, **kwargs)
 
     def get(self, request, *args, **kwargs):
         payment_ref = self.request.GET.get('payment_ref')

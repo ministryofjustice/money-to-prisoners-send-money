@@ -40,22 +40,6 @@ class SendMoneyFunctionalTestCase(FunctionalTestCase):
 
 @unittest.skipIf('DJANGO_TEST_REMOTE_INTEGRATION_URL' in os.environ, 'test only runs locally')
 class SendMoneyFlows(SendMoneyFunctionalTestCase):
-    @override_settings(SHOW_BANK_TRANSFER_OPTION=True,
-                       SHOW_DEBIT_CARD_OPTION=False)
-    def test_bank_transfer_only_flow(self):
-        self.driver.get(self.live_server_url + '/en-gb/')
-        self.driver.find_element_by_id('id_next_btn').click()
-        self.fill_in_form({
-            'prisoner_number': 'A1409AE',
-            'prisoner_dob_0': '21',
-            'prisoner_dob_1': '1',
-            'prisoner_dob_2': '1989',
-        })
-        self.driver.find_element_by_id('id_next_btn').click()
-        self.assertOnPage('bank_transfer')
-
-    @override_settings(SHOW_BANK_TRANSFER_OPTION=True,
-                       SHOW_DEBIT_CARD_OPTION=True)
     def test_bank_transfer_flow(self):
         self.driver.get(self.live_server_url + '/en-gb/')
         self.make_payment_method_choice(PaymentMethod.bank_transfer)
@@ -69,8 +53,6 @@ class SendMoneyFlows(SendMoneyFunctionalTestCase):
         self.driver.find_element_by_id('id_next_btn').click()
         self.assertOnPage('bank_transfer')
 
-    @override_settings(SHOW_BANK_TRANSFER_OPTION=True,
-                       SHOW_DEBIT_CARD_OPTION=True)
     @unittest.skip('gov.uk pay functional testing not implemented')
     def test_debit_card_flow(self):
         self.driver.get(self.live_server_url + '/en-gb/')
@@ -110,22 +92,18 @@ class SendMoneyDetailsPage(SendMoneyFunctionalTestCase):
         self.assertEqual(self.driver.execute_script(script), str(expected_year),
                          msg='2-digit year %s did not format to expected %s' % (entry_year, expected_year))
 
-    @override_settings(SHOW_BANK_TRANSFER_OPTION=True,
-                       SHOW_DEBIT_CARD_OPTION=False)
     def test_2_digit_year_entry_using_javascript_in_bank_transfer_flow(self):
         self.driver.get(self.live_server_url + '/en-gb/')
+        self.driver.find_element_by_id('id_bank_transfer').click()
         self.driver.find_element_by_id('id_next_btn').click()
         self.check_2_digit_entry()
 
-    @override_settings(SHOW_BANK_TRANSFER_OPTION=False,
-                       SHOW_DEBIT_CARD_OPTION=True)
     def test_2_digit_year_entry_using_javascript_in_debit_card_flow(self):
         self.driver.get(self.live_server_url + '/en-gb/')
+        self.driver.find_element_by_id('id_debit_card').click()
         self.check_2_digit_entry()
 
-    @override_settings(SHOW_BANK_TRANSFER_OPTION=False,
-                       SHOW_DEBIT_CARD_OPTION=True,
-                       SERVICE_CHARGE_PERCENTAGE=decimal.Decimal('2.4'),
+    @override_settings(SERVICE_CHARGE_PERCENTAGE=decimal.Decimal('2.4'),
                        SERVICE_CHARGE_FIXED=decimal.Decimal('0.20'))
     def test_service_charge_js(self):
         def check_service_charge(amount, expected):
@@ -136,6 +114,7 @@ class SendMoneyDetailsPage(SendMoneyFunctionalTestCase):
             self.assertEqual(total_field.text, expected)
 
         self.driver.get(self.live_server_url + '/en-gb/')
+        self.driver.find_element_by_id('id_debit_card').click()
         self.fill_in_form({
             'prisoner_name': 'James Halls',
             'prisoner_number': 'A1409AE',
@@ -173,10 +152,9 @@ class SendMoneyDetailsPage(SendMoneyFunctionalTestCase):
 
 @unittest.skipIf('DJANGO_TEST_REMOTE_INTEGRATION_URL' in os.environ, 'test only runs locally')
 class SendMoneyCheckDetailsPage(SendMoneyFunctionalTestCase):
-    @override_settings(SHOW_BANK_TRANSFER_OPTION=False,
-                       SHOW_DEBIT_CARD_OPTION=True)
     def test_content(self):
         self.driver.get(self.live_server_url + '/en-gb/')
+        self.driver.find_element_by_id('id_debit_card').click()
         self.fill_in_form({
             'prisoner_name': 'James Halls',
             'prisoner_number': 'A1409AE',
@@ -208,9 +186,7 @@ class SendMoneyFeedbackPages(SendMoneyFunctionalTestCase):
 
 
 @unittest.skipIf('DJANGO_TEST_REMOTE_INTEGRATION_URL' in os.environ, 'test only runs locally')
-@override_settings(SHOW_BANK_TRANSFER_OPTION=False,
-                   SHOW_DEBIT_CARD_OPTION=True,
-                   GOVUK_PAY_URL='https://pay.gov.local/v1',
+@override_settings(GOVUK_PAY_URL='https://pay.gov.local/v1',
                    GOVUK_PAY_AUTH_TOKEN='15a21a56-817a-43d4-bf8d-f01f298298e8')
 class SendMoneyConfirmationPage(SendMoneyFunctionalTestCase):
     def test_success_page(self):
@@ -278,6 +254,11 @@ class SendMoneySupportPages(SendMoneyFunctionalTestCase):
             'page_content': 'Terms and conditions',
         },
         {
+            'link_name': 'privacy',
+            'link_text': 'Privacy policy',
+            'page_content': 'Privacy policy',
+        },
+        {
             'link_name': 'cookies',
             'link_text': 'Cookies',
             'page_content': 'How cookies are used on GOV.UK',
@@ -292,8 +273,6 @@ class SendMoneySupportPages(SendMoneyFunctionalTestCase):
 
     @classmethod
     def make_test_method(cls, _footer_link):
-        @override_settings(SHOW_BANK_TRANSFER_OPTION=False,
-                           SHOW_DEBIT_CARD_OPTION=False)
         def test(self):
             self.driver.get(self.live_server_url + '/en-gb/')
             link_element = self.driver.find_element_by_link_text(_footer_link['link_text'])

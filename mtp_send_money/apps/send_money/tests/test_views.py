@@ -5,7 +5,6 @@ import logging
 import time
 from unittest import mock
 
-from django.conf import settings
 from django.core import mail
 from django.test import override_settings
 from django.test.testcases import SimpleTestCase
@@ -45,47 +44,8 @@ class PaymentOptionAvailabilityTestCase(BaseTestCase):
                 response = self.client.get('/terms/', HTTP_ACCEPT_LANGUAGE=accept_language)
                 self.assertRedirects(response, '/%s/terms/' % expected_slug)
 
-    @override_settings(SHOW_BANK_TRANSFER_OPTION=False,
-                       SHOW_DEBIT_CARD_OPTION=False)
-    def test_payment_pages_inaccessible_when_no_options_enabled(self):
-        with silence_logger('django.request'):
-            urls = [
-                '/bank-transfer/', '/bank-transfer/warning/', '/bank-transfer/details/', '/bank-transfer/reference/',
-                '/debit-card/', '/debit-card/details/', '/debit-card/amount/', '/debit-card/check/',
-                '/debit-card/payment/', '/debit-card/confirmation/',
-            ]
-            for url_prefix in [lang_code for lang_code, lang_name in settings.LANGUAGES]:
-                for url in urls:
-                    if url_prefix:
-                        url = '/%s/%s' % (url_prefix, url)
-                    self.assertPageNotFound(url)
-
-    @override_settings(SHOW_BANK_TRANSFER_OPTION=False,
-                       SHOW_DEBIT_CARD_OPTION=False)
-    def test_root_page_redirects_when_no_options_enabled(self):
-        response = self.client.get(self.root_url, follow=True)
-        self.assertOnPage(response, 'submit_ticket')
-
-    @override_settings(SHOW_BANK_TRANSFER_OPTION=True,
-                       SHOW_DEBIT_CARD_OPTION=False)
-    def test_bank_transfer_flow_accessible_when_enabled(self):
-        response = self.client.get(self.root_url, follow=True)
-        self.assertOnPage(response, 'bank_transfer_warning')
-        self.assertNotContains(response, 'Prisoner name')
-        self.assertNotContains(response, 'Amount')
-
-    @override_settings(SHOW_BANK_TRANSFER_OPTION=False,
-                       SHOW_DEBIT_CARD_OPTION=True)
-    def test_debit_card_flow_accessible_when_enabled(self):
-        response = self.client.get(self.root_url, follow=True)
-        self.assertOnPage(response, 'prisoner_details_debit')
-        self.assertContains(response, 'Prisoner name')
-        self.assertNotContains(response, 'Amount')
-
     @patch_notifications()
     @patch_gov_uk_pay_availability_check()
-    @override_settings(SHOW_BANK_TRANSFER_OPTION=True,
-                       SHOW_DEBIT_CARD_OPTION=True)
     def test_both_flows_accessible_when_enabled(self):
         response = self.client.get(self.root_url, follow=True)
         self.assertOnPage(response, 'choose_method')
@@ -98,26 +58,6 @@ class PaymentOptionAvailabilityTestCase(BaseTestCase):
 class ChooseMethodViewTestCase(BaseTestCase):
     url = '/en-gb/'
 
-    @override_settings(SHOW_BANK_TRANSFER_OPTION=False,
-                       SHOW_DEBIT_CARD_OPTION=False)
-    def test_redirects_to_feedback_if_both_flows_off(self):
-        response = self.client.get(self.url, follow=True)
-        self.assertOnPage(response, 'submit_ticket')
-
-    @override_settings(SHOW_BANK_TRANSFER_OPTION=True,
-                       SHOW_DEBIT_CARD_OPTION=False)
-    def test_redirects_to_bank_transfer_if_only_method(self):
-        response = self.client.get(self.url, follow=True)
-        self.assertOnPage(response, 'bank_transfer_warning')
-
-    @override_settings(SHOW_BANK_TRANSFER_OPTION=False,
-                       SHOW_DEBIT_CARD_OPTION=True)
-    def test_redirects_to_debit_card_if_only_method(self):
-        response = self.client.get(self.url, follow=True)
-        self.assertOnPage(response, 'prisoner_details_debit')
-
-    @override_settings(SHOW_BANK_TRANSFER_OPTION=True,
-                       SHOW_DEBIT_CARD_OPTION=True)
     def test_shows_all_payment_options(self):
         response = self.client.get(self.url, follow=True)
         self.assertOnPage(response, 'choose_method')
@@ -128,8 +68,6 @@ class ChooseMethodViewTestCase(BaseTestCase):
             self.assertIn(str(method.value), content)
         self.assertNotIn('checked', content)
 
-    @override_settings(SHOW_BANK_TRANSFER_OPTION=True,
-                       SHOW_DEBIT_CARD_OPTION=True)
     def test_session_reset_if_returning_to_page(self):
         response = self.client.post(self.url, data={
             'payment_method': PaymentMethod.debit_card.name
@@ -140,8 +78,6 @@ class ChooseMethodViewTestCase(BaseTestCase):
         self.assertNotIn('checked', content)
         self.assertContains(response, 'How do you want to send money?')
 
-    @override_settings(SHOW_BANK_TRANSFER_OPTION=True,
-                       SHOW_DEBIT_CARD_OPTION=True)
     def test_choice_must_be_made_before_proceeding(self):
         response = self.client.post(self.url)
         self.assertOnPage(response, 'choose_method')
@@ -153,9 +89,7 @@ class ChooseMethodViewTestCase(BaseTestCase):
 
 
 @patch_notifications()
-@override_settings(SHOW_BANK_TRANSFER_OPTION=True,
-                   SHOW_DEBIT_CARD_OPTION=True,
-                   BANK_TRANSFER_PRISONS='',
+@override_settings(BANK_TRANSFER_PRISONS='',
                    DEBIT_CARD_PRISONS='')
 class BankTransferFlowTestCase(BaseTestCase):
     complete_session_keys = [
@@ -408,9 +342,7 @@ class BankTransferReferenceTestCase(BankTransferFlowTestCase):
 
 
 @patch_notifications()
-@override_settings(SHOW_BANK_TRANSFER_OPTION=True,
-                   SHOW_DEBIT_CARD_OPTION=True,
-                   BANK_TRANSFER_PRISONS='',
+@override_settings(BANK_TRANSFER_PRISONS='',
                    DEBIT_CARD_PRISONS='')
 class DebitCardFlowTestCase(BaseTestCase):
     complete_session_keys = [
@@ -698,9 +630,7 @@ class DebitCardCheckTestCase(DebitCardFlowTestCase):
 
 @patch_notifications()
 @patch_gov_uk_pay_availability_check()
-@override_settings(SHOW_BANK_TRANSFER_OPTION=True,
-                   SHOW_DEBIT_CARD_OPTION=True,
-                   SERVICE_CHARGE_PERCENTAGE=Decimal('2.4'),
+@override_settings(SERVICE_CHARGE_PERCENTAGE=Decimal('2.4'),
                    SERVICE_CHARGE_FIXED=Decimal('0.20'),
                    GOVUK_PAY_URL='https://pay.gov.local/v1')
 class DebitCardPaymentTestCase(DebitCardFlowTestCase):
@@ -855,9 +785,7 @@ class DebitCardPaymentTestCase(DebitCardFlowTestCase):
 
 @patch_notifications()
 @patch_gov_uk_pay_availability_check()
-@override_settings(SHOW_BANK_TRANSFER_OPTION=True,
-                   SHOW_DEBIT_CARD_OPTION=True,
-                   SERVICE_CHARGE_PERCENTAGE=Decimal('2.4'),
+@override_settings(SERVICE_CHARGE_PERCENTAGE=Decimal('2.4'),
                    SERVICE_CHARGE_FIXED=Decimal('0.20'),
                    GOVUK_PAY_URL='https://pay.gov.local/v1')
 class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
