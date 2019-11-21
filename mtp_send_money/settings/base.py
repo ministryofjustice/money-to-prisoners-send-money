@@ -232,8 +232,6 @@ OAUTHLIB_INSECURE_TRANSPORT = True
 NOMS_HOLDING_ACCOUNT_NUMBER = os.environ.get('NOMS_HOLDING_ACCOUNT_NUMBER', '########')
 NOMS_HOLDING_ACCOUNT_SORT_CODE = os.environ.get('NOMS_HOLDING_ACCOUNT_SORT_CODE', '##-##-##')
 
-ENABLE_PAYMENT_CHOICE_EXPERIMENT = os.environ.get('ENABLE_PAYMENT_CHOICE_EXPERIMENT', 'True') == 'True'
-
 # 0 to disable delayed capture
 # 100 to enable delayed capture for all payments
 # x to enable delayed capture for x% payments

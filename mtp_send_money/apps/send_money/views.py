@@ -142,18 +142,10 @@ class PaymentMethodChoiceView(SendMoneyFormView):
     url_name = 'choose_method'
     template_name = 'send_money/payment-method.html'
     form_class = send_money_forms.PaymentMethodChoiceForm
-    experiment_cookie_name = 'EXP-first-payment-choice'
-    experiment_variations = ['debit-card', 'bank-transfer']
-    experiment_lifetime = datetime.timedelta(days=300)
 
     @classmethod
     def is_form_enabled(cls):
         return settings.SHOW_BANK_TRANSFER_OPTION and settings.SHOW_DEBIT_CARD_OPTION
-
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.show_bank_transfer_first = False
-        self.set_experiment_cookie = None
 
     def dispatch(self, request, *args, **kwargs):
         # reset the session so that we can start fresh
@@ -162,9 +154,6 @@ class PaymentMethodChoiceView(SendMoneyFormView):
 
         if settings.SHOW_BANK_TRANSFER_OPTION and settings.SHOW_DEBIT_CARD_OPTION:
             response = super().dispatch(request, *args, **kwargs)
-            if self.set_experiment_cookie is not None:
-                response.set_cookie(self.experiment_cookie_name, self.set_experiment_cookie,
-                                    expires=timezone.now() + self.experiment_lifetime)
             return response
         if settings.SHOW_BANK_TRANSFER_OPTION:
             return redirect(build_view_url(self.request, BankTransferWarningView.url_name))
@@ -172,33 +161,9 @@ class PaymentMethodChoiceView(SendMoneyFormView):
             return redirect(build_view_url(self.request, DebitCardPrisonerDetailsView.url_name))
         return redirect('submit_ticket')
 
-    def get_experiment(self):
-        experiment = {
-            'show_bank_transfer_first': self.show_bank_transfer_first,
-        }
-        if not settings.ENABLE_PAYMENT_CHOICE_EXPERIMENT:
-            return experiment
-
-        variation = self.request.COOKIES.get(self.experiment_cookie_name)
-        if variation not in self.experiment_variations:
-            variation = random.choice(self.experiment_variations)
-            self.set_experiment_cookie = variation
-            context = 'pageview,/_experiments/display-payment-methods/%s/' % variation
-        else:
-            context = 'pageview,/_experiments/redisplay-payment-methods/%s/' % variation
-        self.show_bank_transfer_first = variation == 'bank-transfer'
-
-        experiment.update({
-            'show_bank_transfer_first': self.show_bank_transfer_first,
-            'context': context,
-        })
-        return experiment
-
     def get_context_data(self, **kwargs):
-        experiment = self.get_experiment()
         context_data = super().get_context_data(**kwargs)
         context_data.update({
-            'experiment': experiment,
             'service_charged': self.is_service_charged(),
             'service_charge_percentage': settings.SERVICE_CHARGE_PERCENTAGE,
             'service_charge_fixed': settings.SERVICE_CHARGE_FIXED,
@@ -208,8 +173,6 @@ class PaymentMethodChoiceView(SendMoneyFormView):
     def get_form_kwargs(self):
         kwargs = {
             **super().get_form_kwargs(),
-
-            'show_bank_transfer_first': self.show_bank_transfer_first,
             'check_debit_card_payment_availability': True,
         }
         return kwargs

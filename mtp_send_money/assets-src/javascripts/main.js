@@ -10,7 +10,6 @@
 
   // send-money
   require('charges').Charges.init();
-  require('experiments').Experiments.init();
   require('reference').Reference.init();
   require('filtered-list').FilteredList.init();
 }());

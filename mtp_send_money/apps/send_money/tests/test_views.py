@@ -129,8 +129,7 @@ class ChooseMethodViewTestCase(BaseTestCase):
         self.assertNotIn('checked', content)
 
     @override_settings(SHOW_BANK_TRANSFER_OPTION=True,
-                       SHOW_DEBIT_CARD_OPTION=True,
-                       ENABLE_PAYMENT_CHOICE_EXPERIMENT=False)
+                       SHOW_DEBIT_CARD_OPTION=True)
     def test_session_reset_if_returning_to_page(self):
         response = self.client.post(self.url, data={
             'payment_method': PaymentMethod.debit_card.name
@@ -149,41 +148,6 @@ class ChooseMethodViewTestCase(BaseTestCase):
         form = response.context['form']
         self.assertTrue(form.errors)
 
-    @override_settings(SHOW_BANK_TRANSFER_OPTION=True,
-                       SHOW_DEBIT_CARD_OPTION=True,
-                       ENABLE_PAYMENT_CHOICE_EXPERIMENT=False)
-    def test_experiment_turns_off(self):
-        from send_money.views import PaymentMethodChoiceView
-
-        response = self.client.get(self.url)
-        variation = response.cookies.get(PaymentMethodChoiceView.experiment_cookie_name)
-        self.assertIsNone(variation)
-        content = response.content.decode(response.charset)
-        self.assertLess(content.find('id_debit_card'),
-                        content.find('id_bank_transfer'),
-                        'Debit card option should appear first according to experiment')
-
-    @override_settings(SHOW_BANK_TRANSFER_OPTION=True,
-                       SHOW_DEBIT_CARD_OPTION=True,
-                       ENABLE_PAYMENT_CHOICE_EXPERIMENT=True)
-    def test_experiment_choice_cookie_and_ordering(self):
-        from send_money.views import PaymentMethodChoiceView
-
-        response = self.client.get(self.url)
-        variation = response.cookies.get(PaymentMethodChoiceView.experiment_cookie_name)
-        if variation:
-            variation = variation.value
-        self.assertTrue(variation, 'Cookie not saved')
-
-        content = response.content.decode(response.charset)
-        if variation == 'debit-card':
-            self.assertLess(content.find('id_debit_card'),
-                            content.find('id_bank_transfer'),
-                            'Debit card option should appear first according to experiment')
-        else:
-            self.assertLess(content.find('id_bank_transfer'),
-                            content.find('id_debit_card'),
-                            'Bank transfer option should appear first according to experiment')
 
 # BANK TRANSFER FLOW
 

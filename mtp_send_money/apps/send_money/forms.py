@@ -63,11 +63,9 @@ class PaymentMethodChoiceForm(SendMoneyForm):
         'required': _('Please choose how you want to send money')
     }, choices=PaymentMethod.django_choices())
 
-    def __init__(self, show_bank_transfer_first=False, check_debit_card_payment_availability=False, **kwargs):
+    def __init__(self, check_debit_card_payment_availability=False, **kwargs):
         super().__init__(**kwargs)
         payment_method_field = self.fields['payment_method']
-        if show_bank_transfer_first:
-            payment_method_field.choices = reversed(payment_method_field.choices)
 
         if check_debit_card_payment_availability:
             payment_service_available, message_to_users = check_payment_service_available()
