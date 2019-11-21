@@ -1310,20 +1310,19 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
 @patch_notifications()
 @mock.patch(
     'send_money.forms.check_payment_service_available',
-    mock.Mock(
-        return_value=(False, 'Scheduled work'),
-    ),
+    mock.Mock(return_value=(False, 'Scheduled work message')),
 )
 class PaymentServiceUnavailableTestCase(DebitCardFlowTestCase):
     choose_method_url = '/en-gb/'
 
-    def test_gov_uk_service_unavailable_disables_choice(self):
+    def test_gov_uk_service_unavailable_hides_debit_card_route(self):
         response = self.client.get(self.choose_method_url, follow=True)
-        self.assertContains(response, 'disabled')
+        self.assertNotContains(response, 'id_debit_card')
+        self.assertContains(response, 'id_bank_transfer')
 
     def test_gov_uk_service_unavailable_can_show_message_to_users(self):
         response = self.client.get(self.choose_method_url, follow=True)
-        self.assertContains(response, 'Scheduled work')
+        self.assertContains(response, 'Scheduled work message')
 
     def test_gov_uk_service_unavailable_always_goes_to_bank_transfer(self):
         # no post data

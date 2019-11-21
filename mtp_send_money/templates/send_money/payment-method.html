@@ -33,14 +33,29 @@
 
       {% include 'mtp_common/forms/error-summary.html' with form=form only %}
 
-      <form method="post">
-        {% csrf_token %}
-        {% with payment_method=form.payment_method.field.choices.0.0 %}
-          <button name="{{ form.payment_method.html_name }}" value="{{ payment_method }}" id="id_{{ payment_method }}" class="button">
-            {% trans 'Continue' %}
-          </button>
-        {% endwith %}
-      </form>
+      {% if form.payment_method.field.disabled %}
+
+        <div class="error-summary" role="alert" aria-labelledby="error-summary-heading" tabindex="-1">
+          <h1 class="heading-medium error-summary-heading">
+            {{ form.payment_method.field.message_to_users|default:_('Sending money by debit card is temporarily unavailable') }}
+          </h1>
+          <p>
+            {% trans 'Please try again later.' %}
+          </p>
+        </div>
+
+      {% else %}
+
+        <form method="post">
+          {% csrf_token %}
+          {% with payment_method=form.payment_method.field.choices.0.0 %}
+            <button name="{{ form.payment_method.html_name }}" value="{{ payment_method }}" id="id_{{ payment_method }}" class="button">
+              {% trans 'Continue' %}
+            </button>
+          {% endwith %}
+        </form>
+
+      {% endif %}
 
       <br />
 

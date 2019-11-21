@@ -157,13 +157,6 @@ class PaymentMethodChoiceView(SendMoneyFormView):
         })
         return context_data
 
-    def get_form_kwargs(self):
-        kwargs = {
-            **super().get_form_kwargs(),
-            'check_debit_card_payment_availability': True,
-        }
-        return kwargs
-
     def form_valid(self, form):
         if form.cleaned_data['payment_method'] == PaymentMethod.bank_transfer.name:
             self.success_url = build_view_url(self.request, BankTransferWarningView.url_name)
