@@ -261,7 +261,7 @@ class SendMoneySupportPages(SendMoneyFunctionalTestCase):
         {
             'link_name': 'cookies',
             'link_text': 'Cookies',
-            'page_content': 'How cookies are used on GOV.UK',
+            'page_content': 'Cookies we use to improve our service',
         },
     ]
 
