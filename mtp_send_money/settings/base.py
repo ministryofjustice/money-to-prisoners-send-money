@@ -273,10 +273,6 @@ CONFIRMATION_EXPIRES = 60  # minutes
 
 GOVUK_PAY_URL = os.environ.get('GOVUK_PAY_URL', '')
 GOVUK_PAY_AUTH_TOKEN = os.environ.get('GOVUK_PAY_AUTH_TOKEN', '')
-GOVUK_PAY_CONNECTION_CHECK_IMAGE = os.environ.get(
-    'GOVUK_PAY_CONNECTION_CHECK_IMAGE',
-    'https://www.payments.service.gov.uk/assets/images/govuk-crest.png',
-)
 
 EMAIL_BACKEND = 'anymail.backends.mailgun.EmailBackend'
 ANYMAIL = {

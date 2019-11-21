@@ -29,10 +29,6 @@ def patch_gov_uk_pay_availability_check():
                       mock.Mock(return_value=(True, None)))
 
 
-def patch_govuk_pay_connection_check():
-    return mock.patch('send_money.views.can_load_govuk_pay_image', mock.Mock(return_value=(True, None)))
-
-
 class BaseTestCase(SimpleTestCase):
     root_url = '/en-gb/'
 

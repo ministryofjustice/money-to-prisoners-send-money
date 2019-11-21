@@ -24,13 +24,6 @@
         <p>{% trans 'Try again later or get a prisoner reference to send money by UK bank transfer' %}</p>
 
       </div>
-    {% elif check_govuk_pay_connection %}
-      <div style="display:none" class="error-summary mtp-govuk-pay-connection-check" data-image-url="{{ govuk_pay_connection_check_image }}" role="alert" aria-labelledby="error-summary-heading" tabindex="-1">
-        <h1 class="heading-medium error-summary-heading">
-          {% trans 'Paying by debit card won’t work because we don’t support your device or browser' %}
-        </h1>
-        <p>{% trans 'Try another computer or a newer browser, for example, Chrome, Firefox or Internet Explorer 11 and up' %}</p>
-      </div>
     {% endif %}
 
     <fieldset class="mtp-payment-choice">

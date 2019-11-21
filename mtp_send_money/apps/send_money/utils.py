@@ -14,7 +14,7 @@ from django.utils.encoding import force_text
 from django.utils.translation import gettext_lazy as _
 from mtp_common.auth import api_client, urljoin
 import requests
-from requests.exceptions import RequestException, Timeout
+from requests.exceptions import Timeout
 
 logger = logging.getLogger('mtp')
 prisoner_number_re = re.compile(r'^[a-z]\d\d\d\d[a-z]{2}$', re.IGNORECASE)
@@ -35,21 +35,6 @@ def check_payment_service_available():
         return gov_uk_status.get('status', True), gov_uk_status.get('message_to_users')
     except (Timeout, ValueError):
         return True, None
-
-
-def can_load_govuk_pay_image():
-    try:
-        response = requests.get(url=settings.GOVUK_PAY_CONNECTION_CHECK_IMAGE,
-                                timeout=5, allow_redirects=False, verify=True)
-        response.raise_for_status()
-        if response.status_code != 200:
-            raise RequestException('Status code is %s' % response.status_code)
-        if not response.content:
-            raise RequestException('No content')
-        return True
-    except RequestException:
-        logger.exception('Failed to load GOV.UK Pay image')
-        return False
 
 
 def validate_prisoner_number(value):
