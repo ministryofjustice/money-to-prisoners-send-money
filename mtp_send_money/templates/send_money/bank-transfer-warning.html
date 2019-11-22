@@ -53,7 +53,7 @@
       <aside class="panel panel-border-wide">
         {% url 'send_money:choose_method' as choose_method_url %}
         {% blocktrans trimmed with action=_('Paying by debit card')|wraplink:choose_method_url %}
-          {{ action }} is the fastest, simplest and most reliable way of sending money to a prisoner - and it’s free
+          {{ action }} is the <strong>fastest</strong>, <strong>simplest</strong> and most <strong>reliable</strong> way of sending money to a prisoner – and it’s <strong>free</strong>
         {% endblocktrans %}
       </aside>
 
