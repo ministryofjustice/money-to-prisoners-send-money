@@ -1,10 +1,7 @@
-# Send Money to Prisoners
+# Send money to someone in prison
 
-[![Dependency Status](https://img.shields.io/david/ministryofjustice/money-to-prisoners-send-money.svg?style=flat-square&label=NPM%20deps)](https://david-dm.org/ministryofjustice/money-to-prisoners-send-money)
-[![devDependency Status](https://img.shields.io/david/dev/ministryofjustice/money-to-prisoners-send-money.svg?style=flat-square&label=NPM%20devDeps)](https://david-dm.org/ministryofjustice/money-to-prisoners-send-money#info=devDependencies)
-
-Citizen-facing public site for Money to Prisoners
-
+Citizen-facing site for Money to Prisoners (MTP).
+Part of the Prisoner Money suite of apps.
 
 ## Running locally
 
@@ -12,37 +9,37 @@ It's recommended that you use a python virtual environment to isolate each appli
 Please call this `venv` and make sure it's in the root folder of this application so that
 `mtp_common.test_utils.code_style.CodeStyleTestCase` and the build tasks can find it.
 
-
 In order to run the application locally, it is necessary to have the API running.
 Please refer to the [money-to-prisoners-api](https://github.com/ministryofjustice/money-to-prisoners-api/) repository.
 
-Once the API is running locally, run
+Once the API has started locally, run
 
 ```
+./run.py serve
+# or
 ./run.py start
 ```
 
-This will build everything (which will initially take a while) and run
-the local server at [http://localhost:8004/](http://localhost:8004/).
-
+This will build everything and run the local server at [http://localhost:8004/](http://localhost:8004/).
 
 ### Alternative: Docker
 
 In order to run a server that's exactly similar to the production machines,
-you need to have [Docker](https://www.docker.com/docker-toolbox) installed. Run
+you need to have [Docker](https://www.docker.com/products/developer-tools) installed. Run
 
 ```
 ./run.py local_docker
 ```
 
-and you should eventually be able to connect to the local server.
+and you should be able to connect to the local server.
 
 ## Developing
+
+[![CircleCI](https://circleci.com/gh/ministryofjustice/money-to-prisoners-send-money.svg?style=svg)](https://circleci.com/gh/ministryofjustice/money-to-prisoners-send-money)
 
 With the `./run.py` command, you can run a browser-sync server, and get the assets
 to automatically recompile when changes are made, run `./run.py serve` instead of
 `./run.py start`. The server is then available at the URL indicated.
-
 
 ```
 ./run.py test
@@ -61,9 +58,11 @@ python_dependencies --common-path [path]
 
 Update translation files with `./run.py make_messages` – you need to do this every time any translatable text is updated.
 
-Pull updates from Transifex with ``./run.py translations --pull``. You'll need to update translation files afterwards and manually check that the merges occurred correctly.
+Pull updates from Transifex with `./run.py translations --pull`.
+You'll need to update translation files afterwards and manually check that the merges occurred correctly.
 
-Push latest English to Transifex with ``./run.py translations --push``. NB: you should pull updates before pushing to merge correctly.
+Push latest English to Transifex with `./run.py translations --push`.
+NB: you should pull updates before pushing to merge correctly.
 
 ## Deploying
 

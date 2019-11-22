@@ -6,6 +6,7 @@ from django.views.decorators.cache import cache_control
 from django.views.generic.base import RedirectView
 from django.views.i18n import JavaScriptCatalog
 from moj_irat.views import HealthcheckView, PingJsonView
+from mtp_common.metrics.views import metrics_view
 
 from send_money.utils import make_response_cacheable
 from send_money.views_misc import CookiesView, SitemapXMLView, robots_txt_view
@@ -37,6 +38,7 @@ urlpatterns += [
         version_number_key='APP_BUILD_TAG',
     ), name='ping_json'),
     url(r'^healthcheck.json$', HealthcheckView.as_view(), name='healthcheck_json'),
+    url(r'^metrics.txt$', metrics_view, name='prometheus_metrics'),
 
     url(r'^robots.txt$', robots_txt_view),
     url(r'^sitemap.xml$', SitemapXMLView.as_view(), name='sitemap_xml'),

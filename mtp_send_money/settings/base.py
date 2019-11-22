@@ -1,14 +1,9 @@
-"""
-Django settings for mtp_send_money project.
-
-For the full list of settings and their values, see
-https://docs.djangoproject.com/en/1.9/ref/settings/
-"""
 from decimal import Decimal
 from functools import partial
 import os
 from os.path import abspath, dirname, join
 import sys
+from urllib.parse import urljoin
 
 BASE_DIR = dirname(dirname(abspath(__file__)))
 sys.path.insert(0, os.path.join(BASE_DIR, 'apps'))
@@ -27,7 +22,27 @@ SECRET_KEY = 'CHANGE_ME'
 ALLOWED_HOSTS = []
 
 START_PAGE_URL = os.environ.get('START_PAGE_URL', 'https://www.gov.uk/send-prisoner-money')
-SITE_URL = os.environ.get('SITE_URL', 'http://localhost:8004')
+CASHBOOK_URL = (
+    f'https://{os.environ["PUBLIC_CASHBOOK_HOST"]}'
+    if os.environ.get('PUBLIC_CASHBOOK_HOST')
+    else 'http://localhost:8001'
+)
+BANK_ADMIN_URL = (
+    f'https://{os.environ["PUBLIC_BANK_ADMIN_HOST"]}'
+    if os.environ.get('PUBLIC_BANK_ADMIN_HOST')
+    else 'http://localhost:8002'
+)
+NOMS_OPS_URL = (
+    f'https://{os.environ["PUBLIC_NOMS_OPS_HOST"]}'
+    if os.environ.get('PUBLIC_NOMS_OPS_HOST')
+    else 'http://localhost:8003'
+)
+SEND_MONEY_URL = (
+    f'https://{os.environ["PUBLIC_SEND_MONEY_HOST"]}'
+    if os.environ.get('PUBLIC_SEND_MONEY_HOST')
+    else 'http://localhost:8004'
+)
+SITE_URL = SEND_MONEY_URL
 
 # Application definition
 INSTALLED_APPS = (
@@ -40,6 +55,7 @@ INSTALLED_APPS = (
 PROJECT_APPS = (
     'anymail',
     'mtp_common',
+    'mtp_common.metrics',
     'send_money',
     'zendesk_tickets'
 )
@@ -63,6 +79,9 @@ MIDDLEWARE = (
 
 HEALTHCHECKS = []
 AUTODISCOVER_HEALTHCHECKS = True
+
+METRICS_USER = os.environ.get('METRICS_USER', 'prom')
+METRICS_PASS = os.environ.get('METRICS_PASS', 'prom')
 
 # security tightening
 # some overridden in prod/docker settings where SSL is ensured
@@ -100,6 +119,7 @@ STATICFILES_DIRS = [
     get_project_dir('assets'),
     get_project_dir('assets-static'),
 ]
+PUBLIC_STATIC_URL = urljoin(SEND_MONEY_URL, STATIC_URL)
 
 TEMPLATES = [
     {
@@ -195,31 +215,14 @@ TEST_RUNNER = 'mtp_common.test_utils.runner.TestRunner'
 # authentication
 SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
 MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
-
 AUTHENTICATION_BACKENDS = (
     'mtp_common.auth.backends.MojBackend',
 )
 
 
-def find_api_url():
-    import socket
-    import subprocess
-
-    api_port = int(os.environ.get('API_PORT', '8000'))
-    try:
-        host_machine_ip = subprocess.check_output(['docker-machine', 'ip', 'default'],
-                                                  stderr=subprocess.DEVNULL)
-        host_machine_ip = host_machine_ip.decode('ascii').strip()
-        with socket.socket() as sock:
-            sock.connect((host_machine_ip, api_port))
-    except (subprocess.CalledProcessError, OSError):
-        host_machine_ip = 'localhost'
-    return 'http://%s:%s' % (host_machine_ip, api_port)
-
-
 API_CLIENT_ID = 'send-money'
 API_CLIENT_SECRET = os.environ.get('API_CLIENT_SECRET', 'send-money')
-API_URL = os.environ.get('API_URL', find_api_url())
+API_URL = os.environ.get('API_URL', 'http://localhost:8000')
 
 SHARED_API_USERNAME = os.environ.get('SHARED_API_USERNAME', 'send-money')
 SHARED_API_PASSWORD = os.environ.get('SHARED_API_PASSWORD', 'send-money')
