@@ -5,7 +5,7 @@ import logging
 from django.core.management import BaseCommand
 from django.utils import timezone
 from django.utils.dateparse import parse_datetime
-from mtp_common.stack import StackException, InstanceNotInAsgException, is_first_instance
+from mtp_common.stack import StackException, is_first_instance
 from oauthlib.oauth2 import OAuth2Error
 from requests.exceptions import RequestException
 
@@ -28,11 +28,8 @@ class Command(BaseCommand):
     def should_perform_update(self):
         try:
             return is_first_instance()
-        except InstanceNotInAsgException:
-            self.stderr.write('EC2 instance not in an ASG')
-            return True
         except StackException:
-            self.stderr.write('Not running on EC2 instance')
+            self.stderr.write('Not running on Cloud Platform')
             return True
 
     def perform_update(self):
