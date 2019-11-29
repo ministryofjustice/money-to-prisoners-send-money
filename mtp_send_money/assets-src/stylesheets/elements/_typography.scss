@@ -16,17 +16,3 @@ ol > li {
 .list {
   padding-left: 35px;
 }
-
-.govuk-box-highlight {
-  padding: .1em 0 1em;
-
-  p {
-    margin-bottom: 2px;
-  }
-
-  @media print {
-    background: none;
-    border: 2px solid $border-colour;
-    color: $text-colour;
-  }
-}

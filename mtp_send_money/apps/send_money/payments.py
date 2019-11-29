@@ -152,6 +152,9 @@ class PaymentClient:
             if self.should_be_automatically_captured(payment):
                 # capture payment and send successful email
                 govuk_status = self.capture_govuk_payment(govuk_payment, context)
+            elif 'email' in payment_attr_updates:
+                # TODO send capturable email
+                pass
         elif govuk_status == PaymentStatus.success:
             # TODO consider updating other attrs using `get_completion_payment_attr_updates`
             email = govuk_payment.get('email')

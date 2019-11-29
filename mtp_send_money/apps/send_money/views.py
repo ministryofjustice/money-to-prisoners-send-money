@@ -432,6 +432,8 @@ class DebitCardConfirmationView(TemplateView):
     def get_template_names(self):
         if self.status == PaymentStatus.success:
             return ['send_money/debit-card-confirmation.html']
+        if self.status == PaymentStatus.capturable:
+            return ['send_money/debit-card-on-hold.html']
         return ['send_money/debit-card-failure.html']
 
     def dispatch(self, request, *args, **kwargs):
@@ -460,6 +462,7 @@ class DebitCardConfirmationView(TemplateView):
 
             kwargs.update({
                 'prisoner_name': payment['recipient_name'],
+                'prisoner_number': payment['prisoner_number'],
                 'amount': decimal.Decimal(payment['amount']) / 100,
             })
 
