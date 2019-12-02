@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% load send_money %}
+
+{% block page_title %}{% trans 'Payment on hold' %} – {{ block.super }}{% endblock %}
+
+{% block inner_content %}
+
+  <div class="govuk-box-highlight mtp-box-highlight-info">
+    <h1 class="heading-xlarge">{% trans 'This payment has been put on hold for up to 5 days' %}</h1>
+    <p>{% trans 'Reference:' %} <strong>{{ short_payment_ref }}</strong></p>
+  </div>
+
+  <div class="print-hidden mtp-reference-actions">
+    <a class="mtp-print-reference" href="#">{% trans 'Print this page' %}</a>
+  </div>
+
+  <div class="grid-row">
+    <div class="column-two-thirds">
+      <div class="mtp-account panel panel-border-wide">
+        <table>
+          <tbody>
+            <tr>
+              <th>{% trans 'Payment to' %}:</th>
+              <td>{{ prisoner_name }} ( {{ prisoner_number }})</td>
+            </tr>
+            <tr>
+              <th>{% trans 'Amount' %}:</th>
+              <td>{{ amount|currency_format }}</td>
+            </tr>
+            <tr>
+              <th>{% trans 'Date' %}:</th>
+              <td>{% now 'd/m/Y' %}</td>
+            </tr>
+            <tr>
+              <th>{% trans 'Reference' %}:</th>
+              <td>{{ short_payment_ref }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>{% trans 'To maintain a high level of prison safety we do regular security checks.' %}</p>
+      <p>{% trans 'We’ll email you a payment update as soon as we can and are sorry for any inconvenience this may cause.' %}</p>
+      <p>
+        {% url 'submit_ticket' as ticket_url %}
+        {% blocktrans trimmed %}
+          If you’re worried about a prisoner, <a href="{{ ticket_url }}">email us</a> and we can inform the prison.
+        {% endblocktrans %}
+      </p>
+    </div>
+  </div>
+{% endblock %}

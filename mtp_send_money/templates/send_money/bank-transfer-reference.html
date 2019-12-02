@@ -7,8 +7,8 @@
 
 {% block inner_content %}
 
-  <div class="govuk-box-highlight">
-    <h1 class="heading-medium">{% trans 'Your prisoner reference:' %}</h1>
+  <div class="govuk-box-highlight mtp-box-highlight-success">
+    <h1 class="heading-xlarge">{% trans 'Your prisoner reference is' %}</h1>
     <h2 class="heading-large">{{ bank_transfer_reference }}</h2>
     <p>{% trans 'Use this reference to make your bank transfer' %}</p>
   </div>
@@ -30,59 +30,63 @@
     </p>
   </form>
 
-  <section>
-    <h2 class="heading-medium">{% trans 'Now you can make the bank transfer' %}</h2>
-    <ol class="list list-number">
-      <li>
-        {% trans 'Log into your online banking account, mobile banking app or use your telephone banking, as normal.' %}
-      </li>
+  <div class="grid-row">
+    <div class="column-two-thirds">
+      <section>
+        <h2 class="heading-medium">{% trans 'Now you can make the bank transfer' %}</h2>
+        <ol class="list list-number">
+          <li>
+            {% trans 'Log into your online banking account, mobile banking app or use your telephone banking, as normal.' %}
+          </li>
 
-      <li>
-        {% trans 'Copy and paste these details into the transfer:' %}
-        <div class="mtp-account panel panel-border-wide">
-          <table>
-            <tbody>
-              <tr>
-                <th>{% trans 'Account number:' %}</th>
-                <td>{{ account_number }}</td>
-              </tr>
-              <tr>
-                <th>{% trans 'Sort code:'%}</th>
-                <td>{{ sort_code }}</td>
-              </tr>
-              <tr>
-                <th>{% trans 'Reference:' %}</th>
-                <td>{{ bank_transfer_reference }}</td>
-              </tr>
-              <tr>
-                <th>{% trans 'Payee/Name:' %}</th>
-                <td>{{ bank_transfer_reference }}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <p>
-          {% trans 'All prisons share this bank account.' %}
-          {% trans 'Please use your prisoner reference to make sure the money goes to the right prisoner.' %}
-        </p>
-        <p>
-          <strong>{% trans 'Remember:'%}</strong>
-          {% trans 'You can’t do a bank transfer in-branch and you must use a UK bank account.' %}
-        </p>
-      </li>
+          <li>
+            {% trans 'Copy and paste these details into the transfer:' %}
+            <div class="mtp-account panel panel-border-wide">
+              <table>
+                <tbody>
+                  <tr>
+                    <th>{% trans 'Account number:' %}</th>
+                    <td>{{ account_number }}</td>
+                  </tr>
+                  <tr>
+                    <th>{% trans 'Sort code:'%}</th>
+                    <td>{{ sort_code }}</td>
+                  </tr>
+                  <tr>
+                    <th>{% trans 'Reference:' %}</th>
+                    <td>{{ bank_transfer_reference }}</td>
+                  </tr>
+                  <tr>
+                    <th>{% trans 'Payee/Name:' %}</th>
+                    <td>{{ bank_transfer_reference }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <p>
+              {% trans 'All prisons share this bank account.' %}
+              {% trans 'Please use your prisoner reference to make sure the money goes to the right prisoner.' %}
+            </p>
+            <p>
+              <strong>{% trans 'Remember:'%}</strong>
+              {% trans 'You can’t do a bank transfer in-branch and you must use a UK bank account.' %}
+            </p>
+          </li>
 
-      <li>
-        {% trans 'The money should take up to 3 working days to reach the prisoner’s account.' %}
-        {% trans 'No money is processed at weekends or bank holidays.' %}
-      </li>
-    </ol>
-    <p>
-      {% url 'send_money:help_bank_transfer' as help_url %}
-      {% url 'submit_ticket' as ticket_url %}
-      {% blocktrans trimmed %}
-        <a href="{{ help_url }}">Find further help</a> on how to use the service or <a href="{{ ticket_url }}">contact us</a>.
-      {% endblocktrans %}
-    </p>
-  </section>
+          <li>
+            {% trans 'The money should take up to 3 working days to reach the prisoner’s account.' %}
+            {% trans 'No money is processed at weekends or bank holidays.' %}
+          </li>
+        </ol>
+        <p>
+          {% url 'send_money:help_bank_transfer' as help_url %}
+          {% url 'submit_ticket' as ticket_url %}
+          {% blocktrans trimmed %}
+            <a href="{{ help_url }}">Find further help</a> on how to use the service or <a href="{{ ticket_url }}">contact us</a>.
+          {% endblocktrans %}
+        </p>
+      </section>
+    </div>
+  </div>
 
 {% endblock %}

@@ -6,8 +6,8 @@
 
 {% block inner_content %}
 
-  <div class="govuk-box-highlight">
-    <h1 class="heading-large">{% trans 'Payment successful' %}</h1>
+  <div class="govuk-box-highlight mtp-box-highlight-success">
+    <h1 class="heading-xlarge">{% trans 'Payment successful' %}</h1>
     <p>{% trans 'Your confirmation number is' %}<p>
     <strong>{{ short_payment_ref }}</strong>
   </div>
@@ -16,39 +16,44 @@
     <a class="mtp-print-reference" href="#">{% trans 'Print this page' %}</a>
   </div>
 
-  <h2 class="heading-medium">{% trans 'Payment summary' %}</h2>
-  <table class="mtp-check-table">
-    <tbody>
-      <tr>
-        <th>{% trans 'Payment to' %}:</th>
-        <td>{{ prisoner_name }}</td>
-      </tr>
-      <tr>
-        <th>{% trans 'Payment amount' %}:</th>
-        <td>{{ amount|currency_format }}</td>
-      </tr>
-      <tr>
-        <th>{% trans 'Date payment made' %}:</th>
-        <td>{% now 'd/m/Y' %}</td>
-      </tr>
-      <tr>
-        <th>{% trans 'Confirmation number' %}:</th>
-        <td>{{ short_payment_ref }}</td>
-      </tr>
-    </tbody>
-  </table>
+  <div class="grid-row">
+    <div class="column-two-thirds">
+      <div class="mtp-account panel panel-border-wide">
+        <table>
+          <tbody>
+            <tr>
+              <th>{% trans 'Payment to' %}:</th>
+              <td>{{ prisoner_name }}</td>
+            </tr>
+            <tr>
+              <th>{% trans 'Amount' %}:</th>
+              <td>{{ amount|currency_format }}</td>
+            </tr>
+            <tr>
+              <th>{% trans 'Date payment made' %}:</th>
+              <td>{% now 'd/m/Y' %}</td>
+            </tr>
+            <tr>
+              <th>{% trans 'Confirmation number' %}:</th>
+              <td>{{ short_payment_ref }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
-  <h2 class="heading-medium">{% trans 'What happens next' %}</h2>
-  <ol class="list list-number">
-    <li>
-      {% trans 'We’ll email you a copy of this confirmation page.' %}
-      {% trans 'Please check your spam folder.' %}
-    </li>
-    <li>{% trans 'The money will arrive in the prisoner’s account in up to 3 working days.' %}</li>
-    <li>{% trans 'You’ll get a further email when the prisoner’s account has been credited to confirm your money has arrived.' %}</li>
-  </ol>
+      <h2 class="heading-medium">{% trans 'What happens next' %}</h2>
+      <ol class="list list-number">
+        <li>
+          {% trans 'We’ll email you a copy of this confirmation page.' %}
+          {% trans 'Please check your spam folder.' %}
+        </li>
+        <li>{% trans 'Money usually takes less than 3 working days to reach a prisoner’s account, but may take longer.' %}</li>
+        <li>{% trans 'You’ll get a further email when the prisoner’s account has been credited to confirm your money has arrived.' %}</li>
+      </ol>
 
-  <p>
-    <a href="https://www.gov.uk/done/send-prisoner-money">{% trans 'Take a moment to rate this service' %}</a>
-  </p>
+      <p>
+        <a href="https://www.gov.uk/done/send-prisoner-money">{% trans 'Take a moment to rate this service' %}</a> {% trans '(takes 30 seconds)' %}
+      </p>
+    </div>
+  </div>
 {% endblock %}
