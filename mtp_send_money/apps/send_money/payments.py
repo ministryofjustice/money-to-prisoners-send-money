@@ -104,7 +104,7 @@ class PaymentClient:
                 f"Unknown status: {govuk_payment['state']['status']}",
             )
 
-    def should_be_automatically_captured(self, payment):
+    def should_be_captured(self, payment):
         # TODO: work out if payment needs to be delayed and and save result via API
         return True
 
@@ -115,7 +115,7 @@ class PaymentClient:
         If the status is 'success' or 'capturable' and the MTP payment doesn't have any email,
         it updates the email field on record and sends an email to the user.
 
-        If the status is 'capturable' and the payment should be automatically captured, this method
+        If the status is 'capturable' and the payment should be captured, this method
         captures and returns the new status.
 
         If a payment is captured or it's found in success state for the first time, an email
@@ -152,7 +152,7 @@ class PaymentClient:
                 self.update_payment(payment['uuid'], payment_attr_updates)
                 payment.update(payment_attr_updates)
 
-            if self.should_be_automatically_captured(payment):
+            if self.should_be_captured(payment):
                 # capture payment and send successful email
                 govuk_status = self.capture_govuk_payment(govuk_payment, context)
             elif 'email' in payment_attr_updates:

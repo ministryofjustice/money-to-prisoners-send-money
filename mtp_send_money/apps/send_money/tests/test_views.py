@@ -1004,7 +1004,7 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
         self.assertTrue('£17' in mail.outbox[0].body)
 
     @override_settings(ENVIRONMENT='prod')  # because non-prod environments don't send to @outside.local
-    @mock.patch('send_money.payments.PaymentClient.should_be_automatically_captured', mock.Mock(return_value=True))
+    @mock.patch('send_money.payments.PaymentClient.should_be_captured', mock.Mock(return_value=True))
     def test_automatically_captures_payment(self):
         """
         Test that if the GOV.UK payment is in status 'capturable' and the payment should be
@@ -1069,7 +1069,7 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
         self.assertTrue('£17' in mail.outbox[0].body)
 
     @override_settings(ENVIRONMENT='prod')  # because non-prod environments don't send to @outside.local
-    @mock.patch('send_money.payments.PaymentClient.should_be_automatically_captured', mock.Mock(return_value=False))
+    @mock.patch('send_money.payments.PaymentClient.should_be_captured', mock.Mock(return_value=False))
     def test_puts_payment_on_hold(self):
         """
         Test that if the GOV.UK payment is in status 'capturable' and the payment should not be captured, the view:

@@ -285,7 +285,7 @@ class CompletePaymentIfNecessaryTestCase(SimpleTestCase):
         }
 
         with \
-                mock.patch.object(client, 'should_be_automatically_captured', return_value=False), \
+                mock.patch.object(client, 'should_be_captured', return_value=False), \
                 responses.RequestsMock() as rsps:
 
             mock_auth(rsps)
@@ -360,7 +360,7 @@ class CompletePaymentIfNecessaryTestCase(SimpleTestCase):
             'amount': 1700,
         }
 
-        with mock.patch.object(client, 'should_be_automatically_captured', return_value=False):
+        with mock.patch.object(client, 'should_be_captured', return_value=False):
             status = client.complete_payment_if_necessary(payment, govuk_payment, context)
 
         self.assertEqual(status, PaymentStatus.capturable)
@@ -402,7 +402,7 @@ class CompletePaymentIfNecessaryTestCase(SimpleTestCase):
         }
 
         with \
-                mock.patch.object(client, 'should_be_automatically_captured', return_value=True), \
+                mock.patch.object(client, 'should_be_captured', return_value=True), \
                 responses.RequestsMock() as rsps:
 
             mock_auth(rsps)
@@ -445,7 +445,7 @@ class CompletePaymentIfNecessaryTestCase(SimpleTestCase):
         """
         Test that the method only sends any email if:
         - the govuk payment status is 'success' and the MTP payment didn't have the email field set
-        - the govuk payment status is 'capturable' and the payment should be automatically captured.
+        - the govuk payment status is 'capturable' and the MTP payment didn't have the email field set
         """
         client = PaymentClient()
 
@@ -461,7 +461,7 @@ class CompletePaymentIfNecessaryTestCase(SimpleTestCase):
         ]
 
         with \
-                mock.patch.object(client, 'should_be_automatically_captured', return_value=False), \
+                mock.patch.object(client, 'should_be_captured', return_value=False), \
                 silence_logger():
 
             for status in statuses:
