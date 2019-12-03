@@ -33,13 +33,13 @@
     }
   }
 
-  @include media($min-width: $tablet-breakpoint,  $max-width: $desktop-breakpoint, $ignore-for-ie: true) {
+  @include media($min-width: $tablet-breakpoint,  $max-width: $desktop-breakpoint) {
     #mtp-feedback-form {
       margin-right: 1em;
     }
   }
 
-  @include media(mobile, $ignore-for-ie: true) {
+  @include media(mobile) {
     #mtp-feedback-form {
       margin-right: 0;
     }
