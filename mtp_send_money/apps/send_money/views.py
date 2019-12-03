@@ -44,7 +44,7 @@ def clear_session_view(request):
     return redirect(build_view_url(request, PaymentMethodChoiceView.url_name))
 
 
-def should_be_captured_delayed():
+def should_be_capture_delayed():
     """
     Util function to roll out delayed payment capture gradually in order to limit damage caused by unknown problems.
     Returns True if the payment should be created with delayed_capture == True with a chance in
@@ -397,7 +397,7 @@ class DebitCardPaymentView(DebitCardFlow):
             failure_context['short_payment_ref'] = payment_ref[:8]
 
             new_govuk_payment = {
-                'delayed_capture': should_be_captured_delayed(),
+                'delayed_capture': should_be_capture_delayed(),
                 'amount': amount_pence + service_charge_pence,
                 'reference': payment_ref,
                 'description': gettext('To this prisoner: %(prisoner_number)s' % prisoner_details),

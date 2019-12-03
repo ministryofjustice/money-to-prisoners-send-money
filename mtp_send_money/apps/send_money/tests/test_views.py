@@ -19,7 +19,7 @@ from send_money.tests import (
     BaseTestCase, mock_auth,
     patch_notifications, patch_gov_uk_pay_availability_check, patch_govuk_pay_connection_check,
 )
-from send_money.views import should_be_captured_delayed
+from send_money.views import should_be_capture_delayed
 from send_money.utils import api_url, govuk_url, get_api_session
 
 
@@ -808,7 +808,7 @@ class DebitCardPaymentTestCase(DebitCardFlowTestCase):
                 fetch_redirect_response=False
             )
 
-    @mock.patch('send_money.views.should_be_captured_delayed', mock.Mock(return_value=True))
+    @mock.patch('send_money.views.should_be_capture_delayed', mock.Mock(return_value=True))
     def test_debit_card_payment_with_delayed_capture(self):
         """
         Test that if the payment should have delayed capture, the view calls the GOV.UK API
@@ -1527,9 +1527,9 @@ class PaymentServiceUnavailableTestCase(DebitCardFlowTestCase):
             self.assertContains(response, 'success')
 
 
-class ShouldBeCapturedDelayed(SimpleTestCase):
+class ShouldBeCaptureDelayed(SimpleTestCase):
     """
-    Tests related to the should_be_captured_delayed function.
+    Tests related to the should_be_capture_delayed function.
 
     Note: the tests try a few times to exclude any randomness.
     """
@@ -1542,7 +1542,7 @@ class ShouldBeCapturedDelayed(SimpleTestCase):
         """
         for _ in range(10):
             self.assertEqual(
-                should_be_captured_delayed(),
+                should_be_capture_delayed(),
                 False,
             )
 
@@ -1554,7 +1554,7 @@ class ShouldBeCapturedDelayed(SimpleTestCase):
         """
         for _ in range(10):
             self.assertEqual(
-                should_be_captured_delayed(),
+                should_be_capture_delayed(),
                 True,
             )
 
@@ -1566,7 +1566,7 @@ class ShouldBeCapturedDelayed(SimpleTestCase):
         """
         with self.assertLogs('mtp', level='ERROR') as cm:
             self.assertEqual(
-                should_be_captured_delayed(),
+                should_be_capture_delayed(),
                 False,
             )
 
@@ -1586,7 +1586,7 @@ class ShouldBeCapturedDelayed(SimpleTestCase):
         """
         with self.assertLogs('mtp', level='ERROR') as cm:
             self.assertEqual(
-                should_be_captured_delayed(),
+                should_be_capture_delayed(),
                 False,
             )
 
@@ -1606,7 +1606,7 @@ class ShouldBeCapturedDelayed(SimpleTestCase):
         """
         with self.assertLogs('mtp', level='ERROR') as cm:
             self.assertEqual(
-                should_be_captured_delayed(),
+                should_be_capture_delayed(),
                 False,
             )
 
@@ -1629,7 +1629,7 @@ class ShouldBeCapturedDelayed(SimpleTestCase):
             False: 0,
         }
         for _ in range(100):
-            chance[should_be_captured_delayed()] += 1
+            chance[should_be_capture_delayed()] += 1
 
         # we can't accurately check the figures
         self.assertTrue(chance[True] > 0)
