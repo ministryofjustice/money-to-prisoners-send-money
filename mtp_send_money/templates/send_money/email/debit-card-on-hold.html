@@ -1,0 +1,52 @@
+{% extends 'mtp_common/email_base.html' %}
+{% load i18n %}
+{% load send_money %}
+
+{% block inner_content %}
+  <p>{% trans 'Dear sender,' %}</p>
+
+  <p>
+    <strong>{% trans 'This payment has been put on hold for up to 5 days.' %}</strong>
+  </p>
+
+  <table cellspacing="10" style="font-family: sans-serif; border-left: 10px solid #b1b4b6; padding-left: 15px;">
+    <tr>
+      <th valign="top" align="left">{% trans 'Payment to:' %}</th>
+      <td>{{ prisoner_name }}</td>
+    </tr>
+    <tr>
+      <th valign="top" align="left">{% trans 'Amount:' %}</th>
+      <td>{{ amount|currency_format }}</td>
+    </tr>
+    <tr>
+      <th valign="top" align="left">{% trans 'Date:' %}</th>
+      <td>{% now 'd/m/Y' %}</td>
+    </tr>
+    <tr>
+      <th valign="top" align="left">{% trans 'Reference:' %}</th>
+      <td>{{ short_payment_ref }}</td>
+    </tr>
+  </table>
+
+  <p>
+    {% trans 'To maintain a high level of prison safety we do regular security checks.' %}
+  </p>
+  <p>
+    {% trans 'We’ll email you a payment update as soon as we can and are sorry for any inconvenience this may cause.' %}
+  </p>
+
+  <p>
+    {% trans 'Kind regards,' %}
+  </p>
+  <p>
+    {% trans 'Prisoner Money team' %}<br />
+  </p>
+
+  <p>
+    {% blocktrans trimmed %}
+      <a href="{{ help_url }}">Help</a> with problems using this service or how to <a href="{{ feedback_url }}">contact us</a>.
+    {% endblocktrans %}
+  </p>
+
+  <p><a href="{{ site_url }}">{% trans 'Back to the service' %}</a></p>
+{% endblock %}

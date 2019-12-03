@@ -215,6 +215,7 @@ class CompletePaymentIfNecessaryTestCase(SimpleTestCase):
         self.assertEqual(status, PaymentStatus.success)
         self.assertEqual(len(mail.outbox), 1)
         self.assertEqual(payment['email'], 'sender@example.com')
+        self.assertEqual(mail.outbox[0].subject, 'Send money to someone in prison: your payment was successful')
 
     def test_success_status_with_email_already_set(self):
         """
@@ -248,14 +249,14 @@ class CompletePaymentIfNecessaryTestCase(SimpleTestCase):
         self.assertEqual(status, PaymentStatus.success)
         self.assertEqual(len(mail.outbox), 0)
 
-    def test_capturable_status_not_automatically_captured(self):
+    def test_capturable_status_that_shouldnt_be_captured_yet(self):
         """
         Test that if the govuk payment is in 'capturable' state, the MTP payment record
-        doesn't have the email field filled in and the payment should not be automatically captured:
+        doesn't have the email field filled in and the payment should not be captured yet:
 
         - the MTP payment record is patched with the card details attributes
         - the method returns PaymentStatus.capturable
-        - no email is sent
+        - an email is sent to the sender
         """
         client = PaymentClient()
 
@@ -284,7 +285,7 @@ class CompletePaymentIfNecessaryTestCase(SimpleTestCase):
         }
 
         with \
-                mock.patch.object(client, 'should_be_automatically_captured', return_value=False), \
+                mock.patch.object(client, 'should_be_captured', return_value=False), \
                 responses.RequestsMock() as rsps:
 
             mock_auth(rsps)
@@ -313,15 +314,64 @@ class CompletePaymentIfNecessaryTestCase(SimpleTestCase):
                 }
             )
         self.assertEqual(status, PaymentStatus.capturable)
-        self.assertEqual(len(mail.outbox), 0)
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(payment['email'], 'sender@example.com')
+        self.assertEqual(mail.outbox[0].subject, 'Send money to someone in prison: your payment has been put on hold')
 
-    def test_capturable_status_automatically_captured(self):
+    def test_capturable_status_that_shouldnt_be_captured_yet_with_email_already_set(self):
         """
         Test that if the govuk payment is in 'capturable' state, the MTP payment record
-        doesn't have the email field filled in and the payment should be automatically captured:
+        has already the email field filled in and the payment should not be captured yet:
 
+        - the method returns PaymentStatus.capturable
+        - no email is sent as it
+        """
+        client = PaymentClient()
+
+        payment = {
+            'uuid': 'some-id',
+            'email': 'some-sender@example.com',
+            'worldpay_id': '123456789',
+            'cardholder_name': 'John Doe',
+            'card_number_first_digits': '1234',
+            'card_number_last_digits': '987',
+            'card_expiry_date': '01/20',
+            'card_brand': 'visa',
+            'billing_address': 'Buckingham Palace SW1A 1AA',
+        }
+        govuk_payment = {
+            'payment_id': 'payment-id',
+            'state': {
+                'status': PaymentStatus.capturable.name,
+            },
+            'email': 'sender@example.com',
+            'provider_id': '123456789',
+            'card_details': {
+                'cardholder_name': 'John Doe',
+                'first_digits_card_number': '1234',
+                'last_digits_card_number': '987',
+                'expiry_date': '01/20',
+                'card_brand': 'visa',
+                'billing_address': 'Buckingham Palace SW1A 1AA',
+            },
+        }
+        context = {
+            'prisoner_name': 'John Doe',
+            'amount': 1700,
+        }
+
+        with mock.patch.object(client, 'should_be_captured', return_value=False):
+            status = client.complete_payment_if_necessary(payment, govuk_payment, context)
+
+        self.assertEqual(status, PaymentStatus.capturable)
+        self.assertEqual(len(mail.outbox), 0)
+
+    def test_capturable_status_that_should_be_captured(self):
+        """
+        Test that if the govuk payment is in 'capturable' state and the payment should be captured:
+
+        - the MTP payment record is patched with the card details attributes if necessary
         - the method captures the payment
-        - the MTP payment record is patched with the card details attributes
         - a confirmation email is sent
         - the method returns PaymentStatus.success
         """
@@ -352,7 +402,7 @@ class CompletePaymentIfNecessaryTestCase(SimpleTestCase):
         }
 
         with \
-                mock.patch.object(client, 'should_be_automatically_captured', return_value=True), \
+                mock.patch.object(client, 'should_be_captured', return_value=True), \
                 responses.RequestsMock() as rsps:
 
             mock_auth(rsps)
@@ -388,12 +438,14 @@ class CompletePaymentIfNecessaryTestCase(SimpleTestCase):
             )
         self.assertEqual(status, PaymentStatus.success)
         self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(payment['email'], 'sender@example.com')
+        self.assertEqual(mail.outbox[0].subject, 'Send money to someone in prison: your payment was successful')
 
     def test_dont_send_email(self):
         """
         Test that the method only sends any email if:
         - the govuk payment status is 'success' and the MTP payment didn't have the email field set
-        - the govuk payment status is 'capturable' and the payment should be automatically captured.
+        - the govuk payment status is 'capturable' and the MTP payment didn't have the email field set
         """
         client = PaymentClient()
 
@@ -405,21 +457,12 @@ class CompletePaymentIfNecessaryTestCase(SimpleTestCase):
         statuses = [
             status
             for status in PaymentStatus
-            if status != PaymentStatus.success
+            if status not in (PaymentStatus.success, PaymentStatus.capturable)
         ]
 
         with \
-                mock.patch.object(client, 'should_be_automatically_captured', return_value=False), \
-                responses.RequestsMock() as rsps, \
+                mock.patch.object(client, 'should_be_captured', return_value=False), \
                 silence_logger():
-
-            # the 'capturable' status triggers an update on payment email and card details
-            mock_auth(rsps)
-            rsps.add(
-                rsps.PATCH,
-                api_url(f'/payments/{payment["uuid"]}/'),
-                status=200,
-            )
 
             for status in statuses:
                 govuk_payment = {

@@ -15,8 +15,11 @@ import requests
 from requests.exceptions import RequestException
 
 from send_money.exceptions import GovUkPaymentStatusException
+from send_money.mail import send_email_for_card_payment_confirmation, send_email_for_card_payment_on_hold
 from send_money.utils import (
-    get_api_session, govuk_headers, govuk_url, send_notification
+    get_api_session,
+    govuk_headers,
+    govuk_url,
 )
 
 logger = logging.getLogger('mtp')
@@ -101,7 +104,7 @@ class PaymentClient:
                 f"Unknown status: {govuk_payment['state']['status']}",
             )
 
-    def should_be_automatically_captured(self, payment):
+    def should_be_captured(self, payment):
         # TODO: work out if payment needs to be delayed and and save result via API
         return True
 
@@ -112,7 +115,7 @@ class PaymentClient:
         If the status is 'success' or 'capturable' and the MTP payment doesn't have any email,
         it updates the email field on record and sends an email to the user.
 
-        If the status is 'capturable' and the payment should be automatically captured, this method
+        If the status is 'capturable' and the payment should be captured, this method
         captures and returns the new status.
 
         If a payment is captured or it's found in success state for the first time, an email
@@ -149,12 +152,12 @@ class PaymentClient:
                 self.update_payment(payment['uuid'], payment_attr_updates)
                 payment.update(payment_attr_updates)
 
-            if self.should_be_automatically_captured(payment):
+            if self.should_be_captured(payment):
                 # capture payment and send successful email
                 govuk_status = self.capture_govuk_payment(govuk_payment, context)
             elif 'email' in payment_attr_updates:
-                # TODO send capturable email
-                pass
+                email = payment_attr_updates['email']
+                send_email_for_card_payment_on_hold(email, context)
         elif govuk_status == PaymentStatus.success:
             # TODO consider updating other attrs using `get_completion_payment_attr_updates`
             email = govuk_payment.get('email')
@@ -163,7 +166,7 @@ class PaymentClient:
                 payment['email'] = email
 
                 # send successful email if it's the first time we get the sender's email address
-                send_notification(email, context)
+                send_email_for_card_payment_confirmation(email, context)
 
         return govuk_status
 
@@ -239,7 +242,7 @@ class PaymentClient:
         response.raise_for_status()
 
         email = govuk_payment.get('email')
-        send_notification(email, context)
+        send_email_for_card_payment_confirmation(email, context)
 
         govuk_status = PaymentStatus.success
         govuk_payment['state']['status'] = govuk_status.name

@@ -6,15 +6,13 @@ import re
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator
-from django.urls import reverse
 from django.utils import formats
 from django.utils.cache import patch_cache_control
 from django.utils.dateformat import format as format_date
 from django.utils.dateparse import parse_date
 from django.utils.encoding import force_text
-from django.utils.translation import gettext, gettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from mtp_common.auth import api_client, urljoin
-from mtp_common.tasks import send_email
 import requests
 from requests.exceptions import RequestException, Timeout
 
@@ -52,20 +50,6 @@ def can_load_govuk_pay_image():
     except RequestException:
         logger.exception('Failed to load GOV.UK Pay image')
         return False
-
-
-def send_notification(email, context):
-    context.update({
-        'site_url': settings.START_PAGE_URL,
-        'feedback_url': site_url(reverse('submit_ticket')),
-        'help_url': site_url(reverse('send_money:help')),
-    })
-    send_email(
-        email, 'send_money/email/debit-card-confirmation.txt',
-        gettext('Send money to someone in prison: your payment was successful'),
-        context=context, html_template='send_money/email/debit-card-confirmation.html',
-        anymail_tags=['dc-received'],
-    )
 
 
 def validate_prisoner_number(value):
