@@ -9,6 +9,7 @@ from django.test.testcases import SimpleTestCase
 from django.utils.timezone import utc
 import responses
 
+from send_money.payments import CheckResult
 from send_money.tests import mock_auth
 from send_money.utils import api_url, govuk_url
 
@@ -361,7 +362,10 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
         })
 
     @override_settings(ENVIRONMENT='prod')  # because non-prod environments don't send to @outside.local
-    @mock.patch('send_money.payments.PaymentClient.should_be_captured', mock.Mock(return_value=True))
+    @mock.patch(
+        'send_money.payments.PaymentClient.get_security_check_result',
+        mock.Mock(return_value=CheckResult.capture),
+    )
     def test_captured_payment_with_captured_date_gets_updated(self):
         payment_id = 'payment-id'
         govuk_payment_data = {
@@ -464,27 +468,39 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
 
         self.assertEqual(len(mail.outbox), 1)
 
-    @mock.patch('send_money.payments.PaymentClient.should_be_captured', mock.Mock(return_value=True))
+    @mock.patch(
+        'send_money.payments.PaymentClient.get_security_check_result',
+        mock.Mock(return_value=CheckResult.capture),
+    )
     def test_captured_payment_doesnt_get_updated_with_missing_captured_date(self):
         self._test_captured_payment_doesnt_get_updated_before_capture({
             'capture_submit_time': '2016-10-27T15:11:05Z',
         })
 
-    @mock.patch('send_money.payments.PaymentClient.should_be_captured', mock.Mock(return_value=True))
+    @mock.patch(
+        'send_money.payments.PaymentClient.get_security_check_result',
+        mock.Mock(return_value=CheckResult.capture),
+    )
     def test_captured_payment_doesnt_get_updated_with_null_capture_time(self):
         self._test_captured_payment_doesnt_get_updated_before_capture({
             'capture_submit_time': '2016-10-27T15:11:05Z',
             'captured_date': None
         })
 
-    @mock.patch('send_money.payments.PaymentClient.should_be_captured', mock.Mock(return_value=True))
+    @mock.patch(
+        'send_money.payments.PaymentClient.get_security_check_result',
+        mock.Mock(return_value=CheckResult.capture),
+    )
     def test_captured_payment_doesnt_get_updated_with_blank_capture_time(self):
         self._test_captured_payment_doesnt_get_updated_before_capture({
             'capture_submit_time': '2016-10-27T15:11:05Z',
             'captured_date': ''
         })
 
-    @mock.patch('send_money.payments.PaymentClient.should_be_captured', mock.Mock(return_value=True))
+    @mock.patch(
+        'send_money.payments.PaymentClient.get_security_check_result',
+        mock.Mock(return_value=CheckResult.capture),
+    )
     def test_captured_payment_doesnt_get_updated_with_invalid_capture_time(self):
         self._test_captured_payment_doesnt_get_updated_before_capture({
             'capture_submit_time': '2016-10-27T15:11:05Z',
