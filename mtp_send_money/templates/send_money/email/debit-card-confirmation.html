@@ -17,13 +17,13 @@
     {% trans 'You’ll get a further email when the prisoner’s account has been credited to confirm your money has arrived.' %}
   </p>
 
-  <table cellspacing="10" style="font-family: sans-serif;">
+  <table cellspacing="10" style="font-family: sans-serif; border-left: 10px solid #b1b4b6; padding-left: 15px;">
     <tr>
       <th valign="top" align="left">{% trans 'Payment to:' %}</th>
       <td>{{ prisoner_name }}</td>
     </tr>
     <tr>
-      <th valign="top" align="left">{% trans 'Amount paid:' %}</th>
+      <th valign="top" align="left">{% trans 'Amount:' %}</th>
       <td>{{ amount|currency_format }}</td>
     </tr>
     <tr>

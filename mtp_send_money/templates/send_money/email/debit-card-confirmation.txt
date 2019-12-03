@@ -10,7 +10,7 @@ GOV.UK - {% trans 'Send money to someone in prison' %}
 {% trans 'You’ll get a further email when the prisoner’s account has been credited to confirm your money has arrived.' %}
 
 {% trans 'Payment to' %}: {{ prisoner_name }}
-{% trans 'Amount paid' %}: {{ amount|currency_format }}
+{% trans 'Amount' %}: {{ amount|currency_format }}
 {% trans 'Date payment made' %}: {% now 'd/m/Y' %}
 
 

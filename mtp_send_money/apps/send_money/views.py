@@ -12,15 +12,19 @@ from django.utils.dateformat import format as format_date
 from django.utils.dateparse import parse_datetime
 from django.utils.translation import gettext, gettext_lazy as _
 from django.views.generic import FormView, TemplateView, View
-from mtp_common.tasks import send_email
 from oauthlib.oauth2 import OAuth2Error
 from requests.exceptions import RequestException
 
 from send_money import forms as send_money_forms
 from send_money.models import PaymentMethod
 from send_money.payments import is_active_payment, PaymentClient, PaymentStatus
+from send_money.mail import send_email_for_bank_transfer_reference
 from send_money.utils import (
-    bank_transfer_reference, can_load_govuk_pay_image, get_service_charge, get_link_by_rel, site_url,
+    bank_transfer_reference,
+    can_load_govuk_pay_image,
+    get_link_by_rel,
+    get_service_charge,
+    site_url,
 )
 
 logger = logging.getLogger('mtp')
@@ -284,18 +288,11 @@ class BankTransferReferenceView(BankTransferFlow, SendMoneyFormView):
 
     def form_valid(self, form):
         email = form.cleaned_data['email']
-        context = self.get_context_data(site_url=settings.START_PAGE_URL,
-                                        feedback_url=site_url(reverse('submit_ticket')),
-                                        help_url=site_url(reverse('send_money:help')))
+        context = self.get_context_data()
         context.pop('form', None)
         context.pop('view', None)
-        send_email(
-            email, 'send_money/email/bank-transfer-reference.txt',
-            gettext('Send money to someone in prison: '
-                    'Your prisoner reference is %(bank_transfer_reference)s') % context,
-            context=context, html_template='send_money/email/bank-transfer-reference.html',
-            anymail_tags=['bt-reference'],
-        )
+
+        send_email_for_bank_transfer_reference(email, context)
         return super().form_valid(form)
 
     def get_success_url(self):
