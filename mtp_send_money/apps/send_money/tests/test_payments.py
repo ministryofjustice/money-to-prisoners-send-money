@@ -170,6 +170,159 @@ class CaptureGovukPaymentTestCase(SimpleTestCase):
     GOVUK_PAY_URL='https://pay.gov.local/v1',
     ENVIRONMENT='prod',  # because non-prod environments don't send to @outside.local
 )
+class CancelGovukPaymentTestCase(SimpleTestCase):
+    """
+    Tests related to the cancel_govuk_payment method.
+    """
+
+    def test_cancel(self):
+        """
+        Test that if the govuk payment is in 'capturable' state, the method cancels the payment
+        and sends an email to the sender.
+
+        If the method is called again, nothing happen so that to avoid side effects.
+        """
+        client = PaymentClient()
+
+        payment_id = 'payment-id'
+        govuk_payment = {
+            'payment_id': payment_id,
+            'state': {
+                'status': PaymentStatus.capturable.name,
+            },
+            'email': 'sender@example.com',
+
+        }
+        context = {
+            'prisoner_name': 'John Doe',
+            'amount': 1700,
+        }
+        with responses.RequestsMock() as rsps:
+            rsps.add(
+                rsps.POST,
+                govuk_url(f'/payments/{payment_id}/cancel/'),
+                status=204,
+            )
+
+            returned_status = client.cancel_govuk_payment(govuk_payment, context)
+
+        self.assertEqual(returned_status, PaymentStatus.cancelled)
+        self.assertEqual(
+            govuk_payment['state']['status'],
+            PaymentStatus.cancelled.name,
+        )
+
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(
+            mail.outbox[0].subject,
+            'Send money to someone in prison: your payment has NOT been sent to the prisoner',
+        )
+
+        # try to capture the payment again, nothing should happen
+        client.cancel_govuk_payment(govuk_payment, context)
+        self.assertEqual(len(mail.outbox), 1)
+
+    def test_do_nothing_if_payment_in_finished_state(self):
+        """
+        Test that if the govuk payment is already in a finished state, the method doesn't
+        do anything.
+        """
+        finished_statuses = [
+            status
+            for status in PaymentStatus
+            if status.finished()
+        ]
+        for status in finished_statuses:
+            govuk_payment = {
+                'payment_id': 'payment-id',
+                'state': {
+                    'status': status.name,
+                },
+            }
+            context = {}
+
+            client = PaymentClient()
+            returned_status = client.cancel_govuk_payment(govuk_payment, context)
+            self.assertEqual(returned_status, status)
+
+            self.assertEqual(len(mail.outbox), 0)
+
+    def test_do_nothing_if_govukpayment_is_falsy(self):
+        """
+        Test that if the passed in govuk payment dict is falsy, the method doesn't do anything.
+        """
+        client = PaymentClient()
+
+        govuk_payment = {}
+        context = {}
+        returned_status = client.cancel_govuk_payment(govuk_payment, context)
+        self.assertEqual(returned_status, None)
+
+        self.assertEqual(len(mail.outbox), 0)
+
+    def test_payment_not_found(self):
+        """
+        Test that if GOV.UK Pay returns 404 when cancelling a payment, the method raises an HTTPError.
+        """
+        client = PaymentClient()
+
+        payment_id = 'invalid'
+        govuk_payment = {
+            'payment_id': payment_id,
+            'state': {
+                'status': PaymentStatus.capturable.name,
+            },
+        }
+        context = {}
+        with responses.RequestsMock() as rsps:
+            rsps.add(
+                rsps.POST,
+                govuk_url(f'/payments/{payment_id}/cancel/'),
+                status=404,
+            )
+
+            with self.assertRaises(HTTPError) as e:
+                client.cancel_govuk_payment(govuk_payment, context)
+
+            self.assertEqual(
+                e.exception.response.status_code,
+                404,
+            )
+
+    def test_conflict(self):
+        """
+        Test that if GOV.UK Pay returns 409 when cancelling a payment, the method raises an HTTPError.
+        """
+        client = PaymentClient()
+
+        payment_id = 'invalid'
+        govuk_payment = {
+            'payment_id': payment_id,
+            'state': {
+                'status': PaymentStatus.capturable.name,
+            },
+        }
+        context = {}
+        with responses.RequestsMock() as rsps:
+            rsps.add(
+                rsps.POST,
+                govuk_url(f'/payments/{payment_id}/cancel/'),
+                status=409,
+            )
+
+            with self.assertRaises(HTTPError) as e:
+                client.cancel_govuk_payment(govuk_payment, context)
+
+            self.assertEqual(
+                e.exception.response.status_code,
+                409,
+            )
+
+
+@override_settings(
+    GOVUK_PAY_URL='https://pay.gov.local/v1',
+    ENVIRONMENT='prod',  # because non-prod environments don't send to @outside.local
+)
 class CompletePaymentIfNecessaryTestCase(SimpleTestCase):
     """
     Tests related to the complete_payment_if_necessary method.
@@ -440,6 +593,84 @@ class CompletePaymentIfNecessaryTestCase(SimpleTestCase):
         self.assertEqual(len(mail.outbox), 1)
         self.assertEqual(payment['email'], 'sender@example.com')
         self.assertEqual(mail.outbox[0].subject, 'Send money to someone in prison: your payment was successful')
+
+    def test_capturable_payment_that_should_be_cancelled(self):
+        """
+        Test that if the govuk payment is in 'capturable' state and the payment should be cancelled:
+
+        - the MTP payment record is patched with the card details attributes if necessary
+        - the method cancels the payment
+        - an email is sent
+        - the method returns PaymentStatus.cancelled
+        """
+        client = PaymentClient()
+
+        payment = {
+            'uuid': 'some-id',
+        }
+        govuk_payment = {
+            'payment_id': 'payment-id',
+            'state': {
+                'status': PaymentStatus.capturable.name,
+            },
+            'email': 'sender@example.com',
+            'provider_id': '123456789',
+            'card_details': {
+                'cardholder_name': 'John Doe',
+                'first_digits_card_number': '1234',
+                'last_digits_card_number': '987',
+                'expiry_date': '01/20',
+                'card_brand': 'visa',
+                'billing_address': 'Buckingham Palace SW1A 1AA',
+            },
+        }
+        context = {
+            'prisoner_name': 'John Doe',
+            'amount': 1700,
+        }
+
+        with \
+                mock.patch.object(client, 'get_security_check_result', return_value=CheckResult.cancel), \
+                responses.RequestsMock() as rsps:
+
+            mock_auth(rsps)
+
+            # API call related to updating the email address and card details
+            rsps.add(
+                rsps.PATCH,
+                api_url(f'/payments/{payment["uuid"]}/'),
+                status=200,
+            )
+
+            rsps.add(
+                rsps.POST,
+                govuk_url(f'/payments/{govuk_payment["payment_id"]}/cancel/'),
+                status=204,
+            )
+
+            status = client.complete_payment_if_necessary(payment, govuk_payment, context)
+
+            payment_patch_body = json.loads(rsps.calls[-2].request.body.decode())
+            self.assertDictEqual(
+                payment_patch_body,
+                {
+                    'email': 'sender@example.com',
+                    'worldpay_id': '123456789',
+                    'cardholder_name': 'John Doe',
+                    'card_number_first_digits': '1234',
+                    'card_number_last_digits': '987',
+                    'card_expiry_date': '01/20',
+                    'card_brand': 'visa',
+                    'billing_address': 'Buckingham Palace SW1A 1AA',
+                }
+            )
+        self.assertEqual(status, PaymentStatus.cancelled)
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(payment['email'], 'sender@example.com')
+        self.assertEqual(
+            mail.outbox[0].subject,
+            'Send money to someone in prison: your payment has NOT been sent to the prisoner',
+        )
 
     def test_dont_send_email(self):
         """

@@ -15,7 +15,11 @@ import requests
 from requests.exceptions import RequestException
 
 from send_money.exceptions import GovUkPaymentStatusException
-from send_money.mail import send_email_for_card_payment_confirmation, send_email_for_card_payment_on_hold
+from send_money.mail import (
+    send_email_for_card_payment_cancelled,
+    send_email_for_card_payment_confirmation,
+    send_email_for_card_payment_on_hold,
+)
 from send_money.utils import (
     get_api_session,
     govuk_headers,
@@ -177,7 +181,8 @@ class PaymentClient:
                 #   confirmation email if so
                 govuk_status = self.capture_govuk_payment(govuk_payment, context)
             elif check_action == CheckResult.cancel:
-                pass
+                # cancel payment and send email
+                govuk_status = self.cancel_govuk_payment(govuk_payment, context)
         elif govuk_status == PaymentStatus.success:
             # TODO consider updating other attrs using `get_completion_payment_attr_updates`
             email = govuk_payment.get('email')
@@ -265,6 +270,33 @@ class PaymentClient:
         send_email_for_card_payment_confirmation(email, context)
 
         govuk_status = PaymentStatus.success
+        govuk_payment['state']['status'] = govuk_status.name
+        return govuk_status
+
+    def cancel_govuk_payment(self, govuk_payment, context):
+        """
+        Cancels a payment in status 'capturable' and sends an email to the user.
+
+        :raise HTTPError: if GOV.UK Pay returns a 4xx or 5xx response
+        """
+        govuk_status = self.parse_govuk_payment_status(govuk_payment)
+        if govuk_status is None or govuk_status.finished():
+            return govuk_status
+
+        govuk_id = govuk_payment['payment_id']
+        response = requests.post(
+            govuk_url(f'/payments/{govuk_id}/cancel'),
+            headers=govuk_headers(),
+            timeout=15,
+        )
+
+        response.raise_for_status()
+
+        email = govuk_payment.get('email')
+        if email:
+            send_email_for_card_payment_cancelled(email, context)
+
+        govuk_status = PaymentStatus.cancelled
         govuk_payment['state']['status'] = govuk_status.name
         return govuk_status
 
