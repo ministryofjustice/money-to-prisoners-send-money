@@ -15,6 +15,7 @@ from requests import ConnectionError
 import responses
 
 from send_money.models import PaymentMethod
+from send_money.payments import CheckResult
 from send_money.tests import (
     BaseTestCase, mock_auth,
     patch_notifications, patch_gov_uk_pay_availability_check, patch_govuk_pay_connection_check,
@@ -1004,7 +1005,10 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
         self.assertTrue('£17' in mail.outbox[0].body)
 
     @override_settings(ENVIRONMENT='prod')  # because non-prod environments don't send to @outside.local
-    @mock.patch('send_money.payments.PaymentClient.should_be_captured', mock.Mock(return_value=True))
+    @mock.patch(
+        'send_money.payments.PaymentClient.get_security_check_result',
+        mock.Mock(return_value=CheckResult.capture),
+    )
     def test_automatically_captures_payment(self):
         """
         Test that if the GOV.UK payment is in status 'capturable' and the payment should be
@@ -1069,7 +1073,10 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
         self.assertTrue('£17' in mail.outbox[0].body)
 
     @override_settings(ENVIRONMENT='prod')  # because non-prod environments don't send to @outside.local
-    @mock.patch('send_money.payments.PaymentClient.should_be_captured', mock.Mock(return_value=False))
+    @mock.patch(
+        'send_money.payments.PaymentClient.get_security_check_result',
+        mock.Mock(return_value=CheckResult.delay),
+    )
     def test_puts_payment_on_hold(self):
         """
         Test that if the GOV.UK payment is in status 'capturable' and the payment should not be captured, the view:

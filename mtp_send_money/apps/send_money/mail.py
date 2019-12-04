@@ -42,6 +42,16 @@ def send_email_for_card_payment_on_hold(email, context):
     )
 
 
+def send_email_for_card_payment_cancelled(email, context):
+    _send_notification_email(
+        email,
+        'debit-card-cancelled',
+        gettext('your payment has NOT been sent to the prisoner'),
+        ['dc-cancelled'],
+        context,
+    )
+
+
 def send_email_for_bank_transfer_reference(email, context):
     _send_notification_email(
         email,
