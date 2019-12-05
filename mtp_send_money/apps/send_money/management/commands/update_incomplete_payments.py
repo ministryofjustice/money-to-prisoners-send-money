@@ -1,5 +1,4 @@
 from datetime import timedelta
-from decimal import Decimal
 import logging
 
 from django.core.management import BaseCommand
@@ -46,19 +45,11 @@ class Command(BaseCommand):
 
             payment_ref = payment['uuid']
             govuk_id = payment['processor_id']
-            context = {
-                'short_payment_ref': payment_ref[:8].upper(),
-                'prisoner_name': payment['recipient_name'],
-                'prisoner_number': payment['prisoner_number'],
-                'amount': Decimal(payment['amount']) / 100,
-            }
 
             try:
                 govuk_payment = payment_client.get_govuk_payment(govuk_id)
                 was_capturable = payment_client.parse_govuk_payment_status(govuk_payment) == PaymentStatus.capturable
-                govuk_status = payment_client.complete_payment_if_necessary(
-                    payment, govuk_payment, context,
-                )
+                govuk_status = payment_client.complete_payment_if_necessary(payment, govuk_payment)
 
                 # not yet finished and can't do anything so skip
                 if govuk_status and not govuk_status.finished():
@@ -72,9 +63,7 @@ class Command(BaseCommand):
                 # or None (in case of govuk payment not found)
                 success = govuk_status == PaymentStatus.success
 
-                payment_client.update_completed_payment(
-                    payment_ref, govuk_payment, success, context,
-                )
+                payment_client.update_completed_payment(payment, govuk_payment, success)
             except OAuth2Error:
                 logger.exception(
                     'Scheduled job: Authentication error while processing %s' % payment_ref

@@ -40,10 +40,6 @@ class CaptureGovukPaymentTestCase(SimpleTestCase):
             'email': 'sender@example.com',
 
         }
-        context = {
-            'prisoner_name': 'John Doe',
-            'amount': 1700,
-        }
         with responses.RequestsMock() as rsps:
             rsps.add(
                 rsps.POST,
@@ -51,7 +47,7 @@ class CaptureGovukPaymentTestCase(SimpleTestCase):
                 status=204,
             )
 
-            returned_status = client.capture_govuk_payment(govuk_payment, context)
+            returned_status = client.capture_govuk_payment(govuk_payment)
 
         self.assertEqual(returned_status, PaymentStatus.success)
         self.assertEqual(
@@ -62,7 +58,7 @@ class CaptureGovukPaymentTestCase(SimpleTestCase):
         self.assertEqual(len(mail.outbox), 0)
 
         # try to capture the payment again, nothing should happen
-        client.capture_govuk_payment(govuk_payment, context)
+        client.capture_govuk_payment(govuk_payment)
         self.assertEqual(len(mail.outbox), 0)
 
     def test_do_nothing_if_payment_in_finished_state(self):
@@ -82,10 +78,9 @@ class CaptureGovukPaymentTestCase(SimpleTestCase):
                     'status': status.name,
                 },
             }
-            context = {}
 
             client = PaymentClient()
-            returned_status = client.capture_govuk_payment(govuk_payment, context)
+            returned_status = client.capture_govuk_payment(govuk_payment)
             self.assertEqual(returned_status, status)
 
             self.assertEqual(len(mail.outbox), 0)
@@ -97,8 +92,7 @@ class CaptureGovukPaymentTestCase(SimpleTestCase):
         client = PaymentClient()
 
         govuk_payment = {}
-        context = {}
-        returned_status = client.capture_govuk_payment(govuk_payment, context)
+        returned_status = client.capture_govuk_payment(govuk_payment)
         self.assertEqual(returned_status, None)
 
         self.assertEqual(len(mail.outbox), 0)
@@ -116,7 +110,6 @@ class CaptureGovukPaymentTestCase(SimpleTestCase):
                 'status': PaymentStatus.capturable.name,
             },
         }
-        context = {}
         with responses.RequestsMock() as rsps:
             rsps.add(
                 rsps.POST,
@@ -125,7 +118,7 @@ class CaptureGovukPaymentTestCase(SimpleTestCase):
             )
 
             with self.assertRaises(HTTPError) as e:
-                client.capture_govuk_payment(govuk_payment, context)
+                client.capture_govuk_payment(govuk_payment)
 
             self.assertEqual(
                 e.exception.response.status_code,
@@ -145,7 +138,6 @@ class CaptureGovukPaymentTestCase(SimpleTestCase):
                 'status': PaymentStatus.capturable.name,
             },
         }
-        context = {}
         with responses.RequestsMock() as rsps:
             rsps.add(
                 rsps.POST,
@@ -154,7 +146,7 @@ class CaptureGovukPaymentTestCase(SimpleTestCase):
             )
 
             with self.assertRaises(HTTPError) as e:
-                client.capture_govuk_payment(govuk_payment, context)
+                client.capture_govuk_payment(govuk_payment)
 
             self.assertEqual(
                 e.exception.response.status_code,
@@ -189,8 +181,11 @@ class CancelGovukPaymentTestCase(SimpleTestCase):
             'email': 'sender@example.com',
 
         }
-        context = {
+        payment = {
+            'uuid': 'b74a0eb6-0437-4b22-bce8-e6f11bd43802',
+            'recipient_name': 'Alice Re',
             'prisoner_name': 'John Doe',
+            'prisoner_number': 'AAB0A00',
             'amount': 1700,
         }
         with responses.RequestsMock() as rsps:
@@ -200,7 +195,7 @@ class CancelGovukPaymentTestCase(SimpleTestCase):
                 status=204,
             )
 
-            returned_status = client.cancel_govuk_payment(govuk_payment, context)
+            returned_status = client.cancel_govuk_payment(payment, govuk_payment)
 
         self.assertEqual(returned_status, PaymentStatus.cancelled)
         self.assertEqual(
@@ -215,7 +210,7 @@ class CancelGovukPaymentTestCase(SimpleTestCase):
         )
 
         # try to capture the payment again, nothing should happen
-        client.cancel_govuk_payment(govuk_payment, context)
+        client.cancel_govuk_payment(payment, govuk_payment)
         self.assertEqual(len(mail.outbox), 1)
 
     def test_do_nothing_if_payment_in_finished_state(self):
@@ -228,6 +223,13 @@ class CancelGovukPaymentTestCase(SimpleTestCase):
             for status in PaymentStatus
             if status.finished()
         ]
+        payment = {
+            'uuid': 'b74a0eb6-0437-4b22-bce8-e6f11bd43802',
+            'recipient_name': 'Alice Re',
+            'prisoner_name': 'John Doe',
+            'prisoner_number': 'AAB0A00',
+            'amount': 1700,
+        }
         for status in finished_statuses:
             govuk_payment = {
                 'payment_id': 'payment-id',
@@ -235,10 +237,9 @@ class CancelGovukPaymentTestCase(SimpleTestCase):
                     'status': status.name,
                 },
             }
-            context = {}
 
             client = PaymentClient()
-            returned_status = client.cancel_govuk_payment(govuk_payment, context)
+            returned_status = client.cancel_govuk_payment(payment, govuk_payment)
             self.assertEqual(returned_status, status)
 
             self.assertEqual(len(mail.outbox), 0)
@@ -250,8 +251,14 @@ class CancelGovukPaymentTestCase(SimpleTestCase):
         client = PaymentClient()
 
         govuk_payment = {}
-        context = {}
-        returned_status = client.cancel_govuk_payment(govuk_payment, context)
+        payment = {
+            'uuid': 'b74a0eb6-0437-4b22-bce8-e6f11bd43802',
+            'recipient_name': 'Alice Re',
+            'prisoner_name': 'John Doe',
+            'prisoner_number': 'AAB0A00',
+            'amount': 1700,
+        }
+        returned_status = client.cancel_govuk_payment(payment, govuk_payment)
         self.assertEqual(returned_status, None)
 
         self.assertEqual(len(mail.outbox), 0)
@@ -269,7 +276,13 @@ class CancelGovukPaymentTestCase(SimpleTestCase):
                 'status': PaymentStatus.capturable.name,
             },
         }
-        context = {}
+        payment = {
+            'uuid': 'b74a0eb6-0437-4b22-bce8-e6f11bd43802',
+            'recipient_name': 'Alice Re',
+            'prisoner_name': 'John Doe',
+            'prisoner_number': 'AAB0A00',
+            'amount': 1700,
+        }
         with responses.RequestsMock() as rsps:
             rsps.add(
                 rsps.POST,
@@ -278,7 +291,7 @@ class CancelGovukPaymentTestCase(SimpleTestCase):
             )
 
             with self.assertRaises(HTTPError) as e:
-                client.cancel_govuk_payment(govuk_payment, context)
+                client.cancel_govuk_payment(payment, govuk_payment)
 
             self.assertEqual(
                 e.exception.response.status_code,
@@ -298,7 +311,13 @@ class CancelGovukPaymentTestCase(SimpleTestCase):
                 'status': PaymentStatus.capturable.name,
             },
         }
-        context = {}
+        payment = {
+            'uuid': 'b74a0eb6-0437-4b22-bce8-e6f11bd43802',
+            'recipient_name': 'Alice Re',
+            'prisoner_name': 'John Doe',
+            'prisoner_number': 'AAB0A00',
+            'amount': 1700,
+        }
         with responses.RequestsMock() as rsps:
             rsps.add(
                 rsps.POST,
@@ -307,7 +326,7 @@ class CancelGovukPaymentTestCase(SimpleTestCase):
             )
 
             with self.assertRaises(HTTPError) as e:
-                client.cancel_govuk_payment(govuk_payment, context)
+                client.cancel_govuk_payment(payment, govuk_payment)
 
             self.assertEqual(
                 e.exception.response.status_code,
@@ -345,10 +364,6 @@ class CompletePaymentIfNecessaryTestCase(SimpleTestCase):
             },
             'email': 'sender@example.com',
         }
-        context = {
-            'prisoner_name': 'John Doe',
-            'amount': 1700,
-        }
         with responses.RequestsMock() as rsps:
             mock_auth(rsps)
 
@@ -359,7 +374,7 @@ class CompletePaymentIfNecessaryTestCase(SimpleTestCase):
                 status=200,
             )
 
-            status = client.complete_payment_if_necessary(payment, govuk_payment, context)
+            status = client.complete_payment_if_necessary(payment, govuk_payment)
 
         self.assertEqual(status, PaymentStatus.success)
         self.assertEqual(len(mail.outbox), 0)
@@ -376,7 +391,11 @@ class CompletePaymentIfNecessaryTestCase(SimpleTestCase):
         client = PaymentClient()
 
         payment = {
-            'uuid': 'some-id',
+            'uuid': 'b74a0eb6-0437-4b22-bce8-e6f11bd43802',
+            'recipient_name': 'Alice Re',
+            'prisoner_name': 'John Doe',
+            'prisoner_number': 'AAB0A00',
+            'amount': 1700,
         }
         govuk_payment = {
             'payment_id': 'payment-id',
@@ -394,10 +413,6 @@ class CompletePaymentIfNecessaryTestCase(SimpleTestCase):
                 'billing_address': 'Buckingham Palace SW1A 1AA',
             },
         }
-        context = {
-            'prisoner_name': 'John Doe',
-            'amount': 1700,
-        }
 
         with \
                 mock.patch.object(client, 'get_security_check_result', return_value=CheckResult.delay), \
@@ -412,7 +427,7 @@ class CompletePaymentIfNecessaryTestCase(SimpleTestCase):
                 status=200,
             )
 
-            status = client.complete_payment_if_necessary(payment, govuk_payment, context)
+            status = client.complete_payment_if_necessary(payment, govuk_payment)
 
             payment_patch_body = json.loads(rsps.calls[-1].request.body.decode())
             self.assertDictEqual(
@@ -470,13 +485,9 @@ class CompletePaymentIfNecessaryTestCase(SimpleTestCase):
                 'billing_address': 'Buckingham Palace SW1A 1AA',
             },
         }
-        context = {
-            'prisoner_name': 'John Doe',
-            'amount': 1700,
-        }
 
         with mock.patch.object(client, 'get_security_check_result', return_value=CheckResult.delay):
-            status = client.complete_payment_if_necessary(payment, govuk_payment, context)
+            status = client.complete_payment_if_necessary(payment, govuk_payment)
 
         self.assertEqual(status, PaymentStatus.capturable)
         self.assertEqual(len(mail.outbox), 0)
@@ -511,10 +522,6 @@ class CompletePaymentIfNecessaryTestCase(SimpleTestCase):
                 'billing_address': 'Buckingham Palace SW1A 1AA',
             },
         }
-        context = {
-            'prisoner_name': 'John Doe',
-            'amount': 1700,
-        }
 
         with \
                 mock.patch.object(client, 'get_security_check_result', return_value=CheckResult.capture), \
@@ -535,7 +542,7 @@ class CompletePaymentIfNecessaryTestCase(SimpleTestCase):
                 status=204,
             )
 
-            status = client.complete_payment_if_necessary(payment, govuk_payment, context)
+            status = client.complete_payment_if_necessary(payment, govuk_payment)
 
             payment_patch_body = json.loads(rsps.calls[-2].request.body.decode())
             self.assertDictEqual(
@@ -567,6 +574,10 @@ class CompletePaymentIfNecessaryTestCase(SimpleTestCase):
 
         payment = {
             'uuid': 'some-id',
+            'recipient_name': 'Alice Re',
+            'prisoner_number': 'AAB0A00',
+            'prisoner_name': 'John Doe',
+            'amount': 1700,
         }
         govuk_payment = {
             'payment_id': 'payment-id',
@@ -583,10 +594,6 @@ class CompletePaymentIfNecessaryTestCase(SimpleTestCase):
                 'card_brand': 'visa',
                 'billing_address': 'Buckingham Palace SW1A 1AA',
             },
-        }
-        context = {
-            'prisoner_name': 'John Doe',
-            'amount': 1700,
         }
 
         with \
@@ -608,7 +615,7 @@ class CompletePaymentIfNecessaryTestCase(SimpleTestCase):
                 status=204,
             )
 
-            status = client.complete_payment_if_necessary(payment, govuk_payment, context)
+            status = client.complete_payment_if_necessary(payment, govuk_payment)
 
             payment_patch_body = json.loads(rsps.calls[-2].request.body.decode())
             self.assertDictEqual(
@@ -642,7 +649,6 @@ class CompletePaymentIfNecessaryTestCase(SimpleTestCase):
         payment = {
             'uuid': 'some-id',
         }
-        context = {}
 
         statuses = [
             status
@@ -672,7 +678,7 @@ class CompletePaymentIfNecessaryTestCase(SimpleTestCase):
                     },
                     'email': 'sender@example.com',
                 }
-                actual_status = client.complete_payment_if_necessary(payment, govuk_payment, context)
+                actual_status = client.complete_payment_if_necessary(payment, govuk_payment)
 
                 self.assertEqual(actual_status, status)
                 self.assertEqual(len(mail.outbox), 0)
@@ -686,8 +692,7 @@ class CompletePaymentIfNecessaryTestCase(SimpleTestCase):
 
         payment = {}
         govuk_payment = {}
-        context = {}
-        status = client.complete_payment_if_necessary(payment, govuk_payment, context)
+        status = client.complete_payment_if_necessary(payment, govuk_payment)
 
         self.assertEqual(status, None)
         self.assertEqual(len(mail.outbox), 0)
