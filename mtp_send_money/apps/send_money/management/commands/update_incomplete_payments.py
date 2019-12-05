@@ -9,7 +9,7 @@ from oauthlib.oauth2 import OAuth2Error
 from requests.exceptions import RequestException
 
 from send_money.exceptions import GovUkPaymentStatusException
-from send_money.payments import PaymentClient, PaymentStatus
+from send_money.payments import PaymentClient
 
 logger = logging.getLogger('mtp')
 
@@ -48,22 +48,20 @@ class Command(BaseCommand):
 
             try:
                 govuk_payment = payment_client.get_govuk_payment(govuk_id)
-                was_capturable = payment_client.parse_govuk_payment_status(govuk_payment) == PaymentStatus.capturable
+                previous_govuk_status = payment_client.parse_govuk_payment_status(govuk_payment)
                 govuk_status = payment_client.complete_payment_if_necessary(payment, govuk_payment)
 
                 # not yet finished and can't do anything so skip
                 if govuk_status and not govuk_status.finished():
                     continue
 
-                if was_capturable and govuk_status == PaymentStatus.success:
-                    # refresh govuk payment to get the captured time
+                if previous_govuk_status != govuk_status:
+                    # refresh govuk payment to get up-to-date fields (e.g. error codes)
                     govuk_payment = payment_client.get_govuk_payment(govuk_id)
 
                 # if here, status is either success, failed, cancelled, error
                 # or None (in case of govuk payment not found)
-                success = govuk_status == PaymentStatus.success
-
-                payment_client.update_completed_payment(payment, govuk_payment, success)
+                payment_client.update_completed_payment(payment, govuk_payment)
             except OAuth2Error:
                 logger.exception(
                     'Scheduled job: Authentication error while processing %s' % payment_ref

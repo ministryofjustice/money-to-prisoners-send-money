@@ -165,8 +165,7 @@ class CancelGovukPaymentTestCase(SimpleTestCase):
 
     def test_cancel(self):
         """
-        Test that if the govuk payment is in 'capturable' state, the method cancels the payment
-        and sends an email to the sender.
+        Test that if the govuk payment is in 'capturable' state, the method cancels the payment.
 
         If the method is called again, nothing happen so that to avoid side effects.
         """
@@ -181,13 +180,6 @@ class CancelGovukPaymentTestCase(SimpleTestCase):
             'email': 'sender@example.com',
 
         }
-        payment = {
-            'uuid': 'b74a0eb6-0437-4b22-bce8-e6f11bd43802',
-            'recipient_name': 'Alice Re',
-            'prisoner_name': 'John Doe',
-            'prisoner_number': 'AAB0A00',
-            'amount': 1700,
-        }
         with responses.RequestsMock() as rsps:
             rsps.add(
                 rsps.POST,
@@ -195,7 +187,7 @@ class CancelGovukPaymentTestCase(SimpleTestCase):
                 status=204,
             )
 
-            returned_status = client.cancel_govuk_payment(payment, govuk_payment)
+            returned_status = client.cancel_govuk_payment(govuk_payment)
 
         self.assertEqual(returned_status, PaymentStatus.cancelled)
         self.assertEqual(
@@ -203,15 +195,11 @@ class CancelGovukPaymentTestCase(SimpleTestCase):
             PaymentStatus.cancelled.name,
         )
 
-        self.assertEqual(len(mail.outbox), 1)
-        self.assertEqual(
-            mail.outbox[0].subject,
-            'Send money to someone in prison: your payment has NOT been sent to the prisoner',
-        )
+        self.assertEqual(len(mail.outbox), 0)
 
         # try to capture the payment again, nothing should happen
-        client.cancel_govuk_payment(payment, govuk_payment)
-        self.assertEqual(len(mail.outbox), 1)
+        client.cancel_govuk_payment(govuk_payment)
+        self.assertEqual(len(mail.outbox), 0)
 
     def test_do_nothing_if_payment_in_finished_state(self):
         """
@@ -223,13 +211,6 @@ class CancelGovukPaymentTestCase(SimpleTestCase):
             for status in PaymentStatus
             if status.finished()
         ]
-        payment = {
-            'uuid': 'b74a0eb6-0437-4b22-bce8-e6f11bd43802',
-            'recipient_name': 'Alice Re',
-            'prisoner_name': 'John Doe',
-            'prisoner_number': 'AAB0A00',
-            'amount': 1700,
-        }
         for status in finished_statuses:
             govuk_payment = {
                 'payment_id': 'payment-id',
@@ -239,7 +220,7 @@ class CancelGovukPaymentTestCase(SimpleTestCase):
             }
 
             client = PaymentClient()
-            returned_status = client.cancel_govuk_payment(payment, govuk_payment)
+            returned_status = client.cancel_govuk_payment(govuk_payment)
             self.assertEqual(returned_status, status)
 
             self.assertEqual(len(mail.outbox), 0)
@@ -251,14 +232,7 @@ class CancelGovukPaymentTestCase(SimpleTestCase):
         client = PaymentClient()
 
         govuk_payment = {}
-        payment = {
-            'uuid': 'b74a0eb6-0437-4b22-bce8-e6f11bd43802',
-            'recipient_name': 'Alice Re',
-            'prisoner_name': 'John Doe',
-            'prisoner_number': 'AAB0A00',
-            'amount': 1700,
-        }
-        returned_status = client.cancel_govuk_payment(payment, govuk_payment)
+        returned_status = client.cancel_govuk_payment(govuk_payment)
         self.assertEqual(returned_status, None)
 
         self.assertEqual(len(mail.outbox), 0)
@@ -276,13 +250,6 @@ class CancelGovukPaymentTestCase(SimpleTestCase):
                 'status': PaymentStatus.capturable.name,
             },
         }
-        payment = {
-            'uuid': 'b74a0eb6-0437-4b22-bce8-e6f11bd43802',
-            'recipient_name': 'Alice Re',
-            'prisoner_name': 'John Doe',
-            'prisoner_number': 'AAB0A00',
-            'amount': 1700,
-        }
         with responses.RequestsMock() as rsps:
             rsps.add(
                 rsps.POST,
@@ -291,7 +258,7 @@ class CancelGovukPaymentTestCase(SimpleTestCase):
             )
 
             with self.assertRaises(HTTPError) as e:
-                client.cancel_govuk_payment(payment, govuk_payment)
+                client.cancel_govuk_payment(govuk_payment)
 
             self.assertEqual(
                 e.exception.response.status_code,
@@ -311,13 +278,6 @@ class CancelGovukPaymentTestCase(SimpleTestCase):
                 'status': PaymentStatus.capturable.name,
             },
         }
-        payment = {
-            'uuid': 'b74a0eb6-0437-4b22-bce8-e6f11bd43802',
-            'recipient_name': 'Alice Re',
-            'prisoner_name': 'John Doe',
-            'prisoner_number': 'AAB0A00',
-            'amount': 1700,
-        }
         with responses.RequestsMock() as rsps:
             rsps.add(
                 rsps.POST,
@@ -326,7 +286,7 @@ class CancelGovukPaymentTestCase(SimpleTestCase):
             )
 
             with self.assertRaises(HTTPError) as e:
-                client.cancel_govuk_payment(payment, govuk_payment)
+                client.cancel_govuk_payment(govuk_payment)
 
             self.assertEqual(
                 e.exception.response.status_code,
@@ -567,7 +527,7 @@ class CompletePaymentIfNecessaryTestCase(SimpleTestCase):
 
         - the MTP payment record is patched with the card details attributes if necessary
         - the method cancels the payment
-        - an email is sent
+        - no email is sent
         - the method returns PaymentStatus.cancelled
         """
         client = PaymentClient()
@@ -632,12 +592,7 @@ class CompletePaymentIfNecessaryTestCase(SimpleTestCase):
                 }
             )
         self.assertEqual(status, PaymentStatus.cancelled)
-        self.assertEqual(len(mail.outbox), 1)
-        self.assertEqual(payment['email'], 'sender@example.com')
-        self.assertEqual(
-            mail.outbox[0].subject,
-            'Send money to someone in prison: your payment has NOT been sent to the prisoner',
-        )
+        self.assertEqual(len(mail.outbox), 0)
 
     def test_dont_send_email(self):
         """
