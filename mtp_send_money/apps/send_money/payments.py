@@ -74,6 +74,7 @@ def is_active_payment(payment):
 
 
 class PaymentClient:
+    CHECK_INCOMPLETE_PAYMENT_DELAY = timedelta(minutes=30)
 
     @cached_property
     def api_session(self):
@@ -84,9 +85,9 @@ class PaymentClient:
         return api_response['uuid']
 
     def get_incomplete_payments(self):
-        an_hour_ago = timezone.now() - timedelta(hours=1)
+        older_than = timezone.now() - self.CHECK_INCOMPLETE_PAYMENT_DELAY
         return retrieve_all_pages_for_path(
-            self.api_session, '/payments/', modified__lt=an_hour_ago.isoformat()
+            self.api_session, '/payments/', modified__lt=older_than.isoformat()
         )
 
     def get_payment(self, payment_ref):
