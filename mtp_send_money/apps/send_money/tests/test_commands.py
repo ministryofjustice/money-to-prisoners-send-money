@@ -30,6 +30,13 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
 
     @override_settings(ENVIRONMENT='prod')  # because non-prod environments don't send to @outside.local
     def test_update_incomplete_payments(self):
+        """
+        Test that incomplete payments get updated appropriately.
+
+        - wargle-1111 relates to a GOV.UK payment in 'success' status so should become 'taken'
+        - wargle-2222 relates to a GOV.UK payment in 'submitted' status so should be ignored
+        - wargle-3333 relates to a GOV.UK payment in 'failed' status so should become 'failed'
+        """
         with responses.RequestsMock() as rsps:
             mock_auth(rsps)
             rsps.add(
@@ -68,10 +75,11 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
                             'prisoner_number': 'A5544CD',
                             'prisoner_dob': '1992-12-05',
                         },
-                    ]
+                    ],
                 },
                 status=200,
             )
+            # get govuk payment
             rsps.add(
                 rsps.GET,
                 govuk_url('/payments/%s/' % 1),
@@ -84,18 +92,21 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
                     },
                     'email': 'success_sender@outside.local',
                 },
-                status=200
+                status=200,
             )
+            # save email
             rsps.add(
                 rsps.PATCH,
                 api_url('/payments/%s/' % 'wargle-1111'),
                 status=200,
             )
+            # update status
             rsps.add(
                 rsps.PATCH,
                 api_url('/payments/%s/' % 'wargle-1111'),
                 status=200,
             )
+            # get govuk payment
             rsps.add(
                 rsps.GET,
                 govuk_url('/payments/%s/' % 2),
@@ -108,8 +119,9 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
                     },
                     'email': 'pending_sender@outside.local',
                 },
-                status=200
+                status=200,
             )
+            # get govuk payment
             rsps.add(
                 rsps.GET,
                 govuk_url('/payments/%s/' % 3),
@@ -122,8 +134,9 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
                     },
                     'email': 'failed_sender@outside.local',
                 },
-                status=200
+                status=200,
             )
+            # update status
             rsps.add(
                 rsps.PATCH,
                 api_url('/payments/%s/' % 'wargle-3333'),
@@ -132,21 +145,38 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
 
             call_command('update_incomplete_payments', verbosity=0)
 
+            # check actual calls
             self.assertEqual(
                 json.loads(rsps.calls[-5].request.body.decode())['email'],
-                'success_sender@outside.local'
+                'success_sender@outside.local',
             )
-            self.assertEqual(
-                json.loads(rsps.calls[-4].request.body.decode())['received_at'],
-                '2016-10-27T15:11:05+00:00'
+            self.assertDictEqual(
+                json.loads(rsps.calls[-4].request.body.decode()),
+                {
+                    'email': 'success_sender@outside.local',
+                    'status': 'taken',
+                    'received_at': '2016-10-27T15:11:05+00:00',
+                },
             )
             self.assertEqual(
                 json.loads(rsps.calls[-1].request.body.decode())['status'],
-                'failed'
+                'failed',
             )
+
+            # check that confirmation email was sent
+            self.assertEqual(len(mail.outbox), 1)
+            self.assertEqual(
+                mail.outbox[0].subject,
+                'Send money to someone in prison: your payment was successful',
+            )
+            self.assertTrue('John' in mail.outbox[0].body)
+            self.assertTrue('£17' in mail.outbox[0].body)
 
     @override_settings(ENVIRONMENT='prod')  # because non-prod environments don't send to @outside.local
     def test_update_incomplete_payments_extracts_card_details(self):
+        """
+        Test that card details are extracted from the GOV.UK payment and saved on the MTP payment.
+        """
         with responses.RequestsMock() as rsps:
             mock_auth(rsps)
             rsps.add(
@@ -196,7 +226,7 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
                     'provider_id': '11112222-1111-2222-3333-111122223333',
                     'email': 'success_sender@outside.local',
                 },
-                status=200
+                status=200,
             )
             rsps.add(
                 rsps.PATCH,
@@ -249,12 +279,16 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
                 'modified': datetime.now().isoformat() + 'Z',
                 'prisoner_number': 'A1409AE',
                 'prisoner_dob': '1989-01-21'
-            }
-        ]
+            },
+        ],
     }
 
     @override_settings(ENVIRONMENT='prod')  # because non-prod environments don't send to @outside.local
     def test_update_incomplete_payments_no_govuk_payment_found(self):
+        """
+        Test that if GOV.UK Pay returns 404 for one payment, the command marks the related
+        MTP payment as failed.
+        """
         with responses.RequestsMock() as rsps:
             mock_auth(rsps)
             rsps.add(
@@ -279,7 +313,16 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
             self.assertEqual(rsps.calls[3].request.body.decode(), '{"status": "failed"}')
 
     @override_settings(ENVIRONMENT='prod')  # because non-prod environments don't send to @outside.local
-    def test_update_incomplete_payments_doesnt_resend_sent_email(self):
+    def test_update_incomplete_payments_doesnt_sent_email_if_no_captured_date(self):
+        """
+        Test that if the MTP payment is in 'pending' and the GOV.UK payment is in 'success'
+        but no captured_date is found in the response, the MTP payment is not marked
+        as successful yet and no email is sent.
+
+        This is because the actual capture in Worldpay happens at a later time and can fail.
+        The only way to find out if a payment really went through is by checking the captured date,
+        when it becomes available.
+        """
         with responses.RequestsMock() as rsps:
             mock_auth(rsps)
             rsps.add(
@@ -294,19 +337,11 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
                 json={
                     'reference': self.ref,
                     'state': {'status': 'success'},
-                    'settlement_summary': {
-                        'capture_submit_time': '2016-10-27T15:11:05Z',
-                        'captured_date': '2016-10-27'
-                    },
                     'email': 'success_sender@outside.local',
                 },
-                status=200
-            )
-            rsps.add(
-                rsps.PATCH,
-                api_url('/payments/%s/' % self.ref),
                 status=200,
             )
+            # no call to mark the payment as successful
 
             call_command('update_incomplete_payments', verbosity=0)
 
@@ -331,7 +366,7 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
                     'settlement_summary': settlement_summary,
                     'email': 'success_sender@outside.local',
                 },
-                status=200
+                status=200,
             )
 
             call_command('update_incomplete_payments', verbosity=0)
@@ -367,6 +402,11 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
         mock.Mock(return_value=CheckResult.capture),
     )
     def test_captured_payment_with_captured_date_gets_updated(self):
+        """
+        Test that when a MTP pending payment is captured, if the captured date
+        is immediately available, the payment is marked as 'taken' and a confirmation
+        email is sent.
+        """
         payment_id = 'payment-id'
         govuk_payment_data = {
             'payment_id': payment_id,
@@ -382,17 +422,20 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
                 json=self.payment_data,
                 status=200,
             )
+            # get govuk payment
             rsps.add(
                 rsps.GET,
                 govuk_url(f'/payments/{self.processor_id}/'),
                 json=govuk_payment_data,
                 status=200,
             )
+            # capture payment
             rsps.add(
                 rsps.POST,
                 govuk_url(f'/payments/{payment_id}/capture/'),
                 status=204,
             )
+            # get govuk payment to see if we have the captured date
             rsps.add(
                 rsps.GET,
                 govuk_url(f'/payments/{self.processor_id}/'),
@@ -406,6 +449,7 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
                 },
                 status=200,
             )
+            # update status
             rsps.add(
                 rsps.PATCH,
                 api_url(f'/payments/{self.ref}/'),
@@ -466,7 +510,7 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
 
             call_command('update_incomplete_payments', verbosity=0)
 
-        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(len(mail.outbox), 0)
 
     @mock.patch(
         'send_money.payments.PaymentClient.get_security_check_result',

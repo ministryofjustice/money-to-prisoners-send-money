@@ -49,6 +49,7 @@ class Command(BaseCommand):
             context = {
                 'short_payment_ref': payment_ref[:8].upper(),
                 'prisoner_name': payment['recipient_name'],
+                'prisoner_number': payment['prisoner_number'],
                 'amount': Decimal(payment['amount']) / 100,
             }
 
@@ -56,7 +57,7 @@ class Command(BaseCommand):
                 govuk_payment = payment_client.get_govuk_payment(govuk_id)
                 was_capturable = payment_client.parse_govuk_payment_status(govuk_payment) == PaymentStatus.capturable
                 govuk_status = payment_client.complete_payment_if_necessary(
-                    payment, govuk_payment, context
+                    payment, govuk_payment, context,
                 )
 
                 # not yet finished and can't do anything so skip
@@ -72,7 +73,7 @@ class Command(BaseCommand):
                 success = govuk_status == PaymentStatus.success
 
                 payment_client.update_completed_payment(
-                    payment_ref, govuk_payment, success
+                    payment_ref, govuk_payment, success, context,
                 )
             except OAuth2Error:
                 logger.exception(

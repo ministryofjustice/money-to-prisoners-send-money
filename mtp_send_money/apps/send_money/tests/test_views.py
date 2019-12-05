@@ -955,8 +955,8 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
         """
         Test that if the GOV.UK payment is in status 'success', the view:
         - updates the MTP payment record with the email address provided by GOV.UK Pay
-        - sends a confirmation email
         - shows a confirmation page
+        - no email is sent (the confirmation email is sent when we get the capture date)
         """
         self.choose_debit_card_payment_method()
         self.fill_in_prisoner_details()
@@ -1000,9 +1000,7 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
         for key in self.complete_session_keys:
             self.assertNotIn(key, self.client.session)
 
-        self.assertEqual('Send money to someone in prison: your payment was successful', mail.outbox[0].subject)
-        self.assertTrue('WARGLE-B' in mail.outbox[0].body)
-        self.assertTrue('£17' in mail.outbox[0].body)
+        self.assertEqual(len(mail.outbox), 0)
 
     @override_settings(ENVIRONMENT='prod')  # because non-prod environments don't send to @outside.local
     @mock.patch(
@@ -1015,8 +1013,8 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
         automatically captured, the view:
         - updates the MTP payment record with the email address and other details provided by GOV.UK Pay
         - captures the payment
-        - sends a confirmation email
         - shows a confirmation page
+        - no email is sent (the confirmation email is sent when we get the capture date)
         """
         self.choose_debit_card_payment_method()
         self.fill_in_prisoner_details()
@@ -1068,9 +1066,7 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
         for key in self.complete_session_keys:
             self.assertNotIn(key, self.client.session)
 
-        self.assertEqual('Send money to someone in prison: your payment was successful', mail.outbox[0].subject)
-        self.assertTrue('WARGLE-B' in mail.outbox[0].body)
-        self.assertTrue('£17' in mail.outbox[0].body)
+        self.assertEqual(len(mail.outbox), 0)
 
     @override_settings(ENVIRONMENT='prod')  # because non-prod environments don't send to @outside.local
     @mock.patch(
