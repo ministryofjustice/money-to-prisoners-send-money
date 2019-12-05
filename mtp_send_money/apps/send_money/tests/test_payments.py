@@ -25,7 +25,7 @@ class CaptureGovukPaymentTestCase(SimpleTestCase):
     def test_capture(self):
         """
         Test that if the govuk payment is in 'capturable' state, the method captures the payment
-        and sends a confirmation email to the sender.
+        and no email is sent.
 
         If the method is called again, nothing happen so that to avoid side effects.
         """
@@ -59,15 +59,11 @@ class CaptureGovukPaymentTestCase(SimpleTestCase):
             PaymentStatus.success.name,
         )
 
-        self.assertEqual(len(mail.outbox), 1)
-        self.assertEqual(
-            mail.outbox[0].subject,
-            'Send money to someone in prison: your payment was successful',
-        )
+        self.assertEqual(len(mail.outbox), 0)
 
         # try to capture the payment again, nothing should happen
         client.capture_govuk_payment(govuk_payment, context)
-        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(len(mail.outbox), 0)
 
     def test_do_nothing_if_payment_in_finished_state(self):
         """
@@ -334,8 +330,8 @@ class CompletePaymentIfNecessaryTestCase(SimpleTestCase):
         doesn't have the email field filled in:
 
         - the MTP payment record is patched with the email value
-        - an confirmation email is sent to the sender
         - the method returns PaymentStatus.success
+        - no email is sent
         """
         client = PaymentClient()
 
@@ -364,40 +360,6 @@ class CompletePaymentIfNecessaryTestCase(SimpleTestCase):
             )
 
             status = client.complete_payment_if_necessary(payment, govuk_payment, context)
-
-        self.assertEqual(status, PaymentStatus.success)
-        self.assertEqual(len(mail.outbox), 1)
-        self.assertEqual(payment['email'], 'sender@example.com')
-        self.assertEqual(mail.outbox[0].subject, 'Send money to someone in prison: your payment was successful')
-
-    def test_success_status_with_email_already_set(self):
-        """
-        Test that if the govuk payment is in 'success' state and the MTP payment record
-        already has the email field filled in:
-
-        - the method returns PaymentStatus.success
-
-        No email is sent as the email field was already filled in.
-        """
-        client = PaymentClient()
-
-        payment = {
-            'uuid': 'some-id',
-            'email': 'some-sender@example.com',
-        }
-        govuk_payment = {
-            'payment_id': 'payment-id',
-            'state': {
-                'status': PaymentStatus.success.name,
-            },
-            'email': 'sender@example.com',
-        }
-        context = {
-            'prisoner_name': 'John Doe',
-            'amount': 1700,
-        }
-
-        status = client.complete_payment_if_necessary(payment, govuk_payment, context)
 
         self.assertEqual(status, PaymentStatus.success)
         self.assertEqual(len(mail.outbox), 0)
@@ -525,8 +487,8 @@ class CompletePaymentIfNecessaryTestCase(SimpleTestCase):
 
         - the MTP payment record is patched with the card details attributes if necessary
         - the method captures the payment
-        - a confirmation email is sent
         - the method returns PaymentStatus.success
+        - no email is sent
         """
         client = PaymentClient()
 
@@ -590,9 +552,7 @@ class CompletePaymentIfNecessaryTestCase(SimpleTestCase):
                 }
             )
         self.assertEqual(status, PaymentStatus.success)
-        self.assertEqual(len(mail.outbox), 1)
-        self.assertEqual(payment['email'], 'sender@example.com')
-        self.assertEqual(mail.outbox[0].subject, 'Send money to someone in prison: your payment was successful')
+        self.assertEqual(len(mail.outbox), 0)
 
     def test_capturable_payment_that_should_be_cancelled(self):
         """
@@ -674,9 +634,8 @@ class CompletePaymentIfNecessaryTestCase(SimpleTestCase):
 
     def test_dont_send_email(self):
         """
-        Test that the method only sends any email if:
-        - the govuk payment status is 'success' and the MTP payment didn't have the email field set
-        - the govuk payment status is 'capturable' and the MTP payment didn't have the email field set
+        Test that the method only sends any email if the govuk payment status is 'capturable'
+        and the MTP payment didn't have the email field set
         """
         client = PaymentClient()
 
@@ -688,10 +647,18 @@ class CompletePaymentIfNecessaryTestCase(SimpleTestCase):
         statuses = [
             status
             for status in PaymentStatus
-            if status not in (PaymentStatus.success, PaymentStatus.capturable)
+            if status != PaymentStatus.capturable
         ]
 
-        with silence_logger():
+        with responses.RequestsMock() as rsps, silence_logger():
+            mock_auth(rsps)
+
+            # API call related to updating the email address on the payment record
+            rsps.add(
+                rsps.PATCH,
+                api_url(f'/payments/{payment["uuid"]}/'),
+                status=200,
+            )
 
             for status in statuses:
                 govuk_payment = {

@@ -191,9 +191,6 @@ class PaymentClient:
                 self.update_payment(payment['uuid'], {'email': email})
                 payment['email'] = email
 
-                # send successful email if it's the first time we get the sender's email address
-                send_email_for_card_payment_confirmation(email, context)
-
         return govuk_status
 
     def get_completion_payment_attr_updates(self, payment, govuk_payment):
@@ -267,9 +264,6 @@ class PaymentClient:
 
         response.raise_for_status()
 
-        email = govuk_payment.get('email')
-        send_email_for_card_payment_confirmation(email, context)
-
         govuk_status = PaymentStatus.success
         govuk_payment['state']['status'] = govuk_status.name
         return govuk_status
@@ -301,7 +295,7 @@ class PaymentClient:
         govuk_payment['state']['status'] = govuk_status.name
         return govuk_status
 
-    def update_completed_payment(self, payment_ref, govuk_payment, success):
+    def update_completed_payment(self, payment_ref, govuk_payment, success, context):
         payment_attr_updates = self.get_completion_payment_attr_updates({}, govuk_payment)
         payment_attr_updates['status'] = 'taken' if success else 'failed'
         if success:
@@ -309,6 +303,13 @@ class PaymentClient:
             payment_attr_updates['received_at'] = received_at.isoformat()
 
         self.update_payment(payment_ref, payment_attr_updates)
+
+        email = (govuk_payment or {}).get('email')
+        if not email:
+            return
+
+        if success:
+            send_email_for_card_payment_confirmation(email, context)
 
     def get_govuk_payment(self, govuk_id):
         response = requests.get(
