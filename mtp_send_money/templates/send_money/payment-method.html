@@ -2,87 +2,78 @@
 {% load i18n %}
 {% load mtp_common %}
 
-{% block page_title %}{% trans 'How do you want to send money?' %} – {{ block.super }}{% endblock %}
+{% block page_title %}{% trans 'Pay now by debit card' %} – {{ block.super }}{% endblock %}
 
 {% block inner_content %}
   {% notifications_box request 'send_money_landing' %}
 
-  <header>
-    <h1 class="heading-xlarge">{% trans 'How do you want to send money?' %}</h1>
-  </header>
+  <div class="grid-row">
+    <div class="column-two-thirds">
 
-  <form method="post" class="js-experiment-context" {% if experiment.context %}data-experiment-context="{{ experiment.context }}"{% endif %}>
-    {% csrf_token %}
-    {% include 'mtp_common/forms/error-summary.html' with form=form only %}
+      <header>
+        <h1 class="heading-xlarge">{% trans 'Pay now by debit card' %}</h1>
+      </header>
 
-    {% if form.payment_method.field.disabled %}
-      <div class="error-summary" role="alert" aria-labelledby="error-summary-heading" tabindex="-1">
-
-        <h1 class="heading-medium error-summary-heading">
-          {{ form.payment_method.field.message_to_users|default:_('Sending money by debit card is temporarily unavailable') }}
-        </h1>
-        <p>{% trans 'Try again later or get a prisoner reference to send money by UK bank transfer' %}</p>
-
-      </div>
-    {% elif check_govuk_pay_connection %}
-      <div style="display:none" class="error-summary mtp-govuk-pay-connection-check" data-image-url="{{ govuk_pay_connection_check_image }}" role="alert" aria-labelledby="error-summary-heading" tabindex="-1">
-        <h1 class="heading-medium error-summary-heading">
-          {% trans 'Paying by debit card won’t work because we don’t support your device or browser' %}
-        </h1>
-        <p>{% trans 'Try another computer or a newer browser, for example, Chrome, Firefox or Internet Explorer 11 and up' %}</p>
-      </div>
-    {% endif %}
-
-    <fieldset class="mtp-payment-choice">
-      <legend id="{{ form.payment_method.id_for_label }}-label" class="visually-hidden">{% trans 'How do you want to send money?' %}</legend>
-
-      {% for payment_method in form.payment_method.field.choices %}
-        <div class="multiple-choice">
-          <input id="id_{{ payment_method.0 }}" type="radio" name="{{ form.payment_method.html_name }}" value="{{ payment_method.0 }}"
-                 {% if form.payment_method.field.disabled %}disabled{% endif %}
-                 {% if form.payment_method.value == payment_method.0 %}checked{% endif %}>
-          <label class="{% if form.payment_method.field.disabled and form.payment_method.value != payment_method.0 %}mtp-grey-choice{% endif %}" for="id_{{ payment_method.0 }}">
-            {{ payment_method.1 }}
-          </label>
-        </div>
-        {% if not forloop.last %}
-          <p class="form-block">{% trans 'or' %}</p>
-        {% endif %}
-      {% endfor %}
-    </fieldset>
-
-    <div class="mtp-payment-help__container">
-      <p>
-        <a class="mtp-disclosure" href="#" aria-controls="mtp-payment-help" aria-expanded="false" role="button" data-analytics="pageview,/-help_open/{{ request.resolver_match.url_name }}/">
-          <span></span>{% trans 'Which is right for me?' %}
-        </a>
+      <p class="lede">
+        {% blocktrans trimmed %}
+          Paying by debit card is the <strong>fastest</strong>, <strong>simplest</strong> and most <strong>reliable</strong> way of sending money to a prisoner – and it’s <strong>free</strong>
+        {% endblocktrans %}
       </p>
-      <div id="mtp-payment-help" class="mtp-disclosure__contents panel panel-border-narrow">
-        <h2 class="heading-small mtp-debit-header {% if form.payment_method.field.disabled %}mtp-grey-text{% endif %}">{% trans 'Pay now by debit card' %}</h2>
-        {% if form.payment_method.field.disabled %}
-          <h2 class="heading-small mtp-debit-unavailable">
-            {% trans 'Temporarily unavailable' %}
-          </h2>
-        {% endif %}
-        <ol class="list list-number">
-          <li>{% trans 'You can complete your payment here using Mastercard, Visa and Maestro debit cards' %}</li>
-          <li>{% trans 'The money should take up to 3 working days to reach the prisoner’s account' %}</li>
-          <li>{% trans 'You’ll get email confirmation of payment' %}</li>
-          <li>{% trans 'You can make an international payment using a debit card' %}</li>
-        </ol>
 
-        <h2 class="heading-small">{% trans 'Get a prisoner reference to use in a UK bank transfer' %}</h2>
-        <ol class="list list-number">
-          <li>{% trans 'You’ll get a prisoner reference you can use to make a bank transfer using online banking, your mobile banking app or telephone banking' %}</li>
-          <li>{% trans 'You can re-use this reference for this prisoner each time you make a transfer' %}</li>
-          <li>{% trans 'The money should take up to 3 working days to reach the prisoner’s account' %}</li>
-          <li>{% trans 'You don’t get email confirmation after your bank transfer' %}</li>
-        </ol>
+      <p>
+        {% trans 'You can complete your payment here using Mastercard, Visa and Maestro debit cards.' %}
+        {% trans 'Money usually takes less than 3 working days to reach a prisoner’s account, but may take longer.' %}
+      </p>
+
+      <p>
+        {% trans 'You’ll get email confirmation of payment.' %}
+      </p>
+
+      <p>
+        {% trans 'You can make an international payment using a debit card.' %}
+      </p>
+
+      <div class="panel panel-border-wide">
+        {% trans 'From January 2020, you will no longer be able to use a pre-paid debit card.' %}
       </div>
-    </div>
 
-    <p>
-      <input id="id_next_btn" class="button" type="submit" value="{% trans 'Continue' %}">
-    </p>
-  </form>
+      {% include 'mtp_common/forms/error-summary.html' with form=form only %}
+
+      {% if form.payment_method.field.disabled %}
+
+        <div class="error-summary" role="alert" aria-labelledby="error-summary-heading" tabindex="-1">
+          <h1 class="heading-medium error-summary-heading">
+            {{ form.payment_method.field.message_to_users|default:_('Sending money by debit card is temporarily unavailable') }}
+          </h1>
+          <p>
+            {% trans 'Please try again later.' %}
+          </p>
+        </div>
+
+      {% else %}
+
+        <form method="post">
+          {% csrf_token %}
+          {% with payment_method=form.payment_method.field.choices.0.0 %}
+            <button name="{{ form.payment_method.html_name }}" value="{{ payment_method }}" id="id_{{ payment_method }}" class="button">
+              {% trans 'Continue' %}
+            </button>
+          {% endwith %}
+        </form>
+
+      {% endif %}
+
+      <br />
+
+      <form method="post">
+        {% csrf_token %}
+        {% with payment_method=form.payment_method.field.choices.1.0 %}
+          <button name="{{ form.payment_method.html_name }}" value="{{ payment_method }}" id="id_{{ payment_method }}" class="mtp-link-button link font-xsmall">
+            {% trans 'I don’t have a debit card' %}
+          </button>
+        {% endwith %}
+      </form>
+
+    </div>
+  </div>
 {% endblock %}

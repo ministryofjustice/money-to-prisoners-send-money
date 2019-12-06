@@ -232,8 +232,6 @@ OAUTHLIB_INSECURE_TRANSPORT = True
 NOMS_HOLDING_ACCOUNT_NUMBER = os.environ.get('NOMS_HOLDING_ACCOUNT_NUMBER', '########')
 NOMS_HOLDING_ACCOUNT_SORT_CODE = os.environ.get('NOMS_HOLDING_ACCOUNT_SORT_CODE', '##-##-##')
 
-ENABLE_PAYMENT_CHOICE_EXPERIMENT = os.environ.get('ENABLE_PAYMENT_CHOICE_EXPERIMENT', 'True') == 'True'
-
 # 0 to disable delayed capture
 # 100 to enable delayed capture for all payments
 # x to enable delayed capture for x% payments
@@ -264,8 +262,6 @@ ZENDESK_CUSTOM_FIELDS = {
     'contact_email': 30769508,
 }
 
-SHOW_BANK_TRANSFER_OPTION = os.environ.get('SHOW_BANK_TRANSFER_OPTION', 'True') == 'True'
-SHOW_DEBIT_CARD_OPTION = os.environ.get('SHOW_DEBIT_CARD_OPTION', 'True') == 'True'
 BANK_TRANSFER_PRISONS = os.environ.get('BANK_TRANSFER_PRISONS', '')
 DEBIT_CARD_PRISONS = os.environ.get('DEBIT_CARD_PRISONS', '')
 SHOW_LANGUAGE_SWITCH = os.environ.get('SHOW_LANGUAGE_SWITCH', 'False') == 'True'
@@ -273,10 +269,6 @@ CONFIRMATION_EXPIRES = 60  # minutes
 
 GOVUK_PAY_URL = os.environ.get('GOVUK_PAY_URL', '')
 GOVUK_PAY_AUTH_TOKEN = os.environ.get('GOVUK_PAY_AUTH_TOKEN', '')
-GOVUK_PAY_CONNECTION_CHECK_IMAGE = os.environ.get(
-    'GOVUK_PAY_CONNECTION_CHECK_IMAGE',
-    'https://www.payments.service.gov.uk/assets/images/govuk-crest.png',
-)
 
 EMAIL_BACKEND = 'anymail.backends.mailgun.EmailBackend'
 ANYMAIL = {

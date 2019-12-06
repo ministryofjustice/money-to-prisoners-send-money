@@ -4,7 +4,6 @@ import logging
 import random
 
 from django.conf import settings
-from django.http import Http404
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.utils import timezone
@@ -21,7 +20,6 @@ from send_money.payments import is_active_payment, PaymentClient, PaymentStatus
 from send_money.mail import send_email_for_bank_transfer_reference
 from send_money.utils import (
     bank_transfer_reference,
-    can_load_govuk_pay_image,
     get_link_by_rel,
     get_service_charge,
     site_url,
@@ -143,79 +141,21 @@ class PaymentMethodChoiceView(SendMoneyFormView):
     url_name = 'choose_method'
     template_name = 'send_money/payment-method.html'
     form_class = send_money_forms.PaymentMethodChoiceForm
-    experiment_cookie_name = 'EXP-first-payment-choice'
-    experiment_variations = ['debit-card', 'bank-transfer']
-    experiment_lifetime = datetime.timedelta(days=300)
-
-    @classmethod
-    def is_form_enabled(cls):
-        return settings.SHOW_BANK_TRANSFER_OPTION and settings.SHOW_DEBIT_CARD_OPTION
-
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.show_bank_transfer_first = False
-        self.set_experiment_cookie = None
 
     def dispatch(self, request, *args, **kwargs):
         # reset the session so that we can start fresh
         if not request.session.is_empty():
             request.session.flush()
-
-        if settings.SHOW_BANK_TRANSFER_OPTION and settings.SHOW_DEBIT_CARD_OPTION:
-            response = super().dispatch(request, *args, **kwargs)
-            if self.set_experiment_cookie is not None:
-                response.set_cookie(self.experiment_cookie_name, self.set_experiment_cookie,
-                                    expires=timezone.now() + self.experiment_lifetime)
-            return response
-        if settings.SHOW_BANK_TRANSFER_OPTION:
-            return redirect(build_view_url(self.request, BankTransferWarningView.url_name))
-        if settings.SHOW_DEBIT_CARD_OPTION:
-            return redirect(build_view_url(self.request, DebitCardPrisonerDetailsView.url_name))
-        return redirect('submit_ticket')
-
-    def get_experiment(self):
-        experiment = {
-            'show_bank_transfer_first': self.show_bank_transfer_first,
-        }
-        if not settings.ENABLE_PAYMENT_CHOICE_EXPERIMENT:
-            return experiment
-
-        variation = self.request.COOKIES.get(self.experiment_cookie_name)
-        if variation not in self.experiment_variations:
-            variation = random.choice(self.experiment_variations)
-            self.set_experiment_cookie = variation
-            context = 'pageview,/_experiments/display-payment-methods/%s/' % variation
-        else:
-            context = 'pageview,/_experiments/redisplay-payment-methods/%s/' % variation
-        self.show_bank_transfer_first = variation == 'bank-transfer'
-
-        experiment.update({
-            'show_bank_transfer_first': self.show_bank_transfer_first,
-            'context': context,
-        })
-        return experiment
+        return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
-        experiment = self.get_experiment()
         context_data = super().get_context_data(**kwargs)
         context_data.update({
-            'experiment': experiment,
             'service_charged': self.is_service_charged(),
             'service_charge_percentage': settings.SERVICE_CHARGE_PERCENTAGE,
             'service_charge_fixed': settings.SERVICE_CHARGE_FIXED,
-            'check_govuk_pay_connection': can_load_govuk_pay_image(),
-            'govuk_pay_connection_check_image': settings.GOVUK_PAY_CONNECTION_CHECK_IMAGE,
         })
         return context_data
-
-    def get_form_kwargs(self):
-        kwargs = {
-            **super().get_form_kwargs(),
-
-            'show_bank_transfer_first': self.show_bank_transfer_first,
-            'check_debit_card_payment_availability': True,
-        }
-        return kwargs
 
     def form_valid(self, form):
         if form.cleaned_data['payment_method'] == PaymentMethod.bank_transfer.name:
@@ -230,11 +170,6 @@ class PaymentMethodChoiceView(SendMoneyFormView):
 
 class BankTransferFlow(SendMoneyView):
     payment_method = PaymentMethod.bank_transfer
-
-    def dispatch(self, request, *args, **kwargs):
-        if not settings.SHOW_BANK_TRANSFER_OPTION:
-            raise Http404('Bank transfers are not available')
-        return super().dispatch(request, *args, **kwargs)
 
 
 class BankTransferWarningView(BankTransferFlow, TemplateView):
@@ -308,11 +243,6 @@ class DebitCardFlowException(Exception):
 
 class DebitCardFlow(SendMoneyView):
     payment_method = PaymentMethod.debit_card
-
-    def dispatch(self, request, *args, **kwargs):
-        if not settings.SHOW_DEBIT_CARD_OPTION:
-            raise Http404('Debit cards are not available')
-        return super().dispatch(request, *args, **kwargs)
 
 
 class DebitCardPrisonerDetailsView(DebitCardFlow, SendMoneyFormView):
@@ -432,11 +362,6 @@ class DebitCardConfirmationView(TemplateView):
         if self.status == PaymentStatus.capturable:
             return ['send_money/debit-card-on-hold.html']
         return ['send_money/debit-card-failure.html']
-
-    def dispatch(self, request, *args, **kwargs):
-        if not settings.SHOW_DEBIT_CARD_OPTION:
-            raise Http404('Debit cards are not available')
-        return super().dispatch(request, *args, **kwargs)
 
     def get(self, request, *args, **kwargs):
         payment_ref = self.request.GET.get('payment_ref')
