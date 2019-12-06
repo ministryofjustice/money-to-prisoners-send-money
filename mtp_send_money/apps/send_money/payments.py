@@ -338,6 +338,28 @@ class PaymentClient:
         except (ValueError, KeyError):
             raise RequestException('Cannot parse response', response=response)
 
+    def get_govuk_payment_events(self, govuk_id):
+        """
+        :return: list with events information about a certain govuk payment.
+
+        :param govuk_id: id of the govuk payment
+        :raise HTTPError: if GOV.UK Pay returns a 4xx or 5xx response
+        :raise RequestException: if the response body cannot be parsed
+        """
+        response = requests.get(
+            govuk_url(f'/payments/{govuk_id}/events'),
+            headers=govuk_headers(),
+            timeout=15,
+        )
+
+        response.raise_for_status()
+
+        try:
+            data = response.json()
+            return data['events']
+        except (ValueError, KeyError):
+            raise RequestException('Cannot parse response', response=response)
+
     def get_govuk_capture_time(self, govuk_payment):
         try:
             capture_submit_time = parse_datetime(

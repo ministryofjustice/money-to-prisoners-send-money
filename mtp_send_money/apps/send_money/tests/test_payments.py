@@ -5,7 +5,7 @@ from django.core import mail
 from django.test import override_settings
 from django.test.testcases import SimpleTestCase
 from mtp_common.test_utils import silence_logger
-from requests.exceptions import HTTPError
+from requests.exceptions import HTTPError, RequestException
 import responses
 
 from send_money.payments import CheckResult, PaymentClient, PaymentStatus
@@ -292,6 +292,115 @@ class CancelGovukPaymentTestCase(SimpleTestCase):
                 e.exception.response.status_code,
                 409,
             )
+
+
+@override_settings(
+    GOVUK_PAY_URL='https://pay.gov.local/v1',
+)
+class GetGovukPaymentEvents(SimpleTestCase):
+    """
+    Tests related to the get_govuk_payment_events method.
+    """
+
+    def test_successful(self):
+        """
+        Test that the method returns events information about a certain govuk payment.
+        """
+        payment_id = 'payment-id'
+        expected_events = [
+            {
+                'payment_id': payment_id,
+                'state': {
+                    'status': 'created',
+                    'finished': True,
+                    'message': 'User cancelled the payment',
+                    'code': 'P010',
+                },
+                'updated': '2017-01-10T16:44:48.646Z',
+                '_links': {
+                    'payment_url': {
+                        'href': 'https://an.example.link/from/payment/platform',
+                        'method': 'GET',
+                    },
+                },
+            },
+        ]
+
+        client = PaymentClient()
+        with responses.RequestsMock() as rsps:
+            rsps.add(
+                rsps.GET,
+                govuk_url(f'/payments/{payment_id}/events/'),
+                status=200,
+                json={
+                    'events': expected_events,
+                    'payment_id': payment_id,
+                    '_links': {
+                        'self': {
+                            'hrefTrue': 'https://an.example.link/from/payment/platform',
+                            'method': 'GET',
+                        },
+                    },
+                }
+            )
+
+            actual_events = client.get_govuk_payment_events(payment_id)
+
+        self.assertListEqual(actual_events, expected_events)
+
+    def test_404(self):
+        """
+        Test that if GOV.UK Pay returns 404, the method raises HTTPError.
+        """
+        payment_id = 'payment-id'
+
+        client = PaymentClient()
+        with responses.RequestsMock() as rsps:
+            rsps.add(
+                rsps.GET,
+                govuk_url(f'/payments/{payment_id}/events/'),
+                status=404,
+            )
+
+            with self.assertRaises(HTTPError):
+                client.get_govuk_payment_events(payment_id)
+
+    def test_500(self):
+        """
+        Test that if GOV.UK Pay returns 500, the method raises HTTPError.
+        """
+        payment_id = 'payment-id'
+
+        client = PaymentClient()
+        with responses.RequestsMock() as rsps:
+            rsps.add(
+                rsps.GET,
+                govuk_url(f'/payments/{payment_id}/events/'),
+                status=500,
+            )
+
+            with self.assertRaises(HTTPError):
+                client.get_govuk_payment_events(payment_id)
+
+    def test_invalid_response(self):
+        """
+        Test that if the GOV.UK Pay response doesn't have the expected structure, the method raises RequestException.
+        """
+        payment_id = 'payment-id'
+
+        client = PaymentClient()
+        with responses.RequestsMock() as rsps:
+            rsps.add(
+                rsps.GET,
+                govuk_url(f'/payments/{payment_id}/events/'),
+                status=200,
+                json={
+                    'unexpected-key': 'unexpected-value',
+                }
+            )
+
+            with self.assertRaises(RequestException):
+                client.get_govuk_payment_events(payment_id)
 
 
 @override_settings(
