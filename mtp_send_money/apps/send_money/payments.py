@@ -67,6 +67,33 @@ class GovUkPaymentStatus(enum.Enum):
                 f"Unknown status: {govuk_payment.get('state', {}).get('status')}",
             )
 
+    @classmethod
+    def payment_timed_out_after_capturable(cls, govuk_payment):
+        """
+        :return: True if failed because of a timeout and the payment was in a capturable
+            status at some point in the past.
+
+        :raise GovUkPaymentStatusException: if the input value is not in the expected format.
+        """
+        status = cls.get_from_govuk_payment(govuk_payment)
+
+        if status != cls.failed:
+            return False
+
+        error_code = govuk_payment['state'].get('code')
+        if error_code != 'P0020':
+            return False
+
+        # check if there's a capturable event in the event log
+        govuk_id = govuk_payment['payment_id']
+        payment_client = PaymentClient()
+        events = payment_client.get_govuk_payment_events(govuk_id)
+
+        return any(
+            event['state'].get('status') == cls.capturable.name
+            for event in events
+        )
+
 
 class CheckResult(enum.Enum):
     """

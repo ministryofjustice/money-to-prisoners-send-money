@@ -75,6 +75,127 @@ class GovUkPaymentStatusTestCase(SimpleTestCase):
             with self.assertRaises(GovUkPaymentStatusException):
                 GovUkPaymentStatus.get_from_govuk_payment(govuk_payment)
 
+    @override_settings(
+        GOVUK_PAY_URL='https://pay.gov.local/v1',
+    )
+    def test_payment_did_time_out_after_capturable(self):
+        """
+        Test that if the govuk payment failed because of timeout and the payment was in capturable
+        status at some point in the past, the method returns True.
+        """
+        payment_id = 'payment-id'
+
+        govuk_payment = {
+            'payment_id': payment_id,
+            'state': {
+                'status': 'failed',
+                'code': 'P0020',
+                'message': 'Payment expired',
+                'finished': True,
+            },
+        }
+
+        with responses.RequestsMock() as rsps:
+            rsps.add(
+                rsps.GET,
+                govuk_url(f'/payments/{payment_id}/events/'),
+                status=200,
+                json={
+                    'events': [
+                        {
+                            'payment_id': payment_id,
+                            'state': {
+                                'status': 'capturable',
+                                'finished': False,
+                            },
+                        },
+                    ],
+                    'payment_id': payment_id,
+                },
+            )
+
+            self.assertTrue(
+                GovUkPaymentStatus.payment_timed_out_after_capturable(govuk_payment),
+            )
+
+    @override_settings(
+        GOVUK_PAY_URL='https://pay.gov.local/v1',
+    )
+    def test_payment_did_time_out_but_before_capturable(self):
+        """
+        Test that if the govuk payment failed because of timeout but the payment was not in capturable
+        status at some point in the past, the method returns False.
+        """
+        payment_id = 'payment-id'
+
+        govuk_payment = {
+            'payment_id': payment_id,
+            'state': {
+                'status': 'failed',
+                'code': 'P0020',
+                'message': 'Payment expired',
+                'finished': True,
+            },
+        }
+
+        with responses.RequestsMock() as rsps:
+            rsps.add(
+                rsps.GET,
+                govuk_url(f'/payments/{payment_id}/events/'),
+                status=200,
+                json={
+                    'events': [
+                        {
+                            'payment_id': payment_id,
+                            'state': {
+                                'status': 'submitted',
+                                'finished': False,
+                            },
+                        },
+                    ],
+                    'payment_id': payment_id,
+                },
+            )
+
+            self.assertFalse(
+                GovUkPaymentStatus.payment_timed_out_after_capturable(govuk_payment),
+            )
+
+    def test_payment_didnt_time_out(self):
+        """
+        Test that if the govuk payment is None or it's not in failed status because of timeout,
+        the method returns False.
+        """
+        scenarios = [
+            None,
+            {'state': {'status': 'created'}},
+            {'state': {'status': 'started'}},
+            {'state': {'status': 'submitted'}},
+            {'state': {'status': 'capturable'}},
+            {'state': {'status': 'success'}},
+            {'state': {'status': 'failed'}},
+            {'state': {'status': 'failed', 'code': 'P0001'}},
+            {'state': {'status': 'cancelled'}},
+            {'state': {'status': 'error'}},
+        ]
+
+        for govuk_payment in scenarios:
+            self.assertFalse(
+                GovUkPaymentStatus.payment_timed_out_after_capturable(govuk_payment),
+            )
+
+    def test_payment_timed_out_after_capturable_with_invalid_input(self):
+        """
+        Test that if the govuk_payment doesn't have the expected format, GovUkPaymentStatusException is raised.
+        """
+        scenarios = [
+            {'state': {'status': 'invalid'}},
+            {'state': {'another-key': 'another-value'}},
+        ]
+        for govuk_payment in scenarios:
+            with self.assertRaises(GovUkPaymentStatusException):
+                GovUkPaymentStatus.payment_timed_out_after_capturable(govuk_payment)
+
 
 @override_settings(
     GOVUK_PAY_URL='https://pay.gov.local/v1',
