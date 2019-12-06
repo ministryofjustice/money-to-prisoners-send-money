@@ -8,9 +8,72 @@ from mtp_common.test_utils import silence_logger
 from requests.exceptions import HTTPError, RequestException
 import responses
 
+from send_money.exceptions import GovUkPaymentStatusException
 from send_money.payments import CheckResult, PaymentClient, PaymentStatus
 from send_money.tests import mock_auth
 from send_money.utils import api_url, govuk_url
+
+
+class PaymentStatusTestCase(SimpleTestCase):
+    """
+    Tests related to PaymentStatus.
+    """
+
+    def test_get_from_govuk_payment(self):
+        """
+        Test that get_from_govuk_payment returns the right PaymentStatus.
+        """
+        scenarios = [
+            (None, None),
+            ({}, None),
+            (
+                {'state': {'status': 'created'}},
+                PaymentStatus.created,
+            ),
+            (
+                {'state': {'status': 'started'}},
+                PaymentStatus.started,
+            ),
+            (
+                {'state': {'status': 'submitted'}},
+                PaymentStatus.submitted,
+            ),
+            (
+                {'state': {'status': 'capturable'}},
+                PaymentStatus.capturable,
+            ),
+            (
+                {'state': {'status': 'success'}},
+                PaymentStatus.success,
+            ),
+            (
+                {'state': {'status': 'failed'}},
+                PaymentStatus.failed,
+            ),
+            (
+                {'state': {'status': 'cancelled'}},
+                PaymentStatus.cancelled,
+            ),
+            (
+                {'state': {'status': 'error'}},
+                PaymentStatus.error,
+            ),
+        ]
+        for govuk_payment, expected_status in scenarios:
+            actual_status = PaymentStatus.get_from_govuk_payment(govuk_payment)
+            self.assertEqual(actual_status, expected_status)
+
+    def test_get_from_govuk_payment_with_invalid_input(self):
+        """
+        Test that if the govuk_payment doesn't have the expected structure, GovUkPaymentStatusException is raised.
+        """
+        scenarios = [
+            {'state': {'status': 'invalid'}},
+            {'state': {'another-key': 'another-value'}},
+        ]
+        for govuk_payment in scenarios:
+            with self.assertRaises(GovUkPaymentStatusException):
+                PaymentStatus.get_from_govuk_payment(govuk_payment)
 
 
 @override_settings(

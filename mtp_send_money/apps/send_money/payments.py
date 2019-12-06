@@ -48,6 +48,25 @@ class PaymentStatus(enum.Enum):
     def is_awaiting_user_input(self):
         return self in [self.created, self.started, self.submitted]
 
+    @classmethod
+    def get_from_govuk_payment(cls, govuk_payment):
+        """
+        :return: PaymentStatus in the govuk_payment dict or None.
+
+        :raise GovUkPaymentStatusException: if the input value is not in an expected format.
+        """
+        if not govuk_payment:
+            return None
+
+        try:
+            return cls[
+                govuk_payment['state']['status']
+            ]
+        except KeyError:
+            raise GovUkPaymentStatusException(
+                f"Unknown status: {govuk_payment.get('state', {}).get('status')}",
+            )
+
 
 class CheckResult(enum.Enum):
     """
@@ -102,22 +121,6 @@ class PaymentClient:
             raise ValueError('payment_ref must be provided')
         self.api_session.patch('/payments/%s/' % url_quote(payment_ref), json=payment_update)
 
-    def parse_govuk_payment_status(self, govuk_payment):
-        """
-        :return: PaymentStatus in the govuk_payment dict.
-        """
-        if not govuk_payment:
-            return None
-
-        try:
-            return PaymentStatus[
-                govuk_payment['state']['status']
-            ]
-        except KeyError:
-            raise GovUkPaymentStatusException(
-                f"Unknown status: {govuk_payment['state']['status']}",
-            )
-
     def get_security_check_result(self, payment):
         """
         Checks the security check for 'payment' and returns a CheckResult indicating the next
@@ -142,7 +145,7 @@ class PaymentClient:
         :param payment: dict with MTP payment details as returned by the MTP API
         :param govuk_payment: dict with GOV.UK payment details as returned by the GOV.UK Pay API
         """
-        govuk_status = self.parse_govuk_payment_status(govuk_payment)
+        govuk_status = PaymentStatus.get_from_govuk_payment(govuk_payment)
         if not govuk_status:
             return
 
@@ -246,7 +249,7 @@ class PaymentClient:
 
         :raise HTTPError: if GOV.UK Pay returns a 4xx or 5xx response
         """
-        govuk_status = self.parse_govuk_payment_status(govuk_payment)
+        govuk_status = PaymentStatus.get_from_govuk_payment(govuk_payment)
         if govuk_status is None or govuk_status.finished():
             return govuk_status
 
@@ -269,7 +272,7 @@ class PaymentClient:
 
         :raise HTTPError: if GOV.UK Pay returns a 4xx or 5xx response
         """
-        govuk_status = self.parse_govuk_payment_status(govuk_payment)
+        govuk_status = PaymentStatus.get_from_govuk_payment(govuk_payment)
         if govuk_status is None or govuk_status.finished():
             return govuk_status
 
@@ -289,7 +292,7 @@ class PaymentClient:
     def update_completed_payment(self, payment, govuk_payment):
         payment_ref = payment['uuid']
 
-        govuk_status = self.parse_govuk_payment_status(govuk_payment)
+        govuk_status = PaymentStatus.get_from_govuk_payment(govuk_payment)
         success = govuk_status == PaymentStatus.success
 
         # update mtp payment
