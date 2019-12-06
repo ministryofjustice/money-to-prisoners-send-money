@@ -29,7 +29,7 @@ from send_money.utils import (
 logger = logging.getLogger('mtp')
 
 
-class PaymentStatus(enum.Enum):
+class GovUkPaymentStatus(enum.Enum):
     created = 'Created',
     started = 'Started'
     submitted = 'Submitted'
@@ -51,7 +51,7 @@ class PaymentStatus(enum.Enum):
     @classmethod
     def get_from_govuk_payment(cls, govuk_payment):
         """
-        :return: PaymentStatus in the govuk_payment dict or None.
+        :return: GovUkPaymentStatus in the govuk_payment dict or None.
 
         :raise GovUkPaymentStatusException: if the input value is not in an expected format.
         """
@@ -130,7 +130,7 @@ class PaymentClient:
 
     def complete_payment_if_necessary(self, payment, govuk_payment):
         """
-        Completes a payment if necessary and returns the resulting PaymentStatus.
+        Completes a payment if necessary and returns the resulting GovUkPaymentStatus.
 
         If the status is 'capturable' and the MTP payment doesn't have any email,
         it updates the email field on record and sends an email to the user.
@@ -141,15 +141,15 @@ class PaymentClient:
         If the status is 'capturable' and the payment should be cancelled, this method
         cancels the payment and returns the new status.
 
-        :return: PaymentStatus for the GOV.UK payment govuk_payment
+        :return: GovUkPaymentStatus for the GOV.UK payment govuk_payment
         :param payment: dict with MTP payment details as returned by the MTP API
         :param govuk_payment: dict with GOV.UK payment details as returned by the GOV.UK Pay API
         """
-        govuk_status = PaymentStatus.get_from_govuk_payment(govuk_payment)
+        govuk_status = GovUkPaymentStatus.get_from_govuk_payment(govuk_payment)
         if not govuk_status:
             return
 
-        if govuk_status == PaymentStatus.error:
+        if govuk_status == GovUkPaymentStatus.error:
             logger.error(
                 'GOV.UK Pay returned an error for %(govuk_id)s: %(code)s %(msg)s' %
                 {
@@ -159,12 +159,12 @@ class PaymentClient:
                 },
             )
 
-        successfulish = govuk_status in [PaymentStatus.success, PaymentStatus.capturable]
+        successfulish = govuk_status in [GovUkPaymentStatus.success, GovUkPaymentStatus.capturable]
         # if nothing can be done, exist immediately
         if not successfulish:
             return govuk_status
 
-        if govuk_status == PaymentStatus.capturable:
+        if govuk_status == GovUkPaymentStatus.capturable:
             # update payment so that we can work out if it has to be delayed
             payment_attr_updates = self.get_completion_payment_attr_updates(payment, govuk_payment)
             if payment_attr_updates:
@@ -182,7 +182,7 @@ class PaymentClient:
                 govuk_status = self.capture_govuk_payment(govuk_payment)
             elif check_action == CheckResult.cancel:
                 govuk_status = self.cancel_govuk_payment(govuk_payment)
-        elif govuk_status == PaymentStatus.success:
+        elif govuk_status == GovUkPaymentStatus.success:
             # TODO consider updating other attrs using `get_completion_payment_attr_updates`
             email = govuk_payment.get('email')
             if email and not payment.get('email'):
@@ -249,7 +249,7 @@ class PaymentClient:
 
         :raise HTTPError: if GOV.UK Pay returns a 4xx or 5xx response
         """
-        govuk_status = PaymentStatus.get_from_govuk_payment(govuk_payment)
+        govuk_status = GovUkPaymentStatus.get_from_govuk_payment(govuk_payment)
         if govuk_status is None or govuk_status.finished():
             return govuk_status
 
@@ -262,7 +262,7 @@ class PaymentClient:
 
         response.raise_for_status()
 
-        govuk_status = PaymentStatus.success
+        govuk_status = GovUkPaymentStatus.success
         govuk_payment['state']['status'] = govuk_status.name
         return govuk_status
 
@@ -272,7 +272,7 @@ class PaymentClient:
 
         :raise HTTPError: if GOV.UK Pay returns a 4xx or 5xx response
         """
-        govuk_status = PaymentStatus.get_from_govuk_payment(govuk_payment)
+        govuk_status = GovUkPaymentStatus.get_from_govuk_payment(govuk_payment)
         if govuk_status is None or govuk_status.finished():
             return govuk_status
 
@@ -285,15 +285,15 @@ class PaymentClient:
 
         response.raise_for_status()
 
-        govuk_status = PaymentStatus.cancelled
+        govuk_status = GovUkPaymentStatus.cancelled
         govuk_payment['state']['status'] = govuk_status.name
         return govuk_status
 
     def update_completed_payment(self, payment, govuk_payment):
         payment_ref = payment['uuid']
 
-        govuk_status = PaymentStatus.get_from_govuk_payment(govuk_payment)
-        success = govuk_status == PaymentStatus.success
+        govuk_status = GovUkPaymentStatus.get_from_govuk_payment(govuk_payment)
+        success = govuk_status == GovUkPaymentStatus.success
 
         # update mtp payment
         payment_attr_updates = self.get_completion_payment_attr_updates({}, govuk_payment)
@@ -311,10 +311,10 @@ class PaymentClient:
         if not email:
             return
 
-        if govuk_status == PaymentStatus.success:
+        if govuk_status == GovUkPaymentStatus.success:
             # TODO: check if the security check has actioned_by and if so send a different comfirmation email
             send_email_for_card_payment_confirmation(email, payment)
-        elif govuk_status == PaymentStatus.cancelled:
+        elif govuk_status == GovUkPaymentStatus.cancelled:
             send_email_for_card_payment_cancelled(email, payment)
 
     def get_govuk_payment(self, govuk_id):

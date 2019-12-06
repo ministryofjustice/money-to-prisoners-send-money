@@ -9,7 +9,7 @@ from oauthlib.oauth2 import OAuth2Error
 from requests.exceptions import RequestException
 
 from send_money.exceptions import GovUkPaymentStatusException
-from send_money.payments import PaymentClient, PaymentStatus
+from send_money.payments import GovUkPaymentStatus, PaymentClient
 
 logger = logging.getLogger('mtp')
 
@@ -48,7 +48,7 @@ class Command(BaseCommand):
 
             try:
                 govuk_payment = payment_client.get_govuk_payment(govuk_id)
-                previous_govuk_status = PaymentStatus.get_from_govuk_payment(govuk_payment)
+                previous_govuk_status = GovUkPaymentStatus.get_from_govuk_payment(govuk_payment)
                 govuk_status = payment_client.complete_payment_if_necessary(payment, govuk_payment)
 
                 # not yet finished and can't do anything so skip
