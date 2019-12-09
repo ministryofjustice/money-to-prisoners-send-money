@@ -69,11 +69,23 @@ def send_email_for_card_payment_cancelled(email, payment):
     )
 
 
+def send_email_for_card_payment_timed_out(email, payment):
+    context = _get_email_context_for_payment(payment)
+
+    _send_notification_email(
+        email,
+        'debit-card-timeout',
+        gettext('payment session expired'),
+        ['dc-timeout'],
+        context,
+    )
+
+
 def send_email_for_bank_transfer_reference(email, context):
     _send_notification_email(
         email,
         'bank-transfer-reference',
-        gettext('Your prisoner reference is %(bank_transfer_reference)s' % context),
+        gettext('your prisoner reference is %(bank_transfer_reference)s' % context),
         ['bt-reference'],
         context,
     )

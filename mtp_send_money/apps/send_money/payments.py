@@ -19,6 +19,7 @@ from send_money.mail import (
     send_email_for_card_payment_cancelled,
     send_email_for_card_payment_confirmation,
     send_email_for_card_payment_on_hold,
+    send_email_for_card_payment_timed_out,
 )
 from send_money.utils import (
     get_api_session,
@@ -317,21 +318,22 @@ class PaymentClient:
         return govuk_status
 
     def update_completed_payment(self, payment, govuk_payment):
-        payment_ref = payment['uuid']
-
         govuk_status = GovUkPaymentStatus.get_from_govuk_payment(govuk_payment)
-        success = govuk_status == GovUkPaymentStatus.success
+        timed_out_after_capturable = GovUkPaymentStatus.payment_timed_out_after_capturable(govuk_payment)
 
         # update mtp payment
         payment_attr_updates = self.get_completion_payment_attr_updates({}, govuk_payment)
-        # TODO: we need a new mtp status for cancelled payments... 'cancelled'?
-        payment_attr_updates['status'] = 'taken' if success else 'failed'
 
-        if success:
+        if govuk_status == GovUkPaymentStatus.success:
             received_at = self.get_govuk_capture_time(govuk_payment)
             payment_attr_updates['received_at'] = received_at.isoformat()
+            payment_attr_updates['status'] = 'taken'
+        else:
+            # TODO: we need a new mtp status for cancelled payments... 'cancelled'
+            # TODO: if timed_out_after_capturable, failed payment and failed credit
+            payment_attr_updates['status'] = 'failed'
 
-        self.update_payment(payment_ref, payment_attr_updates)
+        self.update_payment(payment['uuid'], payment_attr_updates)
 
         # send notification email
         email = (govuk_payment or {}).get('email')
@@ -343,6 +345,12 @@ class PaymentClient:
             send_email_for_card_payment_confirmation(email, payment)
         elif govuk_status == GovUkPaymentStatus.cancelled:
             send_email_for_card_payment_cancelled(email, payment)
+        elif govuk_status == GovUkPaymentStatus.failed:
+            if timed_out_after_capturable:
+                # it expired after being captured meaning that the user should really get notified
+                # TODO we could check if security check was rejected and if so send a cancellation email instead
+                send_email_for_card_payment_timed_out(email, payment)
+                logger.warning(f'Payment {payment["uuid"]} timed out before being actioned by FIU')
 
     def get_govuk_payment(self, govuk_id):
         response = requests.get(
