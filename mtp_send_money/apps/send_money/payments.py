@@ -352,10 +352,17 @@ class PaymentClient:
             send_email_for_card_payment_rejected(email, payment)
         elif govuk_status == GovUkPaymentStatus.failed:
             if timed_out_after_capturable:
-                # it expired after being captured meaning that the user should really get notified
-                # TODO we could check if security check was rejected and if so send a cancellation email instead
-                send_email_for_card_payment_timed_out(email, payment)
-                logger.warning(f'Payment {payment["uuid"]} timed out before being actioned by FIU')
+                # it expired after being captured meaning that the user should really be notified
+                security_check = payment.get('security_check', {})
+
+                # if it was rejected by FIU, send rejection email anyway
+                if security_check.get('user_actioned') and security_check.get('status') == 'rejected':
+                    send_email_for_card_payment_rejected(email, payment)
+                else:
+                    send_email_for_card_payment_timed_out(email, payment)
+
+                if not security_check.get('user_actioned'):
+                    logger.warning(f'Payment {payment["uuid"]} timed out before being actioned by FIU')
 
     def get_govuk_payment(self, govuk_id):
         response = requests.get(
