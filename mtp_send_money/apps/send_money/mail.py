@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from django.conf import settings
 from django.urls import reverse
 from django.utils.translation import gettext
@@ -22,7 +24,18 @@ def _send_notification_email(email, template_name, subject, tags, context):
     )
 
 
-def send_email_for_card_payment_confirmation(email, context):
+def _get_email_context_for_payment(payment):
+    return {
+        'short_payment_ref': payment['uuid'][:8].upper(),
+        'prisoner_name': payment['recipient_name'],
+        'prisoner_number': payment['prisoner_number'],
+        'amount': Decimal(payment['amount']) / 100,
+    }
+
+
+def send_email_for_card_payment_confirmation(email, payment):
+    context = _get_email_context_for_payment(payment)
+
     _send_notification_email(
         email,
         'debit-card-confirmation',
@@ -32,7 +45,9 @@ def send_email_for_card_payment_confirmation(email, context):
     )
 
 
-def send_email_for_card_payment_on_hold(email, context):
+def send_email_for_card_payment_on_hold(email, payment):
+    context = _get_email_context_for_payment(payment)
+
     _send_notification_email(
         email,
         'debit-card-on-hold',
@@ -42,7 +57,9 @@ def send_email_for_card_payment_on_hold(email, context):
     )
 
 
-def send_email_for_card_payment_cancelled(email, context):
+def send_email_for_card_payment_cancelled(email, payment):
+    context = _get_email_context_for_payment(payment)
+
     _send_notification_email(
         email,
         'debit-card-cancelled',

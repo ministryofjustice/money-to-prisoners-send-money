@@ -395,10 +395,7 @@ class DebitCardConfirmationView(TemplateView):
                 govuk_id = payment['processor_id']
                 govuk_payment = payment_client.get_govuk_payment(govuk_id)
 
-                # check payment and send confirmation email if successful
-                self.status = payment_client.complete_payment_if_necessary(
-                    payment, govuk_payment, kwargs
-                )
+                self.status = payment_client.complete_payment_if_necessary(payment, govuk_payment)
 
                 # if status is error, failed or cancelled, redirect back to the start
                 # as GOV.UK Pay has already shown an error page.

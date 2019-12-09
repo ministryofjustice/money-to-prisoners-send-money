@@ -125,23 +125,22 @@ class PaymentClient:
         """
         return CheckResult.capture
 
-    def complete_payment_if_necessary(self, payment, govuk_payment, context):
+    def complete_payment_if_necessary(self, payment, govuk_payment):
         """
         Completes a payment if necessary and returns the resulting PaymentStatus.
 
-        If the status is 'success' or 'capturable' and the MTP payment doesn't have any email,
+        If the status is 'capturable' and the MTP payment doesn't have any email,
         it updates the email field on record and sends an email to the user.
 
         If the status is 'capturable' and the payment should be captured, this method
-        captures and returns the new status.
+        captures the payment and returns the new status.
 
-        If a payment is captured or it's found in success state for the first time, an email
-        to the sender is sent.
+        If the status is 'capturable' and the payment should be cancelled, this method
+        cancels the payment and returns the new status.
 
         :return: PaymentStatus for the GOV.UK payment govuk_payment
         :param payment: dict with MTP payment details as returned by the MTP API
         :param govuk_payment: dict with GOV.UK payment details as returned by the GOV.UK Pay API
-        :param context: dict with extra variable to be used in constructing any email message
         """
         govuk_status = self.parse_govuk_payment_status(govuk_payment)
         if not govuk_status:
@@ -175,15 +174,11 @@ class PaymentClient:
                 # if the user hasn't been notified, send email
                 if 'email' in payment_attr_updates:
                     email = payment_attr_updates['email']
-                    send_email_for_card_payment_on_hold(email, context)
+                    send_email_for_card_payment_on_hold(email, payment)
             elif check_action == CheckResult.capture:
-                # capture payment and send successful email
-                # TODO: check on payment if check was actioned by and send a different
-                #   confirmation email if so
-                govuk_status = self.capture_govuk_payment(govuk_payment, context)
+                govuk_status = self.capture_govuk_payment(govuk_payment)
             elif check_action == CheckResult.cancel:
-                # cancel payment and send email
-                govuk_status = self.cancel_govuk_payment(govuk_payment, context)
+                govuk_status = self.cancel_govuk_payment(govuk_payment)
         elif govuk_status == PaymentStatus.success:
             # TODO consider updating other attrs using `get_completion_payment_attr_updates`
             email = govuk_payment.get('email')
@@ -245,9 +240,9 @@ class PaymentClient:
 
         return attr_updates
 
-    def capture_govuk_payment(self, govuk_payment, context):
+    def capture_govuk_payment(self, govuk_payment):
         """
-        Captures and finalises a payment in status 'capturable' and sends a confirmation email to the user.
+        Captures and finalises a payment in status 'capturable'.
 
         :raise HTTPError: if GOV.UK Pay returns a 4xx or 5xx response
         """
@@ -268,9 +263,9 @@ class PaymentClient:
         govuk_payment['state']['status'] = govuk_status.name
         return govuk_status
 
-    def cancel_govuk_payment(self, govuk_payment, context):
+    def cancel_govuk_payment(self, govuk_payment):
         """
-        Cancels a payment in status 'capturable' and sends an email to the user.
+        Cancels a payment in status 'capturable'.
 
         :raise HTTPError: if GOV.UK Pay returns a 4xx or 5xx response
         """
@@ -287,29 +282,37 @@ class PaymentClient:
 
         response.raise_for_status()
 
-        email = govuk_payment.get('email')
-        if email:
-            send_email_for_card_payment_cancelled(email, context)
-
         govuk_status = PaymentStatus.cancelled
         govuk_payment['state']['status'] = govuk_status.name
         return govuk_status
 
-    def update_completed_payment(self, payment_ref, govuk_payment, success, context):
+    def update_completed_payment(self, payment, govuk_payment):
+        payment_ref = payment['uuid']
+
+        govuk_status = self.parse_govuk_payment_status(govuk_payment)
+        success = govuk_status == PaymentStatus.success
+
+        # update mtp payment
         payment_attr_updates = self.get_completion_payment_attr_updates({}, govuk_payment)
+        # TODO: we need a new mtp status for cancelled payments... 'cancelled'?
         payment_attr_updates['status'] = 'taken' if success else 'failed'
+
         if success:
             received_at = self.get_govuk_capture_time(govuk_payment)
             payment_attr_updates['received_at'] = received_at.isoformat()
 
         self.update_payment(payment_ref, payment_attr_updates)
 
+        # send notification email
         email = (govuk_payment or {}).get('email')
         if not email:
             return
 
-        if success:
-            send_email_for_card_payment_confirmation(email, context)
+        if govuk_status == PaymentStatus.success:
+            # TODO: check if the security check has actioned_by and if so send a different comfirmation email
+            send_email_for_card_payment_confirmation(email, payment)
+        elif govuk_status == PaymentStatus.cancelled:
+            send_email_for_card_payment_cancelled(email, payment)
 
     def get_govuk_payment(self, govuk_id):
         response = requests.get(

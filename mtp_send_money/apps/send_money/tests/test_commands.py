@@ -36,6 +36,7 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
         - wargle-1111 relates to a GOV.UK payment in 'success' status so should become 'taken'
         - wargle-2222 relates to a GOV.UK payment in 'submitted' status so should be ignored
         - wargle-3333 relates to a GOV.UK payment in 'failed' status so should become 'failed'
+        - wargle-4444 relates to a GOV.UK payment in 'cancelled' status so should become 'failed'
         """
         with responses.RequestsMock() as rsps:
             mock_auth(rsps)
@@ -73,6 +74,16 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
                             'status': 'pending',
                             'modified': datetime.now().isoformat() + 'Z',
                             'prisoner_number': 'A5544CD',
+                            'prisoner_dob': '1992-12-05',
+                        },
+                        {
+                            'uuid': 'wargle-4444',
+                            'processor_id': 4,
+                            'recipient_name': 'Lisa',
+                            'amount': 600,
+                            'status': 'pending',
+                            'modified': datetime.now().isoformat() + 'Z',
+                            'prisoner_number': 'A4444DB',
                             'prisoner_dob': '1992-12-05',
                         },
                     ],
@@ -142,16 +153,33 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
                 api_url('/payments/%s/' % 'wargle-3333'),
                 status=200,
             )
+            # get govuk payment
+            rsps.add(
+                rsps.GET,
+                govuk_url('/payments/%s/' % 4),
+                json={
+                    'reference': 'wargle-4444',
+                    'state': {'status': 'cancelled'},
+                    'email': 'cancelled_sender@outside.local',
+                },
+                status=200,
+            )
+            # update status
+            rsps.add(
+                rsps.PATCH,
+                api_url('/payments/%s/' % 'wargle-4444'),
+                status=200,
+            )
 
             call_command('update_incomplete_payments', verbosity=0)
 
             # check actual calls
             self.assertEqual(
-                json.loads(rsps.calls[-5].request.body.decode())['email'],
+                json.loads(rsps.calls[-7].request.body.decode())['email'],
                 'success_sender@outside.local',
             )
             self.assertDictEqual(
-                json.loads(rsps.calls[-4].request.body.decode()),
+                json.loads(rsps.calls[-6].request.body.decode()),
                 {
                     'email': 'success_sender@outside.local',
                     'status': 'taken',
@@ -159,18 +187,30 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
                 },
             )
             self.assertEqual(
+                json.loads(rsps.calls[-3].request.body.decode())['status'],
+                'failed',
+            )
+
+            self.assertEqual(
                 json.loads(rsps.calls[-1].request.body.decode())['status'],
                 'failed',
             )
 
             # check that confirmation email was sent
-            self.assertEqual(len(mail.outbox), 1)
+            self.assertEqual(len(mail.outbox), 2)
             self.assertEqual(
                 mail.outbox[0].subject,
                 'Send money to someone in prison: your payment was successful',
             )
             self.assertTrue('John' in mail.outbox[0].body)
             self.assertTrue('£17' in mail.outbox[0].body)
+
+            self.assertEqual(
+                mail.outbox[1].subject,
+                'Send money to someone in prison: your payment has NOT been sent to the prisoner',
+            )
+            self.assertTrue('Lisa' in mail.outbox[1].body)
+            self.assertTrue('£6' in mail.outbox[1].body)
 
     @override_settings(ENVIRONMENT='prod')  # because non-prod environments don't send to @outside.local
     def test_update_incomplete_payments_extracts_card_details(self):
