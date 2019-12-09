@@ -6,14 +6,7 @@
   <p>{% trans 'Dear sender,' %}</p>
 
   <p>
-    {% blocktrans trimmed %}
-      We’re sorry to tell you that the <strong>payment session expired</strong> before your payment could be taken.
-    {% endblocktrans %}
-  </p>
-  <p>
-    {% blocktrans trimmed %}
-      This payment has <strong>not</strong> gone through to the prisoner’s account.
-    {% endblocktrans %}
+    <strong>{% trans 'This payment has NOT been sent to the prisoner.' %}</strong>
   </p>
 
   <table cellspacing="10" style="font-family: sans-serif; border-left: 10px solid #b1b4b6; padding-left: 15px;">
@@ -32,22 +25,24 @@
   </table>
 
   <p>
+    {% trans 'We’re emailing to tell you this payment has not passed our compliance check.' %}
+    </br>
+    {% trans 'HMPPS is committed to maintaining prison safety and security and because this payment may compromise this, we have been unable to process it.' %}
+  </p>
+
+  <p>
     <strong>{% trans 'What now?' %}</strong>
   </p>
 
   <p>
     {% blocktrans trimmed %}
-      Please go to <a href="{{ site_url }}">Send money to someone in prison</a> and try again.
+      Your debit card payment has <strong>not</strong> been taken from your account.
     {% endblocktrans %}
   </p>
 
   <p>
-    {% trans 'We’re sorry for any inconvenience this may have caused but we’re keen to keep the service running smoothly.' %}
-  </p>
-
-  <p>
     {% blocktrans trimmed %}
-      <a href="{{ feedback_url }}">Contact us</a> if this is a recurring problem for you or if you need further more help.
+    If you need further assistance with this, <a href="{{ feedback_url }}">please email us.</a>.
     {% endblocktrans %}
   </p>
 
@@ -55,6 +50,6 @@
     {% trans 'Kind regards,' %}
   </p>
   <p>
-    {% trans 'Prisoner money team' %}<br />
+    {% trans 'Prisoner money compliance team' %}<br />
   </p>
 {% endblock %}

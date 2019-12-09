@@ -16,7 +16,7 @@ from requests.exceptions import RequestException
 
 from send_money.exceptions import GovUkPaymentStatusException
 from send_money.mail import (
-    send_email_for_card_payment_cancelled,
+    send_email_for_card_payment_rejected,
     send_email_for_card_payment_confirmation,
     send_email_for_card_payment_on_hold,
     send_email_for_card_payment_timed_out,
@@ -344,7 +344,7 @@ class PaymentClient:
             # TODO: check if the security check has actioned_by and if so send a different comfirmation email
             send_email_for_card_payment_confirmation(email, payment)
         elif govuk_status == GovUkPaymentStatus.cancelled:
-            send_email_for_card_payment_cancelled(email, payment)
+            send_email_for_card_payment_rejected(email, payment)
         elif govuk_status == GovUkPaymentStatus.failed:
             if timed_out_after_capturable:
                 # it expired after being captured meaning that the user should really get notified
