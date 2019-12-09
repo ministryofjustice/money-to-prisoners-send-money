@@ -5,12 +5,196 @@ from django.core import mail
 from django.test import override_settings
 from django.test.testcases import SimpleTestCase
 from mtp_common.test_utils import silence_logger
-from requests.exceptions import HTTPError
+from requests.exceptions import HTTPError, RequestException
 import responses
 
-from send_money.payments import CheckResult, PaymentClient, PaymentStatus
+from send_money.exceptions import GovUkPaymentStatusException
+from send_money.payments import CheckResult, GovUkPaymentStatus, PaymentClient
 from send_money.tests import mock_auth
 from send_money.utils import api_url, govuk_url
+
+
+class GovUkPaymentStatusTestCase(SimpleTestCase):
+    """
+    Tests related to GovUkPaymentStatus.
+    """
+
+    def test_get_from_govuk_payment(self):
+        """
+        Test that get_from_govuk_payment returns the right GovUkPaymentStatus.
+        """
+        scenarios = [
+            (None, None),
+            ({}, None),
+            (
+                {'state': {'status': 'created'}},
+                GovUkPaymentStatus.created,
+            ),
+            (
+                {'state': {'status': 'started'}},
+                GovUkPaymentStatus.started,
+            ),
+            (
+                {'state': {'status': 'submitted'}},
+                GovUkPaymentStatus.submitted,
+            ),
+            (
+                {'state': {'status': 'capturable'}},
+                GovUkPaymentStatus.capturable,
+            ),
+            (
+                {'state': {'status': 'success'}},
+                GovUkPaymentStatus.success,
+            ),
+            (
+                {'state': {'status': 'failed'}},
+                GovUkPaymentStatus.failed,
+            ),
+            (
+                {'state': {'status': 'cancelled'}},
+                GovUkPaymentStatus.cancelled,
+            ),
+            (
+                {'state': {'status': 'error'}},
+                GovUkPaymentStatus.error,
+            ),
+        ]
+        for govuk_payment, expected_status in scenarios:
+            actual_status = GovUkPaymentStatus.get_from_govuk_payment(govuk_payment)
+            self.assertEqual(actual_status, expected_status)
+
+    def test_get_from_govuk_payment_with_invalid_input(self):
+        """
+        Test that if the govuk_payment doesn't have the expected structure, GovUkPaymentStatusException is raised.
+        """
+        scenarios = [
+            {'state': {'status': 'invalid'}},
+            {'state': {'another-key': 'another-value'}},
+        ]
+        for govuk_payment in scenarios:
+            with self.assertRaises(GovUkPaymentStatusException):
+                GovUkPaymentStatus.get_from_govuk_payment(govuk_payment)
+
+    @override_settings(
+        GOVUK_PAY_URL='https://pay.gov.local/v1',
+    )
+    def test_payment_did_time_out_after_capturable(self):
+        """
+        Test that if the govuk payment failed because of timeout and the payment was in capturable
+        status at some point in the past, the method returns True.
+        """
+        payment_id = 'payment-id'
+
+        govuk_payment = {
+            'payment_id': payment_id,
+            'state': {
+                'status': 'failed',
+                'code': 'P0020',
+                'message': 'Payment expired',
+                'finished': True,
+            },
+        }
+
+        with responses.RequestsMock() as rsps:
+            rsps.add(
+                rsps.GET,
+                govuk_url(f'/payments/{payment_id}/events/'),
+                status=200,
+                json={
+                    'events': [
+                        {
+                            'payment_id': payment_id,
+                            'state': {
+                                'status': 'capturable',
+                                'finished': False,
+                            },
+                        },
+                    ],
+                    'payment_id': payment_id,
+                },
+            )
+
+            self.assertTrue(
+                GovUkPaymentStatus.payment_timed_out_after_capturable(govuk_payment),
+            )
+
+    @override_settings(
+        GOVUK_PAY_URL='https://pay.gov.local/v1',
+    )
+    def test_payment_did_time_out_but_before_capturable(self):
+        """
+        Test that if the govuk payment failed because of timeout but the payment was not in capturable
+        status at some point in the past, the method returns False.
+        """
+        payment_id = 'payment-id'
+
+        govuk_payment = {
+            'payment_id': payment_id,
+            'state': {
+                'status': 'failed',
+                'code': 'P0020',
+                'message': 'Payment expired',
+                'finished': True,
+            },
+        }
+
+        with responses.RequestsMock() as rsps:
+            rsps.add(
+                rsps.GET,
+                govuk_url(f'/payments/{payment_id}/events/'),
+                status=200,
+                json={
+                    'events': [
+                        {
+                            'payment_id': payment_id,
+                            'state': {
+                                'status': 'submitted',
+                                'finished': False,
+                            },
+                        },
+                    ],
+                    'payment_id': payment_id,
+                },
+            )
+
+            self.assertFalse(
+                GovUkPaymentStatus.payment_timed_out_after_capturable(govuk_payment),
+            )
+
+    def test_payment_didnt_time_out(self):
+        """
+        Test that if the govuk payment is None or it's not in failed status because of timeout,
+        the method returns False.
+        """
+        scenarios = [
+            None,
+            {'state': {'status': 'created'}},
+            {'state': {'status': 'started'}},
+            {'state': {'status': 'submitted'}},
+            {'state': {'status': 'capturable'}},
+            {'state': {'status': 'success'}},
+            {'state': {'status': 'failed'}},
+            {'state': {'status': 'failed', 'code': 'P0001'}},
+            {'state': {'status': 'cancelled'}},
+            {'state': {'status': 'error'}},
+        ]
+
+        for govuk_payment in scenarios:
+            self.assertFalse(
+                GovUkPaymentStatus.payment_timed_out_after_capturable(govuk_payment),
+            )
+
+    def test_payment_timed_out_after_capturable_with_invalid_input(self):
+        """
+        Test that if the govuk_payment doesn't have the expected format, GovUkPaymentStatusException is raised.
+        """
+        scenarios = [
+            {'state': {'status': 'invalid'}},
+            {'state': {'another-key': 'another-value'}},
+        ]
+        for govuk_payment in scenarios:
+            with self.assertRaises(GovUkPaymentStatusException):
+                GovUkPaymentStatus.payment_timed_out_after_capturable(govuk_payment)
 
 
 @override_settings(
@@ -35,7 +219,7 @@ class CaptureGovukPaymentTestCase(SimpleTestCase):
         govuk_payment = {
             'payment_id': payment_id,
             'state': {
-                'status': PaymentStatus.capturable.name,
+                'status': GovUkPaymentStatus.capturable.name,
             },
             'email': 'sender@example.com',
 
@@ -49,10 +233,10 @@ class CaptureGovukPaymentTestCase(SimpleTestCase):
 
             returned_status = client.capture_govuk_payment(govuk_payment)
 
-        self.assertEqual(returned_status, PaymentStatus.success)
+        self.assertEqual(returned_status, GovUkPaymentStatus.success)
         self.assertEqual(
             govuk_payment['state']['status'],
-            PaymentStatus.success.name,
+            GovUkPaymentStatus.success.name,
         )
 
         self.assertEqual(len(mail.outbox), 0)
@@ -68,7 +252,7 @@ class CaptureGovukPaymentTestCase(SimpleTestCase):
         """
         finished_statuses = [
             status
-            for status in PaymentStatus
+            for status in GovUkPaymentStatus
             if status.finished()
         ]
         for status in finished_statuses:
@@ -107,7 +291,7 @@ class CaptureGovukPaymentTestCase(SimpleTestCase):
         govuk_payment = {
             'payment_id': payment_id,
             'state': {
-                'status': PaymentStatus.capturable.name,
+                'status': GovUkPaymentStatus.capturable.name,
             },
         }
         with responses.RequestsMock() as rsps:
@@ -135,7 +319,7 @@ class CaptureGovukPaymentTestCase(SimpleTestCase):
         govuk_payment = {
             'payment_id': payment_id,
             'state': {
-                'status': PaymentStatus.capturable.name,
+                'status': GovUkPaymentStatus.capturable.name,
             },
         }
         with responses.RequestsMock() as rsps:
@@ -175,7 +359,7 @@ class CancelGovukPaymentTestCase(SimpleTestCase):
         govuk_payment = {
             'payment_id': payment_id,
             'state': {
-                'status': PaymentStatus.capturable.name,
+                'status': GovUkPaymentStatus.capturable.name,
             },
             'email': 'sender@example.com',
 
@@ -189,10 +373,10 @@ class CancelGovukPaymentTestCase(SimpleTestCase):
 
             returned_status = client.cancel_govuk_payment(govuk_payment)
 
-        self.assertEqual(returned_status, PaymentStatus.cancelled)
+        self.assertEqual(returned_status, GovUkPaymentStatus.cancelled)
         self.assertEqual(
             govuk_payment['state']['status'],
-            PaymentStatus.cancelled.name,
+            GovUkPaymentStatus.cancelled.name,
         )
 
         self.assertEqual(len(mail.outbox), 0)
@@ -208,7 +392,7 @@ class CancelGovukPaymentTestCase(SimpleTestCase):
         """
         finished_statuses = [
             status
-            for status in PaymentStatus
+            for status in GovUkPaymentStatus
             if status.finished()
         ]
         for status in finished_statuses:
@@ -247,7 +431,7 @@ class CancelGovukPaymentTestCase(SimpleTestCase):
         govuk_payment = {
             'payment_id': payment_id,
             'state': {
-                'status': PaymentStatus.capturable.name,
+                'status': GovUkPaymentStatus.capturable.name,
             },
         }
         with responses.RequestsMock() as rsps:
@@ -275,7 +459,7 @@ class CancelGovukPaymentTestCase(SimpleTestCase):
         govuk_payment = {
             'payment_id': payment_id,
             'state': {
-                'status': PaymentStatus.capturable.name,
+                'status': GovUkPaymentStatus.capturable.name,
             },
         }
         with responses.RequestsMock() as rsps:
@@ -296,6 +480,115 @@ class CancelGovukPaymentTestCase(SimpleTestCase):
 
 @override_settings(
     GOVUK_PAY_URL='https://pay.gov.local/v1',
+)
+class GetGovukPaymentEvents(SimpleTestCase):
+    """
+    Tests related to the get_govuk_payment_events method.
+    """
+
+    def test_successful(self):
+        """
+        Test that the method returns events information about a certain govuk payment.
+        """
+        payment_id = 'payment-id'
+        expected_events = [
+            {
+                'payment_id': payment_id,
+                'state': {
+                    'status': 'created',
+                    'finished': True,
+                    'message': 'User cancelled the payment',
+                    'code': 'P010',
+                },
+                'updated': '2017-01-10T16:44:48.646Z',
+                '_links': {
+                    'payment_url': {
+                        'href': 'https://an.example.link/from/payment/platform',
+                        'method': 'GET',
+                    },
+                },
+            },
+        ]
+
+        client = PaymentClient()
+        with responses.RequestsMock() as rsps:
+            rsps.add(
+                rsps.GET,
+                govuk_url(f'/payments/{payment_id}/events/'),
+                status=200,
+                json={
+                    'events': expected_events,
+                    'payment_id': payment_id,
+                    '_links': {
+                        'self': {
+                            'hrefTrue': 'https://an.example.link/from/payment/platform',
+                            'method': 'GET',
+                        },
+                    },
+                }
+            )
+
+            actual_events = client.get_govuk_payment_events(payment_id)
+
+        self.assertListEqual(actual_events, expected_events)
+
+    def test_404(self):
+        """
+        Test that if GOV.UK Pay returns 404, the method raises HTTPError.
+        """
+        payment_id = 'payment-id'
+
+        client = PaymentClient()
+        with responses.RequestsMock() as rsps:
+            rsps.add(
+                rsps.GET,
+                govuk_url(f'/payments/{payment_id}/events/'),
+                status=404,
+            )
+
+            with self.assertRaises(HTTPError):
+                client.get_govuk_payment_events(payment_id)
+
+    def test_500(self):
+        """
+        Test that if GOV.UK Pay returns 500, the method raises HTTPError.
+        """
+        payment_id = 'payment-id'
+
+        client = PaymentClient()
+        with responses.RequestsMock() as rsps:
+            rsps.add(
+                rsps.GET,
+                govuk_url(f'/payments/{payment_id}/events/'),
+                status=500,
+            )
+
+            with self.assertRaises(HTTPError):
+                client.get_govuk_payment_events(payment_id)
+
+    def test_invalid_response(self):
+        """
+        Test that if the GOV.UK Pay response doesn't have the expected structure, the method raises RequestException.
+        """
+        payment_id = 'payment-id'
+
+        client = PaymentClient()
+        with responses.RequestsMock() as rsps:
+            rsps.add(
+                rsps.GET,
+                govuk_url(f'/payments/{payment_id}/events/'),
+                status=200,
+                json={
+                    'unexpected-key': 'unexpected-value',
+                }
+            )
+
+            with self.assertRaises(RequestException):
+                client.get_govuk_payment_events(payment_id)
+
+
+@override_settings(
+    GOVUK_PAY_URL='https://pay.gov.local/v1',
     ENVIRONMENT='prod',  # because non-prod environments don't send to @outside.local
 )
 class CompletePaymentIfNecessaryTestCase(SimpleTestCase):
@@ -309,7 +602,7 @@ class CompletePaymentIfNecessaryTestCase(SimpleTestCase):
         doesn't have the email field filled in:
 
         - the MTP payment record is patched with the email value
-        - the method returns PaymentStatus.success
+        - the method returns GovUkPaymentStatus.success
         - no email is sent
         """
         client = PaymentClient()
@@ -320,7 +613,7 @@ class CompletePaymentIfNecessaryTestCase(SimpleTestCase):
         govuk_payment = {
             'payment_id': 'payment-id',
             'state': {
-                'status': PaymentStatus.success.name,
+                'status': GovUkPaymentStatus.success.name,
             },
             'email': 'sender@example.com',
         }
@@ -336,7 +629,7 @@ class CompletePaymentIfNecessaryTestCase(SimpleTestCase):
 
             status = client.complete_payment_if_necessary(payment, govuk_payment)
 
-        self.assertEqual(status, PaymentStatus.success)
+        self.assertEqual(status, GovUkPaymentStatus.success)
         self.assertEqual(len(mail.outbox), 0)
 
     def test_capturable_payment_that_shouldnt_be_captured_yet(self):
@@ -345,7 +638,7 @@ class CompletePaymentIfNecessaryTestCase(SimpleTestCase):
         doesn't have the email field filled in and the payment should not be captured yet:
 
         - the MTP payment record is patched with the card details attributes
-        - the method returns PaymentStatus.capturable
+        - the method returns GovUkPaymentStatus.capturable
         - an email is sent to the sender
         """
         client = PaymentClient()
@@ -360,7 +653,7 @@ class CompletePaymentIfNecessaryTestCase(SimpleTestCase):
         govuk_payment = {
             'payment_id': 'payment-id',
             'state': {
-                'status': PaymentStatus.capturable.name,
+                'status': GovUkPaymentStatus.capturable.name,
             },
             'email': 'sender@example.com',
             'provider_id': '123456789',
@@ -403,7 +696,7 @@ class CompletePaymentIfNecessaryTestCase(SimpleTestCase):
                     'billing_address': 'Buckingham Palace SW1A 1AA',
                 }
             )
-        self.assertEqual(status, PaymentStatus.capturable)
+        self.assertEqual(status, GovUkPaymentStatus.capturable)
         self.assertEqual(len(mail.outbox), 1)
         self.assertEqual(payment['email'], 'sender@example.com')
         self.assertEqual(mail.outbox[0].subject, 'Send money to someone in prison: your payment has been put on hold')
@@ -413,7 +706,7 @@ class CompletePaymentIfNecessaryTestCase(SimpleTestCase):
         Test that if the govuk payment is in 'capturable' state, the MTP payment record
         has already the email field filled in and the payment should not be captured yet:
 
-        - the method returns PaymentStatus.capturable
+        - the method returns GovUkPaymentStatus.capturable
         - no email is sent as it
         """
         client = PaymentClient()
@@ -432,7 +725,7 @@ class CompletePaymentIfNecessaryTestCase(SimpleTestCase):
         govuk_payment = {
             'payment_id': 'payment-id',
             'state': {
-                'status': PaymentStatus.capturable.name,
+                'status': GovUkPaymentStatus.capturable.name,
             },
             'email': 'sender@example.com',
             'provider_id': '123456789',
@@ -449,7 +742,7 @@ class CompletePaymentIfNecessaryTestCase(SimpleTestCase):
         with mock.patch.object(client, 'get_security_check_result', return_value=CheckResult.delay):
             status = client.complete_payment_if_necessary(payment, govuk_payment)
 
-        self.assertEqual(status, PaymentStatus.capturable)
+        self.assertEqual(status, GovUkPaymentStatus.capturable)
         self.assertEqual(len(mail.outbox), 0)
 
     def test_capturable_payment_that_should_be_captured(self):
@@ -458,7 +751,7 @@ class CompletePaymentIfNecessaryTestCase(SimpleTestCase):
 
         - the MTP payment record is patched with the card details attributes if necessary
         - the method captures the payment
-        - the method returns PaymentStatus.success
+        - the method returns GovUkPaymentStatus.success
         - no email is sent
         """
         client = PaymentClient()
@@ -469,7 +762,7 @@ class CompletePaymentIfNecessaryTestCase(SimpleTestCase):
         govuk_payment = {
             'payment_id': 'payment-id',
             'state': {
-                'status': PaymentStatus.capturable.name,
+                'status': GovUkPaymentStatus.capturable.name,
             },
             'email': 'sender@example.com',
             'provider_id': '123456789',
@@ -518,7 +811,7 @@ class CompletePaymentIfNecessaryTestCase(SimpleTestCase):
                     'billing_address': 'Buckingham Palace SW1A 1AA',
                 }
             )
-        self.assertEqual(status, PaymentStatus.success)
+        self.assertEqual(status, GovUkPaymentStatus.success)
         self.assertEqual(len(mail.outbox), 0)
 
     def test_capturable_payment_that_should_be_cancelled(self):
@@ -528,7 +821,7 @@ class CompletePaymentIfNecessaryTestCase(SimpleTestCase):
         - the MTP payment record is patched with the card details attributes if necessary
         - the method cancels the payment
         - no email is sent
-        - the method returns PaymentStatus.cancelled
+        - the method returns GovUkPaymentStatus.cancelled
         """
         client = PaymentClient()
 
@@ -542,7 +835,7 @@ class CompletePaymentIfNecessaryTestCase(SimpleTestCase):
         govuk_payment = {
             'payment_id': 'payment-id',
             'state': {
-                'status': PaymentStatus.capturable.name,
+                'status': GovUkPaymentStatus.capturable.name,
             },
             'email': 'sender@example.com',
             'provider_id': '123456789',
@@ -591,7 +884,7 @@ class CompletePaymentIfNecessaryTestCase(SimpleTestCase):
                     'billing_address': 'Buckingham Palace SW1A 1AA',
                 }
             )
-        self.assertEqual(status, PaymentStatus.cancelled)
+        self.assertEqual(status, GovUkPaymentStatus.cancelled)
         self.assertEqual(len(mail.outbox), 0)
 
     def test_dont_send_email(self):
@@ -607,8 +900,8 @@ class CompletePaymentIfNecessaryTestCase(SimpleTestCase):
 
         statuses = [
             status
-            for status in PaymentStatus
-            if status != PaymentStatus.capturable
+            for status in GovUkPaymentStatus
+            if status != GovUkPaymentStatus.capturable
         ]
 
         with responses.RequestsMock() as rsps, silence_logger():

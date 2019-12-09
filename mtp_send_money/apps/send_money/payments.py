@@ -19,6 +19,7 @@ from send_money.mail import (
     send_email_for_card_payment_cancelled,
     send_email_for_card_payment_confirmation,
     send_email_for_card_payment_on_hold,
+    send_email_for_card_payment_timed_out,
 )
 from send_money.utils import (
     get_api_session,
@@ -29,7 +30,7 @@ from send_money.utils import (
 logger = logging.getLogger('mtp')
 
 
-class PaymentStatus(enum.Enum):
+class GovUkPaymentStatus(enum.Enum):
     created = 'Created',
     started = 'Started'
     submitted = 'Submitted'
@@ -47,6 +48,52 @@ class PaymentStatus(enum.Enum):
 
     def is_awaiting_user_input(self):
         return self in [self.created, self.started, self.submitted]
+
+    @classmethod
+    def get_from_govuk_payment(cls, govuk_payment):
+        """
+        :return: GovUkPaymentStatus in the govuk_payment dict or None.
+
+        :raise GovUkPaymentStatusException: if the input value is not in an expected format.
+        """
+        if not govuk_payment:
+            return None
+
+        try:
+            return cls[
+                govuk_payment['state']['status']
+            ]
+        except KeyError:
+            raise GovUkPaymentStatusException(
+                f"Unknown status: {govuk_payment.get('state', {}).get('status')}",
+            )
+
+    @classmethod
+    def payment_timed_out_after_capturable(cls, govuk_payment):
+        """
+        :return: True if failed because of a timeout and the payment was in a capturable
+            status at some point in the past.
+
+        :raise GovUkPaymentStatusException: if the input value is not in the expected format.
+        """
+        status = cls.get_from_govuk_payment(govuk_payment)
+
+        if status != cls.failed:
+            return False
+
+        error_code = govuk_payment['state'].get('code')
+        if error_code != 'P0020':
+            return False
+
+        # check if there's a capturable event in the event log
+        govuk_id = govuk_payment['payment_id']
+        payment_client = PaymentClient()
+        events = payment_client.get_govuk_payment_events(govuk_id)
+
+        return any(
+            event['state'].get('status') == cls.capturable.name
+            for event in events
+        )
 
 
 class CheckResult(enum.Enum):
@@ -102,22 +149,6 @@ class PaymentClient:
             raise ValueError('payment_ref must be provided')
         self.api_session.patch('/payments/%s/' % url_quote(payment_ref), json=payment_update)
 
-    def parse_govuk_payment_status(self, govuk_payment):
-        """
-        :return: PaymentStatus in the govuk_payment dict.
-        """
-        if not govuk_payment:
-            return None
-
-        try:
-            return PaymentStatus[
-                govuk_payment['state']['status']
-            ]
-        except KeyError:
-            raise GovUkPaymentStatusException(
-                f"Unknown status: {govuk_payment['state']['status']}",
-            )
-
     def get_security_check_result(self, payment):
         """
         Checks the security check for 'payment' and returns a CheckResult indicating the next
@@ -127,7 +158,7 @@ class PaymentClient:
 
     def complete_payment_if_necessary(self, payment, govuk_payment):
         """
-        Completes a payment if necessary and returns the resulting PaymentStatus.
+        Completes a payment if necessary and returns the resulting GovUkPaymentStatus.
 
         If the status is 'capturable' and the MTP payment doesn't have any email,
         it updates the email field on record and sends an email to the user.
@@ -138,15 +169,15 @@ class PaymentClient:
         If the status is 'capturable' and the payment should be cancelled, this method
         cancels the payment and returns the new status.
 
-        :return: PaymentStatus for the GOV.UK payment govuk_payment
+        :return: GovUkPaymentStatus for the GOV.UK payment govuk_payment
         :param payment: dict with MTP payment details as returned by the MTP API
         :param govuk_payment: dict with GOV.UK payment details as returned by the GOV.UK Pay API
         """
-        govuk_status = self.parse_govuk_payment_status(govuk_payment)
+        govuk_status = GovUkPaymentStatus.get_from_govuk_payment(govuk_payment)
         if not govuk_status:
             return
 
-        if govuk_status == PaymentStatus.error:
+        if govuk_status == GovUkPaymentStatus.error:
             logger.error(
                 'GOV.UK Pay returned an error for %(govuk_id)s: %(code)s %(msg)s' %
                 {
@@ -156,12 +187,12 @@ class PaymentClient:
                 },
             )
 
-        successfulish = govuk_status in [PaymentStatus.success, PaymentStatus.capturable]
+        successfulish = govuk_status in [GovUkPaymentStatus.success, GovUkPaymentStatus.capturable]
         # if nothing can be done, exist immediately
         if not successfulish:
             return govuk_status
 
-        if govuk_status == PaymentStatus.capturable:
+        if govuk_status == GovUkPaymentStatus.capturable:
             # update payment so that we can work out if it has to be delayed
             payment_attr_updates = self.get_completion_payment_attr_updates(payment, govuk_payment)
             if payment_attr_updates:
@@ -179,7 +210,7 @@ class PaymentClient:
                 govuk_status = self.capture_govuk_payment(govuk_payment)
             elif check_action == CheckResult.cancel:
                 govuk_status = self.cancel_govuk_payment(govuk_payment)
-        elif govuk_status == PaymentStatus.success:
+        elif govuk_status == GovUkPaymentStatus.success:
             # TODO consider updating other attrs using `get_completion_payment_attr_updates`
             email = govuk_payment.get('email')
             if email and not payment.get('email'):
@@ -246,7 +277,7 @@ class PaymentClient:
 
         :raise HTTPError: if GOV.UK Pay returns a 4xx or 5xx response
         """
-        govuk_status = self.parse_govuk_payment_status(govuk_payment)
+        govuk_status = GovUkPaymentStatus.get_from_govuk_payment(govuk_payment)
         if govuk_status is None or govuk_status.finished():
             return govuk_status
 
@@ -259,7 +290,7 @@ class PaymentClient:
 
         response.raise_for_status()
 
-        govuk_status = PaymentStatus.success
+        govuk_status = GovUkPaymentStatus.success
         govuk_payment['state']['status'] = govuk_status.name
         return govuk_status
 
@@ -269,7 +300,7 @@ class PaymentClient:
 
         :raise HTTPError: if GOV.UK Pay returns a 4xx or 5xx response
         """
-        govuk_status = self.parse_govuk_payment_status(govuk_payment)
+        govuk_status = GovUkPaymentStatus.get_from_govuk_payment(govuk_payment)
         if govuk_status is None or govuk_status.finished():
             return govuk_status
 
@@ -282,37 +313,44 @@ class PaymentClient:
 
         response.raise_for_status()
 
-        govuk_status = PaymentStatus.cancelled
+        govuk_status = GovUkPaymentStatus.cancelled
         govuk_payment['state']['status'] = govuk_status.name
         return govuk_status
 
     def update_completed_payment(self, payment, govuk_payment):
-        payment_ref = payment['uuid']
-
-        govuk_status = self.parse_govuk_payment_status(govuk_payment)
-        success = govuk_status == PaymentStatus.success
+        govuk_status = GovUkPaymentStatus.get_from_govuk_payment(govuk_payment)
+        timed_out_after_capturable = GovUkPaymentStatus.payment_timed_out_after_capturable(govuk_payment)
 
         # update mtp payment
         payment_attr_updates = self.get_completion_payment_attr_updates({}, govuk_payment)
-        # TODO: we need a new mtp status for cancelled payments... 'cancelled'?
-        payment_attr_updates['status'] = 'taken' if success else 'failed'
 
-        if success:
+        if govuk_status == GovUkPaymentStatus.success:
             received_at = self.get_govuk_capture_time(govuk_payment)
             payment_attr_updates['received_at'] = received_at.isoformat()
+            payment_attr_updates['status'] = 'taken'
+        else:
+            # TODO: we need a new mtp status for cancelled payments... 'cancelled'
+            # TODO: if timed_out_after_capturable, failed payment and failed credit
+            payment_attr_updates['status'] = 'failed'
 
-        self.update_payment(payment_ref, payment_attr_updates)
+        self.update_payment(payment['uuid'], payment_attr_updates)
 
         # send notification email
         email = (govuk_payment or {}).get('email')
         if not email:
             return
 
-        if govuk_status == PaymentStatus.success:
+        if govuk_status == GovUkPaymentStatus.success:
             # TODO: check if the security check has actioned_by and if so send a different comfirmation email
             send_email_for_card_payment_confirmation(email, payment)
-        elif govuk_status == PaymentStatus.cancelled:
+        elif govuk_status == GovUkPaymentStatus.cancelled:
             send_email_for_card_payment_cancelled(email, payment)
+        elif govuk_status == GovUkPaymentStatus.failed:
+            if timed_out_after_capturable:
+                # it expired after being captured meaning that the user should really get notified
+                # TODO we could check if security check was rejected and if so send a cancellation email instead
+                send_email_for_card_payment_timed_out(email, payment)
+                logger.warning(f'Payment {payment["uuid"]} timed out before being actioned by FIU')
 
     def get_govuk_payment(self, govuk_id):
         response = requests.get(
@@ -335,6 +373,28 @@ class PaymentClient:
             except ValidationError:
                 data['email'] = None
             return data
+        except (ValueError, KeyError):
+            raise RequestException('Cannot parse response', response=response)
+
+    def get_govuk_payment_events(self, govuk_id):
+        """
+        :return: list with events information about a certain govuk payment.
+
+        :param govuk_id: id of the govuk payment
+        :raise HTTPError: if GOV.UK Pay returns a 4xx or 5xx response
+        :raise RequestException: if the response body cannot be parsed
+        """
+        response = requests.get(
+            govuk_url(f'/payments/{govuk_id}/events'),
+            headers=govuk_headers(),
+            timeout=15,
+        )
+
+        response.raise_for_status()
+
+        try:
+            data = response.json()
+            return data['events']
         except (ValueError, KeyError):
             raise RequestException('Cannot parse response', response=response)
 

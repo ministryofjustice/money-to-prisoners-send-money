@@ -16,7 +16,7 @@ from requests.exceptions import RequestException
 
 from send_money import forms as send_money_forms
 from send_money.models import PaymentMethod
-from send_money.payments import is_active_payment, PaymentClient, PaymentStatus
+from send_money.payments import is_active_payment, GovUkPaymentStatus, PaymentClient
 from send_money.mail import send_email_for_bank_transfer_reference
 from send_money.utils import (
     bank_transfer_reference,
@@ -354,12 +354,12 @@ class DebitCardConfirmationView(TemplateView):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.status = PaymentStatus.failed
+        self.status = GovUkPaymentStatus.failed
 
     def get_template_names(self):
-        if self.status == PaymentStatus.success:
+        if self.status == GovUkPaymentStatus.success:
             return ['send_money/debit-card-confirmation.html']
-        if self.status == PaymentStatus.capturable:
+        if self.status == GovUkPaymentStatus.capturable:
             return ['send_money/debit-card-on-hold.html']
         return ['send_money/debit-card-failure.html']
 
@@ -389,7 +389,7 @@ class DebitCardConfirmationView(TemplateView):
             })
 
             if payment['status'] == 'taken':
-                self.status = PaymentStatus.success
+                self.status = GovUkPaymentStatus.success
             else:
                 # check gov.uk payment status
                 govuk_id = payment['processor_id']
@@ -407,17 +407,17 @@ class DebitCardConfirmationView(TemplateView):
                 # treat statuses created, started, submitted as failed as they should have
                 # never got here
                 if self.status.is_awaiting_user_input():
-                    self.status = PaymentStatus.failed
+                    self.status = GovUkPaymentStatus.failed
 
         except OAuth2Error:
             logger.exception('Authentication error while processing %s' % payment_ref)
-            self.status = PaymentStatus.failed
+            self.status = GovUkPaymentStatus.failed
         except RequestException as error:
             error_message = 'Payment check failed for ref %s' % payment_ref
             if hasattr(error, 'response') and hasattr(error.response, 'content'):
                 error_message += '\nReceived: %s' % error.response.content
             logger.exception(error_message)
-            self.status = PaymentStatus.failed
+            self.status = GovUkPaymentStatus.failed
 
         response = super().get(request, *args, **kwargs)
         request.session.flush()
