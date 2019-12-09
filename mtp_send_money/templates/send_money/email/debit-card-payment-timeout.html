@@ -6,7 +6,14 @@
   <p>{% trans 'Dear sender,' %}</p>
 
   <p>
-    <strong>{% trans 'This payment has NOT been sent to the prisoner.' %}</strong>
+    {% blocktrans trimmed %}
+      We’re sorry to tell you that the <strong>payment session expired</strong> before your payment could be taken.
+    {% endblocktrans %}
+  </p>
+  <p>
+    {% blocktrans trimmed %}
+      This payment has <strong>not</strong> gone through to the prisoner’s account.
+    {% endblocktrans %}
   </p>
 
   <table cellspacing="10" style="font-family: sans-serif; border-left: 10px solid #b1b4b6; padding-left: 15px;">
@@ -25,40 +32,29 @@
   </table>
 
   <p>
-    {% trans 'We’re emailing to let you know that this payment has not gone through this time.' %}
-  </p>
-
-  <p>
-    {% trans 'To maintain a high level of prison safety we do regular security checks.' %} <br />
-    {% trans 'Sometimes this means payments can’t be allowed to go through to the prisoner.' %}
-  </p>
-
-  <p>
     <strong>{% trans 'What now?' %}</strong>
   </p>
 
   <p>
     {% blocktrans trimmed %}
-      Your debit card payment has <strong>not</strong> been taken from your account.
+      Please go to <a href="{{ site_url }}">Send money to someone in prison</a> and try again.
     {% endblocktrans %}
+  </p>
+
+  <p>
+    {% trans 'We’re sorry for any inconvenience this may have caused but we’re keen to keep the service running smoothly.' %}
   </p>
 
   <p>
     {% blocktrans trimmed %}
-    If you need further assistance with this, please <a href="{{ feedback_url }}">contact us</a>.
+      <a href="{{ feedback_url }}">Contact us</a> if this is a recurring problem for you or if you need further help.
     {% endblocktrans %}
-  </p>
-
-  <p>
-    {% trans 'We’re sorry for any inconvenience this may have caused.' %}
   </p>
 
   <p>
     {% trans 'Kind regards,' %}
   </p>
   <p>
-    {% trans 'Prisoner Money team' %}<br />
+    {% trans 'Prisoner money team' %}<br />
   </p>
-
-  <p><a href="{{ site_url }}">{% trans 'Back to the service' %}</a></p>
 {% endblock %}

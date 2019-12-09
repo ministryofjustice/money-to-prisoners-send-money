@@ -16,9 +16,10 @@ from requests.exceptions import RequestException
 
 from send_money.exceptions import GovUkPaymentStatusException
 from send_money.mail import (
-    send_email_for_card_payment_cancelled,
+    send_email_for_card_payment_accepted,
     send_email_for_card_payment_confirmation,
     send_email_for_card_payment_on_hold,
+    send_email_for_card_payment_rejected,
     send_email_for_card_payment_timed_out,
 )
 from send_money.utils import (
@@ -341,10 +342,14 @@ class PaymentClient:
             return
 
         if govuk_status == GovUkPaymentStatus.success:
-            # TODO: check if the security check has actioned_by and if so send a different comfirmation email
-            send_email_for_card_payment_confirmation(email, payment)
+            was_accepted_by_fiu = payment.get('security_check', {}).get('user_actioned')
+
+            if was_accepted_by_fiu:
+                send_email_for_card_payment_accepted(email, payment)
+            else:
+                send_email_for_card_payment_confirmation(email, payment)
         elif govuk_status == GovUkPaymentStatus.cancelled:
-            send_email_for_card_payment_cancelled(email, payment)
+            send_email_for_card_payment_rejected(email, payment)
         elif govuk_status == GovUkPaymentStatus.failed:
             if timed_out_after_capturable:
                 # it expired after being captured meaning that the user should really get notified

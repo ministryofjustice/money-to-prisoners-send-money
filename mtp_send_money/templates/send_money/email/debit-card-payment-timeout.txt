@@ -8,9 +8,9 @@ GOV.UK - {% trans 'Send money to someone in prison' %}
 
 {% trans 'This payment has not gone through to the prisoner’s account.' %}
 
-{% trans 'Payment to' %}: {{ prisoner_name }}
-{% trans 'Amount' %}: {{ amount|currency_format }}
-{% trans 'Reference' %}: {{ short_payment_ref }}
+{% trans 'Payment to:' %} {{ prisoner_name }}
+{% trans 'Amount:' %} {{ amount|currency_format }}
+{% trans 'Reference:' %} {{ short_payment_ref }}
 
 {% trans 'What now?' %}
 
@@ -18,7 +18,7 @@ GOV.UK - {% trans 'Send money to someone in prison' %}
 
 {% trans 'We’re sorry for any inconvenience this may have caused but we’re keen to keep the service running smoothly.' %}
 
-{% trans 'Contact us if this is a recurring problem for you or if you need further more help:' %} {{ feedback_url }}
+{% trans 'Contact us if this is a recurring problem for you or if you need further help:' %} {{ feedback_url }}
 
 {% trans 'Kind regards,' %}
 {% trans 'Prisoner money team' %}

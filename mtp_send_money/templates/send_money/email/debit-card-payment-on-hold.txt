@@ -1,0 +1,17 @@
+{% load i18n %}
+{% load send_money %}
+GOV.UK - {% trans 'Send money to someone in prison' %}
+
+{% trans 'Dear sender,' %}
+
+{% trans 'This payment has been put on hold for up to 5 days.' %}
+
+{% trans 'Payment to:' %} {{ prisoner_name }}
+{% trans 'Amount:' %} {{ amount|currency_format }}
+{% trans 'Reference:' %} {{ short_payment_ref }}
+
+{% trans 'Your payment has been selected for a compliance check.' %}
+{% trans 'We’ll email you a payment update as soon as we can and are sorry for any inconvenience this may cause.' %}
+
+{% trans 'Kind regards,' %}
+{% trans 'Prisoner money compliance team' %}

@@ -50,21 +50,33 @@ def send_email_for_card_payment_on_hold(email, payment):
 
     _send_notification_email(
         email,
-        'debit-card-on-hold',
+        'debit-card-payment-on-hold',
         gettext('your payment has been put on hold'),
         ['dc-on-hold'],
         context,
     )
 
 
-def send_email_for_card_payment_cancelled(email, payment):
+def send_email_for_card_payment_accepted(email, payment):
     context = _get_email_context_for_payment(payment)
 
     _send_notification_email(
         email,
-        'debit-card-cancelled',
+        'debit-card-payment-accepted',
+        gettext('your payment has now gone through'),
+        ['dc-accepted'],
+        context,
+    )
+
+
+def send_email_for_card_payment_rejected(email, payment):
+    context = _get_email_context_for_payment(payment)
+
+    _send_notification_email(
+        email,
+        'debit-card-payment-rejected',
         gettext('your payment has NOT been sent to the prisoner'),
-        ['dc-cancelled'],
+        ['dc-rejected'],
         context,
     )
 
@@ -74,7 +86,7 @@ def send_email_for_card_payment_timed_out(email, payment):
 
     _send_notification_email(
         email,
-        'debit-card-timeout',
+        'debit-card-payment-timeout',
         gettext('payment session expired'),
         ['dc-timeout'],
         context,
