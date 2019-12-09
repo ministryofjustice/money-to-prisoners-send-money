@@ -45,6 +45,9 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
         - wargle-5555 relates to a GOV.UK payment in 'failed' status which was in a capturable status in the past so:
             * should become 'failed'
             * a notification email should be sent to the sender
+        - wargle-6666 relates to a GOV.UK payment in 'success' status after its credit was accepted by FIU so:
+            * should become 'taken'
+            * a different confirmation email should be sent
         """
         with responses.RequestsMock() as rsps:
             mock_auth(rsps)
@@ -52,7 +55,7 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
                 rsps.GET,
                 api_url('/payments/'),
                 json={
-                    'count': 3,
+                    'count': 6,
                     'results': [
                         {
                             'uuid': 'wargle-1111',
@@ -103,6 +106,20 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
                             'modified': datetime.now().isoformat() + 'Z',
                             'prisoner_number': 'A4444DE',
                             'prisoner_dob': '1992-12-05',
+                        },
+                        {
+                            'uuid': 'wargle-6666',
+                            'processor_id': 6,
+                            'recipient_name': 'Tim',
+                            'amount': 800,
+                            'status': 'pending',
+                            'modified': datetime.now().isoformat() + 'Z',
+                            'prisoner_number': 'A1409AW',
+                            'prisoner_dob': '1989-01-21',
+                            'security_check': {
+                                'status': 'accepted',
+                                'user_actioned': True,
+                            }
                         },
                     ],
                 },
@@ -227,6 +244,33 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
                 api_url('/payments/%s/' % 'wargle-5555'),
                 status=200,
             )
+            # get govuk payment
+            rsps.add(
+                rsps.GET,
+                govuk_url('/payments/%s/' % 6),
+                json={
+                    'reference': 'wargle-6666',
+                    'state': {'status': 'success'},
+                    'settlement_summary': {
+                        'capture_submit_time': '2016-10-27T15:11:05Z',
+                        'captured_date': '2016-10-27'
+                    },
+                    'email': 'success_after_delay_sender@outside.local',
+                },
+                status=200,
+            )
+            # save email
+            rsps.add(
+                rsps.PATCH,
+                api_url('/payments/%s/' % 'wargle-6666'),
+                status=200,
+            )
+            # update status
+            rsps.add(
+                rsps.PATCH,
+                api_url('/payments/%s/' % 'wargle-6666'),
+                status=200,
+            )
 
             call_command('update_incomplete_payments', verbosity=0)
 
@@ -289,8 +333,28 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
             self.assertTrue('Tom' in mail.outbox[2].body)
             self.assertTrue('£7' in mail.outbox[2].body)
 
+            # check wargle-6666
+            self.assertEqual(
+                json.loads(rsps.calls[14].request.body.decode()),
+                {'email': 'success_after_delay_sender@outside.local'},
+            )
+            self.assertDictEqual(
+                json.loads(rsps.calls[15].request.body.decode()),
+                {
+                    'email': 'success_after_delay_sender@outside.local',
+                    'status': 'taken',
+                    'received_at': '2016-10-27T15:11:05+00:00',
+                },
+            )
+            self.assertEqual(
+                mail.outbox[3].subject,
+                'Send money to someone in prison: your payment has now gone through',
+            )
+            self.assertTrue('Tim' in mail.outbox[3].body)
+            self.assertTrue('£8' in mail.outbox[3].body)
+
             # double-check that no more emails were sent
-            self.assertEqual(len(mail.outbox), 3)
+            self.assertEqual(len(mail.outbox), 4)
 
     @override_settings(ENVIRONMENT='prod')  # because non-prod environments don't send to @outside.local
     def test_update_incomplete_payments_extracts_card_details(self):

@@ -57,6 +57,18 @@ def send_email_for_card_payment_on_hold(email, payment):
     )
 
 
+def send_email_for_card_payment_accepted(email, payment):
+    context = _get_email_context_for_payment(payment)
+
+    _send_notification_email(
+        email,
+        'debit-card-payment-accepted',
+        gettext('your payment has now gone through'),
+        ['dc-accepted'],
+        context,
+    )
+
+
 def send_email_for_card_payment_rejected(email, payment):
     context = _get_email_context_for_payment(payment)
 
