@@ -336,7 +336,7 @@ class PaymentClient:
             return
 
         if govuk_status == GovUkPaymentStatus.success:
-            was_accepted_by_fiu = payment.get('security_check', {}).get('user_actioned')
+            was_accepted_by_fiu = (payment.get('security_check') or {}).get('user_actioned')
 
             if was_accepted_by_fiu:
                 send_email_for_card_payment_accepted(email, payment)
