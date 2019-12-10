@@ -193,13 +193,13 @@ class PaymentClient:
         if not successfulish:
             return govuk_status
 
-        if govuk_status == GovUkPaymentStatus.capturable:
-            # update payment so that we can work out if it has to be delayed
-            payment_attr_updates = self.get_completion_payment_attr_updates(payment, govuk_payment)
-            if payment_attr_updates:
-                self.update_payment(payment['uuid'], payment_attr_updates)
-                payment.update(payment_attr_updates)
+        # update payment so that we can work out if it has to be delayed
+        payment_attr_updates = self.get_completion_payment_attr_updates(payment, govuk_payment)
+        if payment_attr_updates:
+            self.update_payment(payment['uuid'], payment_attr_updates)
+            payment.update(payment_attr_updates)
 
+        if govuk_status == GovUkPaymentStatus.capturable:
             # decide next action
             check_action = self.get_security_check_result(payment)
             if check_action == CheckResult.delay:
@@ -211,12 +211,6 @@ class PaymentClient:
                 govuk_status = self.capture_govuk_payment(govuk_payment)
             elif check_action == CheckResult.cancel:
                 govuk_status = self.cancel_govuk_payment(govuk_payment)
-        elif govuk_status == GovUkPaymentStatus.success:
-            # TODO consider updating other attrs using `get_completion_payment_attr_updates`
-            email = govuk_payment.get('email')
-            if email and not payment.get('email'):
-                self.update_payment(payment['uuid'], {'email': email})
-                payment['email'] = email
 
         return govuk_status
 
