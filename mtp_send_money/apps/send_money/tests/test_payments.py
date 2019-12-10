@@ -599,9 +599,9 @@ class CompletePaymentIfNecessaryTestCase(SimpleTestCase):
     def test_success_status(self):
         """
         Test that if the govuk payment is in 'success' state and the MTP payment record
-        doesn't have the email field filled in:
+        doesn't have all the card details and email field filled in:
 
-        - the MTP payment record is patched with the email value
+        - the MTP payment record is patched with the extra payment details
         - the method returns GovUkPaymentStatus.success
         - no email is sent
         """
@@ -616,11 +616,19 @@ class CompletePaymentIfNecessaryTestCase(SimpleTestCase):
                 'status': GovUkPaymentStatus.success.name,
             },
             'email': 'sender@example.com',
+            'card_details': {
+                'cardholder_name': 'John Doe',
+                'first_digits_card_number': '1234',
+                'last_digits_card_number': '987',
+                'expiry_date': '01/20',
+                'card_brand': 'visa',
+                'billing_address': 'Buckingham Palace SW1A 1AA',
+            },
         }
         with responses.RequestsMock() as rsps:
             mock_auth(rsps)
 
-            # API call related to updating the email address on the payment record
+            # API call related to updating the email address and other details on the payment record
             rsps.add(
                 rsps.PATCH,
                 api_url(f'/payments/{payment["uuid"]}/'),
@@ -628,6 +636,19 @@ class CompletePaymentIfNecessaryTestCase(SimpleTestCase):
             )
 
             status = client.complete_payment_if_necessary(payment, govuk_payment)
+
+            self.assertDictEqual(
+                json.loads(rsps.calls[-1].request.body.decode()),
+                {
+                    'email': 'sender@example.com',
+                    'cardholder_name': 'John Doe',
+                    'card_number_first_digits': '1234',
+                    'card_number_last_digits': '987',
+                    'card_expiry_date': '01/20',
+                    'card_brand': 'visa',
+                    'billing_address': 'Buckingham Palace SW1A 1AA',
+                },
+            )
 
         self.assertEqual(status, GovUkPaymentStatus.success)
         self.assertEqual(len(mail.outbox), 0)
