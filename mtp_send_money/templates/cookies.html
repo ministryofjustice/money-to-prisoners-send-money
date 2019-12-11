@@ -4,18 +4,18 @@
 
 {% block page_title %}{% trans 'Cookies' %} – {{ block.super }}{% endblock %}
 
-{% block inner_content %}
+{% block content %}
   <header>
-    <h1 class="heading-xlarge">{% trans 'Cookies' %}</h1>
+    <h1 class="govuk-heading-xl">{% trans 'Cookies' %}</h1>
   </header>
 
-  <div class="grid-row">
-    <div class="column-two-thirds">
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
       {% include 'mtp_common/forms/error-summary.html' with form=form only %}
 
       <p>{% trans 'We put small files (known as ‘cookies’) onto your computer or mobile device when you visit this website.' %}</p>
       <p>{% trans 'Cookies are used to:' %}</p>
-      <ul class="list list-bullet">
+      <ul class="govuk-list govuk-list--bullet">
         <li>{% trans 'measure how you use this website so it can be updated and improved based on your needs' %}</li>
         <li>{% trans 'remember your progress through our service' %}</li>
         <li>{% trans 'remember the settings you’ve chosen' %}</li>
@@ -29,7 +29,7 @@
         {% trans 'You can read more about <a href="https://www.gov.uk/help/cookies" rel="external">how cookies are used throughout GOV.UK</a>.' %}
       </p>
 
-      <h2 class="heading-large">{% trans 'Cookies we use to improve our service' %}</h2>
+      <h2 class="govuk-heading-l">{% trans 'Cookies we use to improve our service' %}</h2>
       <p>
         {% trans 'We use Google Analytics to measure how you use this website so we can improve it based on your needs.' %}
         {% trans 'We do not allow Google to use or share the data about how you use it.' %}
@@ -43,20 +43,20 @@
               {% trans 'Do you agree to the Ministry of Justice and other UK government departments using Google Analytics to help improve the ‘Send money to someone in prison’ service?' %}
             </legend>
             {% include 'mtp_common/forms/radio-field.html' with field=form.accept_cookies only %}
-            <input class="button" type="submit" value="{% trans 'Save changes' %}">
+            <input class="govuk-button" type="submit" value="{% trans 'Save changes' %}">
           </fieldset>
         </div>
       </form>
 
       <p>{% trans 'Google Analytics stores information about:' %}</p>
-      <ul class="list list-bullet">
+      <ul class="govuk-list govuk-list--bullet">
         <li>{% trans 'the pages you visit in this service' %}</li>
         <li>{% trans 'how long you spend on each page' %}</li>
         <li>{% trans 'how you got to the site' %}</li>
         <li>{% trans 'what you click on while you’re visiting the site' %}</li>
       </ul>
       <p>{% trans 'Google Analytics does <strong>NOT</strong> store:' %}</p>
-      <ul class="list list-bullet">
+      <ul class="govuk-list govuk-list--bullet">
         <li>{% trans 'any of your personal details, for example, your name' %}</li>
         <li>{% trans 'what you enter into pages on this site' %}</li>
       </ul>
@@ -79,7 +79,7 @@
         </tbody>
       </table>
 
-      <h2 class="heading-large">{% trans 'Essential cookies' %}</h2>
+      <h2 class="govuk-heading-l">{% trans 'Essential cookies' %}</h2>
       <p>
         {% trans 'These cookies need to be on to allow you to use this service.' %}
       </p>
@@ -91,7 +91,7 @@
         {% endblocktrans %}
       </p>
 
-      <h3 class="heading-medium">{% trans 'Your progress when using the service' %}</h3>
+      <h3 class="govuk-heading-m">{% trans 'Your progress when using the service' %}</h3>
       <p>
         {% trans 'When you use the ‘Send money to someone in prison’ service, we’ll set cookies to remember your progress through this site.' %}
         {% trans 'These cookies don’t store your personal data and are deleted when you close this website.' %}
@@ -118,7 +118,7 @@
         </tbody>
       </table>
 
-      <h3 class="heading-medium">{% trans 'Settings you’ve chosen' %}</h3>
+      <h3 class="govuk-heading-m">{% trans 'Settings you’ve chosen' %}</h3>
       <p>
         {% trans 'When you use the ‘Send money to someone in prison’ service, we’ll set cookies to remember settings you change.' %}
         {% trans 'These cookies don’t store any personal data, but will be saved on your computer or mobile for some time.' %}

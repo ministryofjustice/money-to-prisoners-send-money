@@ -4,13 +4,13 @@
 
 {% block page_title %}{% trans 'Payment issues' %} – {{ block.super }}{% endblock %}
 
-{% block inner_content %}
-  <div class="grid-row">
-    <div class="column-two-thirds">
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
 
       <header>
-        <h1 class="heading-xlarge">
-          <span class="heading-secondary">
+        <h1 class="govuk-heading-xl">
+          <span class="govuk-caption-xl">
             {% trans 'Help' %}
           </span>
           {% trans 'Payment issues' %}
@@ -23,7 +23,7 @@
       <p>
         {% trans 'Find out:' %}
       </p>
-      <ul class="list list-bullet">
+      <ul class="govuk-list govuk-list--bullet">
         <li>
           {% url 'send_money:help_bank_transfer' as help_page_url %}
           {% blocktrans trimmed %}

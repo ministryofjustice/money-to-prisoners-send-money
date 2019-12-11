@@ -4,17 +4,17 @@
 
 {% block page_title %}{% trans 'Pay now by debit card' %} – {{ block.super }}{% endblock %}
 
-{% block inner_content %}
+{% block content %}
   {% notifications_box request 'send_money_landing' %}
 
-  <div class="grid-row">
-    <div class="column-two-thirds">
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
 
       <header>
-        <h1 class="heading-xlarge">{% trans 'Pay now by debit card' %}</h1>
+        <h1 class="govuk-heading-xl">{% trans 'Pay now by debit card' %}</h1>
       </header>
 
-      <p class="lede">
+      <p class="govuk-body-l">
         {% blocktrans trimmed %}
           Paying by debit card is the <strong>fastest</strong>, <strong>simplest</strong> and most <strong>reliable</strong> way of sending money to a prisoner – and it’s <strong>free</strong>
         {% endblocktrans %}
@@ -33,7 +33,7 @@
         {% trans 'You can make an international payment using a debit card.' %}
       </p>
 
-      <div class="panel panel-border-wide">
+      <div class="govuk-inset-text">
         {% trans 'From January 2020, you will no longer be able to use a pre-paid debit card.' %}
       </div>
 
@@ -41,13 +41,16 @@
 
       {% if form.payment_method.field.disabled %}
 
-        <div class="error-summary" role="alert" aria-labelledby="error-summary-heading" tabindex="-1">
-          <h1 class="heading-medium error-summary-heading">
+        {# based on mtp_common/forms/error-summary.html #}
+        <div class="govuk-error-summary" aria-labelledby="debit-cards-unavailable" role="alert" tabindex="-1">
+          <h2 class="govuk-error-summary__title" id="debit-cards-unavailable">
             {{ form.payment_method.field.message_to_users|default:_('Sending money by debit card is temporarily unavailable') }}
-          </h1>
-          <p>
-            {% trans 'Please try again later.' %}
-          </p>
+          </h2>
+          <div class="govuk-error-summary__body">
+            <p>
+              {% trans 'Please try again later.' %}
+            </p>
+          </div>
         </div>
 
       {% else %}
@@ -55,7 +58,7 @@
         <form method="post">
           {% csrf_token %}
           {% with payment_method=form.payment_method.field.choices.0.0 %}
-            <button name="{{ form.payment_method.html_name }}" value="{{ payment_method }}" id="id_{{ payment_method }}" class="button">
+            <button name="{{ form.payment_method.html_name }}" value="{{ payment_method }}" id="id_{{ payment_method }}" class="govuk-button">
               {% trans 'Continue' %}
             </button>
           {% endwith %}
@@ -68,7 +71,7 @@
       <form method="post">
         {% csrf_token %}
         {% with payment_method=form.payment_method.field.choices.1.0 %}
-          <button name="{{ form.payment_method.html_name }}" value="{{ payment_method }}" id="id_{{ payment_method }}" class="mtp-link-button link font-xsmall">
+          <button name="{{ form.payment_method.html_name }}" value="{{ payment_method }}" id="id_{{ payment_method }}" class="mtp-link-button govuk-link govuk-body-s">
             {% trans 'I don’t have a debit card' %}
           </button>
         {% endwith %}

@@ -5,10 +5,10 @@
 
 {% block page_title %}{% trans 'Enter amount to send' %} – {{ block.super }}{% endblock %}
 
-{% block inner_content %}
+{% block content %}
   <header>
-    <h1 class="heading-xlarge">
-      <span class="heading-secondary">{% trans 'Pay now by debit card' %}</span>
+    <h1 class="govuk-heading-xl">
+      <span class="govuk-caption-xl">{% trans 'Pay now by debit card' %}</span>
       {% trans 'Enter amount to send' %}
     </h1>
   </header>
@@ -21,7 +21,7 @@
     {% with field=form.amount %}
       <div class="mtp-amount">
         <fieldset>
-          <legend class="visually-hidden">{% trans 'Please enter the amount in pounds' %}</legend>
+          <legend class="govuk-visually-hidden">{% trans 'Please enter the amount in pounds' %}</legend>
 
           {% include 'mtp_common/forms/field-label.html' with field=field only %}
           <div class="form-group mtp-money-amount {% if field.errors %}form-group-error{% endif %}">
@@ -79,7 +79,7 @@
     {% endwith %}
 
     <p>
-      <input id="id_next_btn" class="button" type="submit" value="{% trans 'Check details' %}">
+      <input id="id_next_btn" class="govuk-button" type="submit" value="{% trans 'Check details' %}">
     </p>
   </form>
 {% endblock %}

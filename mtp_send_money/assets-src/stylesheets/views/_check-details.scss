@@ -4,12 +4,13 @@
   border-top: 2px solid $border-colour;
   padding: 1em 0 1.5em;
 
-  .heading-medium {
+  .govuk-heading-m {
+    // TODO: needed?
     margin: 0 0 0.2em;
   }
 
   @include media(mobile) {
-    .column-one-third {
+    .govuk-grid-column-one-third {
       padding-top: 1em;
     }
   }

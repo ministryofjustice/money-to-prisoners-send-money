@@ -5,44 +5,51 @@
 {# extended copy of mtp_common/forms/error-summary.html #}
 
 {% if form.errors %}
-  <div class="error-summary" aria-labelledby="error-summary-heading" tabindex="-1" role="alert">
-    <h2 class="heading-medium error-summary-heading" id="error-summary-heading">
+  <div class="govuk-error-summary" aria-labelledby="error-summary-title" role="alert" tabindex="-1" data-module="govuk-error-summary">
+    <h2 class="govuk-error-summary__title" id="error-summary-title">
       {% trans 'There was a problem' as error_summary_title %}
       {{ form.error_summary_title|default:error_summary_title }}
     </h2>
-    <ul class="error-summary-list">
-      {% get_form_errors form as errors %}
+    <div class="govuk-error-summary__body">
+      <ul class="govuk-list govuk-error-summary__list">
+        {% get_form_errors form as errors %}
 
-      {% for error in errors.non_field %}
-        <li class="non-field-error">{{ error }}<span class="visually-hidden">.</span></li>
-      {% endfor %}
-      {% if errors.non_field|prisoner_details_not_found %}
-        <li class="non-field-error">
-          {% trans 'Please check:' %}
-            <ul class="list list-bullet">
-              <li>{% trans 'you entered the details correctly' %}</li>
-              <li>
-                {% url 'send_money:prison_list' as prison_list_url %}
-                {% blocktrans trimmed %}
-                  you’re sending money to a <a href="{{ prison_list_url }}">public prison</a>
-                {% endblocktrans %}
-              </li>
+        {% for error in errors.non_field %}
+          <li class="mtp-error-summary__non-field-error">
+            {{ error }}<span class="govuk-visually-hidden">.</span>
+          </li>
+        {% endfor %}
+        {% if errors.non_field|prisoner_details_not_found %}
+          <li class="mtp-error-summary__non-field-error">
+            {% trans 'Please check:' %}
+              <ul class="govuk-list govuk-list--bullet">
+                <li>
+                  {% trans 'you entered the details correctly' %}
+                </li>
+                <li>
+                  {% url 'send_money:prison_list' as prison_list_url %}
+                  {% blocktrans trimmed %}
+                    you’re sending money to a <a href="{{ prison_list_url }}">supported prison</a>
+                  {% endblocktrans %}
+                </li>
+                <li>
+                  {% trans 'the details match those held by the prison - ask the prisoner to check with the wing officer' %}
+                </li>
+              </ul>
+          </li>
+        {% endif %}
 
-              <li>{% trans 'the details match those held by the prison - ask the prisoner to check with the wing officer' %}</li>
+        {% for field, field_errors in errors.field_specific.items %}
+          <li class="mtp-error-summary__field-errors">
+            <a href="#{{ field.id_for_label }}-label">{{ field.label }}</a>
+            <ul>
+              {% for field_error in field_errors %}
+                <li>{{ field_error }}<span class="govuk-visually-hidden">.</span></li>
+              {% endfor %}
             </ul>
-        </li>
-      {% endif %}
-
-      {% for field, field_errors in errors.field_specific.items %}
-        <li class="field-specific-error">
-          <a href="#{{ field.id_for_label }}-label">{{ field.label }}</a>
-          <ul>
-            {% for field_error in field_errors %}
-              <li>{{ field_error }}<span class="visually-hidden">.</span></li>
-            {% endfor %}
-          </ul>
-        </li>
-      {% endfor %}
-    </ul>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
   </div>
 {% endif %}

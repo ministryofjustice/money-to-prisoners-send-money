@@ -1,15 +1,15 @@
 {% extends 'base.html' %}
 {% load mtp_common %}
 
-{% block inner_content %}
+{% block content %}
 
 <header>
-  <h1 class="heading-xlarge">Send money to someone in prison – FAQs</h1>
+  <h1 class="govuk-heading-xl">Send money to someone in prison – FAQs</h1>
 </header>
 
-<div class="grid-row">
-  <div class="column-two-thirds">
-    <p class="lede">
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <p class="govuk-body-l">
       Information for prison switchboard, APVU and business hub staff to help answer questions from the public regarding the <a href="{{ site_url }}">Send money to someone in prison</a> service.
     </p>
 
@@ -35,7 +35,7 @@
       <dt>Can I send money to a prisoner using this service?</dt>
       <dd>
         <p>Yes. The digital service (bank transfers and debit cards) is now available to all <a href="{% url 'send_money:prison_list' %}">public prisons in England and Wales</a>.</p>
-        <p>The service is <strong>not</strong> available in <a href="https://www.justice.gov.uk/about/hmps/contracted-out">private prisons</a> except HMP Lowdham Grange and HMP Northumberland.</p>
+        <p>The service is <strong>not</strong> available in <a href="https://www.justice.gov.uk/about/hmps/contracted-out">private prisons</a> except HMP Lowdham Grange, HMP Northumberland or HMP Oakwood.</p>
       </dd>
 
       <dt>How long will it take for the prisoner to receive the money?</dt>
@@ -53,7 +53,7 @@
       <dd>
         <p>If you paid by <strong>debit card</strong>, contact your bank.</p>
         <p>If you paid by <strong>bank transfer</strong>, it may be because:</p>
-        <ul class="list list-bullet">
+        <ul class="govuk-list govuk-list--bullet">
           <li>the reference you inserted for the bank transfer is wrong – check with the prisoner that you have the prisoner’s correct date of birth and correct prisoner number</li>
           <li>the prisoner has left prison</li>
           <li>you paid cash in-branch (not allowed)</li>
@@ -89,7 +89,7 @@
       <dt>How do I get my money back if I made a bank transfer in-branch or by international transfer?</dt>
       <dd>
         <p>You need to talk to the prison business hub staff to identify the payment. When it’s been identified you will need to write to them confirming:</p>
-        <ul class="list list-bullet">
+        <ul class="govuk-list govuk-list--bullet">
           <li>who you are</li>
           <li>your address</li>
           <li>how you made the payment (in-branch or international transfer)</li>

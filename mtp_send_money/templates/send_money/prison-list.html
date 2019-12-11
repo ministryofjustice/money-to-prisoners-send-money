@@ -3,31 +3,36 @@
 {% load mtp_common %}
 {% load prisons %}
 
-{% block page_title %}{% trans 'Public prisons in England and Wales' %} – {{ block.super }}{% endblock %}
+{% block page_title %}{% trans 'Supported prisons in England and Wales' %} – {{ block.super }}{% endblock %}
 
-{% block inner_content %}
-  <header>
-    <h1 class="heading-xlarge">
-      {% trans 'Public prisons in England and Wales' %}
-    </h1>
-  </header>
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <header>
+        <h1 class="govuk-heading-xl">
+          {% trans 'Supported prisons in England and Wales' %}
+        </h1>
+      </header>
 
-  <p>{% trans 'The ‘Send money to someone in prison’ service is available in the following public prisons, young offender institutions and immigration removal centres in England and Wales.' %}</p>
-
-  {% if prison_list %}
-    <div class="mtp-filtered-list">
       <p>
-        <input class="form-control form-control-1-3 mtp-filtered-list__input" type="search" value="" placeholder="{% trans 'Search' %}" />
+        {% trans 'The ‘Send money to someone in prison’ service is available in the following prisons, young offender institutions and immigration removal centres in England and Wales.' %}
       </p>
-      <ul class="panel panel-border-narrow mtp-filtered-list__list" data-stop-words="{{ stop_words|join:' ' }}">
-        <li class="mtp-filtered-list__empty">{% trans 'No prisons found' %}</li>
-        {% for prison in prison_list %}
-          <li>{{ prison|describe_abbreviation }}</li>
-        {% endfor %}
-      </ul>
-    </div>
-  {% else %}
-    <p><strong>{% trans 'This service is currently unavailable' %}</strong></p>
-  {% endif %}
 
+      {% if prison_list %}
+        <div class="mtp-filtered-list">
+          <p>
+            <input class="form-control form-control-1-3 mtp-filtered-list__input" type="search" value="" placeholder="{% trans 'Search' %}" />
+          </p>
+          <ul class="govuk-inset-text mtp-filtered-list__list" data-stop-words="{{ stop_words|join:' ' }}">
+            <li class="mtp-filtered-list__empty">{% trans 'No prisons found' %}</li>
+            {% for prison in prison_list %}
+              <li>{{ prison|describe_abbreviation }}</li>
+            {% endfor %}
+          </ul>
+        </div>
+      {% else %}
+        <p><strong>{% trans 'This service is currently unavailable' %}</strong></p>
+      {% endif %}
+    </div>
+  </div>
 {% endblock %}

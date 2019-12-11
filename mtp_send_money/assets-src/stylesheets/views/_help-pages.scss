@@ -6,7 +6,7 @@
   }
 
   #id_ticket_content-label, #id_contact_email-label {
-    @extend .heading-medium;
+    @extend %govuk-heading-m;
     margin-bottom: 0 !important;
   }
 

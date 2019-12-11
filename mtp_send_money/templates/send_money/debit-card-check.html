@@ -5,21 +5,21 @@
 
 {% block page_title %}{% trans 'Check details' %} – {{ block.super }}{% endblock %}
 
-{% block inner_content %}
+{% block content %}
   <header>
-    <h1 class="heading-xlarge">
-      <span class="heading-secondary">{% trans 'Pay now by debit card' %}</span>
+    <h1 class="govuk-heading-xl">
+      <span class="govuk-caption-xl">{% trans 'Pay now by debit card' %}</span>
       {% trans 'Check details' %}
     </h1>
   </header>
 
-  <div class="grid-row">
-    <div class="column-two-thirds">
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
 
       <section class="mtp-check-details">
-        <div class="grid-row">
-          <div class="column-two-thirds">
-            <h2 class="heading-medium">{% trans 'Prisoner details' %}</h2>
+        <div class="govuk-grid-row">
+          <div class="govuk-grid-column-two-thirds">
+            <h2 class="govuk-heading-m">{% trans 'Prisoner details' %}</h2>
             <table class="mtp-check-table">
               <tbody>
                 <tr>
@@ -37,18 +37,18 @@
               </tbody>
             </table>
           </div>
-          <div class="column-one-third">
+          <div class="govuk-grid-column-one-third">
             <a href="{{ view.get_prisoner_details_url }}?focus=id_prisoner_name">
-              {% trans 'Change' %} <span class="visually-hidden">{% trans 'Name, date of birth or prisoner number' %}</span>
+              {% trans 'Change' %} <span class="govuk-visually-hidden">{% trans 'Name, date of birth or prisoner number' %}</span>
             </a>
           </div>
         </div>
       </section>
 
       <section class="mtp-check-details">
-        <div class="grid-row">
-          <div class="column-two-thirds">
-            <h2 class="heading-medium">{% trans 'Amount' %}</h2>
+        <div class="govuk-grid-row">
+          <div class="govuk-grid-column-two-thirds">
+            <h2 class="govuk-heading-m">{% trans 'Amount' %}</h2>
             <table class="mtp-check-table">
               <tbody>
                 {% if service_charged %}
@@ -75,9 +75,9 @@
               </tbody>
             </table>
           </div>
-          <div class="column-one-third">
+          <div class="govuk-grid-column-one-third">
             <a href="{{ view.get_amount_url }}?focus=id_amount">
-              {% trans 'Change' %} <span class="visually-hidden">{% trans 'Amount' %}</span>
+              {% trans 'Change' %} <span class="govuk-visually-hidden">{% trans 'Amount' %}</span>
             </a>
           </div>
         </div>
@@ -90,11 +90,11 @@
     </div>
   </div>
 
-  <div class="grid-row mtp-check-details__confirm">
-    <form class="column-one-third" action="{{ view.get_success_url }}" method="get">
-      <input class="button" id="id_next_btn" type="submit" value="{% trans 'Enter card details' %}">
+  <div class="govuk-grid-row mtp-check-details__confirm">
+    <form class="govuk-grid-column-one-third" action="{{ view.get_success_url }}" method="get">
+      <input class="govuk-button" id="id_next_btn" type="submit" value="{% trans 'Enter card details' %}">
     </form>
-    <form class="column-two-thirds" action="{% url 'send_money:clear_session' %}" method="get">
+    <form class="govuk-grid-column-two-thirds" action="{% url 'send_money:clear_session' %}" method="get">
       <input class="link" type="submit" value="{% trans 'Cancel and delete all details' %}">
     </form>
   </div>

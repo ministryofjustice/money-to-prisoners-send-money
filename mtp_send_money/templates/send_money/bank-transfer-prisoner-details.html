@@ -5,10 +5,10 @@
 
 {% block page_title %}{% trans 'Enter prisoner details' %} – {{ block.super }}{% endblock %}
 
-{% block inner_content %}
+{% block content %}
   <header>
-    <h1 class="heading-xlarge">
-      <span class="heading-secondary">{% trans 'Get a prisoner reference to use in a UK bank transfer' %}</span>
+    <h1 class="govuk-heading-xl">
+      <span class="govuk-caption-xl">{% trans 'Get a prisoner reference to use in a UK bank transfer' %}</span>
       {% trans 'Enter prisoner details' %}
     </h1>
   </header>
@@ -24,12 +24,12 @@
     {% include 'send_money/prisoner-details-error-summary.html' with form=form only %}
 
     <fieldset>
-      <legend class="visually-hidden">{% trans 'Prisoner details' %}</legend>
+      <legend class="govuk-visually-hidden">{% trans 'Prisoner details' %}</legend>
       {% include 'send_money/includes/prisoner-details-dob.html' with field=form.prisoner_dob only %}
       {% include 'send_money/includes/prisoner-details-number.html' with field=form.prisoner_number only %}
     </fieldset>
     <p>
-      <input id="id_next_btn" class="button" type="submit" value="{% trans 'Get reference' %}">
+      <input id="id_next_btn" class="govuk-button" type="submit" value="{% trans 'Get reference' %}">
     </p>
   </form>
 {% endblock %}

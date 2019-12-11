@@ -5,10 +5,10 @@
 
 {% block page_title %}{% trans 'Enter prisoner details' %} – {{ block.super }}{% endblock %}
 
-{% block inner_content %}
+{% block content %}
   <header>
-    <h1 class="heading-xlarge">
-      <span class="heading-secondary">{% trans 'Pay now by debit card' %}</span>
+    <h1 class="govuk-heading-xl">
+      <span class="govuk-caption-xl">{% trans 'Pay now by debit card' %}</span>
       {% trans 'Enter prisoner details' %}
     </h1>
   </header>
@@ -19,14 +19,14 @@
     {% include 'send_money/prisoner-details-error-summary.html' with form=form only %}
 
     <fieldset>
-      <legend class="visually-hidden">{% trans 'Prisoner details' %}</legend>
+      <legend class="govuk-visually-hidden">{% trans 'Prisoner details' %}</legend>
       {% include 'mtp_common/forms/field.html' with field=form.prisoner_name only %}
       {% include 'send_money/includes/prisoner-details-dob.html' with field=form.prisoner_dob only %}
       {% include 'send_money/includes/prisoner-details-number.html' with field=form.prisoner_number only %}
     </fieldset>
 
     <p>
-      <input id="id_next_btn" class="button" type="submit" value="{% trans 'Enter amount' %}">
+      <input id="id_next_btn" class="govuk-button" type="submit" value="{% trans 'Enter amount' %}">
     </p>
   </form>
 {% endblock %}

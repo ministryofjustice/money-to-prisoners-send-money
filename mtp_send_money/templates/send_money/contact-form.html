@@ -4,8 +4,8 @@
 
 {% block get_help_heading %}
   <header>
-    <h1 class="heading-xlarge">
-      <span class="heading-secondary">
+    <h1 class="govuk-heading-xl">
+      <span class="govuk-caption-xl">
         {% trans 'Help' %}
       </span>
       {% trans 'Contact us' %}
@@ -17,13 +17,13 @@
 
 {% block get_help_form %}
 
-  <div class="grid-row mtp-contact-columns">
-    <div class="column-two-thirds">
+  <div class="govuk-grid-row mtp-contact-columns">
+    <div class="govuk-grid-column-two-thirds">
       <form action="." method="post" id="mtp-feedback-form">
         {% include 'mtp_common/forms/error-summary.html' with form=form only %}
 
         <fieldset>
-          <legend class="visually-hidden">{% trans 'Your message' %}</legend>
+          <legend class="govuk-visually-hidden">{% trans 'Your message' %}</legend>
 
           <div class="hidden">
             {% include 'mtp_common/forms/field.html' with field=form.subject only %}
@@ -37,7 +37,7 @@
             </div>
           {% endwith %}
 
-          <h2 class="heading-medium">{% trans 'If you’re having difficulties using the service, please send:' %}</h2>
+          <h2 class="govuk-heading-m">{% trans 'If you’re having difficulties using the service, please send:' %}</h2>
           {% include 'mtp_common/forms/field.html' with field=form.prisoner_number only %}
           {% include 'mtp_common/forms/field.html' with field=form.prisoner_dob only %}
 
@@ -46,20 +46,20 @@
           <div class="form-group">
             {% csrf_token %}
             {{ form.referer }}
-            <button type="submit" class="button" name="submit-feedback">{% trans 'Send' %}</button>
+            <button type="submit" class="govuk-button" name="submit-feedback">{% trans 'Send' %}</button>
           </div>
         </fieldset>
       </form>
     </div>
 
-    <aside class="column-one-third">
-      <h2 class="heading-medium">
+    <aside class="govuk-grid-column-one-third">
+      <h2 class="govuk-heading-m">
         {% trans 'Find help if you’ve already sent money but the:' %}
       </h2>
       <p>
         {% trans 'Find help if you’ve already sent money but the:' %}
       </p>
-      <ul class="list list-bullet">
+      <ul class="govuk-list govuk-list--bullet">
         <li>
           <a href="{% url 'send_money:help_delays' %}">
             {% trans 'Payment has taken longer than expected' %}

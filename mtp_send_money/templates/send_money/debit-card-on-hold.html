@@ -4,10 +4,10 @@
 
 {% block page_title %}{% trans 'Payment on hold' %} – {{ block.super }}{% endblock %}
 
-{% block inner_content %}
+{% block content %}
 
   <div class="govuk-box-highlight mtp-box-highlight-info">
-    <h1 class="heading-xlarge">{% trans 'This payment has been put on hold for up to 5 days' %}</h1>
+    <h1 class="govuk-heading-xl">{% trans 'This payment has been put on hold for up to 5 days' %}</h1>
     <p>{% trans 'Reference:' %} <strong>{{ short_payment_ref }}</strong></p>
   </div>
 
@@ -15,9 +15,9 @@
     <a class="mtp-print-reference" href="#">{% trans 'Print this page' %}</a>
   </div>
 
-  <div class="grid-row">
-    <div class="column-two-thirds">
-      <div class="mtp-account panel panel-border-wide">
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <div class="mtp-account govuk-inset-text">
         <table>
           <tbody>
             <tr>

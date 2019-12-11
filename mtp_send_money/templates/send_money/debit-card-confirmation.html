@@ -4,10 +4,10 @@
 
 {% block page_title %}{% trans 'Payment successful' %} – {{ block.super }}{% endblock %}
 
-{% block inner_content %}
+{% block content %}
 
   <div class="govuk-box-highlight mtp-box-highlight-success">
-    <h1 class="heading-xlarge">{% trans 'Payment successful' %}</h1>
+    <h1 class="govuk-heading-xl">{% trans 'Payment successful' %}</h1>
     <p>{% trans 'Your confirmation number is' %}<p>
     <strong>{{ short_payment_ref }}</strong>
   </div>
@@ -16,9 +16,9 @@
     <a class="mtp-print-reference" href="#">{% trans 'Print this page' %}</a>
   </div>
 
-  <div class="grid-row">
-    <div class="column-two-thirds">
-      <div class="mtp-account panel panel-border-wide">
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <div class="mtp-account govuk-inset-text">
         <table>
           <tbody>
             <tr>
@@ -41,8 +41,8 @@
         </table>
       </div>
 
-      <h2 class="heading-medium">{% trans 'What happens next' %}</h2>
-      <ol class="list list-number">
+      <h2 class="govuk-heading-m">{% trans 'What happens next' %}</h2>
+      <ol class="govuk-list govuk-list--number">
         <li>
           {% trans 'We’ll email you a copy of this confirmation page.' %}
           {% trans 'Please check your spam folder.' %}

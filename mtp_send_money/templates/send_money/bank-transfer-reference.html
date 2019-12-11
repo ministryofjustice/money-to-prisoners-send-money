@@ -5,11 +5,11 @@
 
 {% block page_title %}{% trans 'Now you can make the bank transfer' %} – {{ block.super }}{% endblock %}
 
-{% block inner_content %}
+{% block content %}
 
   <div class="govuk-box-highlight mtp-box-highlight-success">
-    <h1 class="heading-xlarge">{% trans 'Your prisoner reference is' %}</h1>
-    <h2 class="heading-large">{{ bank_transfer_reference }}</h2>
+    <h1 class="govuk-heading-xl">{% trans 'Your prisoner reference is' %}</h1>
+    <h2 class="govuk-heading-l">{{ bank_transfer_reference }}</h2>
     <p>{% trans 'Use this reference to make your bank transfer' %}</p>
   </div>
 
@@ -26,22 +26,22 @@
     {% include 'mtp_common/forms/field.html' with field=form.email only %}
 
     <p>
-      <input id="id_next_btn" class="button" type="submit" value="{% trans 'Send me an email' %}">
+      <input id="id_next_btn" class="govuk-button" type="submit" value="{% trans 'Send me an email' %}">
     </p>
   </form>
 
-  <div class="grid-row">
-    <div class="column-two-thirds">
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
       <section>
-        <h2 class="heading-medium">{% trans 'Now you can make the bank transfer' %}</h2>
-        <ol class="list list-number">
+        <h2 class="govuk-heading-m">{% trans 'Now you can make the bank transfer' %}</h2>
+        <ol class="govuk-list govuk-list--number">
           <li>
             {% trans 'Log into your online banking account, mobile banking app or use your telephone banking, as normal.' %}
           </li>
 
           <li>
             {% trans 'Copy and paste these details into the transfer:' %}
-            <div class="mtp-account panel panel-border-wide">
+            <div class="mtp-account govuk-inset-text">
               <table>
                 <tbody>
                   <tr>

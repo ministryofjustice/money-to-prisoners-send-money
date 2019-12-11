@@ -4,13 +4,13 @@
 
 {% block page_title %}{% trans 'A prisoner has been moved or released' %} – {{ block.super }}{% endblock %}
 
-{% block inner_content %}
-  <div class="grid-row">
-    <div class="column-two-thirds">
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
 
       <header>
-        <h1 class="heading-xlarge">
-          <span class="heading-secondary">
+        <h1 class="govuk-heading-xl">
+          <span class="govuk-caption-xl">
             {% trans 'Help' %}
           </span>
           {% trans 'A prisoner has been moved or released' %}
@@ -20,7 +20,7 @@
       <p>
         {% trans 'If the prisoner has been:' %}
       </p>
-      <ul class="list list-bullet">
+      <ul class="govuk-list govuk-list--bullet">
         <li>
           {% blocktrans with private_prisons_url='https://www.justice.gov.uk/about/hmps/contracted-out' trimmed %}
             moved, the money will be transferred to the next prison, whether it’s a public or private prison – if it’s a <a href="{{ private_prisons_url }}">private prison</a> the process may take longer

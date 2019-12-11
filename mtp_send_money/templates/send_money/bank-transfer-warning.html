@@ -5,12 +5,12 @@
 
 {% block page_title %}{% trans 'Get a prisoner reference to make your UK bank transfer' %} – {{ block.super }}{% endblock %}
 
-{% block inner_content %}
-  <div class="grid-row">
-    <div class="column-two-thirds">
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
 
       <header>
-        <h1 class="heading-xlarge">
+        <h1 class="govuk-heading-xl">
           {% trans 'Get a prisoner reference to make your UK bank transfer' %}
         </h1>
       </header>
@@ -18,7 +18,7 @@
       <p>
         {% trans 'You’ll get a prisoner reference so you can make a bank transfer using:' %}
       </p>
-      <ul class="list list-bullet">
+      <ul class="govuk-list govuk-list--bullet">
         <li>
           {% trans 'online banking' %}
         </li>
@@ -38,7 +38,7 @@
       <strong>
         {% trans 'You can’t' %}
       </strong>
-      <ul class="list list-bullet">
+      <ul class="govuk-list govuk-list--bullet">
         <li>
           {% trans 'go into a bank branch to transfer money' %}
         </li>
@@ -50,7 +50,7 @@
         </li>
       </ul>
 
-      <aside class="panel panel-border-wide">
+      <aside class="govuk-inset-text">
         {% url 'send_money:choose_method' as choose_method_url %}
         {% blocktrans trimmed with action=_('Paying by debit card')|wraplink:choose_method_url %}
           {{ action }} is the <strong>fastest</strong>, <strong>simplest</strong> and most <strong>reliable</strong> way of sending money to a prisoner – and it’s <strong>free</strong>
@@ -59,7 +59,7 @@
 
       <br />
       <p>
-        <a id="id_next_btn" class="button" href="{{ view.get_success_url }}">{% trans 'Continue' %}</a>
+        <a id="id_next_btn" class="govuk-button" href="{{ view.get_success_url }}">{% trans 'Continue' %}</a>
       </p>
 
     </div>

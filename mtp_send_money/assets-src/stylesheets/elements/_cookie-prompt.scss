@@ -1,9 +1,4 @@
-#global-cookie-message {
-  display: none !important;
-}
-
 .mtp-cookie-prompt {
-  @extend %site-width-container;
   @include core-19;
 
   display: none;
@@ -18,7 +13,7 @@
     display: block;
   }
 
-  form a.mtp-cancel-button {
+  form a.mtp-button--cancel {
     color: $green;
 
     &:visited {
@@ -26,7 +21,7 @@
     }
   }
 
-  .button {
+  .govuk-button {
     border: 2px solid $green;
     color: #fff;
     background-color: $green;
@@ -41,11 +36,11 @@
   }
 
   @include media(mobile) {
-    .button {
+    .govuk-button {
       width: 40%;
     }
 
-    .mtp-cancel-button {
+    .mtp-button--cancel {
       display: block;
       margin-top: 1em;
     }
