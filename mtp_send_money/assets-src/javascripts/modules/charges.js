@@ -2,7 +2,7 @@
 // Automatically shows service charges when typing an amount in the payment page
 'use strict';
 
-exports.Charges = {
+export var Charges = {
   selector: '.mtp-amount',
 
   init: function () {

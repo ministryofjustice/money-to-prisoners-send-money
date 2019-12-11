@@ -1,7 +1,7 @@
 // Reference section
 'use strict';
 
-exports.Reference = {
+export var Reference = {
   init: function () {
     $('.mtp-print-reference').click(function (e) {
       e.preventDefault();
