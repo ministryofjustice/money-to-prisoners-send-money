@@ -323,8 +323,9 @@ class PaymentClient:
             received_at = self.get_govuk_capture_time(govuk_payment)
             payment_attr_updates['received_at'] = received_at.isoformat()
             payment_attr_updates['status'] = 'taken'
+        elif govuk_status == GovUkPaymentStatus.cancelled:
+            payment_attr_updates['status'] = 'rejected'
         else:
-            # TODO: we need a new mtp status for cancelled payments... 'cancelled'
             # TODO: if timed_out_after_capturable, failed payment and failed credit
             payment_attr_updates['status'] = 'failed'
 

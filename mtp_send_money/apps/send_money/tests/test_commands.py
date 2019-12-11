@@ -40,7 +40,7 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
         - wargle-3333 relates to a GOV.UK payment in 'failed' status without being in capturable status in the past
             so should become 'failed'
         - wargle-4444 relates to a GOV.UK payment in 'cancelled' status so:
-            * should become 'failed'
+            * should become 'rejected'
             * a notification email should be sent to the sender
         - wargle-5555 relates to a GOV.UK payment in 'failed' status which was in a capturable status in the past so:
             * should become 'failed'
@@ -365,7 +365,7 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
                 json.loads(rsps.calls[9].request.body.decode()),
                 {
                     'email': 'cancelled_sender@outside.local',
-                    'status': 'failed',
+                    'status': 'rejected',
                 },
             )
             self.assertEqual(
