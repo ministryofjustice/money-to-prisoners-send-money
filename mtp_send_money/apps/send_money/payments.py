@@ -325,8 +325,9 @@ class PaymentClient:
             payment_attr_updates['status'] = 'taken'
         elif govuk_status == GovUkPaymentStatus.cancelled:
             payment_attr_updates['status'] = 'rejected'
+        elif timed_out_after_capturable:
+            payment_attr_updates['status'] = 'expired'
         else:
-            # TODO: if timed_out_after_capturable, failed payment and failed credit
             payment_attr_updates['status'] = 'failed'
 
         self.update_payment(payment['uuid'], payment_attr_updates)

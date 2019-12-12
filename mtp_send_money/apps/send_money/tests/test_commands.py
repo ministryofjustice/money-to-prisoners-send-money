@@ -43,14 +43,14 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
             * should become 'rejected'
             * a notification email should be sent to the sender
         - wargle-5555 relates to a GOV.UK payment in 'failed' status which was in a capturable status in the past so:
-            * should become 'failed'
+            * should become 'expired'
             * a notification email should be sent to the sender
         - wargle-6666 relates to a GOV.UK payment in 'success' status after its credit was accepted by FIU so:
             * should become 'taken'
             * a different confirmation email should be sent
         - wargle-7777 relates to a GOV.UK payment in 'failed' status which was in a capturable status in the past and
             was rejected by FIU so:
-            * should become 'failed'
+            * should become 'expired'
             * a rejection email (not a timeout email) should be sent to the sender
         """
         with responses.RequestsMock() as rsps:
@@ -380,7 +380,7 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
                 json.loads(rsps.calls[12].request.body.decode()),
                 {
                     'email': 'timedout_sender@outside.local',
-                    'status': 'failed',
+                    'status': 'expired',
                 },
             )
             self.assertEqual(
@@ -415,7 +415,7 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
                 json.loads(rsps.calls[18].request.body.decode()),
                 {
                     'email': 'timedout_sender@outside.local',
-                    'status': 'failed',
+                    'status': 'expired',
                 },
             )
             self.assertEqual(
