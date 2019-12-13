@@ -148,7 +148,8 @@ class PaymentClient:
     def update_payment(self, payment_ref, payment_update):
         if not payment_ref:
             raise ValueError('payment_ref must be provided')
-        self.api_session.patch('/payments/%s/' % url_quote(payment_ref), json=payment_update)
+        response = self.api_session.patch('/payments/%s/' % url_quote(payment_ref), json=payment_update)
+        return response.json()
 
     def get_security_check_result(self, payment):
         """
@@ -196,8 +197,10 @@ class PaymentClient:
         # update payment so that we can work out if it has to be delayed
         payment_attr_updates = self.get_completion_payment_attr_updates(payment, govuk_payment)
         if payment_attr_updates:
-            self.update_payment(payment['uuid'], payment_attr_updates)
-            payment.update(payment_attr_updates)
+            # update instead of replace payment because we want to keep the same reference
+            payment.update(
+                **self.update_payment(payment['uuid'], payment_attr_updates),
+            )
 
         if govuk_status == GovUkPaymentStatus.capturable:
             # decide next action
@@ -317,7 +320,7 @@ class PaymentClient:
         timed_out_after_capturable = GovUkPaymentStatus.payment_timed_out_after_capturable(govuk_payment)
 
         # update mtp payment
-        payment_attr_updates = self.get_completion_payment_attr_updates({}, govuk_payment)
+        payment_attr_updates = self.get_completion_payment_attr_updates(payment, govuk_payment)
 
         if govuk_status == GovUkPaymentStatus.success:
             received_at = self.get_govuk_capture_time(govuk_payment)
