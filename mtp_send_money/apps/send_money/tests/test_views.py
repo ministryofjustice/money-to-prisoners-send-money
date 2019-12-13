@@ -665,11 +665,15 @@ class DebitCardPaymentTestCase(DebitCardFlowTestCase):
                         }
                     }
                 },
-                status=201
+                status=201,
             )
             rsps.add(
                 rsps.PATCH,
                 api_url('/payments/%s/' % ref),
+                json={
+                    'uuid': ref,
+                    'processor_id': processor_id,
+                },
                 status=200,
             )
             with self.patch_prisoner_details_check():
@@ -727,6 +731,10 @@ class DebitCardPaymentTestCase(DebitCardFlowTestCase):
             rsps.add(
                 rsps.PATCH,
                 api_url(f'/payments/{ref}/'),
+                json={
+                    'uuid': ref,
+                    'processor_id': processor_id,
+                },
                 status=200,
             )
             with self.patch_prisoner_details_check():
@@ -865,6 +873,10 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
             rsps.add(
                 rsps.PATCH,
                 api_url('/payments/%s/' % 'wargle-blargle'),
+                json={
+                    **self.payment_data,
+                    'email': 'sender@outside.local',
+                },
                 status=200,
             )
             with self.patch_prisoner_details_check():
@@ -924,6 +936,10 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
             rsps.add(
                 rsps.PATCH,
                 api_url('/payments/%s/' % 'wargle-blargle'),
+                json={
+                    **self.payment_data,
+                    'email': 'sender@outside.local',
+                },
                 status=200,
             )
             rsps.add(
@@ -988,6 +1004,10 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
             rsps.add(
                 rsps.PATCH,
                 api_url('/payments/%s/' % 'wargle-blargle'),
+                json={
+                    **self.payment_data,
+                    'email': 'sender@outside.local',
+                },
                 status=200,
             )
             with self.patch_prisoner_details_check():
@@ -1360,22 +1380,24 @@ class PaymentServiceUnavailableTestCase(DebitCardFlowTestCase):
         self.fill_in_prisoner_details()
         self.fill_in_amount()
 
+        payment = {
+            'uuid': payment_ref,
+            'processor_id': processor_id,
+            'recipient_name': 'John',
+            'amount': 1700,
+            'status': 'pending',
+            'modified': f'{datetime.datetime.now().isoformat()}Z',
+            'received_at': f'{datetime.datetime.now().isoformat()}Z',
+            'prisoner_number': 'A1409AE',
+            'prisoner_dob': '1989-01-21',
+        }
+
         with responses.RequestsMock() as rsps:
             mock_auth(rsps)
             rsps.add(
                 rsps.GET,
                 api_url(f'/payments/{payment_ref}/'),
-                json={
-                    'uuid': payment_ref,
-                    'processor_id': processor_id,
-                    'recipient_name': 'John',
-                    'amount': 1700,
-                    'status': 'pending',
-                    'modified': f'{datetime.datetime.now().isoformat()}Z',
-                    'received_at': f'{datetime.datetime.now().isoformat()}Z',
-                    'prisoner_number': 'A1409AE',
-                    'prisoner_dob': '1989-01-21',
-                },
+                json=payment,
                 status=200,
             )
             rsps.add(
@@ -1395,6 +1417,10 @@ class PaymentServiceUnavailableTestCase(DebitCardFlowTestCase):
             rsps.add(
                 rsps.PATCH,
                 api_url(f'/payments/{payment_ref}/'),
+                json={
+                    **payment,
+                    'email': 'sender@outside.local',
+                },
                 status=200,
             )
             with self.patch_prisoner_details_check():

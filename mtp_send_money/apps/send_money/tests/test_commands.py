@@ -53,93 +53,94 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
             * should become 'expired'
             * a rejection email (not a timeout email) should be sent to the sender
         """
+        payments = [
+            {
+                'uuid': 'wargle-1111',
+                'processor_id': 1,
+                'recipient_name': 'John',
+                'amount': 1700,
+                'status': 'pending',
+                'modified': datetime.now().isoformat() + 'Z',
+                'prisoner_number': 'A1409AE',
+                'prisoner_dob': '1989-01-21',
+            },
+            {
+                'uuid': 'wargle-2222',
+                'processor_id': 2,
+                'recipient_name': 'Tom',
+                'amount': 2000,
+                'status': 'pending',
+                'modified': datetime.now().isoformat() + 'Z',
+                'prisoner_number': 'A1234GJ',
+                'prisoner_dob': '1954-04-17',
+            },
+            {
+                'uuid': 'wargle-3333',
+                'processor_id': 3,
+                'recipient_name': 'Harry',
+                'amount': 500,
+                'status': 'pending',
+                'modified': datetime.now().isoformat() + 'Z',
+                'prisoner_number': 'A5544CD',
+                'prisoner_dob': '1992-12-05',
+            },
+            {
+                'uuid': 'wargle-4444',
+                'processor_id': 4,
+                'recipient_name': 'Lisa',
+                'amount': 600,
+                'status': 'pending',
+                'modified': datetime.now().isoformat() + 'Z',
+                'prisoner_number': 'A4444DB',
+                'prisoner_dob': '1992-12-05',
+            },
+            {
+                'uuid': 'wargle-5555',
+                'processor_id': 5,
+                'recipient_name': 'Tom',
+                'amount': 700,
+                'status': 'pending',
+                'modified': datetime.now().isoformat() + 'Z',
+                'prisoner_number': 'A4444DE',
+                'prisoner_dob': '1992-12-05',
+            },
+            {
+                'uuid': 'wargle-6666',
+                'processor_id': 6,
+                'recipient_name': 'Tim',
+                'amount': 800,
+                'status': 'pending',
+                'modified': datetime.now().isoformat() + 'Z',
+                'prisoner_number': 'A1409AW',
+                'prisoner_dob': '1989-01-21',
+                'security_check': {
+                    'status': 'accepted',
+                    'user_actioned': True,
+                },
+            },
+            {
+                'uuid': 'wargle-7777',
+                'processor_id': 7,
+                'recipient_name': 'Jim',
+                'amount': 900,
+                'status': 'pending',
+                'modified': datetime.now().isoformat() + 'Z',
+                'prisoner_number': 'A4444DQ',
+                'prisoner_dob': '1992-12-05',
+                'security_check': {
+                    'status': 'rejected',
+                    'user_actioned': True,
+                },
+            },
+        ]
         with responses.RequestsMock() as rsps:
             mock_auth(rsps)
             rsps.add(
                 rsps.GET,
                 api_url('/payments/'),
                 json={
-                    'count': 7,
-                    'results': [
-                        {
-                            'uuid': 'wargle-1111',
-                            'processor_id': 1,
-                            'recipient_name': 'John',
-                            'amount': 1700,
-                            'status': 'pending',
-                            'modified': datetime.now().isoformat() + 'Z',
-                            'prisoner_number': 'A1409AE',
-                            'prisoner_dob': '1989-01-21',
-                        },
-                        {
-                            'uuid': 'wargle-2222',
-                            'processor_id': 2,
-                            'recipient_name': 'Tom',
-                            'amount': 2000,
-                            'status': 'pending',
-                            'modified': datetime.now().isoformat() + 'Z',
-                            'prisoner_number': 'A1234GJ',
-                            'prisoner_dob': '1954-04-17',
-                        },
-                        {
-                            'uuid': 'wargle-3333',
-                            'processor_id': 3,
-                            'recipient_name': 'Harry',
-                            'amount': 500,
-                            'status': 'pending',
-                            'modified': datetime.now().isoformat() + 'Z',
-                            'prisoner_number': 'A5544CD',
-                            'prisoner_dob': '1992-12-05',
-                        },
-                        {
-                            'uuid': 'wargle-4444',
-                            'processor_id': 4,
-                            'recipient_name': 'Lisa',
-                            'amount': 600,
-                            'status': 'pending',
-                            'modified': datetime.now().isoformat() + 'Z',
-                            'prisoner_number': 'A4444DB',
-                            'prisoner_dob': '1992-12-05',
-                        },
-                        {
-                            'uuid': 'wargle-5555',
-                            'processor_id': 5,
-                            'recipient_name': 'Tom',
-                            'amount': 700,
-                            'status': 'pending',
-                            'modified': datetime.now().isoformat() + 'Z',
-                            'prisoner_number': 'A4444DE',
-                            'prisoner_dob': '1992-12-05',
-                        },
-                        {
-                            'uuid': 'wargle-6666',
-                            'processor_id': 6,
-                            'recipient_name': 'Tim',
-                            'amount': 800,
-                            'status': 'pending',
-                            'modified': datetime.now().isoformat() + 'Z',
-                            'prisoner_number': 'A1409AW',
-                            'prisoner_dob': '1989-01-21',
-                            'security_check': {
-                                'status': 'accepted',
-                                'user_actioned': True,
-                            }
-                        },
-                        {
-                            'uuid': 'wargle-7777',
-                            'processor_id': 7,
-                            'recipient_name': 'Jim',
-                            'amount': 900,
-                            'status': 'pending',
-                            'modified': datetime.now().isoformat() + 'Z',
-                            'prisoner_number': 'A4444DQ',
-                            'prisoner_dob': '1992-12-05',
-                            'security_check': {
-                                'status': 'rejected',
-                                'user_actioned': True,
-                            }
-                        },
-                    ],
+                    'count': len(payments),
+                    'results': payments,
                 },
                 status=200,
             )
@@ -162,12 +163,21 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
             rsps.add(
                 rsps.PATCH,
                 api_url('/payments/%s/' % 'wargle-1111'),
+                json={
+                    **payments[0],
+                    'email': 'success_sender@outside.local',
+                },
                 status=200,
             )
             # update status
             rsps.add(
                 rsps.PATCH,
                 api_url('/payments/%s/' % 'wargle-1111'),
+                json={
+                    **payments[0],
+                    'email': 'success_sender@outside.local',
+                    'status': 'taken',
+                },
                 status=200,
             )
             # get govuk payment
@@ -204,6 +214,10 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
             rsps.add(
                 rsps.PATCH,
                 api_url('/payments/%s/' % 'wargle-3333'),
+                json={
+                    **payments[2],
+                    'status': 'failed',
+                },
                 status=200,
             )
             # get govuk payment
@@ -221,6 +235,10 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
             rsps.add(
                 rsps.PATCH,
                 api_url('/payments/%s/' % 'wargle-4444'),
+                json={
+                    **payments[3],
+                    'status': 'rejected',
+                },
                 status=200,
             )
             # get govuk payment
@@ -260,6 +278,10 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
             rsps.add(
                 rsps.PATCH,
                 api_url('/payments/%s/' % 'wargle-5555'),
+                json={
+                    **payments[4],
+                    'status': 'expired',
+                },
                 status=200,
             )
             # get govuk payment
@@ -281,12 +303,20 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
             rsps.add(
                 rsps.PATCH,
                 api_url('/payments/%s/' % 'wargle-6666'),
+                json={
+                    **payments[5],
+                    'email': 'success_after_delay@outside.local',
+                },
                 status=200,
             )
             # update status
             rsps.add(
                 rsps.PATCH,
                 api_url('/payments/%s/' % 'wargle-6666'),
+                json={
+                    **payments[5],
+                    'status': 'taken',
+                },
                 status=200,
             )
             # get govuk payment
@@ -326,6 +356,10 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
             rsps.add(
                 rsps.PATCH,
                 api_url('/payments/%s/' % 'wargle-7777'),
+                json={
+                    **payments[0],
+                    'status': 'expired',
+                },
                 status=200,
             )
 
@@ -339,7 +373,6 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
             self.assertDictEqual(
                 json.loads(rsps.calls[4].request.body.decode()),
                 {
-                    'email': 'success_sender@outside.local',
                     'status': 'taken',
                     'received_at': '2016-10-27T15:11:05+00:00',
                 },
@@ -398,7 +431,6 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
             self.assertDictEqual(
                 json.loads(rsps.calls[15].request.body.decode()),
                 {
-                    'email': 'success_after_delay_sender@outside.local',
                     'status': 'taken',
                     'received_at': '2016-10-27T15:11:05+00:00',
                 },
@@ -433,6 +465,32 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
         """
         Test that card details are extracted from the GOV.UK payment and saved on the MTP payment.
         """
+        payment = {
+            'uuid': 'wargle-1111',
+            'processor_id': 1,
+            'recipient_name': 'John',
+            'amount': 1700,
+            'status': 'pending',
+            'modified': datetime.now().isoformat() + 'Z',
+            'prisoner_number': 'A1409AE',
+            'prisoner_dob': '1989-01-21',
+        }
+        payment_extra_details = {
+            'cardholder_name': 'Jack Halls',
+            'card_brand': 'Visa',
+            'worldpay_id': '11112222-1111-2222-3333-111122223333',
+            'email': 'success_sender@outside.local',
+            'card_number_first_digits': '100002',
+            'card_number_last_digits': '1111',
+            'card_expiry_date': '11/18',
+            'billing_address': {
+                'line1': '102 Petty France',
+                'line2': '',
+                'city': 'London',
+                'postcode': 'SW1H9AJ',
+                'country': 'GB',
+            },
+        }
         with responses.RequestsMock() as rsps:
             mock_auth(rsps)
             rsps.add(
@@ -440,18 +498,7 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
                 api_url('/payments/'),
                 json={
                     'count': 1,
-                    'results': [
-                        {
-                            'uuid': 'wargle-1111',
-                            'processor_id': 1,
-                            'recipient_name': 'John',
-                            'amount': 1700,
-                            'status': 'pending',
-                            'modified': datetime.now().isoformat() + 'Z',
-                            'prisoner_number': 'A1409AE',
-                            'prisoner_dob': '1989-01-21',
-                        },
-                    ]
+                    'results': [payment],
                 },
                 status=200,
             )
@@ -487,38 +534,35 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
             rsps.add(
                 rsps.PATCH,
                 api_url('/payments/%s/' % 'wargle-1111'),
+                json={
+                    **payment,
+                    **payment_extra_details,
+                },
                 status=200,
             )
             rsps.add(
                 rsps.PATCH,
                 api_url('/payments/%s/' % 'wargle-1111'),
+                json={
+                    **payment,
+                    **payment_extra_details,
+                },
                 status=200,
             )
 
             call_command('update_incomplete_payments', verbosity=0)
-            api_patch = json.loads(rsps.calls[-1].request.body.decode())
 
-        api_patch.pop('received_at')
-        api_patch.pop('status')
-        self.assertDictEqual(
-            api_patch,
-            {
-                'cardholder_name': 'Jack Halls',
-                'card_brand': 'Visa',
-                'worldpay_id': '11112222-1111-2222-3333-111122223333',
-                'email': 'success_sender@outside.local',
-                'card_number_first_digits': '100002',
-                'card_number_last_digits': '1111',
-                'card_expiry_date': '11/18',
-                'billing_address': {
-                    'line1': '102 Petty France',
-                    'line2': '',
-                    'city': 'London',
-                    'postcode': 'SW1H9AJ',
-                    'country': 'GB',
-                },
-            },
-        )
+            self.assertDictEqual(
+                json.loads(rsps.calls[-2].request.body.decode()),
+                payment_extra_details,
+            )
+            self.assertDictEqual(
+                json.loads(rsps.calls[-1].request.body.decode()),
+                {
+                    'received_at': '2016-10-27T15:11:05+00:00',
+                    'status': 'taken',
+                }
+            )
 
     ref = 'wargle-1111'
     processor_id = '1'
@@ -556,11 +600,15 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
             rsps.add(
                 rsps.GET,
                 govuk_url('/payments/%s/' % self.processor_id),
-                status=404
+                status=404,
             )
             rsps.add(
                 rsps.PATCH,
                 api_url('/payments/%s/' % self.ref),
+                json={
+                    **self.payment_data,
+                    'status': 'failed',
+                },
                 status=200,
             )
 
@@ -709,6 +757,11 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
             rsps.add(
                 rsps.PATCH,
                 api_url(f'/payments/{self.ref}/'),
+                json={
+                    **self.payment_data,
+                    'status': 'taken',
+                    'email': 'success_sender@outside.local',
+                },
                 status=200,
             )
 
@@ -721,7 +774,6 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
                 {
                     'status': 'taken',
                     'received_at': '2016-10-27T15:11:05+00:00',
-                    'email': 'success_sender@outside.local',
                 },
             )
 
@@ -834,6 +886,10 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
             rsps.add(
                 rsps.PATCH,
                 api_url('/payments/%s/' % self.ref),
+                json={
+                    **self.payment_data,
+                    'email': 'success_sender@outside.local',
+                },
                 status=200,
             )
 

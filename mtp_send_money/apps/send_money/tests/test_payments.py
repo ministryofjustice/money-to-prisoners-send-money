@@ -610,6 +610,15 @@ class CompletePaymentIfNecessaryTestCase(SimpleTestCase):
         payment = {
             'uuid': 'some-id',
         }
+        payment_extra_details = {
+            'email': 'sender@example.com',
+            'cardholder_name': 'John Doe',
+            'card_number_first_digits': '1234',
+            'card_number_last_digits': '987',
+            'card_expiry_date': '01/20',
+            'card_brand': 'visa',
+            'billing_address': 'Buckingham Palace SW1A 1AA',
+        }
         govuk_payment = {
             'payment_id': 'payment-id',
             'state': {
@@ -632,6 +641,10 @@ class CompletePaymentIfNecessaryTestCase(SimpleTestCase):
             rsps.add(
                 rsps.PATCH,
                 api_url(f'/payments/{payment["uuid"]}/'),
+                json={
+                    **payment,
+                    **payment_extra_details,
+                },
                 status=200,
             )
 
@@ -639,15 +652,7 @@ class CompletePaymentIfNecessaryTestCase(SimpleTestCase):
 
             self.assertDictEqual(
                 json.loads(rsps.calls[-1].request.body.decode()),
-                {
-                    'email': 'sender@example.com',
-                    'cardholder_name': 'John Doe',
-                    'card_number_first_digits': '1234',
-                    'card_number_last_digits': '987',
-                    'card_expiry_date': '01/20',
-                    'card_brand': 'visa',
-                    'billing_address': 'Buckingham Palace SW1A 1AA',
-                },
+                payment_extra_details,
             )
 
         self.assertEqual(status, GovUkPaymentStatus.success)
@@ -670,6 +675,16 @@ class CompletePaymentIfNecessaryTestCase(SimpleTestCase):
             'prisoner_name': 'John Doe',
             'prisoner_number': 'AAB0A00',
             'amount': 1700,
+        }
+        payment_extra_details = {
+            'email': 'sender@example.com',
+            'worldpay_id': '123456789',
+            'cardholder_name': 'John Doe',
+            'card_number_first_digits': '1234',
+            'card_number_last_digits': '987',
+            'card_expiry_date': '01/20',
+            'card_brand': 'visa',
+            'billing_address': 'Buckingham Palace SW1A 1AA',
         }
         govuk_payment = {
             'payment_id': 'payment-id',
@@ -698,6 +713,10 @@ class CompletePaymentIfNecessaryTestCase(SimpleTestCase):
             rsps.add(
                 rsps.PATCH,
                 api_url(f'/payments/{payment["uuid"]}/'),
+                json={
+                    **payment,
+                    **payment_extra_details,
+                },
                 status=200,
             )
 
@@ -706,16 +725,7 @@ class CompletePaymentIfNecessaryTestCase(SimpleTestCase):
             payment_patch_body = json.loads(rsps.calls[-1].request.body.decode())
             self.assertDictEqual(
                 payment_patch_body,
-                {
-                    'email': 'sender@example.com',
-                    'worldpay_id': '123456789',
-                    'cardholder_name': 'John Doe',
-                    'card_number_first_digits': '1234',
-                    'card_number_last_digits': '987',
-                    'card_expiry_date': '01/20',
-                    'card_brand': 'visa',
-                    'billing_address': 'Buckingham Palace SW1A 1AA',
-                }
+                payment_extra_details,
             )
         self.assertEqual(status, GovUkPaymentStatus.capturable)
         self.assertEqual(len(mail.outbox), 1)
@@ -780,6 +790,16 @@ class CompletePaymentIfNecessaryTestCase(SimpleTestCase):
         payment = {
             'uuid': 'some-id',
         }
+        payment_extra_details = {
+            'email': 'sender@example.com',
+            'worldpay_id': '123456789',
+            'cardholder_name': 'John Doe',
+            'card_number_first_digits': '1234',
+            'card_number_last_digits': '987',
+            'card_expiry_date': '01/20',
+            'card_brand': 'visa',
+            'billing_address': 'Buckingham Palace SW1A 1AA',
+        }
         govuk_payment = {
             'payment_id': 'payment-id',
             'state': {
@@ -807,6 +827,10 @@ class CompletePaymentIfNecessaryTestCase(SimpleTestCase):
             rsps.add(
                 rsps.PATCH,
                 api_url(f'/payments/{payment["uuid"]}/'),
+                json={
+                    **payment,
+                    **payment_extra_details,
+                },
                 status=200,
             )
 
@@ -821,16 +845,7 @@ class CompletePaymentIfNecessaryTestCase(SimpleTestCase):
             payment_patch_body = json.loads(rsps.calls[-2].request.body.decode())
             self.assertDictEqual(
                 payment_patch_body,
-                {
-                    'email': 'sender@example.com',
-                    'worldpay_id': '123456789',
-                    'cardholder_name': 'John Doe',
-                    'card_number_first_digits': '1234',
-                    'card_number_last_digits': '987',
-                    'card_expiry_date': '01/20',
-                    'card_brand': 'visa',
-                    'billing_address': 'Buckingham Palace SW1A 1AA',
-                }
+                payment_extra_details,
             )
         self.assertEqual(status, GovUkPaymentStatus.success)
         self.assertEqual(len(mail.outbox), 0)
@@ -852,6 +867,16 @@ class CompletePaymentIfNecessaryTestCase(SimpleTestCase):
             'prisoner_number': 'AAB0A00',
             'prisoner_name': 'John Doe',
             'amount': 1700,
+        }
+        payment_extra_details = {
+            'email': 'sender@example.com',
+            'worldpay_id': '123456789',
+            'cardholder_name': 'John Doe',
+            'card_number_first_digits': '1234',
+            'card_number_last_digits': '987',
+            'card_expiry_date': '01/20',
+            'card_brand': 'visa',
+            'billing_address': 'Buckingham Palace SW1A 1AA',
         }
         govuk_payment = {
             'payment_id': 'payment-id',
@@ -880,6 +905,10 @@ class CompletePaymentIfNecessaryTestCase(SimpleTestCase):
             rsps.add(
                 rsps.PATCH,
                 api_url(f'/payments/{payment["uuid"]}/'),
+                json={
+                    **payment,
+                    **payment_extra_details,
+                },
                 status=200,
             )
 
@@ -894,16 +923,7 @@ class CompletePaymentIfNecessaryTestCase(SimpleTestCase):
             payment_patch_body = json.loads(rsps.calls[-2].request.body.decode())
             self.assertDictEqual(
                 payment_patch_body,
-                {
-                    'email': 'sender@example.com',
-                    'worldpay_id': '123456789',
-                    'cardholder_name': 'John Doe',
-                    'card_number_first_digits': '1234',
-                    'card_number_last_digits': '987',
-                    'card_expiry_date': '01/20',
-                    'card_brand': 'visa',
-                    'billing_address': 'Buckingham Palace SW1A 1AA',
-                }
+                payment_extra_details,
             )
         self.assertEqual(status, GovUkPaymentStatus.cancelled)
         self.assertEqual(len(mail.outbox), 0)
@@ -932,6 +952,9 @@ class CompletePaymentIfNecessaryTestCase(SimpleTestCase):
             rsps.add(
                 rsps.PATCH,
                 api_url(f'/payments/{payment["uuid"]}/'),
+                json={
+                    'email': 'sender@example.com',
+                },
                 status=200,
             )
 
