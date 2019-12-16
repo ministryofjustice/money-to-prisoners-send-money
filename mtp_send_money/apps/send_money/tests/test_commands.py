@@ -9,9 +9,21 @@ from django.test.testcases import SimpleTestCase
 from django.utils.timezone import utc
 import responses
 
-from send_money.payments import CheckResult
 from send_money.tests import mock_auth
 from send_money.utils import api_url, govuk_url
+
+
+PAYMENT_DATA = {
+    'uuid': 'wargle-1111',
+    'processor_id': 1,
+    'recipient_name': 'John',
+    'amount': 1700,
+    'status': 'pending',
+    'email': 'success_sender@outside.local',
+    'modified': datetime.now().isoformat() + 'Z',
+    'prisoner_number': 'A1409AE',
+    'prisoner_dob': '1989-01-21',
+}
 
 
 @override_settings(GOVUK_PAY_URL='https://pay.gov.local/v1')
@@ -465,21 +477,10 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
         """
         Test that card details are extracted from the GOV.UK payment and saved on the MTP payment.
         """
-        payment = {
-            'uuid': 'wargle-1111',
-            'processor_id': 1,
-            'recipient_name': 'John',
-            'amount': 1700,
-            'status': 'pending',
-            'modified': datetime.now().isoformat() + 'Z',
-            'prisoner_number': 'A1409AE',
-            'prisoner_dob': '1989-01-21',
-        }
         payment_extra_details = {
             'cardholder_name': 'Jack Halls',
             'card_brand': 'Visa',
             'worldpay_id': '11112222-1111-2222-3333-111122223333',
-            'email': 'success_sender@outside.local',
             'card_number_first_digits': '100002',
             'card_number_last_digits': '1111',
             'card_expiry_date': '11/18',
@@ -498,19 +499,19 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
                 api_url('/payments/'),
                 json={
                     'count': 1,
-                    'results': [payment],
+                    'results': [PAYMENT_DATA],
                 },
                 status=200,
             )
             rsps.add(
                 rsps.GET,
-                govuk_url('/payments/%s/' % 1),
+                govuk_url(f'/payments/{PAYMENT_DATA["processor_id"]}/'),
                 json={
-                    'reference': 'wargle-1111',
+                    'reference': PAYMENT_DATA['uuid'],
                     'state': {'status': 'success'},
                     'settlement_summary': {
                         'capture_submit_time': '2016-10-27T15:11:05Z',
-                        'captured_date': '2016-10-27'
+                        'captured_date': '2016-10-27',
                     },
                     'card_details': {
                         'card_brand': 'Visa',
@@ -523,7 +524,7 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
                             'line2': '',
                             'postcode': 'SW1H9AJ',
                             'city': 'London',
-                            'country': 'GB'
+                            'country': 'GB',
                         },
                     },
                     'provider_id': '11112222-1111-2222-3333-111122223333',
@@ -533,18 +534,18 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
             )
             rsps.add(
                 rsps.PATCH,
-                api_url('/payments/%s/' % 'wargle-1111'),
+                api_url(f'/payments/{PAYMENT_DATA["uuid"]}/'),
                 json={
-                    **payment,
+                    **PAYMENT_DATA,
                     **payment_extra_details,
                 },
                 status=200,
             )
             rsps.add(
                 rsps.PATCH,
-                api_url('/payments/%s/' % 'wargle-1111'),
+                api_url(f'/payments/{PAYMENT_DATA["uuid"]}/'),
                 json={
-                    **payment,
+                    **PAYMENT_DATA,
                     **payment_extra_details,
                 },
                 status=200,
@@ -561,27 +562,8 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
                 {
                     'received_at': '2016-10-27T15:11:05+00:00',
                     'status': 'taken',
-                }
+                },
             )
-
-    ref = 'wargle-1111'
-    processor_id = '1'
-    payment_data = {
-        'count': 1,
-        'results': [
-            {
-                'uuid': ref,
-                'processor_id': processor_id,
-                'recipient_name': 'John',
-                'amount': 1700,
-                'status': 'pending',
-                'email': 'success_sender@outside.local',
-                'modified': datetime.now().isoformat() + 'Z',
-                'prisoner_number': 'A1409AE',
-                'prisoner_dob': '1989-01-21'
-            },
-        ],
-    }
 
     @override_settings(ENVIRONMENT='prod')  # because non-prod environments don't send to @outside.local
     def test_update_incomplete_payments_no_govuk_payment_found(self):
@@ -594,19 +576,22 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
             rsps.add(
                 rsps.GET,
                 api_url('/payments/'),
-                json=self.payment_data,
+                json={
+                    'count': 1,
+                    'results': [PAYMENT_DATA],
+                },
                 status=200,
             )
             rsps.add(
                 rsps.GET,
-                govuk_url('/payments/%s/' % self.processor_id),
+                govuk_url(f'/payments/{PAYMENT_DATA["processor_id"]}/'),
                 status=404,
             )
             rsps.add(
                 rsps.PATCH,
-                api_url('/payments/%s/' % self.ref),
+                api_url(f'/payments/{PAYMENT_DATA["uuid"]}/'),
                 json={
-                    **self.payment_data,
+                    **PAYMENT_DATA,
                     'status': 'failed',
                 },
                 status=200,
@@ -632,14 +617,17 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
             rsps.add(
                 rsps.GET,
                 api_url('/payments/'),
-                json=self.payment_data,
+                json={
+                    'count': 1,
+                    'results': [PAYMENT_DATA],
+                },
                 status=200,
             )
             rsps.add(
                 rsps.GET,
-                govuk_url('/payments/%s/' % self.processor_id),
+                govuk_url(f'/payments/{PAYMENT_DATA["processor_id"]}/'),
                 json={
-                    'reference': self.ref,
+                    'reference': PAYMENT_DATA['uuid'],
                     'state': {'status': 'success'},
                     'email': 'success_sender@outside.local',
                 },
@@ -658,14 +646,17 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
             rsps.add(
                 rsps.GET,
                 api_url('/payments/'),
-                json=self.payment_data,
+                json={
+                    'count': 1,
+                    'results': [PAYMENT_DATA],
+                },
                 status=200,
             )
             rsps.add(
                 rsps.GET,
-                govuk_url('/payments/%s/' % self.processor_id),
+                govuk_url(f'/payments/{PAYMENT_DATA["processor_id"]}/'),
                 json={
-                    'reference': self.ref,
+                    'reference': PAYMENT_DATA['uuid'],
                     'state': {'status': 'success'},
                     'settlement_summary': settlement_summary,
                     'email': 'success_sender@outside.local',
@@ -701,20 +692,15 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
         })
 
     @override_settings(ENVIRONMENT='prod')  # because non-prod environments don't send to @outside.local
-    @mock.patch(
-        'send_money.payments.PaymentClient.get_security_check_result',
-        mock.Mock(return_value=CheckResult.capture),
-    )
     def test_captured_payment_with_captured_date_gets_updated(self):
         """
         Test that when a MTP pending payment is captured, if the captured date
         is immediately available, the payment is marked as 'taken' and a confirmation
         email is sent.
         """
-        payment_id = 'payment-id'
         govuk_payment_data = {
-            'payment_id': payment_id,
-            'reference': self.ref,
+            'payment_id': PAYMENT_DATA['processor_id'],
+            'reference': PAYMENT_DATA['uuid'],
             'state': {'status': 'capturable'},
             'email': 'success_sender@outside.local',
         }
@@ -723,26 +709,37 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
             rsps.add(
                 rsps.GET,
                 api_url('/payments/'),
-                json=self.payment_data,
+                json={
+                    'count': 1,
+                    'results': [
+                        {
+                            **PAYMENT_DATA,
+                            'security_check': {
+                                'status': 'accepted',
+                                'user_actioned': True,
+                            },
+                        },
+                    ],
+                },
                 status=200,
             )
             # get govuk payment
             rsps.add(
                 rsps.GET,
-                govuk_url(f'/payments/{self.processor_id}/'),
+                govuk_url(f'/payments/{PAYMENT_DATA["processor_id"]}/'),
                 json=govuk_payment_data,
                 status=200,
             )
             # capture payment
             rsps.add(
                 rsps.POST,
-                govuk_url(f'/payments/{payment_id}/capture/'),
+                govuk_url(f'/payments/{PAYMENT_DATA["processor_id"]}/capture/'),
                 status=204,
             )
             # get govuk payment to see if we have the captured date
             rsps.add(
                 rsps.GET,
-                govuk_url(f'/payments/{self.processor_id}/'),
+                govuk_url(f'/payments/{PAYMENT_DATA["processor_id"]}/'),
                 json={
                     **govuk_payment_data,
                     'state': {'status': 'success'},
@@ -756,9 +753,9 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
             # update status
             rsps.add(
                 rsps.PATCH,
-                api_url(f'/payments/{self.ref}/'),
+                api_url(f'/payments/{PAYMENT_DATA["uuid"]}/'),
                 json={
-                    **self.payment_data,
+                    **PAYMENT_DATA,
                     'status': 'taken',
                     'email': 'success_sender@outside.local',
                 },
@@ -779,10 +776,9 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
 
     @override_settings(ENVIRONMENT='prod')  # because non-prod environments don't send to @outside.local
     def _test_captured_payment_doesnt_get_updated_before_capture(self, settlement_summary):
-        payment_id = 'payment-id'
         govuk_payment_data = {
-            'payment_id': payment_id,
-            'reference': self.ref,
+            'payment_id': PAYMENT_DATA['processor_id'],
+            'reference': PAYMENT_DATA['uuid'],
             'state': {'status': 'capturable'},
             'email': 'success_sender@outside.local',
         }
@@ -791,23 +787,34 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
             rsps.add(
                 rsps.GET,
                 api_url('/payments/'),
-                json=self.payment_data,
+                json={
+                    'count': 1,
+                    'results': [
+                        {
+                            **PAYMENT_DATA,
+                            'security_check': {
+                                'status': 'accepted',
+                                'user_actioned': True,
+                            },
+                        },
+                    ],
+                },
                 status=200,
             )
             rsps.add(
                 rsps.GET,
-                govuk_url(f'/payments/{self.processor_id}/'),
+                govuk_url(f'/payments/{PAYMENT_DATA["processor_id"]}/'),
                 json=govuk_payment_data,
                 status=200,
             )
             rsps.add(
                 rsps.POST,
-                govuk_url(f'/payments/{payment_id}/capture/'),
+                govuk_url(f'/payments/{PAYMENT_DATA["processor_id"]}/capture/'),
                 status=204,
             )
             rsps.add(
                 rsps.GET,
-                govuk_url(f'/payments/{self.processor_id}/'),
+                govuk_url(f'/payments/{PAYMENT_DATA["processor_id"]}/'),
                 json={
                     **govuk_payment_data,
                     'state': {'status': 'success'},
@@ -820,39 +827,23 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
 
         self.assertEqual(len(mail.outbox), 0)
 
-    @mock.patch(
-        'send_money.payments.PaymentClient.get_security_check_result',
-        mock.Mock(return_value=CheckResult.capture),
-    )
     def test_captured_payment_doesnt_get_updated_with_missing_captured_date(self):
         self._test_captured_payment_doesnt_get_updated_before_capture({
             'capture_submit_time': '2016-10-27T15:11:05Z',
         })
 
-    @mock.patch(
-        'send_money.payments.PaymentClient.get_security_check_result',
-        mock.Mock(return_value=CheckResult.capture),
-    )
     def test_captured_payment_doesnt_get_updated_with_null_capture_time(self):
         self._test_captured_payment_doesnt_get_updated_before_capture({
             'capture_submit_time': '2016-10-27T15:11:05Z',
             'captured_date': None
         })
 
-    @mock.patch(
-        'send_money.payments.PaymentClient.get_security_check_result',
-        mock.Mock(return_value=CheckResult.capture),
-    )
     def test_captured_payment_doesnt_get_updated_with_blank_capture_time(self):
         self._test_captured_payment_doesnt_get_updated_before_capture({
             'capture_submit_time': '2016-10-27T15:11:05Z',
             'captured_date': ''
         })
 
-    @mock.patch(
-        'send_money.payments.PaymentClient.get_security_check_result',
-        mock.Mock(return_value=CheckResult.capture),
-    )
     def test_captured_payment_doesnt_get_updated_with_invalid_capture_time(self):
         self._test_captured_payment_doesnt_get_updated_before_capture({
             'capture_submit_time': '2016-10-27T15:11:05Z',
@@ -866,14 +857,17 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
             rsps.add(
                 rsps.GET,
                 api_url('/payments/'),
-                json=self.payment_data,
+                json={
+                    'count': 1,
+                    'results': [PAYMENT_DATA],
+                },
                 status=200,
             )
             rsps.add(
                 rsps.GET,
-                govuk_url('/payments/%s/' % self.processor_id),
+                govuk_url(f'/payments/{PAYMENT_DATA["processor_id"]}/'),
                 json={
-                    'reference': self.ref,
+                    'reference': PAYMENT_DATA['uuid'],
                     'state': {'status': 'success'},
                     'settlement_summary': {
                         'capture_submit_time': capture_submit_time,
@@ -885,9 +879,9 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
             )
             rsps.add(
                 rsps.PATCH,
-                api_url('/payments/%s/' % self.ref),
+                api_url(f'/payments/{PAYMENT_DATA["uuid"]}/'),
                 json={
-                    **self.payment_data,
+                    **PAYMENT_DATA,
                     'email': 'success_sender@outside.local',
                 },
                 status=200,

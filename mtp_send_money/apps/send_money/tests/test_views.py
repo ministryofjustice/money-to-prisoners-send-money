@@ -14,7 +14,6 @@ from requests import ConnectionError
 import responses
 
 from send_money.models import PaymentMethod
-from send_money.payments import CheckResult
 from send_money.tests import (
     BaseTestCase, mock_auth,
     patch_notifications, patch_gov_uk_pay_availability_check,
@@ -852,27 +851,27 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
             mock_auth(rsps)
             rsps.add(
                 rsps.GET,
-                api_url('/payments/%s/' % self.ref),
+                api_url(f'/payments/{self.ref}/'),
                 json=self.payment_data,
                 status=200,
             )
             rsps.add(
                 rsps.GET,
-                govuk_url('/payments/%s/' % self.processor_id),
+                govuk_url(f'/payments/{self.processor_id}/'),
                 json={
-                    'reference': 'wargle-blargle',
+                    'reference': self.ref,
                     'state': {'status': 'success'},
                     'email': 'sender@outside.local',
                     'settlement_summary': {
                         'capture_submit_time': None,
-                        'captured_date': None
+                        'captured_date': None,
                     },
                 },
                 status=200
             )
             rsps.add(
                 rsps.PATCH,
-                api_url('/payments/%s/' % 'wargle-blargle'),
+                api_url(f'/payments/{self.ref}/'),
                 json={
                     **self.payment_data,
                     'email': 'sender@outside.local',
@@ -881,7 +880,9 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
             )
             with self.patch_prisoner_details_check():
                 response = self.client.get(
-                    self.url, {'payment_ref': self.ref}, follow=False
+                    self.url,
+                    {'payment_ref': self.ref},
+                    follow=False,
                 )
         self.assertContains(response, 'success')
         self.assertResponseNotCacheable(response)
@@ -893,10 +894,6 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
         self.assertEqual(len(mail.outbox), 0)
 
     @override_settings(ENVIRONMENT='prod')  # because non-prod environments don't send to @outside.local
-    @mock.patch(
-        'send_money.payments.PaymentClient.get_security_check_result',
-        mock.Mock(return_value=CheckResult.capture),
-    )
     def test_automatically_captures_payment(self):
         """
         Test that if the GOV.UK payment is in status 'capturable' and the payment should be
@@ -923,7 +920,7 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
                 govuk_url(f'/payments/{self.processor_id}/'),
                 json={
                     'payment_id': self.processor_id,
-                    'reference': 'wargle-blargle',
+                    'reference': self.ref,
                     'state': {'status': 'capturable'},
                     'email': 'sender@outside.local',
                     'settlement_summary': {
@@ -935,10 +932,14 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
             )
             rsps.add(
                 rsps.PATCH,
-                api_url('/payments/%s/' % 'wargle-blargle'),
+                api_url(f'/payments/{self.ref}/'),
                 json={
                     **self.payment_data,
                     'email': 'sender@outside.local',
+                    'security_check': {
+                        'status': 'accepted',
+                        'user_actioned': False,
+                    },
                 },
                 status=200,
             )
@@ -963,10 +964,6 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
         self.assertEqual(len(mail.outbox), 0)
 
     @override_settings(ENVIRONMENT='prod')  # because non-prod environments don't send to @outside.local
-    @mock.patch(
-        'send_money.payments.PaymentClient.get_security_check_result',
-        mock.Mock(return_value=CheckResult.delay),
-    )
     def test_puts_payment_on_hold(self):
         """
         Test that if the GOV.UK payment is in status 'capturable' and the payment should not be captured, the view:
@@ -991,7 +988,7 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
                 govuk_url(f'/payments/{self.processor_id}/'),
                 json={
                     'payment_id': self.processor_id,
-                    'reference': 'wargle-blargle',
+                    'reference': self.ref,
                     'state': {'status': 'capturable'},
                     'email': 'sender@outside.local',
                     'settlement_summary': {
@@ -1003,10 +1000,14 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
             )
             rsps.add(
                 rsps.PATCH,
-                api_url('/payments/%s/' % 'wargle-blargle'),
+                api_url(f'/payments/{self.ref}/'),
                 json={
                     **self.payment_data,
                     'email': 'sender@outside.local',
+                    'security_check': {
+                        'status': 'pending',
+                        'user_actioned': False,
+                    },
                 },
                 status=200,
             )
@@ -1040,12 +1041,14 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
             mock_auth(rsps)
             rsps.add(
                 rsps.GET,
-                api_url('/payments/%s/' % self.ref),
+                api_url(f'/payments/{self.ref}/'),
                 status=500,
             )
             with self.patch_prisoner_details_check(), silence_logger():
                 response = self.client.get(
-                    self.url, {'payment_ref': self.ref}, follow=False
+                    self.url,
+                    {'payment_ref': self.ref},
+                    follow=False,
                 )
 
         self.assertContains(response, 'your payment could not be processed')
@@ -1070,18 +1073,20 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
             mock_auth(rsps)
             rsps.add(
                 rsps.GET,
-                api_url('/payments/%s/' % self.ref),
+                api_url(f'/payments/{self.ref}/'),
                 json=self.payment_data,
                 status=200,
             )
             rsps.add(
                 rsps.GET,
-                govuk_url('/payments/%s/' % self.processor_id),
+                govuk_url(f'/payments/{self.processor_id}/'),
                 status=500
             )
             with self.patch_prisoner_details_check(), silence_logger():
                 response = self.client.get(
-                    self.url, {'payment_ref': self.ref}, follow=False
+                    self.url,
+                    {'payment_ref': self.ref},
+                    follow=False,
                 )
 
         self.assertContains(response, 'your payment could not be processed')
@@ -1107,15 +1112,15 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
             mock_auth(rsps)
             rsps.add(
                 rsps.GET,
-                api_url('/payments/%s/' % self.ref),
+                api_url(f'/payments/{self.ref}/'),
                 json=self.payment_data,
                 status=200,
             )
             rsps.add(
                 rsps.GET,
-                govuk_url('/payments/%s/' % self.processor_id),
+                govuk_url(f'/payments/{self.processor_id}/'),
                 json={
-                    'reference': 'wargle-blargle',
+                    'reference': self.ref,
                     'state': {'status': 'failed'},
                     'email': 'sender@outside.local',
                 },
@@ -1123,7 +1128,9 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
             )
             with self.patch_prisoner_details_check(), silence_logger():
                 response = self.client.get(
-                    self.url, {'payment_ref': self.ref}, follow=True
+                    self.url,
+                    {'payment_ref': self.ref},
+                    follow=True,
                 )
 
         self.assertOnPage(response, 'check_details')
@@ -1149,15 +1156,15 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
             mock_auth(rsps)
             rsps.add(
                 rsps.GET,
-                api_url('/payments/%s/' % self.ref),
+                api_url(f'/payments/{self.ref}/'),
                 json=self.payment_data,
                 status=200,
             )
             rsps.add(
                 rsps.GET,
-                govuk_url('/payments/%s/' % self.processor_id),
+                govuk_url(f'/payments/{self.processor_id}/'),
                 json={
-                    'reference': 'wargle-blargle',
+                    'reference': self.ref,
                     'state': {
                         'status': 'error',
                         'code': 'code',
@@ -1166,11 +1173,13 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
                     'payment_id': 1,
                     'email': 'sender@outside.local',
                 },
-                status=200
+                status=200,
             )
             with self.patch_prisoner_details_check(), silence_logger():
                 response = self.client.get(
-                    self.url, {'payment_ref': self.ref}, follow=True
+                    self.url,
+                    {'payment_ref': self.ref},
+                    follow=True,
                 )
 
         self.assertOnPage(response, 'check_details')
@@ -1200,23 +1209,25 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
             mock_auth(rsps)
             rsps.add(
                 rsps.GET,
-                api_url('/payments/%s/' % self.ref),
+                api_url(f'/payments/{self.ref}/'),
                 json=self.payment_data,
                 status=200,
             )
             rsps.add(
                 rsps.GET,
-                govuk_url('/payments/%s/' % self.processor_id),
+                govuk_url(f'/payments/{self.processor_id}/'),
                 json={
-                    'reference': 'wargle-blargle',
+                    'reference': self.ref,
                     'state': {'status': 'cancelled'},
                     'email': 'sender@outside.local',
                 },
-                status=200
+                status=200,
             )
             with self.patch_prisoner_details_check(), silence_logger():
                 response = self.client.get(
-                    self.url, {'payment_ref': self.ref}, follow=True
+                    self.url,
+                    {'payment_ref': self.ref},
+                    follow=True,
                 )
 
         self.assertOnPage(response, 'check_details')
@@ -1242,7 +1253,7 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
             mock_auth(rsps)
             rsps.add(
                 rsps.GET,
-                api_url('/payments/%s/' % self.ref),
+                api_url(f'/payments/{self.ref}/'),
                 json={
                     **self.payment_data,
                     'status': 'taken',
@@ -1251,7 +1262,9 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
             )
             with self.patch_prisoner_details_check(), silence_logger():
                 response = self.client.get(
-                    self.url, {'payment_ref': self.ref}, follow=False
+                    self.url,
+                    {'payment_ref': self.ref},
+                    follow=False,
                 )
 
         self.assertContains(response, 'success')
@@ -1276,7 +1289,7 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
             mock_auth(rsps)
             rsps.add(
                 rsps.GET,
-                api_url('/payments/%s/' % self.ref),
+                api_url(f'/payments/{self.ref}/'),
                 json={
                     **self.payment_data,
 
@@ -1288,7 +1301,9 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
             )
             with self.patch_prisoner_details_check(), silence_logger():
                 response = self.client.get(
-                    self.url, {'payment_ref': self.ref}, follow=False
+                    self.url,
+                    {'payment_ref': self.ref},
+                    follow=False,
                 )
             self.assertRedirects(response, '/en-gb/', fetch_redirect_response=False)
 
@@ -1310,7 +1325,7 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
             mock_auth(rsps)
             rsps.add(
                 rsps.GET,
-                api_url('/payments/%s/' % self.ref),
+                api_url(f'/payments/{self.ref}/'),
                 json={
                     **self.payment_data,
 
@@ -1322,7 +1337,9 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
             )
             with self.patch_prisoner_details_check(), silence_logger():
                 response = self.client.get(
-                    self.url, {'payment_ref': self.ref}, follow=False
+                    self.url,
+                    {'payment_ref': self.ref},
+                    follow=False,
                 )
             self.assertRedirects(response, '/en-gb/', fetch_redirect_response=False)
 
