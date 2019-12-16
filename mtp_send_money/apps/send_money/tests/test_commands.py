@@ -9,7 +9,6 @@ from django.test.testcases import SimpleTestCase
 from django.utils.timezone import utc
 import responses
 
-from send_money.payments import CheckResult
 from send_money.tests import mock_auth
 from send_money.utils import api_url, govuk_url
 
@@ -693,10 +692,6 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
         })
 
     @override_settings(ENVIRONMENT='prod')  # because non-prod environments don't send to @outside.local
-    @mock.patch(
-        'send_money.payments.PaymentClient.get_security_check_result',
-        mock.Mock(return_value=CheckResult.capture),
-    )
     def test_captured_payment_with_captured_date_gets_updated(self):
         """
         Test that when a MTP pending payment is captured, if the captured date
@@ -716,7 +711,15 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
                 api_url('/payments/'),
                 json={
                     'count': 1,
-                    'results': [PAYMENT_DATA],
+                    'results': [
+                        {
+                            **PAYMENT_DATA,
+                            'security_check': {
+                                'status': 'accepted',
+                                'user_actioned': True,
+                            },
+                        },
+                    ],
                 },
                 status=200,
             )
@@ -786,7 +789,15 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
                 api_url('/payments/'),
                 json={
                     'count': 1,
-                    'results': [PAYMENT_DATA],
+                    'results': [
+                        {
+                            **PAYMENT_DATA,
+                            'security_check': {
+                                'status': 'accepted',
+                                'user_actioned': True,
+                            },
+                        },
+                    ],
                 },
                 status=200,
             )
@@ -816,39 +827,23 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
 
         self.assertEqual(len(mail.outbox), 0)
 
-    @mock.patch(
-        'send_money.payments.PaymentClient.get_security_check_result',
-        mock.Mock(return_value=CheckResult.capture),
-    )
     def test_captured_payment_doesnt_get_updated_with_missing_captured_date(self):
         self._test_captured_payment_doesnt_get_updated_before_capture({
             'capture_submit_time': '2016-10-27T15:11:05Z',
         })
 
-    @mock.patch(
-        'send_money.payments.PaymentClient.get_security_check_result',
-        mock.Mock(return_value=CheckResult.capture),
-    )
     def test_captured_payment_doesnt_get_updated_with_null_capture_time(self):
         self._test_captured_payment_doesnt_get_updated_before_capture({
             'capture_submit_time': '2016-10-27T15:11:05Z',
             'captured_date': None
         })
 
-    @mock.patch(
-        'send_money.payments.PaymentClient.get_security_check_result',
-        mock.Mock(return_value=CheckResult.capture),
-    )
     def test_captured_payment_doesnt_get_updated_with_blank_capture_time(self):
         self._test_captured_payment_doesnt_get_updated_before_capture({
             'capture_submit_time': '2016-10-27T15:11:05Z',
             'captured_date': ''
         })
 
-    @mock.patch(
-        'send_money.payments.PaymentClient.get_security_check_result',
-        mock.Mock(return_value=CheckResult.capture),
-    )
     def test_captured_payment_doesnt_get_updated_with_invalid_capture_time(self):
         self._test_captured_payment_doesnt_get_updated_before_capture({
             'capture_submit_time': '2016-10-27T15:11:05Z',

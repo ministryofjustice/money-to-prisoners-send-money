@@ -156,6 +156,20 @@ class PaymentClient:
         Checks the security check for 'payment' and returns a CheckResult indicating the next
         action to perform.
         """
+        security_check = payment.get('security_check')
+        if not security_check:
+            logging.warning(f'Could not find any security check for payment {payment["uuid"]}')
+            return CheckResult.capture
+
+        check_status = security_check['status']
+        if check_status == 'accepted':
+            return CheckResult.capture
+        elif check_status == 'rejected':
+            return CheckResult.cancel
+        elif check_status == 'pending':
+            return CheckResult.delay
+
+        logging.warning(f'Unrecognised check status {check_status} for payment {payment["uuid"]}')
         return CheckResult.capture
 
     def complete_payment_if_necessary(self, payment, govuk_payment):

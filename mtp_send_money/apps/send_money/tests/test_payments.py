@@ -1,5 +1,4 @@
 import json
-from unittest import mock
 
 from django.core import mail
 from django.test import override_settings
@@ -9,7 +8,7 @@ from requests.exceptions import HTTPError, RequestException
 import responses
 
 from send_money.exceptions import GovUkPaymentStatusException
-from send_money.payments import CheckResult, GovUkPaymentStatus, PaymentClient
+from send_money.payments import GovUkPaymentStatus, PaymentClient
 from send_money.tests import mock_auth
 from send_money.utils import api_url, govuk_url
 
@@ -675,6 +674,10 @@ class CompletePaymentIfNecessaryTestCase(SimpleTestCase):
             'prisoner_name': 'John Doe',
             'prisoner_number': 'AAB0A00',
             'amount': 1700,
+            'security_check': {
+                'status': 'pending',
+                'user_actioned': False,
+            },
         }
         payment_extra_details = {
             'email': 'sender@example.com',
@@ -703,10 +706,7 @@ class CompletePaymentIfNecessaryTestCase(SimpleTestCase):
             },
         }
 
-        with \
-                mock.patch.object(client, 'get_security_check_result', return_value=CheckResult.delay), \
-                responses.RequestsMock() as rsps:
-
+        with responses.RequestsMock() as rsps:
             mock_auth(rsps)
 
             # API call related to updating the email address and card details
@@ -752,6 +752,10 @@ class CompletePaymentIfNecessaryTestCase(SimpleTestCase):
             'card_expiry_date': '01/20',
             'card_brand': 'visa',
             'billing_address': 'Buckingham Palace SW1A 1AA',
+            'security_check': {
+                'status': 'pending',
+                'user_actioned': False,
+            },
         }
         govuk_payment = {
             'payment_id': 'payment-id',
@@ -770,8 +774,7 @@ class CompletePaymentIfNecessaryTestCase(SimpleTestCase):
             },
         }
 
-        with mock.patch.object(client, 'get_security_check_result', return_value=CheckResult.delay):
-            status = client.complete_payment_if_necessary(payment, govuk_payment)
+        status = client.complete_payment_if_necessary(payment, govuk_payment)
 
         self.assertEqual(status, GovUkPaymentStatus.capturable)
         self.assertEqual(len(mail.outbox), 0)
@@ -789,6 +792,10 @@ class CompletePaymentIfNecessaryTestCase(SimpleTestCase):
 
         payment = {
             'uuid': 'some-id',
+            'security_check': {
+                'status': 'accepted',
+                'user_actioned': True,
+            },
         }
         payment_extra_details = {
             'email': 'sender@example.com',
@@ -817,10 +824,7 @@ class CompletePaymentIfNecessaryTestCase(SimpleTestCase):
             },
         }
 
-        with \
-                mock.patch.object(client, 'get_security_check_result', return_value=CheckResult.capture), \
-                responses.RequestsMock() as rsps:
-
+        with responses.RequestsMock() as rsps:
             mock_auth(rsps)
 
             # API call related to updating the email address and card details
@@ -867,6 +871,10 @@ class CompletePaymentIfNecessaryTestCase(SimpleTestCase):
             'prisoner_number': 'AAB0A00',
             'prisoner_name': 'John Doe',
             'amount': 1700,
+            'security_check': {
+                'status': 'rejected',
+                'user_actioned': True,
+            },
         }
         payment_extra_details = {
             'email': 'sender@example.com',
@@ -895,10 +903,7 @@ class CompletePaymentIfNecessaryTestCase(SimpleTestCase):
             },
         }
 
-        with \
-                mock.patch.object(client, 'get_security_check_result', return_value=CheckResult.cancel), \
-                responses.RequestsMock() as rsps:
-
+        with responses.RequestsMock() as rsps:
             mock_auth(rsps)
 
             # API call related to updating the email address and card details
