@@ -616,7 +616,13 @@ class CompletePaymentIfNecessaryTestCase(SimpleTestCase):
             'card_number_last_digits': '987',
             'card_expiry_date': '01/20',
             'card_brand': 'visa',
-            'billing_address': 'Buckingham Palace SW1A 1AA',
+            'billing_address': {
+                'line1': '102 Petty France',
+                'line2': '',
+                'postcode': 'SW1H9AJ',
+                'city': 'London',
+                'country': 'GB',
+            },
         }
         govuk_payment = {
             'payment_id': 'payment-id',
@@ -630,7 +636,13 @@ class CompletePaymentIfNecessaryTestCase(SimpleTestCase):
                 'last_digits_card_number': '987',
                 'expiry_date': '01/20',
                 'card_brand': 'visa',
-                'billing_address': 'Buckingham Palace SW1A 1AA',
+                'billing_address': {
+                    'line1': '102 Petty France',
+                    'line2': '',
+                    'postcode': 'SW1H9AJ',
+                    'city': 'London',
+                    'country': 'GB',
+                },
             },
         }
         with responses.RequestsMock() as rsps:
@@ -687,7 +699,13 @@ class CompletePaymentIfNecessaryTestCase(SimpleTestCase):
             'card_number_last_digits': '987',
             'card_expiry_date': '01/20',
             'card_brand': 'visa',
-            'billing_address': 'Buckingham Palace SW1A 1AA',
+            'billing_address': {
+                'line1': '102 Petty France',
+                'line2': '',
+                'postcode': 'SW1H9AJ',
+                'city': 'London',
+                'country': 'GB',
+            },
         }
         govuk_payment = {
             'payment_id': 'payment-id',
@@ -702,7 +720,13 @@ class CompletePaymentIfNecessaryTestCase(SimpleTestCase):
                 'last_digits_card_number': '987',
                 'expiry_date': '01/20',
                 'card_brand': 'visa',
-                'billing_address': 'Buckingham Palace SW1A 1AA',
+                'billing_address': {
+                    'line1': '102 Petty France',
+                    'line2': '',
+                    'postcode': 'SW1H9AJ',
+                    'city': 'London',
+                    'country': 'GB',
+                },
             },
         }
 
@@ -751,7 +775,13 @@ class CompletePaymentIfNecessaryTestCase(SimpleTestCase):
             'card_number_last_digits': '987',
             'card_expiry_date': '01/20',
             'card_brand': 'visa',
-            'billing_address': 'Buckingham Palace SW1A 1AA',
+            'billing_address': {
+                'line1': '102 Petty France',
+                'line2': '',
+                'postcode': 'SW1H9AJ',
+                'city': 'London',
+                'country': 'GB',
+            },
             'security_check': {
                 'status': 'pending',
                 'user_actioned': False,
@@ -770,7 +800,13 @@ class CompletePaymentIfNecessaryTestCase(SimpleTestCase):
                 'last_digits_card_number': '987',
                 'expiry_date': '01/20',
                 'card_brand': 'visa',
-                'billing_address': 'Buckingham Palace SW1A 1AA',
+                'billing_address': {
+                    'line1': '102 Petty France',
+                    'line2': '',
+                    'postcode': 'SW1H9AJ',
+                    'city': 'London',
+                    'country': 'GB',
+                },
             },
         }
 
@@ -805,7 +841,13 @@ class CompletePaymentIfNecessaryTestCase(SimpleTestCase):
             'card_number_last_digits': '987',
             'card_expiry_date': '01/20',
             'card_brand': 'visa',
-            'billing_address': 'Buckingham Palace SW1A 1AA',
+            'billing_address': {
+                'line1': '102 Petty France',
+                'line2': '',
+                'postcode': 'SW1H9AJ',
+                'city': 'London',
+                'country': 'GB',
+            },
         }
         govuk_payment = {
             'payment_id': 'payment-id',
@@ -820,7 +862,13 @@ class CompletePaymentIfNecessaryTestCase(SimpleTestCase):
                 'last_digits_card_number': '987',
                 'expiry_date': '01/20',
                 'card_brand': 'visa',
-                'billing_address': 'Buckingham Palace SW1A 1AA',
+                'billing_address': {
+                    'line1': '102 Petty France',
+                    'line2': '',
+                    'postcode': 'SW1H9AJ',
+                    'city': 'London',
+                    'country': 'GB',
+                },
             },
         }
 
@@ -884,7 +932,13 @@ class CompletePaymentIfNecessaryTestCase(SimpleTestCase):
             'card_number_last_digits': '987',
             'card_expiry_date': '01/20',
             'card_brand': 'visa',
-            'billing_address': 'Buckingham Palace SW1A 1AA',
+            'billing_address': {
+                'line1': '102 Petty France',
+                'line2': '',
+                'postcode': 'SW1H9AJ',
+                'city': 'London',
+                'country': 'GB',
+            },
         }
         govuk_payment = {
             'payment_id': 'payment-id',
@@ -899,7 +953,13 @@ class CompletePaymentIfNecessaryTestCase(SimpleTestCase):
                 'last_digits_card_number': '987',
                 'expiry_date': '01/20',
                 'card_brand': 'visa',
-                'billing_address': 'Buckingham Palace SW1A 1AA',
+                'billing_address': {
+                    'line1': '102 Petty France',
+                    'line2': '',
+                    'postcode': 'SW1H9AJ',
+                    'city': 'London',
+                    'country': 'GB',
+                },
             },
         }
 
@@ -1063,7 +1123,13 @@ class GetCompletionPaymentAttrUpdatesTestCase(SimpleTestCase):
                 'last_digits_card_number': '987',
                 'expiry_date': '01/20',
                 'card_brand': 'visa',  # hasn't changed so should be ignored
-                'billing_address': 'Buckingham Palace SW1A 1AA',
+                'billing_address': {
+                    'line1': '102 Petty France',
+                    'line2': '',
+                    'postcode': 'SW1H9AJ',
+                    'city': 'London',
+                    'country': 'GB',
+                },
             },
             'extra_attribute': 'some-value',
         }
@@ -1077,6 +1143,12 @@ class GetCompletionPaymentAttrUpdatesTestCase(SimpleTestCase):
                 'card_number_first_digits': '1234',
                 'card_number_last_digits': '987',
                 'card_expiry_date': '01/20',
-                'billing_address': 'Buckingham Palace SW1A 1AA',
+                'billing_address': {
+                    'line1': '102 Petty France',
+                    'line2': '',
+                    'postcode': 'SW1H9AJ',
+                    'city': 'London',
+                    'country': 'GB',
+                },
             }
         )
