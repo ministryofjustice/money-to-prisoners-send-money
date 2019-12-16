@@ -122,7 +122,7 @@ def is_active_payment(payment):
 
 
 class PaymentClient:
-    CHECK_INCOMPLETE_PAYMENT_DELAY = timedelta(minutes=30)
+    CHECK_INCOMPLETE_PAYMENT_DELAY = timedelta(minutes=settings.CHECK_INCOMPLETE_PAYMENT_DELAY)
 
     @cached_property
     def api_session(self):
