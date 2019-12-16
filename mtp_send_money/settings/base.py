@@ -285,6 +285,10 @@ if MAILGUN_FROM_ADDRESS:
 
 CLOUD_PLATFORM_MIGRATION_MODE = os.environ.get('CLOUD_PLATFORM_MIGRATION_MODE', '')
 
+CHECK_INCOMPLETE_PAYMENT_DELAY = int(  # in minutes
+    os.environ.get('CHECK_INCOMPLETE_PAYMENT_DELAY', 30),
+)
+
 try:
     from .local import *  # noqa
 except ImportError:
