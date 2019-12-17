@@ -366,7 +366,7 @@ class PaymentClient:
         elif govuk_status == GovUkPaymentStatus.failed:
             if timed_out_after_capturable:
                 # it expired after being captured meaning that the user should really be notified
-                security_check = payment.get('security_check', {})
+                security_check = payment.get('security_check') or {}
 
                 # if it was rejected by FIU, send rejection email anyway
                 if security_check.get('user_actioned') and security_check.get('status') == 'rejected':
