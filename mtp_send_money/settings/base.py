@@ -237,6 +237,10 @@ NOMS_HOLDING_ACCOUNT_SORT_CODE = os.environ.get('NOMS_HOLDING_ACCOUNT_SORT_CODE'
 # x to enable delayed capture for x% payments
 PAYMENT_DELAYED_CAPTURE_ROLLOUT_PERCENTAGE = os.environ.get('PAYMENT_DELAYED_CAPTURE_ROLLOUT_PERCENTAGE', '0')
 
+CHECK_INCOMPLETE_PAYMENT_DELAY = int(  # in minutes
+    os.environ.get('CHECK_INCOMPLETE_PAYMENT_DELAY', 30),
+)
+
 SERVICE_CHARGE_PERCENTAGE = Decimal(
     os.environ.get('SERVICE_CHARGE_PERCENTAGE', '0')
 )  # always use `Decimal` percentage
@@ -285,9 +289,6 @@ if MAILGUN_FROM_ADDRESS:
 
 CLOUD_PLATFORM_MIGRATION_MODE = os.environ.get('CLOUD_PLATFORM_MIGRATION_MODE', '')
 
-CHECK_INCOMPLETE_PAYMENT_DELAY = int(  # in minutes
-    os.environ.get('CHECK_INCOMPLETE_PAYMENT_DELAY', 30),
-)
 
 try:
     from .local import *  # noqa

@@ -42,14 +42,9 @@ def clear_session_view(request):
     return redirect(build_view_url(request, PaymentMethodChoiceView.url_name))
 
 
-def should_be_capture_delayed():
+def get_payment_delayed_capture_rollout_percentage():
     """
-    Util function to roll out delayed payment capture gradually in order to limit damage caused by unknown problems.
-    Returns True if the payment should be created with delayed_capture == True with a chance in
-    percentage uqual to settings.PAYMENT_DELAYED_CAPTURE_ROLLOUT_PERCENTAGE.
-
-    TODO remove (and always delay) or allow just an on/off value when happy and confident that things are
-    working fine.
+    TODO: remove following delayed capture release
     """
     try:
         rollout_perc = int(settings.PAYMENT_DELAYED_CAPTURE_ROLLOUT_PERCENTAGE)
@@ -62,6 +57,19 @@ def should_be_capture_delayed():
             'Disabling delayed capture for now.'
         )
         rollout_perc = 0
+    return rollout_perc
+
+
+def should_be_capture_delayed():
+    """
+    Util function to roll out delayed payment capture gradually in order to limit damage caused by unknown problems.
+    Returns True if the payment should be created with delayed_capture == True with a chance in
+    percentage uqual to settings.PAYMENT_DELAYED_CAPTURE_ROLLOUT_PERCENTAGE.
+
+    TODO remove (and always delay) or allow just an on/off value when happy and confident that things are
+    working fine.
+    """
+    rollout_perc = get_payment_delayed_capture_rollout_percentage()
 
     if rollout_perc == 0:
         return False

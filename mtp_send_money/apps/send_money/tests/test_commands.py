@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 import json
 from unittest import mock
 
@@ -11,6 +11,7 @@ import responses
 
 from send_money.tests import mock_auth
 from send_money.utils import api_url, govuk_url
+from send_money.management.commands.update_incomplete_payments import ALWAYS_CHECK_IF_OLDER_THAN
 
 
 PAYMENT_DATA = {
@@ -20,9 +21,14 @@ PAYMENT_DATA = {
     'amount': 1700,
     'status': 'pending',
     'email': 'success_sender@outside.local',
+    'created': datetime.now().isoformat() + 'Z',
     'modified': datetime.now().isoformat() + 'Z',
     'prisoner_number': 'A1409AE',
     'prisoner_dob': '1989-01-21',
+    'security_check': {
+        'status': 'accepted',
+        'user_actioned': False,
+    }
 }
 
 
@@ -72,9 +78,14 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
                 'recipient_name': 'John',
                 'amount': 1700,
                 'status': 'pending',
+                'created': datetime.now().isoformat() + 'Z',
                 'modified': datetime.now().isoformat() + 'Z',
                 'prisoner_number': 'A1409AE',
                 'prisoner_dob': '1989-01-21',
+                'security_check': {
+                    'status': 'accepted',
+                    'user_actioned': False,
+                },
             },
             {
                 'uuid': 'wargle-2222',
@@ -82,9 +93,14 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
                 'recipient_name': 'Tom',
                 'amount': 2000,
                 'status': 'pending',
+                'created': datetime.now().isoformat() + 'Z',
                 'modified': datetime.now().isoformat() + 'Z',
                 'prisoner_number': 'A1234GJ',
                 'prisoner_dob': '1954-04-17',
+                'security_check': {
+                    'status': 'accepted',
+                    'user_actioned': False,
+                },
             },
             {
                 'uuid': 'wargle-3333',
@@ -92,9 +108,14 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
                 'recipient_name': 'Harry',
                 'amount': 500,
                 'status': 'pending',
+                'created': datetime.now().isoformat() + 'Z',
                 'modified': datetime.now().isoformat() + 'Z',
                 'prisoner_number': 'A5544CD',
                 'prisoner_dob': '1992-12-05',
+                'security_check': {
+                    'status': 'accepted',
+                    'user_actioned': False,
+                },
             },
             {
                 'uuid': 'wargle-4444',
@@ -102,9 +123,14 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
                 'recipient_name': 'Lisa',
                 'amount': 600,
                 'status': 'pending',
+                'created': datetime.now().isoformat() + 'Z',
                 'modified': datetime.now().isoformat() + 'Z',
                 'prisoner_number': 'A4444DB',
                 'prisoner_dob': '1992-12-05',
+                'security_check': {
+                    'status': 'accepted',
+                    'user_actioned': False,
+                },
             },
             {
                 'uuid': 'wargle-5555',
@@ -112,9 +138,14 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
                 'recipient_name': 'Tom',
                 'amount': 700,
                 'status': 'pending',
+                'created': datetime.now().isoformat() + 'Z',
                 'modified': datetime.now().isoformat() + 'Z',
                 'prisoner_number': 'A4444DE',
                 'prisoner_dob': '1992-12-05',
+                'security_check': {
+                    'status': 'accepted',
+                    'user_actioned': False,
+                },
             },
             {
                 'uuid': 'wargle-6666',
@@ -122,6 +153,7 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
                 'recipient_name': 'Tim',
                 'amount': 800,
                 'status': 'pending',
+                'created': datetime.now().isoformat() + 'Z',
                 'modified': datetime.now().isoformat() + 'Z',
                 'prisoner_number': 'A1409AW',
                 'prisoner_dob': '1989-01-21',
@@ -136,6 +168,7 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
                 'recipient_name': 'Jim',
                 'amount': 900,
                 'status': 'pending',
+                'created': datetime.now().isoformat() + 'Z',
                 'modified': datetime.now().isoformat() + 'Z',
                 'prisoner_number': 'A4444DQ',
                 'prisoner_dob': '1992-12-05',
@@ -471,6 +504,232 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
 
             # double-check that no more emails were sent
             self.assertEqual(len(mail.outbox), 5)
+
+    @override_settings(
+        ENVIRONMENT='prod',   # because non-prod environments don't send to @outside.local
+        PAYMENT_DELAYED_CAPTURE_ROLLOUT_PERCENTAGE='100',
+    )
+    def test_skip_payments(self):
+        """
+        Test that checks for some payments get skipped and some get included
+
+        - wargle-aaaa is a recent payment and the check is in pending so should be skipped
+        - wargle-bbbb is an old payment so should be checked even if the check is in pending
+            as it could have been timed out
+        - wargle-cccc is a recent payment and the payment object doesn't have check info so should be included
+            just in case
+        - wargle-dddd is a recent payment and the check is in accepted so should be included
+        - wargle-eeee is a recent payment and the check is in rejected so should be included
+        """
+        payments = [
+            {
+                'uuid': 'wargle-aaaa',
+                'processor_id': 1,
+                'recipient_name': 'John',
+                'amount': 1700,
+                'status': 'pending',
+                'created': datetime.now().isoformat() + 'Z',
+                'modified': datetime.now().isoformat() + 'Z',
+                'prisoner_number': 'A1409AE',
+                'prisoner_dob': '1989-01-21',
+                'security_check': {
+                    'status': 'pending',
+                    'user_actioned': False,
+                },
+            },
+            {
+                'uuid': 'wargle-bbbb',
+                'processor_id': 2,
+                'recipient_name': 'Tom',
+                'amount': 2000,
+                'status': 'pending',
+                'created': (
+                    datetime.now() - ALWAYS_CHECK_IF_OLDER_THAN - timedelta(hours=1)
+                ).isoformat() + 'Z',
+                'modified': datetime.now().isoformat() + 'Z',
+                'prisoner_number': 'A1234GJ',
+                'prisoner_dob': '1954-04-17',
+                'security_check': {
+                    'status': 'pending',
+                    'user_actioned': False,
+                },
+            },
+            {
+                'uuid': 'wargle-cccc',
+                'processor_id': 3,
+                'recipient_name': 'Harry',
+                'amount': 500,
+                'status': 'pending',
+                'created': datetime.now().isoformat() + 'Z',
+                'modified': datetime.now().isoformat() + 'Z',
+                'prisoner_number': 'A5544CD',
+                'prisoner_dob': '1992-12-05',
+                'security_check': None,
+            },
+            {
+                'uuid': 'wargle-dddd',
+                'processor_id': 4,
+                'recipient_name': 'Lisa',
+                'amount': 600,
+                'status': 'pending',
+                'created': datetime.now().isoformat() + 'Z',
+                'modified': datetime.now().isoformat() + 'Z',
+                'prisoner_number': 'A4444DB',
+                'prisoner_dob': '1992-12-05',
+                'security_check': {
+                    'status': 'accepted',
+                    'user_actioned': False,
+                },
+            },
+            {
+                'uuid': 'wargle-eeee',
+                'processor_id': 5,
+                'recipient_name': 'Tom',
+                'amount': 700,
+                'status': 'pending',
+                'created': datetime.now().isoformat() + 'Z',
+                'modified': datetime.now().isoformat() + 'Z',
+                'prisoner_number': 'A4444DE',
+                'prisoner_dob': '1992-12-05',
+                'security_check': {
+                    'status': 'rejected',
+                    'user_actioned': True,
+                },
+            },
+        ]
+        with responses.RequestsMock() as rsps:
+            mock_auth(rsps)
+            rsps.add(
+                rsps.GET,
+                api_url('/payments/'),
+                json={
+                    'count': len(payments),
+                    'results': payments,
+                },
+                status=200,
+            )
+            # get govuk payment
+            rsps.add(
+                rsps.GET,
+                govuk_url('/payments/%s/' % 2),
+                json={
+                    'reference': 'wargle-bbbb',
+                    'state': {'status': 'capturable'},
+                },
+                status=200,
+            )
+            # get govuk payment
+            rsps.add(
+                rsps.GET,
+                govuk_url('/payments/%s/' % 3),
+                json={
+                    'reference': 'wargle-cccc',
+                    'state': {'status': 'submitted'},
+                    'settlement_summary': {
+                        'capture_submit_time': '2016-10-27T15:11:05Z',
+                        'captured_date': None
+                    },
+                },
+                status=200,
+            )
+            # get govuk payment
+            rsps.add(
+                rsps.GET,
+                govuk_url('/payments/%s/' % 4),
+                json={
+                    'reference': 'wargle-dddd',
+                    'state': {'status': 'success'},
+                    'settlement_summary': {
+                        'capture_submit_time': '2016-10-27T15:11:05Z',
+                        'captured_date': '2016-10-27'
+                    },
+                    'email': 'success_sender@outside.local',
+                },
+                status=200,
+            )
+            # save email
+            rsps.add(
+                rsps.PATCH,
+                api_url('/payments/%s/' % 'wargle-dddd'),
+                json={
+                    **payments[3],
+                    'email': 'success_sender@outside.local',
+                },
+                status=200,
+            )
+            # update status
+            rsps.add(
+                rsps.PATCH,
+                api_url('/payments/%s/' % 'wargle-dddd'),
+                json={
+                    **payments[3],
+                    'email': 'success_sender@outside.local',
+                    'status': 'taken',
+                },
+                status=200,
+            )
+            # get govuk payment
+            rsps.add(
+                rsps.GET,
+                govuk_url('/payments/%s/' % 5),
+                json={
+                    'reference': 'wargle-eeee',
+                    'state': {'status': 'cancelled'},
+                    'email': 'cancelled_sender@outside.local',
+                },
+                status=200,
+            )
+            # update status
+            rsps.add(
+                rsps.PATCH,
+                api_url('/payments/%s/' % 'wargle-eeee'),
+                json={
+                    **payments[4],
+                    'status': 'rejected',
+                },
+                status=200,
+            )
+
+            call_command('update_incomplete_payments', verbosity=0)
+
+            # wargle-aaaa, wargle-bbbb and wargle-cccc already checked implicitly by RequestsMock
+
+            # check wargle-dddd
+            self.assertEqual(
+                json.loads(rsps.calls[5].request.body.decode()),
+                {'email': 'success_sender@outside.local'},
+            )
+            self.assertDictEqual(
+                json.loads(rsps.calls[6].request.body.decode()),
+                {
+                    'status': 'taken',
+                    'received_at': '2016-10-27T15:11:05+00:00',
+                },
+            )
+            self.assertEqual(
+                mail.outbox[0].subject,
+                'Send money to someone in prison: your payment was successful',
+            )
+            self.assertTrue('Lisa' in mail.outbox[0].body)
+            self.assertTrue('£6' in mail.outbox[0].body)
+
+            # check wargle-eeee
+            self.assertEqual(
+                json.loads(rsps.calls[8].request.body.decode()),
+                {
+                    'email': 'cancelled_sender@outside.local',
+                    'status': 'rejected',
+                },
+            )
+            self.assertEqual(
+                mail.outbox[1].subject,
+                'Send money to someone in prison: your payment has NOT been sent to the prisoner',
+            )
+            self.assertTrue('Tom' in mail.outbox[1].body)
+            self.assertTrue('£7' in mail.outbox[1].body)
+
+            # double-check that no more emails were sent
+            self.assertEqual(len(mail.outbox), 2)
 
     @override_settings(ENVIRONMENT='prod')  # because non-prod environments don't send to @outside.local
     def test_update_incomplete_payments_extracts_card_details(self):

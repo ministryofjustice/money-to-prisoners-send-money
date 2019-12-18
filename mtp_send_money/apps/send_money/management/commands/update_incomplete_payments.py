@@ -10,8 +10,12 @@ from requests.exceptions import RequestException
 
 from send_money.exceptions import GovUkPaymentStatusException
 from send_money.payments import GovUkPaymentStatus, PaymentClient
+from send_money.views import get_payment_delayed_capture_rollout_percentage
 
 logger = logging.getLogger('mtp')
+
+
+ALWAYS_CHECK_IF_OLDER_THAN = timedelta(days=3)
 
 
 class Command(BaseCommand):
@@ -31,17 +35,31 @@ class Command(BaseCommand):
             self.stderr.write('Not running on Cloud Platform')
             return True
 
+    def should_be_checked(self, payment):
+        """
+        Returns True if the GOV.UK Pay API should be used to check the status of the payment.
+
+        Used to limit the amount of API calls to GOV.UK Pay endpoints.
+        """
+        # if delayed capture hasn't been released yet => always check
+        if not get_payment_delayed_capture_rollout_percentage():
+            return True
+
+        creation_date = parse_datetime(payment['created'])
+        security_check = payment.get('security_check')
+        is_old = creation_date < (timezone.now() - ALWAYS_CHECK_IF_OLDER_THAN)
+
+        if not security_check or is_old:
+            return True
+
+        return security_check.get('status') != 'pending'
+
     def perform_update(self):
         payment_client = PaymentClient()
         payments = payment_client.get_incomplete_payments()
-        one_day_ago = timezone.now() - timedelta(days=1)
         for payment in payments:
-            modified = parse_datetime(payment['modified'])
-            if modified < one_day_ago:
-                logger.warning(
-                    'Payment %s was last modified at %s and is still pending' %
-                    (payment['uuid'], modified.isoformat())
-                )
+            if not self.should_be_checked(payment):
+                continue
 
             payment_ref = payment['uuid']
             govuk_id = payment['processor_id']
