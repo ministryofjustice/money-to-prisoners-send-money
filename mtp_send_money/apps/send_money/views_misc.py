@@ -144,13 +144,13 @@ class SitemapXMLView(TemplateView):
         return (
             {
                 'url': links[settings.LANGUAGE_CODE][url_name],
-                'alt_links': (
+                'alt_links': [
                     {
                         'lang': lang_code,
                         'url': links[lang_code][url_name],
                     }
                     for lang_code, lang_name in settings.LANGUAGES
-                ) if settings.SHOW_LANGUAGE_SWITCH else []
+                ] if settings.SHOW_LANGUAGE_SWITCH else []
             }
             for url_name in url_names
         )
