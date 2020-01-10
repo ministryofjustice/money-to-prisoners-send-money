@@ -17,7 +17,7 @@ def _send_notification_email(email, template_name, subject, tags, context):
     send_email(
         email,
         f'send_money/email/{template_name}.txt',
-        gettext('Send money to someone in prison: %(subject)s' % {'subject': subject}),
+        gettext('Send money to someone in prison: %(subject)s') % {'subject': subject},
         context=context,
         html_template=f'send_money/email/{template_name}.html',
         anymail_tags=tags,
@@ -97,7 +97,7 @@ def send_email_for_bank_transfer_reference(email, context):
     _send_notification_email(
         email,
         'bank-transfer-reference',
-        gettext('your prisoner reference is %(bank_transfer_reference)s' % context),
+        gettext('your prisoner reference is %(bank_transfer_reference)s') % context,
         ['bt-reference'],
         context,
     )
