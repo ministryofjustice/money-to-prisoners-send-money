@@ -127,8 +127,11 @@ class SitemapXMLView(TemplateView):
 
     def make_links(self):
         url_names = [
-            'send_money:choose_method', 'send_money:help', 'send_money:help_bank_transfer',
-            'send_money:help_delays', 'send_money:help_transfered', 'send_money:prison_list',
+            'send_money:choose_method',
+            'send_money:help', 'send_money:faq',
+            'send_money:help_bank_transfer', 'send_money:help_delays', 'send_money:help_transfered',
+            'send_money:prison_list',
+            'terms', 'privacy', 'cookies',
         ]
         links = {}
         request = self.request
@@ -141,13 +144,13 @@ class SitemapXMLView(TemplateView):
         return (
             {
                 'url': links[settings.LANGUAGE_CODE][url_name],
-                'alt_links': (
+                'alt_links': [
                     {
                         'lang': lang_code,
                         'url': links[lang_code][url_name],
                     }
                     for lang_code, lang_name in settings.LANGUAGES
-                ) if settings.SHOW_LANGUAGE_SWITCH else []
+                ] if settings.SHOW_LANGUAGE_SWITCH else []
             }
             for url_name in url_names
         )
