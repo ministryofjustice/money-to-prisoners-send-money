@@ -1,18 +1,17 @@
-// Reference section
 'use strict';
 
 export var Reference = {
   init: function () {
-    $('.mtp-print-reference').click(function (e) {
+    $('.mtp-reference-actions__print').click(function (e) {
       e.preventDefault();
       try {
         window.print();
       } catch (e) {}  // eslint-disable-line
     });
 
-    $('.mtp-email-reference').click(function (e) {
+    $('.mtp-reference-actions__email').click(function (e) {
       e.preventDefault();
-      $('#mtp-email-reference-form').show();
+      $('#mtp-reference-actions__email-form').show();
       $('#id_email').focus();
     });
   }

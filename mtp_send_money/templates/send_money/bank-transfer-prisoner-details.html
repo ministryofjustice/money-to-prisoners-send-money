@@ -6,30 +6,37 @@
 {% block page_title %}{% trans 'Enter prisoner details' %} – {{ block.super }}{% endblock %}
 
 {% block content %}
-  <header>
-    <h1 class="govuk-heading-xl">
-      <span class="govuk-caption-xl">{% trans 'Get a prisoner reference to use in a UK bank transfer' %}</span>
-      {% trans 'Enter prisoner details' %}
-    </h1>
-  </header>
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
 
-  <p class="mtp-bank-transfer-instructions">
-    {% trans 'To make a bank transfer online, you need a prisoner reference number.' %}
-    {% trans 'To get this, provide these details:' %}
-  </p>
+      <header>
+        <h1 class="govuk-heading-xl">
+          <span class="govuk-caption-xl">{% trans 'Get a prisoner reference to use in a UK bank transfer' %}</span>
+          {% trans 'Enter prisoner details' %}
+        </h1>
+      </header>
 
-  <form method="post" action=".">
-    {% csrf_token %}
+      <p>
+        {% trans 'To make a bank transfer online, you need a prisoner reference number.' %}
+        {% trans 'To get this, provide these details:' %}
+      </p>
 
-    {% include 'send_money/prisoner-details-error-summary.html' with form=form only %}
+      <form method="post" action=".">
+        {% csrf_token %}
 
-    <fieldset>
-      <legend class="govuk-visually-hidden">{% trans 'Prisoner details' %}</legend>
-      {% include 'send_money/includes/prisoner-details-dob.html' with field=form.prisoner_dob only %}
-      {% include 'send_money/includes/prisoner-details-number.html' with field=form.prisoner_number only %}
-    </fieldset>
-    <p>
-      <input id="id_next_btn" class="govuk-button" type="submit" value="{% trans 'Get reference' %}">
-    </p>
-  </form>
+        {% include 'send_money/prisoner-details-error-summary.html' with form=form only %}
+
+        <fieldset class="govuk-fieldset">
+          <legend class="govuk-visually-hidden">{% trans 'Prisoner details' %}</legend>
+          {% include 'mtp_common/forms/date-field.html' with field=form.prisoner_dob only %}
+          {% include 'mtp_common/forms/field.html' with field=form.prisoner_number input_classes='govuk-input--width-10 mtp-input--prisoner-number' only %}
+        </fieldset>
+
+        <p>
+          <input id="id_next_btn" class="govuk-button" type="submit" value="{% trans 'Get reference' %}">
+        </p>
+      </form>
+
+    </div>
+  </div>
 {% endblock %}

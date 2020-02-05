@@ -18,47 +18,10 @@
 {% block get_help_form %}
 
   <div class="govuk-grid-row mtp-contact-columns">
-    <div class="govuk-grid-column-two-thirds">
-      <form action="." method="post" id="mtp-feedback-form">
-        {% include 'mtp_common/forms/error-summary.html' with form=form only %}
-
-        <fieldset>
-          <legend class="govuk-visually-hidden">{% trans 'Your message' %}</legend>
-
-          <div class="hidden">
-            {% include 'mtp_common/forms/field.html' with field=form.subject only %}
-          </div>
-
-          {% with field=form.ticket_content value=request.GET.message|default:'' %}
-            <div class="form-group {% if field.errors %}form-group-error{% endif %}">
-              {% include 'mtp_common/forms/field-label.html' with field=field only %}
-              {% include 'mtp_common/forms/field-errors.html' with field=field only %}
-              <textarea class="form-control {% if field.errors %}form-control-error{% endif %}" id="{{ field.id_for_label }}" name="{{ field.html_name }}" cols="40" rows="10">{{ field.value|default:value }}</textarea>
-            </div>
-          {% endwith %}
-
-          <h2 class="govuk-heading-m">{% trans 'If you’re having difficulties using the service, please send:' %}</h2>
-          {% include 'mtp_common/forms/field.html' with field=form.prisoner_number only %}
-          {% include 'mtp_common/forms/field.html' with field=form.prisoner_dob only %}
-
-          {% include 'mtp_common/forms/field.html' with field=form.contact_email value=request.GET.email|default:'' only %}
-
-          <div class="form-group">
-            {% csrf_token %}
-            {{ form.referer }}
-            <button type="submit" class="govuk-button" name="submit-feedback">{% trans 'Send' %}</button>
-          </div>
-        </fieldset>
-      </form>
-    </div>
-
-    <aside class="govuk-grid-column-one-third">
-      <h2 class="govuk-heading-m">
+    <aside class="govuk-grid-column-one-third--right govuk-!-margin-bottom-9">
+      <h2 class="govuk-body">
         {% trans 'Find help if you’ve already sent money but the:' %}
       </h2>
-      <p>
-        {% trans 'Find help if you’ve already sent money but the:' %}
-      </p>
       <ul class="govuk-list govuk-list--bullet">
         <li>
           <a href="{% url 'send_money:help_delays' %}">
@@ -77,6 +40,36 @@
         </li>
       </ul>
     </aside>
+
+    <div class="govuk-grid-column-two-thirds--left">
+      <form action="." method="post" id="mtp-feedback-form">
+        {% include 'mtp_common/forms/error-summary.html' with form=form only %}
+
+        <fieldset class="govuk-fieldset">
+          <legend class="govuk-visually-hidden">{% trans 'Your message' %}</legend>
+
+          {% include 'mtp_common/forms/field.html' with field=form.subject only %}
+          {% with field=form.ticket_content value=request.GET.message|default:'' %}
+            <div class="govuk-form-group {% if field.errors %}govuk-form-group--error{% endif %}">
+              {% include 'mtp_common/forms/field-label.html' with field=field only %}
+              {% include 'mtp_common/forms/field-errors.html' with field=field only %}
+              <textarea class="govuk-textarea {% if field.errors %}govuk-textarea--error{% endif %}" id="{{ field.id_for_label }}" name="{{ field.html_name }}" cols="40" rows="10">{{ field.value|default:value }}</textarea>
+            </div>
+          {% endwith %}
+
+          <h2 class="govuk-heading-m">{% trans 'If you’re having difficulties using the service, please send:' %}</h2>
+          {% include 'mtp_common/forms/field.html' with field=form.prisoner_number input_classes='govuk-input--width-10 mtp-input--prisoner-number' only %}
+          {% include 'mtp_common/forms/field.html' with field=form.prisoner_dob input_classes='govuk-input--width-10' only %}
+          {% include 'mtp_common/forms/field.html' with field=form.contact_email input_classes='govuk-input--width-20' value=request.GET.email|default:'' autocomplete='email' only %}
+
+          <div class="govuk-form-group">
+            {% csrf_token %}
+            {{ form.referer }}
+            <button type="submit" class="govuk-button" name="submit-feedback">{% trans 'Send' %}</button>
+          </div>
+        </fieldset>
+      </form>
+    </div>
   </div>
 
 {% endblock %}

@@ -6,35 +6,44 @@
 
 {% block content %}
 
-  <div class="govuk-box-highlight mtp-box-highlight-success">
-    <h1 class="govuk-heading-xl">{% trans 'Payment successful' %}</h1>
-    <p>{% trans 'Your confirmation number is' %}<p>
-    <strong>{{ short_payment_ref }}</strong>
+  <div class="govuk-panel govuk-panel--confirmation">
+    <h1 class="govuk-panel__title">
+      {% trans 'Payment successful' %}
+    </h1>
+    <div class="govuk-panel__body">
+      {% trans 'Your confirmation number is' %}
+      <br />
+      <strong>{{ short_payment_ref }}</strong>
+    </div>
   </div>
 
-  <div class="print-hidden mtp-reference-actions">
-    <a class="mtp-print-reference" href="#">{% trans 'Print this page' %}</a>
-  </div>
+  <p class="mtp-reference-actions govuk-!-margin-bottom-6">
+    <a class="mtp-reference-actions__print govuk-link--no-visited-state" href="#">{% trans 'Print this page' %}</a>
+  </p>
 
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-      <div class="mtp-account govuk-inset-text">
-        <table>
+
+      <div class="govuk-inset-text">
+        <table class="govuk-table">
+          <caption class="govuk-visually-hidden">
+            {% trans 'Details of your successful payment' %}
+          </caption>
           <tbody>
             <tr>
-              <th>{% trans 'Payment to' %}:</th>
+              <th scope="row">{% trans 'Payment to' %}</th>
               <td>{{ prisoner_name }}</td>
             </tr>
             <tr>
-              <th>{% trans 'Amount' %}:</th>
+              <th scope="row">{% trans 'Amount' %}</th>
               <td>{{ amount|currency_format }}</td>
             </tr>
             <tr>
-              <th>{% trans 'Date payment made' %}:</th>
+              <th scope="row">{% trans 'Date payment made' %}</th>
               <td>{% now 'd/m/Y' %}</td>
             </tr>
             <tr>
-              <th>{% trans 'Confirmation number' %}:</th>
+              <th scope="row">{% trans 'Confirmation number' %}</th>
               <td>{{ short_payment_ref }}</td>
             </tr>
           </tbody>
@@ -54,6 +63,7 @@
       <p>
         <a href="https://www.gov.uk/done/send-prisoner-money">{% trans 'Take a moment to rate this service' %}</a> {% trans '(takes 30 seconds)' %}
       </p>
+
     </div>
   </div>
 {% endblock %}

@@ -5,20 +5,20 @@ import 'govuk-design-system';
 
 // common
 import {Analytics} from 'analytics';
+import {Banner} from 'banner';
 import {ElementFocus} from 'element-focus';
 import {YearFieldCompletion} from 'year-field-completion';
-import {Notifications} from 'notifications';
 
 Analytics.init();
+Banner.init();
 ElementFocus.init();
 YearFieldCompletion.init();
-Notifications.init();
 
 // send-money
-import {Charges} from 'charges';
-import {Reference} from 'reference';
 import {FilteredList} from 'filtered-list';
+import {Reference} from 'reference';
+import {ServiceCharge} from 'service-charge';
 
-Charges.init();
-Reference.init();
 FilteredList.init();
+Reference.init();
+ServiceCharge.init();

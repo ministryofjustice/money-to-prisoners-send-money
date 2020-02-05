@@ -15,9 +15,11 @@
       <form action="{% url 'cookies' %}" method="post">
         {% csrf_token %}
         <input type="hidden" name="next" value="{{ request.get_full_path }}" />
-        <button class="govuk-button govuk-!-margin-right-1" type="submit" name="accept_cookies" value="yes">{% trans 'Accept cookies' %}</button>
-        <button class="govuk-button" type="submit" name="accept_cookies" value="no">{% trans 'Reject cookies' %}</button>
-        <a class="mtp-button--cancel" href="{% url 'cookies' %}">{% trans 'View more information' %}</a>
+        <p>
+          <button class="govuk-button govuk-!-margin-right-1" type="submit" name="accept_cookies" value="yes">{% trans 'Accept cookies' %}</button>
+          <button class="govuk-button" type="submit" name="accept_cookies" value="no">{% trans 'Reject cookies' %}</button>
+          <a class="mtp-link--form-cancel" href="{% url 'cookies' %}">{% trans 'View more information' %}</a>
+        </p>
       </form>
     </aside>
   {% endif %}
@@ -57,18 +59,15 @@
   <div class="govuk-phase-banner">
     <p class="govuk-phase-banner__content">
       {% if ENVIRONMENT != 'prod' %}
-        <strong class="govuk-tag govuk-phase-banner__content__tag mtp-tag-warning" title="{{ APP }}-{{ ENVIRONMENT }}:
-          {{ APP_GIT_COMMIT_SHORT }}{% if APP_BUILD_DATE %}, built {{ APP_BUILD_DATE }}{% endif %}">
+        <strong class="govuk-tag govuk-phase-banner__content__tag mtp-tag-warning">
           {% trans 'Warning' %}
         </strong>
-        <span class="govuk-phase-banner__text">
-          {% blocktrans trimmed with name=ENVIRONMENT %}
-            This “{{ name }}” website is for testing only.
-          {% endblocktrans %}
-        </span>
       {% endif %}
-      {% url 'submit_ticket' as ticket_url %}
       <span class="govuk-phase-banner__text">
+        {% if ENVIRONMENT != 'prod' %}
+          {% trans 'This website is only for testing!' %}
+        {% endif %}
+        {% url 'submit_ticket' as ticket_url %}
         {% blocktrans trimmed %}
           <a href="{{ ticket_url }}">Contact us</a> if you need help or would like to give us some feedback.
         {% endblocktrans %}

@@ -87,9 +87,11 @@ METRICS_PASS = os.environ.get('METRICS_PASS', 'prom')
 # some overridden in prod/docker settings where SSL is ensured
 SECURE_CONTENT_TYPE_NOSNIFF = True
 SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SAMESITE = 'Lax'  # TODO: need django 2.1 or mtp_common update
 SESSION_COOKIE_SECURE = False
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 CSRF_COOKIE_HTTPONLY = True
+CSRF_COOKIE_SAMESITE = 'Lax'
 CSRF_COOKIE_SECURE = False
 CSRF_FAILURE_VIEW = 'mtp_common.auth.csrf.csrf_failure'
 

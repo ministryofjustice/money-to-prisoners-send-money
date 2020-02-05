@@ -1,0 +1,13 @@
+.mtp-service-charge__description {
+  .js-enabled & {
+    display: none;
+  }
+}
+
+.mtp-service-charge__totals {
+  display: none;
+
+  .js-enabled & {
+    display: block;
+  }
+}

@@ -1,91 +1,94 @@
 {% extends 'base.html' %}
 {% load i18n %}
 {% load send_money %}
-{% load static %}
 
 {% block page_title %}{% trans 'Now you can make the bank transfer' %} – {{ block.super }}{% endblock %}
 
 {% block content %}
 
-  <div class="govuk-box-highlight mtp-box-highlight-success">
-    <h1 class="govuk-heading-xl">{% trans 'Your prisoner reference is' %}</h1>
-    <h2 class="govuk-heading-l">{{ bank_transfer_reference }}</h2>
-    <p>{% trans 'Use this reference to make your bank transfer' %}</p>
+  <div class="govuk-panel govuk-panel--confirmation">
+    <h1 class="govuk-panel__title">
+      {% trans 'Your prisoner reference is' %}
+      <br />
+      {{ bank_transfer_reference }}
+    </h1>
+    <div class="govuk-panel__body">
+      {% trans 'Use this reference to make your bank transfer' %}
+    </div>
   </div>
 
-  <div class="mtp-reference-actions">
-    <a class="mtp-print-reference" href="#">{% trans 'Print this page' %}</a>
-    &nbsp;
-    <a class="mtp-email-reference" href="#">{% trans 'Email me this page' %}</a>
-  </div>
-
-  <form id="mtp-email-reference-form" class="print-hidden {% if form.errors %}mtp-email-reference-form--errors{% endif %}" method="post" action=".">
+  <p class="mtp-reference-actions govuk-!-margin-bottom-6">
+    <a class="mtp-reference-actions__print govuk-link--no-visited-state" href="#">{% trans 'Print this page' %}</a>
+    <a class="mtp-reference-actions__email govuk-link--no-visited-state" href="#">{% trans 'Email me this page' %}</a>
+  </p>
+  <form id="mtp-reference-actions__email-form" class="govuk-!-margin-bottom-6 {% if form.errors %}mtp-reference-actions__email-form--errors{% endif %}" method="post" action=".">
     {% csrf_token %}
-
     {% include 'mtp_common/forms/error-summary.html' with form=form only %}
-    {% include 'mtp_common/forms/field.html' with field=form.email only %}
-
+    {% include 'mtp_common/forms/field.html' with field=form.email input_classes='govuk-input--width-20' autocomplete='email' only %}
     <p>
-      <input id="id_next_btn" class="govuk-button" type="submit" value="{% trans 'Send me an email' %}">
+      <input id="id_next_btn" class="govuk-button" type="submit" value="{% trans 'Email me this page' %}">
     </p>
   </form>
 
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-      <section>
-        <h2 class="govuk-heading-m">{% trans 'Now you can make the bank transfer' %}</h2>
-        <ol class="govuk-list govuk-list--number">
-          <li>
-            {% trans 'Log into your online banking account, mobile banking app or use your telephone banking, as normal.' %}
-          </li>
 
-          <li>
-            {% trans 'Copy and paste these details into the transfer:' %}
-            <div class="mtp-account govuk-inset-text">
-              <table>
-                <tbody>
-                  <tr>
-                    <th>{% trans 'Account number:' %}</th>
-                    <td>{{ account_number }}</td>
-                  </tr>
-                  <tr>
-                    <th>{% trans 'Sort code:'%}</th>
-                    <td>{{ sort_code }}</td>
-                  </tr>
-                  <tr>
-                    <th>{% trans 'Reference:' %}</th>
-                    <td>{{ bank_transfer_reference }}</td>
-                  </tr>
-                  <tr>
-                    <th>{% trans 'Payee/Name:' %}</th>
-                    <td>{{ bank_transfer_reference }}</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-            <p>
-              {% trans 'All prisons share this bank account.' %}
-              {% trans 'Please use your prisoner reference to make sure the money goes to the right prisoner.' %}
-            </p>
-            <p>
-              <strong>{% trans 'Remember:'%}</strong>
-              {% trans 'You can’t do a bank transfer in-branch and you must use a UK bank account.' %}
-            </p>
-          </li>
+      <h2 class="govuk-heading-l">{% trans 'Now you can make the bank transfer' %}</h2>
+      <ol class="govuk-list govuk-list--number">
+        <li>
+          {% trans 'Log into your online banking account, mobile banking app or use your telephone banking, as normal.' %}
+        </li>
 
-          <li>
-            {% trans 'The money should take up to 3 working days to reach the prisoner’s account.' %}
-            {% trans 'No money is processed at weekends or bank holidays.' %}
-          </li>
-        </ol>
-        <p>
-          {% url 'send_money:help_bank_transfer' as help_url %}
-          {% url 'submit_ticket' as ticket_url %}
-          {% blocktrans trimmed %}
-            <a href="{{ help_url }}">Find further help</a> on how to use the service or <a href="{{ ticket_url }}">contact us</a>.
-          {% endblocktrans %}
-        </p>
-      </section>
+        <li>
+          {% trans 'Copy and paste these details into the transfer' %}:
+          <div class="govuk-inset-text">
+            <table class="govuk-table">
+              <caption class="govuk-visually-hidden">
+                {% trans 'The details you need to use in the bank transfer' %}
+              </caption>
+              <tbody>
+                <tr>
+                  <th scope="row">{% trans 'Account number' %}</th>
+                  <td>{{ account_number }}</td>
+                </tr>
+                <tr>
+                  <th scope="row">{% trans 'Sort code'%}</th>
+                  <td>{{ sort_code }}</td>
+                </tr>
+                <tr>
+                  <th scope="row">{% trans 'Reference' %}</th>
+                  <td>{{ bank_transfer_reference }}</td>
+                </tr>
+                <tr>
+                  <th scope="row">{% trans 'Payee/Name' %}</th>
+                  <td>{{ bank_transfer_reference }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p>
+            {% trans 'All prisons share this bank account.' %}
+            {% trans 'Please use your prisoner reference to make sure the money goes to the right prisoner.' %}
+          </p>
+          <p>
+            <strong>{% trans 'Remember'%}:</strong>
+            {% trans 'You can’t do a bank transfer in-branch and you must use a UK bank account.' %}
+          </p>
+        </li>
+
+        <li>
+          {% trans 'The money should take up to 3 working days to reach the prisoner’s account.' %}
+          {% trans 'No money is processed at weekends or bank holidays.' %}
+        </li>
+      </ol>
+      <p>
+        {% url 'send_money:help_bank_transfer' as help_url %}
+        {% url 'submit_ticket' as ticket_url %}
+        {% blocktrans trimmed %}
+          <a href="{{ help_url }}">Find further help</a> on how to use the service or <a href="{{ ticket_url }}">contact us</a>.
+        {% endblocktrans %}
+      </p>
+
     </div>
   </div>
 

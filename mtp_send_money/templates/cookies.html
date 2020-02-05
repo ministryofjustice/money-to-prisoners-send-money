@@ -20,11 +20,9 @@
         <li>{% trans 'remember your progress through our service' %}</li>
         <li>{% trans 'remember the settings you’ve chosen' %}</li>
       </ul>
-
       <p>
         {% trans 'Cookies on ‘Send money to someone in prison’ are not used for advertising or marketing.' %}
       </p>
-
       <p>
         {% trans 'You can read more about <a href="https://www.gov.uk/help/cookies" rel="external">how cookies are used throughout GOV.UK</a>.' %}
       </p>
@@ -36,16 +34,15 @@
       </p>
       <form method="post">
         {% csrf_token %}
-
-        <div class="form-group">
-          <fieldset class="inline">
-            <legend>
+        <div class="govuk-form-group">
+          <fieldset class="govuk-fieldset">
+            <legend class="govuk-fieldset__legend">
               {% trans 'Do you agree to the Ministry of Justice and other UK government departments using Google Analytics to help improve the ‘Send money to someone in prison’ service?' %}
             </legend>
-            {% include 'mtp_common/forms/radio-field.html' with field=form.accept_cookies only %}
-            <input class="govuk-button" type="submit" value="{% trans 'Save changes' %}">
+            {% include 'mtp_common/forms/radio-field.html' with field=form.accept_cookies inline=True only %}
           </fieldset>
         </div>
+        <input class="govuk-button" type="submit" value="{% trans 'Save changes' %}">
       </form>
 
       <p>{% trans 'Google Analytics stores information about:' %}</p>
@@ -55,14 +52,21 @@
         <li>{% trans 'how you got to the site' %}</li>
         <li>{% trans 'what you click on while you’re visiting the site' %}</li>
       </ul>
-      <p>{% trans 'Google Analytics does <strong>NOT</strong> store:' %}</p>
+      <p>
+        {% blocktrans trimmed %}
+          Google Analytics does <strong>NOT</strong> store:
+        {% endblocktrans %}
+      </p>
       <ul class="govuk-list govuk-list--bullet">
         <li>{% trans 'any of your personal details, for example, your name' %}</li>
         <li>{% trans 'what you enter into pages on this site' %}</li>
       </ul>
 
       <p>{% trans 'Google Analytics sets the following cookies:' %}</p>
-      <table>
+      <table class="govuk-table">
+        <caption class="govuk-visually-hidden">
+          {% trans 'Table of cookies set by Google Analytics' %}
+        </caption>
         <thead>
           <tr>
             <th>{% trans 'Name' %}</th>
@@ -96,7 +100,10 @@
         {% trans 'When you use the ‘Send money to someone in prison’ service, we’ll set cookies to remember your progress through this site.' %}
         {% trans 'These cookies don’t store your personal data and are deleted when you close this website.' %}
       </p>
-      <table>
+      <table class="govuk-table">
+        <caption class="govuk-visually-hidden">
+          {% trans 'Table of cookies that save your progress when using this service' %}
+        </caption>
         <thead>
           <tr>
             <th>{% trans 'Name' %}</th>
@@ -123,7 +130,10 @@
         {% trans 'When you use the ‘Send money to someone in prison’ service, we’ll set cookies to remember settings you change.' %}
         {% trans 'These cookies don’t store any personal data, but will be saved on your computer or mobile for some time.' %}
       </p>
-      <table>
+      <table class="govuk-table">
+        <caption class="govuk-visually-hidden">
+          {% trans 'Table of cookies for settings you’ve chosen' %}
+        </caption>
         <thead>
           <tr>
             <th>{% trans 'Name' %}</th>
@@ -135,11 +145,6 @@
           <tr>
             <td><code>{{ cookie_policy_cookie_name }}</code></td>
             <td>{% trans 'Saves the choices you make about cookies on this page' %}</td>
-            <td>{% trans '1 year' %}</td>
-          </tr>
-          <tr>
-            <td><code>seen_cookie_message</code></td>
-            <td>{% trans 'Saves a message to let us know that you have seen our cookie message' %}</td>
             <td>{% trans '1 year' %}</td>
           </tr>
         </tbody>

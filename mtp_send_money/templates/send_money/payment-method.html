@@ -5,7 +5,7 @@
 {% block page_title %}{% trans 'Pay now by debit card' %} – {{ block.super }}{% endblock %}
 
 {% block content %}
-  {% notifications_box request 'send_money_landing' %}
+  {% notification_banners request 'send_money_landing' %}
 
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
@@ -70,11 +70,13 @@
 
       <form method="post">
         {% csrf_token %}
-        {% with payment_method=form.payment_method.field.choices.1.0 %}
-          <button name="{{ form.payment_method.html_name }}" value="{{ payment_method }}" id="id_{{ payment_method }}" class="mtp-link-button govuk-link govuk-body-s">
-            {% trans 'I don’t have a debit card' %}
-          </button>
-        {% endwith %}
+        <p>
+          {% with payment_method=form.payment_method.field.choices.1.0 %}
+            <button name="{{ form.payment_method.html_name }}" value="{{ payment_method }}" id="id_{{ payment_method }}" class="govuk-link">
+              {% trans 'I don’t have a debit card' %}
+            </button>
+          {% endwith %}
+        </p>
       </form>
 
     </div>

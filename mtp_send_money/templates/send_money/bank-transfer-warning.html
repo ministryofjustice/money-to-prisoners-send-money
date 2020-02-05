@@ -35,9 +35,12 @@
         {% trans 'You won’t get email confirmation after your bank transfer.' %}
       </p>
 
-      <strong>
+      <h2 class="govuk-heading-s">
         {% trans 'You can’t' %}
-      </strong>
+        <span class="govuk-visually-hidden">
+          {% trans 'do the following things' %}
+        </span>
+      </h2>
       <ul class="govuk-list govuk-list--bullet">
         <li>
           {% trans 'go into a bank branch to transfer money' %}

@@ -1,64 +1,10 @@
 @import 'mtp';
 
-/*
-TODO: upgrade styles and include them if still needed
-
-// Application elements
-@import 'elements/card-acceptance-signage';
-@import 'elements/cookie-prompt';
-@import 'elements/banners';
-@import 'elements/typography';
-@import 'elements/notifications';
-
-// View-specific styles
-@import 'views/payment-method';
-@import 'views/bank-transfer';
-@import 'views/check-details';
-@import 'views/references';
-@import 'views/send-money';
-@import 'views/help-pages';
-@import 'views/filtered-list';
-
-// Govuk elements overrides
-
-.govuk-box-highlight {
-  padding: 2em;
-
-  p, strong {
-    @include core-36;
-  }
-
-  p {
-    margin-bottom: 2px;
-  }
-
-  strong {
-    font-weight: 700;
-  }
-
-  h1 {
-    margin-top: 0;
-    margin-bottom: 0.6em;
-  }
-
-  h2 {
-    margin-top: 0;
-    margin-bottom: 0;
-  }
-
-  &.mtp-box-highlight-info {
-    background: $govuk-blue;
-  }
-
-  &.mtp-box-highlight-success {
-    background: $green;
-  }
-
-  @media print {
-    background: none;
-    border: 2px solid $border-colour;
-    color: $text-colour;
-  }
-}
-
-*/
+@import './components/card-acceptance-signage';
+@import './components/contact-us';
+@import './components/cookie-prompt';
+@import './components/faq';
+@import './components/filtered-list';
+@import './components/prisoner-number';
+@import './components/reference-page';
+@import './components/service-charge';

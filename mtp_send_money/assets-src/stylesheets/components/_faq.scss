@@ -1,0 +1,10 @@
+.mtp-qna {
+  dt {
+    @extend %govuk-heading-m;
+    margin-top: 3em;
+  }
+
+  dd {
+    margin: 0 0 3em;
+  }
+}

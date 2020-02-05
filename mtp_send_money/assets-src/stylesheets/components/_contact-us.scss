@@ -1,0 +1,29 @@
+.mtp-contact-columns {
+  .govuk-grid-column-one-third--right {
+    @include govuk-grid-column(one-third, $float: right);
+  }
+
+  .govuk-grid-column-two-thirds--left {
+    @include govuk-grid-column(two-thirds, $float: left);
+  }
+
+  @include govuk-media-query($from: tablet) {
+    #mtp-feedback-form {
+      margin-right: 5em;
+    }
+  }
+
+  #id_subject-wrapper {
+    display: none !important;
+  }
+
+  #id_ticket_content-label, #id_contact_email-label {
+    @extend %govuk-heading-m;
+    margin-bottom: 0;
+  }
+
+  #id_ticket_content {
+    width: 100%;
+    resize: vertical;
+  }
+}

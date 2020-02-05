@@ -6,97 +6,123 @@
 {% block page_title %}{% trans 'Check details' %} – {{ block.super }}{% endblock %}
 
 {% block content %}
-  <header>
-    <h1 class="govuk-heading-xl">
-      <span class="govuk-caption-xl">{% trans 'Pay now by debit card' %}</span>
-      {% trans 'Check details' %}
-    </h1>
-  </header>
-
   <div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds">
+    <div class="govuk-grid-column-two-thirds-from-desktop">
 
-      <section class="mtp-check-details">
-        <div class="govuk-grid-row">
-          <div class="govuk-grid-column-two-thirds">
-            <h2 class="govuk-heading-m">{% trans 'Prisoner details' %}</h2>
-            <table class="mtp-check-table">
-              <tbody>
-                <tr>
-                  <th>{% trans 'Name' %}:</th>
-                  <td>{{ prisoner_name }}</td>
-                </tr>
-                <tr>
-                  <th>{% trans 'Date of birth' %}:</th>
-                  <td>{{ prisoner_dob|prepare_prisoner_dob|date:'d/m/Y' }}</td>
-                </tr>
-                <tr>
-                  <th>{% trans 'Prisoner number' %}:</th>
-                  <td>{{ prisoner_number }}</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-          <div class="govuk-grid-column-one-third">
+      <header>
+        <h1 class="govuk-heading-xl">
+          <span class="govuk-caption-xl">{% trans 'Pay now by debit card' %}</span>
+          {% trans 'Check details' %}
+        </h1>
+      </header>
+
+      <h2 class="govuk-heading-m">{% trans 'Prisoner details' %}</h2>
+      <dl class="govuk-summary-list govuk-!-margin-bottom-9">
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">
+            {% trans 'Name' %}
+          </dt>
+          <dd class="govuk-summary-list__value">
+            {{ prisoner_name }}
+          </dd>
+          <dd class="govuk-summary-list__actions">
             <a href="{{ view.get_prisoner_details_url }}?focus=id_prisoner_name">
-              {% trans 'Change' %} <span class="govuk-visually-hidden">{% trans 'Name, date of birth or prisoner number' %}</span>
+              {% trans 'Change' %}
+              <span class="govuk-visually-hidden">{% trans 'prisoner name' %}</span>
             </a>
-          </div>
+          </dd>
         </div>
-      </section>
-
-      <section class="mtp-check-details">
-        <div class="govuk-grid-row">
-          <div class="govuk-grid-column-two-thirds">
-            <h2 class="govuk-heading-m">{% trans 'Amount' %}</h2>
-            <table class="mtp-check-table">
-              <tbody>
-                {% if service_charged %}
-                  <tr>
-                    <th>{% trans 'Total to prisoner' %}:</th>
-                    <td>
-                      {{ amount|currency_format }}
-                    </td>
-                  </tr>
-                  <tr>
-                    <th>{% trans 'Amount to be taken from your account' %}:</th>
-                    <td>
-                      {{ amount|add_service_charge|currency_format }}
-                    </td>
-                  </tr>
-                {% else %}
-                  <tr>
-                    <th>{% trans 'Total' %}:</th>
-                    <td>
-                      {{ amount|currency_format }}
-                    </td>
-                  </tr>
-                {% endif %}
-              </tbody>
-            </table>
-          </div>
-          <div class="govuk-grid-column-one-third">
-            <a href="{{ view.get_amount_url }}?focus=id_amount">
-              {% trans 'Change' %} <span class="govuk-visually-hidden">{% trans 'Amount' %}</span>
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">
+            {% trans 'Date of birth' %}
+          </dt>
+          <dd class="govuk-summary-list__value">
+            {{ prisoner_dob|prepare_prisoner_dob|date:'d/m/Y' }}
+          </dd>
+          <dd class="govuk-summary-list__actions">
+            <a href="{{ view.get_prisoner_details_url }}?focus=id_prisoner_dob_0">
+              {% trans 'Change' %}
+              <span class="govuk-visually-hidden">{% trans 'prisoner date of birth' %}</span>
             </a>
-          </div>
+          </dd>
         </div>
-      </section>
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">
+            {% trans 'Prisoner number' %}
+          </dt>
+          <dd class="govuk-summary-list__value">
+            {{ prisoner_number }}
+          </dd>
+          <dd class="govuk-summary-list__actions">
+            <a href="{{ view.get_prisoner_details_url }}?focus=id_prisoner_number">
+              {% trans 'Change' %}
+              <span class="govuk-visually-hidden">{% trans 'prisoner number' %}</span>
+            </a>
+          </dd>
+        </div>
+      </dl>
 
-      <p>
-        {% trans 'Please be aware that you can’t request a refund once money is sent.' %}
-      </p>
+      <h2 class="govuk-heading-m">{% trans 'Amount' %}</h2>
+      <dl class="govuk-summary-list govuk-!-margin-bottom-9">
+        {% if service_charged %}
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">
+              {% trans 'Total to prisoner' %}
+            </dt>
+            <dd class="govuk-summary-list__value">
+              {{ amount|currency_format }}
+            </dd>
+            <dd class="govuk-summary-list__actions">
+              <a href="{{ view.get_amount_url }}?focus=id_amount">
+                {% trans 'Change' %}
+                <span class="govuk-visually-hidden">{% trans 'amount' %}</span>
+              </a>
+            </dd>
+          </div>
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">
+              {% trans 'Amount to be taken from your account' %}
+            </dt>
+            <dd class="govuk-summary-list__value">
+              {{ amount|add_service_charge|currency_format }}
+            </dd>
+            <dd class="govuk-summary-list__actions"></dd>
+          </div>
+        {% else %}
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">
+              {% trans 'Total' %}
+            </dt>
+            <dd class="govuk-summary-list__value">
+              {{ amount|currency_format }}
+            </dd>
+            <dd class="govuk-summary-list__actions">
+              <a href="{{ view.get_amount_url }}?focus=id_amount">
+                {% trans 'Change' %}
+                <span class="govuk-visually-hidden">{% trans 'amount' %}</span>
+              </a>
+            </dd>
+          </div>
+        {% endif %}
+      </dl>
+
+      <div class="govuk-warning-text">
+        <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+        <strong class="govuk-warning-text__text">
+          {% trans 'Please be aware that you can’t request a refund once money is sent.' %}
+        </strong>
+      </div>
+
+      <form action="{{ view.get_success_url }}" method="get">
+        <p>
+          <input class="govuk-button" id="id_next_btn" type="submit" value="{% trans 'Enter card details' %}" data-module="govuk-button" data-prevent-double-click="true">
+          <a href="{% url 'send_money:clear_session' %}" class="mtp-link--form-cancel">
+            {% trans 'Cancel and delete all details' %}
+          </a>
+        </p>
+      </form>
 
     </div>
-  </div>
-
-  <div class="govuk-grid-row mtp-check-details__confirm">
-    <form class="govuk-grid-column-one-third" action="{{ view.get_success_url }}" method="get">
-      <input class="govuk-button" id="id_next_btn" type="submit" value="{% trans 'Enter card details' %}">
-    </form>
-    <form class="govuk-grid-column-two-thirds" action="{% url 'send_money:clear_session' %}" method="get">
-      <input class="link" type="submit" value="{% trans 'Cancel and delete all details' %}">
-    </form>
   </div>
 
 {% endblock %}

@@ -1,4 +1,3 @@
-// Filter-as-you-type lists
 'use strict';
 
 export var FilteredList = {

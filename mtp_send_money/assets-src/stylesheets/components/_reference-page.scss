@@ -1,0 +1,35 @@
+.govuk-panel {
+  @media print {
+    background: none;
+    color: #000;
+    border: $govuk-border-width solid #000;
+  }
+}
+
+.mtp-reference-actions {
+  display: none;
+
+  .js-enabled & {
+    display: block;
+
+    @media print {
+      display: none;
+    }
+  }
+
+  a + a {
+    margin-left: 1em;
+  }
+}
+
+#mtp-reference-actions__email-form {
+  display: none;
+
+  &.mtp-reference-actions__email-form--errors {
+    display: block;
+  }
+
+  @media print {
+    display: none !important;
+  }
+}
