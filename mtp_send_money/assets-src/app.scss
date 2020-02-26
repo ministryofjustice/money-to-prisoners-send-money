@@ -1,5 +1,10 @@
-@import 'mtp';
+// mtp-common base components
+@import 'mtp/base';
 
+// mtp-common extra components
+@import 'mtp/components/amount-field';
+
+// app components
 @import './components/card-acceptance-signage';
 @import './components/contact-us';
 @import './components/cookie-prompt';
