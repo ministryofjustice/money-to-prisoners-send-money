@@ -3,3 +3,50 @@
   background: transparent;
   padding: 0;
 }
+
+.mtp-card-branding {
+  overflow: hidden;
+  margin-bottom: 2em;
+
+  @include media(mobile) {
+    margin-bottom: 1.5em;
+  }
+
+  .mtp-card-branding--narrow, .mtp-card-branding--wide {
+    display: block;
+    float: left;
+    margin-right: 18px;
+
+    @include media(mobile) {
+      margin-right: 10px;
+    }
+
+    svg, image {
+      float: left;
+    }
+  }
+
+  .mtp-card-branding--narrow {
+    svg, image {
+      width: 177px;
+      height: 160px;
+
+      @include media(mobile) {
+        width: 111px;
+        height: 100px;
+      }
+    }
+  }
+
+  .mtp-card-branding--wide {
+    svg, image {
+      width: 195px;
+      height: 160px;
+
+      @include media(mobile) {
+        width: 122px;
+        height: 100px;
+      }
+    }
+  }
+}

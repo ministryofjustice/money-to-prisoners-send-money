@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load i18n %}
+{% load static %}
 {% load mtp_common %}
 
 {% block page_title %}{% trans 'Pay now by debit card' %} – {{ block.super }}{% endblock %}
@@ -20,8 +21,27 @@
         {% endblocktrans %}
       </p>
 
+      <h2 class="heading-small" aria-hidden="true">{% trans 'Only debit cards accepted' %}</h2>
+      <div class="mtp-card-branding" aria-hidden="true" role="presentation">
+        <div class="mtp-card-branding--narrow">
+          <svg width="177" height="160">
+            <image xlink:href="{% static 'images/cards/visa.svg' %}" src="{% static 'images/cards/visa.png' %}" width="177" height="160" />
+          </svg>
+        </div>
+        <div class="mtp-card-branding--wide">
+          <svg width="195" height="160">
+            <image xlink:href="{% static 'images/cards/mastercard.svg' %}" src="{% static 'images/cards/mastercard.png' %}" width="195" height="160" />
+          </svg>
+        </div>
+        <div class="mtp-card-branding--wide">
+          <svg width="195" height="160">
+            <image xlink:href="{% static 'images/cards/maestro.svg' %}" src="{% static 'images/cards/maestro.png' %}" width="195" height="160" />
+          </svg>
+        </div>
+      </div>
+
       <p>
-        {% trans 'You can complete your payment here using Mastercard, Visa and Maestro debit cards.' %}
+        {% trans 'You can complete your payment here using Visa, Mastercard and Maestro debit cards.' %}
         {% trans 'Money usually takes less than 3 working days to reach a prisoner’s account, but may take longer.' %}
       </p>
 
