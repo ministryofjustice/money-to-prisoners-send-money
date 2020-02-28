@@ -18,7 +18,7 @@
     margin-right: 18px;
 
     @include media(mobile) {
-      margin-right: 10px;
+      margin-right: 0;
     }
 
     svg, image {
@@ -26,14 +26,16 @@
     }
   }
 
+  $mtp-card-branding--mobile: 90px;
+
   .mtp-card-branding--narrow {
     svg, image {
       width: 177px;
       height: 160px;
 
       @include media(mobile) {
-        width: 111px;
-        height: 100px;
+        width: (177px * $mtp-card-branding--mobile / 160px);
+        height: $mtp-card-branding--mobile;
       }
     }
   }
@@ -44,8 +46,8 @@
       height: 160px;
 
       @include media(mobile) {
-        width: 122px;
-        height: 100px;
+        width: (195px * $mtp-card-branding--mobile / 160px);
+        height: $mtp-card-branding--mobile;
       }
     }
   }
