@@ -1,0 +1,37 @@
+.mtp-card-acceptance-signage {
+  overflow: hidden;
+  margin-bottom: 2em;
+
+  @include media(mobile) {
+    margin-bottom: 1.5em;
+  }
+
+  @media print {
+    display: none !important;
+  }
+
+  .mtp-card-acceptance-signage--large {
+    display: block;
+
+    @include media(mobile) {
+      display: none;
+    }
+  }
+
+  .mtp-card-acceptance-signage--small {
+    display: none;
+
+    @include media(mobile) {
+      display: block;
+    }
+  }
+
+  .mtp-card-acceptance-signage__logo {
+    float: left;
+    margin-right: 18px;
+
+    @include media(mobile) {
+      margin-right: 0;
+    }
+  }
+}

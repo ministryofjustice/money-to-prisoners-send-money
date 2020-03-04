@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% load i18n %}
 {% load mtp_common %}
+{% load send_money %}
 
 {% block page_title %}{% trans 'Terms and conditions' %} – {{ block.super }}{% endblock %}
 
@@ -29,6 +30,20 @@
 </p>
 <p>
   {% trans 'If you don’t agree to the terms and conditions and privacy policy set out in this document, you should not send money to prisoners using your bank account.' %}
+</p>
+
+<h3 class="heading-small">{% trans 'This service only accepts debit cards' %}</h3>
+<div class="mtp-card-acceptance-signage" aria-hidden="true" role="presentation">
+  <div class="mtp-card-acceptance-signage--large">
+    {% card_acceptance_signage width=160 %}
+  </div>
+  <div class="mtp-card-acceptance-signage--small">
+    {% card_acceptance_signage width=95 %}
+  </div>
+</div>
+<p>
+  {% trans 'You can only use debit cards on this service' %} – Visa, Mastercard and Maestro.
+  {% trans 'You can not use credit cards or prepaid cards.' %}
 </p>
 
 <h3 class="heading-small">{% trans 'Applicable law' %}</h3>
