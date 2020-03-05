@@ -44,3 +44,12 @@ def prepare_prisoner_dob(dob):
 @register.filter
 def prisoner_details_not_found(error_list):
     return any(error.code == 'not_found' for error in error_list.as_data())
+
+
+@register.inclusion_tag('send_money/includes/card-acceptance-signage.html')
+def card_acceptance_signage(width):
+    height = int(round(146 * width / 160))
+    return {
+        'width': width,
+        'height': height,
+    }
