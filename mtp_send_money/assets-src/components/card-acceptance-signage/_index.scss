@@ -1,9 +1,9 @@
 .mtp-card-acceptance-signage {
   overflow: hidden;
-  margin-bottom: 2em;
+  margin-bottom: $govuk-gutter;
 
-  @include media(mobile) {
-    margin-bottom: 1.5em;
+  @include govuk-media-query($until: tablet) {
+    margin-bottom: $govuk-gutter-half;
   }
 
   @media print {
@@ -13,7 +13,7 @@
   .mtp-card-acceptance-signage--large {
     display: block;
 
-    @include media(mobile) {
+    @include govuk-media-query($until: tablet) {
       display: none;
     }
   }
@@ -21,16 +21,16 @@
   .mtp-card-acceptance-signage--small {
     display: none;
 
-    @include media(mobile) {
+    @include govuk-media-query($until: tablet) {
       display: block;
     }
   }
 
   .mtp-card-acceptance-signage__logo {
     float: left;
-    margin-right: 18px;
+    margin-right: $govuk-gutter-half;
 
-    @include media(mobile) {
+    @include govuk-media-query($until: tablet) {
       margin-right: 0;
     }
   }
