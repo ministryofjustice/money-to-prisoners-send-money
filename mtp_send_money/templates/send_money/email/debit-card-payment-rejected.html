@@ -41,9 +41,15 @@
   </p>
 
   <p>
-    {% blocktrans trimmed %}
-      If you need further assistance with this, <a href="{{ feedback_url }}">please email us</a>.
-    {% endblocktrans %}
+    {% if '@' in compliance_contact %}
+      {% blocktrans trimmed %}
+        If you need further assistance with this, <a href="mailto:{{ compliance_contact }}">please email us</a>.
+      {% endblocktrans %}
+    {% else %}
+      {% blocktrans trimmed %}
+        If you need further assistance with this, <a href="{{ compliance_contact }}">please contact us</a>.
+      {% endblocktrans %}
+    {% endif %}
   </p>
 
   <p>

@@ -71,6 +71,7 @@ def send_email_for_card_payment_accepted(email, payment):
 
 def send_email_for_card_payment_rejected(email, payment):
     context = _get_email_context_for_payment(payment)
+    context['compliance_contact'] = settings.COMPLIANCE_CONTACT_EMAIL or site_url(reverse('submit_ticket'))
 
     _send_notification_email(
         email,
