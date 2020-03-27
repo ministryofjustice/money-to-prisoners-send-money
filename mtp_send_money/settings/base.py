@@ -265,6 +265,7 @@ ZENDESK_CUSTOM_FIELDS = {
     'user_agent': 23791776,
     'contact_email': 30769508,
 }
+COMPLIANCE_CONTACT_EMAIL = os.environ.get('COMPLIANCE_CONTACT_EMAIL', '')
 
 BANK_TRANSFER_PRISONS = os.environ.get('BANK_TRANSFER_PRISONS', '')
 DEBIT_CARD_PRISONS = os.environ.get('DEBIT_CARD_PRISONS', '')

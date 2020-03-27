@@ -15,9 +15,11 @@ GOV.UK - {% trans 'Send money to someone in prison' %}
 
 {% trans 'What now?' %}
 {% trans 'Your debit card payment has not been taken from your account.' %}
-
-{% trans 'If you need further assistance with this, please email us at:' %} {{ feedback_url }}
-
+{% if '@' in compliance_contact %}
+{% trans 'If you need further assistance with this, please email us at:' %} {{ compliance_contact }}
+{% else %}
+{% trans 'If you need further assistance with this, please contact us at:' %} {{ compliance_contact }}
+{% endif %}
 {% trans 'We’re sorry for any inconvenience this may have caused.' %}
 
 {% trans 'Kind regards,' %}

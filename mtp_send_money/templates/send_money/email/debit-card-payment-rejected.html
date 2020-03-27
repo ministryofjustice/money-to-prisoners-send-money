@@ -26,7 +26,7 @@
 
   <p>
     {% trans 'We’re emailing to tell you this payment has not passed our compliance check.' %}
-    </br>
+    <br />
     {% trans 'HMPPS is committed to maintaining prison safety and security and because this payment may compromise this, we have been unable to process it.' %}
   </p>
 
@@ -41,15 +41,21 @@
   </p>
 
   <p>
-    {% blocktrans trimmed %}
-      If you need further assistance with this, <a href="{{ feedback_url }}">please email us</a>.
-    {% endblocktrans %}
+    {% if '@' in compliance_contact %}
+      {% blocktrans trimmed %}
+        If you need further assistance with this, <a href="mailto:{{ compliance_contact }}">please email us</a>.
+      {% endblocktrans %}
+    {% else %}
+      {% blocktrans trimmed %}
+        If you need further assistance with this, <a href="{{ compliance_contact }}">please contact us</a>.
+      {% endblocktrans %}
+    {% endif %}
   </p>
 
   <p>
     {% trans 'Kind regards,' %}
   </p>
   <p>
-    {% trans 'Prisoner money compliance team' %}<br />
+    {% trans 'Prisoner money compliance team' %}
   </p>
 {% endblock %}
