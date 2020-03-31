@@ -12,7 +12,7 @@ class GetHelpView(BaseGetHelpView):
     form_class = ContactForm
     success_url = reverse_lazy('feedback_success')
     template_name = 'send_money/contact-form.html'
-    ticket_subject = 'MTP for APVU - Send money to someone in prison'
+    ticket_subject = 'MTP for Family Services - Send money to someone in prison'
     ticket_tags = ['feedback', 'mtp', 'send-money', settings.ENVIRONMENT]
     ticket_template_name = 'send_money/contact-form-ticket.txt'
 
