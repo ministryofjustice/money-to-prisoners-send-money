@@ -17,7 +17,8 @@
   {% if prison_list %}
     <div class="mtp-filtered-list">
       <p>
-        <input class="form-control form-control-1-3 mtp-filtered-list__input" type="search" value="" placeholder="{% trans 'Search' %}" />
+        <label class="visually-hidden" for="id_search">{% trans 'Search prison list' %}</label>
+        <input class="form-control form-control-1-3 mtp-filtered-list__input" id="id_search" type="search" value="" placeholder="{% trans 'Search' %}" />
       </p>
       <ul class="panel panel-border-narrow mtp-filtered-list__list" data-stop-words="{{ stop_words|join:' ' }}">
         <li class="mtp-filtered-list__empty">{% trans 'No prisons found' %}</li>
