@@ -3,16 +3,16 @@
 {% load mtp_common %}
 {% load prisons %}
 
-{% block page_title %}{% trans 'Public prisons in England and Wales' %} – {{ block.super }}{% endblock %}
+{% block page_title %}{% trans 'Prisons in England and Wales' %} – {{ block.super }}{% endblock %}
 
 {% block inner_content %}
   <header>
     <h1 class="heading-xlarge">
-      {% trans 'Public prisons in England and Wales' %}
+      {% trans 'Prisons in England and Wales' %}
     </h1>
   </header>
 
-  <p>{% trans 'The ‘Send money to someone in prison’ service is available in the following public prisons, young offender institutions and immigration removal centres in England and Wales.' %}</p>
+  <p>{% trans 'The ‘Send money to someone in prison’ service is available in the following prisons, young offender institutions and immigration removal centres in England and Wales.' %}</p>
 
   {% if prison_list %}
     <div class="mtp-filtered-list">
