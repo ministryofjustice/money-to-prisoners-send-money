@@ -194,9 +194,9 @@ class PaymentClient:
             logger.error(
                 'GOV.UK Pay returned an error for %(govuk_id)s: %(code)s %(msg)s' %
                 {
-                    'govuk_id': govuk_payment['payment_id'],
-                    'code': govuk_payment['state']['code'],
-                    'msg': govuk_payment['state']['message'],
+                    'govuk_id': govuk_payment.get('payment_id') or payment['uuid'],
+                    'code': govuk_payment.get('state', {}).get('code'),
+                    'msg': govuk_payment.get('state', {}).get('message'),
                 },
             )
 

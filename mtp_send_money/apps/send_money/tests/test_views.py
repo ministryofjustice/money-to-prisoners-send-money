@@ -1275,17 +1275,20 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
                         'code': 'P0050',
                         'message': 'Payment provider returned an error',
                     },
-                    'payment_id': 1,
+                    'payment_id': 12345,
                     'email': 'sender@outside.local',
                 },
                 status=200,
             )
-            with self.patch_prisoner_details_check(), silence_logger():
+            with self.patch_prisoner_details_check(), mock.patch('send_money.payments.logger') as logger:
                 response = self.client.get(
                     self.url,
                     {'payment_ref': self.ref},
                     follow=True,
                 )
+                error_log = logger.error.call_args[0][0]
+                self.assertIn('12345', error_log)
+                self.assertIn('P0050', error_log)
 
         self.assertOnPaymentErrorPage(response)
 
@@ -1401,6 +1404,125 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
                 )
 
         self.assertOnPaymentSessionExpiredPage(response)
+
+    def test_handles_payments_with_unusual_failed_code(self):
+        """
+        A `failed` status with P0020 or P0030 are treated as special.
+        All others (including the very common P0010) should be treated equally.
+        Similar to DebitCardConfirmationTestCase.test_handles_declined_card
+        """
+        self.choose_debit_card_payment_method()
+        self.fill_in_prisoner_details()
+        self.fill_in_amount()
+
+        with responses.RequestsMock() as rsps:
+            mock_auth(rsps)
+            rsps.add(
+                rsps.GET,
+                api_url(f'/payments/{self.ref}/'),
+                json=self.payment_data,
+                status=200,
+            )
+            rsps.add(
+                rsps.GET,
+                govuk_url(f'/payments/{self.processor_id}/'),
+                json={
+                    'reference': self.ref,
+                    'state': {'status': 'failed', 'code': 'P990099'},
+                    'email': 'sender@outside.local',
+                },
+                status=200
+            )
+            with self.patch_prisoner_details_check(), mock.patch('send_money.views.logger') as logger:
+                response = self.client.get(
+                    self.url,
+                    {'payment_ref': self.ref},
+                    follow=True,
+                )
+                error_log = logger.error.call_args[0][0]
+                self.assertIn(self.ref, error_log)
+                self.assertIn('failed', error_log)
+                self.assertIn('P990099', error_log)
+
+        self.assertOnPaymentDeclinedPage(response)
+
+    def test_handles_payments_with_unusual_cancelled_code(self):
+        """
+        A `cancelled` status expects a P0040 code, but we should treat all cancellations equally.
+        Similar to DebitCardConfirmationTestCase.test_handles_payments_cancelled_by_us
+        """
+        self.choose_debit_card_payment_method()
+        self.fill_in_prisoner_details()
+        self.fill_in_amount()
+
+        with responses.RequestsMock() as rsps:
+            mock_auth(rsps)
+            rsps.add(
+                rsps.GET,
+                api_url(f'/payments/{self.ref}/'),
+                json=self.payment_data,
+                status=200,
+            )
+            rsps.add(
+                rsps.GET,
+                govuk_url(f'/payments/{self.processor_id}/'),
+                json={
+                    'reference': self.ref,
+                    'state': {'status': 'cancelled', 'code': 'P990099'},
+                    'email': 'sender@outside.local',
+                },
+                status=200,
+            )
+            with self.patch_prisoner_details_check(), mock.patch('send_money.views.logger') as logger:
+                response = self.client.get(
+                    self.url,
+                    {'payment_ref': self.ref},
+                    follow=True,
+                )
+                error_log = logger.error.call_args[0][0]
+                self.assertIn(self.ref, error_log)
+                self.assertIn('cancelled', error_log)
+                self.assertIn('P990099', error_log)
+
+        self.assertOnPaymentCancelledPage(response)
+
+    def test_handles_payments_with_unusual_error_code(self):
+        """
+        An `error` status with P0050 code is common, but we should treat all errors equally.
+        Similar to DebitCardConfirmationTestCase.test_handles_payments_in_error
+        """
+        self.choose_debit_card_payment_method()
+        self.fill_in_prisoner_details()
+        self.fill_in_amount()
+
+        with responses.RequestsMock() as rsps:
+            mock_auth(rsps)
+            rsps.add(
+                rsps.GET,
+                api_url(f'/payments/{self.ref}/'),
+                json=self.payment_data,
+                status=200,
+            )
+            rsps.add(
+                rsps.GET,
+                govuk_url(f'/payments/{self.processor_id}/'),
+                json={
+                    'reference': self.ref,
+                    'state': {'status': 'error'},
+                },
+                status=200,
+            )
+            with self.patch_prisoner_details_check(), mock.patch('send_money.payments.logger') as logger:
+                response = self.client.get(
+                    self.url,
+                    {'payment_ref': self.ref},
+                    follow=True,
+                )
+                error_log = logger.error.call_args[0][0]
+                self.assertIn(self.ref, error_log)
+                self.assertIn('None', error_log)
+
+        self.assertOnPaymentErrorPage(response)
 
     def test_refreshes_for_recently_completed_payments(self):
         """

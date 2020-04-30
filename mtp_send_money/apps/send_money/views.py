@@ -414,6 +414,9 @@ class DebitCardConfirmationView(TemplateView):
                 # payment was cancelled programmatically (this would not currently happen)
                 if self.status == GovUkPaymentStatus.cancelled:
                     # error_code is expected to be P0040
+                    error_code == 'P0040' or logger.error(
+                        f'Unexpected code for cancelled GOV.UK Pay payment {payment_ref}: {error_code}'
+                    )
                     return render(request, 'send_money/debit-card-cancelled.html')
 
                 # the user cancelled the payment
@@ -428,6 +431,9 @@ class DebitCardConfirmationView(TemplateView):
                 # e.g. due to insufficient funds or risk management
                 if self.status == GovUkPaymentStatus.failed:
                     # error_code is expected to be P0010
+                    error_code == 'P0010' or logger.error(
+                        f'Unexpected code for failed GOV.UK Pay payment {payment_ref}: {error_code}'
+                    )
                     return render(request, 'send_money/debit-card-declined.html')
 
                 # here status can be either created, started, submitted, capturable, success, error
