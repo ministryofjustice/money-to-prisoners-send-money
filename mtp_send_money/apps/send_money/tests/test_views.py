@@ -636,7 +636,7 @@ class DebitCardPaymentTestCase(DebitCardFlowTestCase):
             )
             with self.patch_prisoner_details_check(), self.patch_prisoner_balance_check(), silence_logger():
                 response = self.client.get(self.url, follow=False)
-            self.assertContains(response, 'We are experiencing technical problems')
+            self.assertContains(response, 'We are experiencing technical problems', status_code=500)
 
     def test_debit_card_payment_handles_govuk_errors(self):
         self.choose_debit_card_payment_method()
@@ -658,7 +658,7 @@ class DebitCardPaymentTestCase(DebitCardFlowTestCase):
             )
             with self.patch_prisoner_details_check(), self.patch_prisoner_balance_check(), silence_logger():
                 response = self.client.get(self.url, follow=False)
-            self.assertContains(response, 'We are experiencing technical problems')
+            self.assertContains(response, 'We are experiencing technical problems', status_code=500)
 
 
 @patch_notifications()
@@ -956,8 +956,8 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
         - no emails sent
         - session cleared
         """
-        self.assertContains(response, 'We are experiencing technical problems')
-        self.assertContains(response, self.ref[:8].upper())
+        self.assertContains(response, 'We are experiencing technical problems', status_code=500)
+        self.assertIn(self.ref[:8].upper(), response.content.decode())
 
         self.assertEqual(len(mail.outbox), 0)
 
