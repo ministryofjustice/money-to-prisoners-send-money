@@ -15,6 +15,7 @@ from oauthlib.oauth2 import OAuth2Error
 from requests.exceptions import RequestException
 
 from send_money import forms as send_money_forms
+from send_money.exceptions import GovUkPaymentStatusException
 from send_money.models import PaymentMethod
 from send_money.payments import is_active_payment, GovUkPaymentStatus, PaymentClient
 from send_money.mail import send_email_for_bank_transfer_reference
@@ -406,6 +407,7 @@ class DebitCardConfirmationView(TemplateView):
                 self.status = payment_client.complete_payment_if_necessary(payment, govuk_payment)
 
                 # here status can be either created, started, submitted, capturable, success, failed, cancelled, error
+                # or None
 
                 error_code = govuk_payment and govuk_payment.get('state', {}).get('code')
 
@@ -429,21 +431,25 @@ class DebitCardConfirmationView(TemplateView):
                     return render(request, 'send_money/debit-card-declined.html')
 
                 # here status can be either created, started, submitted, capturable, success, error
+                # or None
 
-                # treat statuses created, started, submitted as error as they should have never got here
-                if self.status.is_awaiting_user_input():
+                # treat statuses created, started, submitted or None as error as they should have never got here
+                if not self.status or self.status.is_awaiting_user_input():
                     self.status = GovUkPaymentStatus.error
 
                 # here status can be either capturable, success, error
 
         except OAuth2Error:
-            logger.exception('Authentication error while processing %s' % payment_ref)
+            logger.exception('Authentication error while processing %s', payment_ref)
             self.status = GovUkPaymentStatus.error
         except RequestException as error:
             error_message = 'Payment check failed for ref %s' % payment_ref
             if hasattr(error, 'response') and hasattr(error.response, 'content'):
                 error_message += '\nReceived: %s' % error.response.content
             logger.exception(error_message)
+            self.status = GovUkPaymentStatus.error
+        except GovUkPaymentStatusException:
+            logger.exception('GOV.UK Pay returned unexpected status for ref %s', payment_ref)
             self.status = GovUkPaymentStatus.error
 
         response = super().get(request, *args, **kwargs)

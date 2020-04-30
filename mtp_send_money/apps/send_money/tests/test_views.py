@@ -1145,6 +1145,73 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
 
         self.assertOnPaymentErrorPage(response)
 
+    def test_handles_missing_govuk_payment(self):
+        """
+        Test that if the GOV.UK API call returns 404, the view shows a generic error page
+        and no email is sent; even though MTP payment exists.
+        """
+        self.choose_debit_card_payment_method()
+        self.fill_in_prisoner_details()
+        self.fill_in_amount()
+
+        with responses.RequestsMock() as rsps:
+            mock_auth(rsps)
+            rsps.add(
+                rsps.GET,
+                api_url(f'/payments/{self.ref}/'),
+                json=self.payment_data,
+                status=200,
+            )
+            rsps.add(
+                rsps.GET,
+                govuk_url(f'/payments/{self.processor_id}/'),
+                status=404,
+            )
+            with self.patch_prisoner_details_check(), silence_logger():
+                response = self.client.get(
+                    self.url,
+                    {'payment_ref': self.ref},
+                    follow=True,
+                )
+
+        self.assertOnPaymentErrorPage(response)
+
+    def test_handles_unexpected_govuk_response(self):
+        """
+        Test that if the GOV.UK API call returns unexpected status, the view shows a generic error page
+        and no email is sent.
+        """
+        self.choose_debit_card_payment_method()
+        self.fill_in_prisoner_details()
+        self.fill_in_amount()
+
+        with responses.RequestsMock() as rsps:
+            mock_auth(rsps)
+            rsps.add(
+                rsps.GET,
+                api_url(f'/payments/{self.ref}/'),
+                json=self.payment_data,
+                status=200,
+            )
+            rsps.add(
+                rsps.GET,
+                govuk_url(f'/payments/{self.processor_id}/'),
+                json={
+                    'reference': self.ref,
+                    'state': {'status': 'UNEXPECTED', 'code': 'P9090'},
+                    'email': 'sender@outside.local',
+                },
+                status=200
+            )
+            with self.patch_prisoner_details_check(), silence_logger():
+                response = self.client.get(
+                    self.url,
+                    {'payment_ref': self.ref},
+                    follow=True,
+                )
+
+        self.assertOnPaymentErrorPage(response)
+
     def test_handles_declined_card(self):
         """
         Test that if the GOV.UK payment is in status 'failed' (P0010 e.g. because the card has insufficient funds),
