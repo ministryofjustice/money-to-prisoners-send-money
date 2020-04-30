@@ -25,7 +25,7 @@ class SendMoneyFunctionalTestCase(FunctionalTestCase):
     def patch_view_chain_form_checking(cls):
         return mock.patch('send_money.views.SendMoneyFormView.is_form_enabled', return_value=False)
 
-    def assertOnPage(self, url_name):  # noqa
+    def assertOnPage(self, url_name):  # noqa: N802
         self.assertInSource('<!-- %s -->' % url_name)
 
     def make_payment_method_choice(self, payment_method):

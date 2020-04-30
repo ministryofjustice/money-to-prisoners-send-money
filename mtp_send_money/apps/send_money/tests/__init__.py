@@ -32,13 +32,13 @@ def patch_gov_uk_pay_availability_check():
 class BaseTestCase(SimpleTestCase):
     root_url = '/en-gb/'
 
-    def assertOnPage(self, response, url_name):  # noqa
+    def assertOnPage(self, response, url_name):  # noqa: N802
         self.assertContains(response, '<!-- %s -->' % url_name)
 
-    def assertResponseNotCacheable(self, response):  # noqa
+    def assertResponseNotCacheable(self, response):  # noqa: N802
         self.assertTrue(response.has_header('Cache-Control'), msg='response has no cache control header')
         self.assertIn('no-cache', response['Cache-Control'], msg='response is not private')
 
-    def assertPageNotFound(self, url):  # noqa
+    def assertPageNotFound(self, url):  # noqa: N802
         response = self.client.get(url)
         self.assertEqual(response.status_code, 404, msg='should not be able to access %s' % url)

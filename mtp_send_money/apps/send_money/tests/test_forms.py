@@ -48,11 +48,11 @@ class FormTestCase(unittest.TestCase):
         for data_set in data_sets:
             setattr(cls, 'test_invalid__%s' % data_set['name'], make_method(data_set['input_data']))
 
-    def assertFormValid(self, form):  # noqa
+    def assertFormValid(self, form):  # noqa: N802
         is_valid = form.is_valid()
         self.assertTrue(is_valid, msg='\n\n%s' % form.errors.as_text())
 
-    def assertFormInvalid(self, form):  # noqa
+    def assertFormInvalid(self, form):  # noqa: N802
         is_valid = form.is_valid()
         self.assertFalse(is_valid)
 
@@ -94,7 +94,7 @@ PaymentMethodChoiceFormTestCase.make_invalid_tests(
 
 
 class PrisonerDetailsFormTestCase(FormTestCase):
-    def assertFormValid(self, form):  # noqa
+    def assertFormValid(self, form):  # noqa: N802
         with responses.RequestsMock() as rsps, \
                 mock.patch('send_money.forms.PrisonerDetailsForm.get_api_session') as mocked_api_session:
             mocked_api_session.side_effect = get_api_session
@@ -113,7 +113,7 @@ class PrisonerDetailsFormTestCase(FormTestCase):
             )
             self.assertTrue(form.is_valid(), msg='\n\n%s' % form.errors.as_text())
 
-    def assertFormInvalid(self, form):  # noqa
+    def assertFormInvalid(self, form):  # noqa: N802
         with mock.patch('send_money.utils.api_client') as mocked_api_client:
             is_valid = form.is_valid()
         self.assertEqual(mocked_api_client.call_count, 0,
