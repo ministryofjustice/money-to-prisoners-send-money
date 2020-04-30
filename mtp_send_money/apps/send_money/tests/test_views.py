@@ -736,7 +736,7 @@ class DebitCardPaymentTestCase(DebitCardFlowTestCase):
                 },
                 status=200,
             )
-            with self.patch_prisoner_details_check():
+            with self.patch_prisoner_details_check(), silence_logger(level=logging.WARNING):
                 response = self.client.get(self.url, follow=False)
 
             # check delayed param in govuk pay call
