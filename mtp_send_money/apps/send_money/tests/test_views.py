@@ -1029,6 +1029,66 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
         self.assertTrue('WARGLE-B' in mail.outbox[0].body)
         self.assertTrue('£17' in mail.outbox[0].body)
 
+    def assertOnPaymentDeclinedPage(self, response):  # noqa: N802
+        """
+        Payment was declined by card issuer or WorldPay (e.g. due to insufficient funds or risk management)
+        - card declined page presented
+        - no emails sent
+        - session remains
+        """
+        self.assertContains(response, 'Your payment has been declined')
+        self.assertEqual(response.templates[0].name, 'send_money/debit-card-declined.html')
+
+        self.assertEqual(len(mail.outbox), 0)
+
+        for key in self.complete_session_keys:
+            self.assertIn(key, self.client.session)
+
+    def assertOnPaymentCancelledPage(self, response):  # noqa: N802
+        """
+        Payment was cancelled by user or through GOV.UK Pay api
+        - payment cancelled page presented
+        - no emails sent
+        - session remains
+        """
+        self.assertContains(response, 'Your payment has been cancelled')
+        self.assertEqual(response.templates[0].name, 'send_money/debit-card-cancelled.html')
+
+        self.assertEqual(len(mail.outbox), 0)
+
+        for key in self.complete_session_keys:
+            self.assertIn(key, self.client.session)
+
+    def assertOnPaymentSessionExpiredPage(self, response):  # noqa: N802
+        """
+        User did not complete forms in GOV.UK Pay in allowed time
+        - payment session expired page presented
+        - no emails sent
+        - session remains
+        """
+        self.assertContains(response, 'Your payment session has expired')
+        self.assertEqual(response.templates[0].name, 'send_money/debit-card-session-expired.html')
+
+        self.assertEqual(len(mail.outbox), 0)
+
+        for key in self.complete_session_keys:
+            self.assertIn(key, self.client.session)
+
+    def assertOnPaymentErrorPage(self, response):  # noqa: N802
+        """
+        An unexpected error occurred communicating with mtp-api, GOV.UK Pay or GOV.UK Pay returned an explicit error
+        - payment error page presented with reference
+        - no emails sent
+        - session cleared
+        """
+        self.assertContains(response, 'We are experiencing technical problems')
+        self.assertContains(response, self.ref[:8].upper())
+
+        self.assertEqual(len(mail.outbox), 0)
+
+        for key in self.complete_session_keys:
+            self.assertNotIn(key, self.client.session)
+
     def test_handles_api_update_errors(self):
         """
         Test that if the MTP API call returns 500, the view shows a generic error page
@@ -1052,14 +1112,7 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
                     follow=False,
                 )
 
-        self.assertContains(response, 'We are experiencing technical problems')
-        self.assertContains(response, self.ref[:8].upper())
-
-        self.assertEqual(len(mail.outbox), 0)
-
-        # check session is cleared
-        for key in self.complete_session_keys:
-            self.assertNotIn(key, self.client.session)
+        self.assertOnPaymentErrorPage(response)
 
     def test_handles_govuk_errors(self):
         """
@@ -1090,18 +1143,11 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
                     follow=False,
                 )
 
-        self.assertContains(response, 'We are experiencing technical problems')
-        self.assertContains(response, self.ref[:8].upper())
+        self.assertOnPaymentErrorPage(response)
 
-        self.assertEqual(len(mail.outbox), 0)
-
-        # check session is cleared
-        for key in self.complete_session_keys:
-            self.assertNotIn(key, self.client.session)
-
-    def test_handles_rejected_card(self):
+    def test_handles_declined_card(self):
         """
-        Test that if the GOV.UK payment is in status 'failed' (P0010 e.g. because the card was rejected),
+        Test that if the GOV.UK payment is in status 'failed' (P0010 e.g. because the card has insufficient funds),
         an error page is shown (since GOV.UK Pay now defers error display to this service).
         """
         self.choose_debit_card_payment_method()
@@ -1133,18 +1179,11 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
                     follow=True,
                 )
 
-        self.assertContains(response, 'Your payment has been declined')
-        self.assertEqual(response.templates[0].name, 'send_money/debit-card-declined.html')
-
-        self.assertEqual(len(mail.outbox), 0)
-
-        # check session is kept
-        for key in self.complete_session_keys:
-            self.assertIn(key, self.client.session)
+        self.assertOnPaymentDeclinedPage(response)
 
     def test_handles_payments_in_error(self):
         """
-        Test that if the GOV.UK payment is in status 'error' (e.g. GOV.UK Pay could not contact WorldPay)
+        Test that if the GOV.UK payment is in status 'error' (P0050 e.g. GOV.UK Pay could not contact WorldPay)
         an error page is shown (since GOV.UK Pay now defers error display to this service).
         """
         self.choose_debit_card_payment_method()
@@ -1167,7 +1206,7 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
                     'state': {
                         'status': 'error',
                         'code': 'P0050',
-                        'message': 'message',
+                        'message': 'Payment provider returned an error',
                     },
                     'payment_id': 1,
                     'email': 'sender@outside.local',
@@ -1181,15 +1220,7 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
                     follow=True,
                 )
 
-        # TODO: make this return a 500 status?
-        self.assertContains(response, 'We are experiencing technical problems')
-        self.assertEqual(response.templates[0].name, 'send_money/debit-card-error.html')
-
-        self.assertEqual(len(mail.outbox), 0)
-
-        # check session is cleared
-        for key in self.complete_session_keys:
-            self.assertNotIn(key, self.client.session)
+        self.assertOnPaymentErrorPage(response)
 
     def test_handles_payments_cancelled_by_us(self):
         """
@@ -1229,14 +1260,7 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
                     follow=True,
                 )
 
-        self.assertContains(response, 'Your payment has been cancelled')
-        self.assertEqual(response.templates[0].name, 'send_money/debit-card-cancelled.html')
-
-        self.assertEqual(len(mail.outbox), 0)
-
-        # check session is kept
-        for key in self.complete_session_keys:
-            self.assertIn(key, self.client.session)
+        self.assertOnPaymentCancelledPage(response)
 
     def test_handles_payments_cancelled_by_user(self):
         """
@@ -1272,14 +1296,7 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
                     follow=True,
                 )
 
-        self.assertContains(response, 'Your payment has been cancelled')
-        self.assertEqual(response.templates[0].name, 'send_money/debit-card-cancelled.html')
-
-        self.assertEqual(len(mail.outbox), 0)
-
-        # check session is kept
-        for key in self.complete_session_keys:
-            self.assertIn(key, self.client.session)
+        self.assertOnPaymentCancelledPage(response)
 
     def test_handles_payments_with_expired_session(self):
         """
@@ -1316,14 +1333,7 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
                     follow=True,
                 )
 
-        self.assertContains(response, 'Your payment session has expired')
-        self.assertEqual(response.templates[0].name, 'send_money/debit-card-session-expired.html')
-
-        self.assertEqual(len(mail.outbox), 0)
-
-        # check session is kept
-        for key in self.complete_session_keys:
-            self.assertIn(key, self.client.session)
+        self.assertOnPaymentSessionExpiredPage(response)
 
     def test_refreshes_for_recently_completed_payments(self):
         """
