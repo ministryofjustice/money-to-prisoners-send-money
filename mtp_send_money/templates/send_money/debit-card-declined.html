@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% load mtp_common %}
+
+{% block page_title %}{% trans 'Your payment has been declined' %} – {{ block.super }}{% endblock %}
+
+{% block inner_content %}
+<header>
+  <h1 class="heading-xlarge">{% trans 'Your payment has been declined' %}</h1>
+</header>
+
+<p>{% trans 'No money has been taken from your account.' %}</p>
+
+<p>{% trans 'What next?' %}</p>
+
+<ul class="list list-bullet">
+  <li>{% trans 'Wait 5 days before you try to make another payment or your card could be declined again' %}</li>
+  <li>{% trans 'Check that the address and other card details are exactly the same as your bank holds' %}</li>
+  <li>{% trans 'Check with your bank for any problems with your card' %}</li>
+</ul>
+{% endblock %}

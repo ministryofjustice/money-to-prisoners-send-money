@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% load mtp_common %}
+
+{% block page_title %}{% trans 'Payment cancelled' %} – {{ block.super }}{% endblock %}
+
+{% block inner_content %}
+<header>
+  <h1 class="heading-xlarge">{% trans 'Payment cancelled' %}</h1>
+</header>
+
+<p>
+  {% trans 'Your payment has been cancelled.' %}
+  {% trans 'No money was taken from your account.' %}
+</p>
+
+<p>
+  <a class="button" href="{% url 'send_money:clear_session' %}">{% trans 'Continue' %}</a>
+</p>
+{% endblock %}

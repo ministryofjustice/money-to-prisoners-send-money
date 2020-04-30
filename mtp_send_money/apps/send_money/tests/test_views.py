@@ -762,7 +762,7 @@ class DebitCardPaymentTestCase(DebitCardFlowTestCase):
             )
             with self.patch_prisoner_details_check(), silence_logger():
                 response = self.client.get(self.url, follow=False)
-            self.assertContains(response, 'We’re sorry, your payment could not be processed on this occasion')
+            self.assertContains(response, 'We are experiencing technical problems')
 
     def test_debit_card_payment_handles_govuk_errors(self):
         self.choose_debit_card_payment_method()
@@ -784,7 +784,7 @@ class DebitCardPaymentTestCase(DebitCardFlowTestCase):
             )
             with self.patch_prisoner_details_check(), silence_logger():
                 response = self.client.get(self.url, follow=False)
-            self.assertContains(response, 'We’re sorry, your payment could not be processed on this occasion')
+            self.assertContains(response, 'We are experiencing technical problems')
 
 
 @patch_notifications()
@@ -1052,7 +1052,7 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
                     follow=False,
                 )
 
-        self.assertContains(response, 'your payment could not be processed')
+        self.assertContains(response, 'We are experiencing technical problems')
         self.assertContains(response, self.ref[:8].upper())
 
         self.assertEqual(len(mail.outbox), 0)
@@ -1090,7 +1090,7 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
                     follow=False,
                 )
 
-        self.assertContains(response, 'your payment could not be processed')
+        self.assertContains(response, 'We are experiencing technical problems')
         self.assertContains(response, self.ref[:8].upper())
 
         self.assertEqual(len(mail.outbox), 0)
@@ -1101,9 +1101,8 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
 
     def test_handles_rejected_card(self):
         """
-        Test that if the GOV.UK payment is in status 'failed' (e.g. the card was rejected),
-        the view redirects to a few steps back in the journey so that the user can try again
-        as GOV.UK Pay has already shown an error page.
+        Test that if the GOV.UK payment is in status 'failed' (P0010 e.g. because the card was rejected),
+        an error page is shown (since GOV.UK Pay now defers error display to this service).
         """
         self.choose_debit_card_payment_method()
         self.fill_in_prisoner_details()
@@ -1122,7 +1121,7 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
                 govuk_url(f'/payments/{self.processor_id}/'),
                 json={
                     'reference': self.ref,
-                    'state': {'status': 'failed'},
+                    'state': {'status': 'failed', 'code': 'P0010'},
                     'email': 'sender@outside.local',
                 },
                 status=200
@@ -1134,20 +1133,19 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
                     follow=True,
                 )
 
-        self.assertOnPage(response, 'check_details')
+        self.assertContains(response, 'Your payment has been declined')
+        self.assertEqual(response.templates[0].name, 'send_money/debit-card-declined.html')
 
         self.assertEqual(len(mail.outbox), 0)
 
         # check session is kept
         for key in self.complete_session_keys:
             self.assertIn(key, self.client.session)
-        self.assertEqual(len(mail.outbox), 0)
 
     def test_handles_payments_in_error(self):
         """
-        Test that if the GOV.UK payment is in status 'error' (e.g. Pay could contact Woldpay)
-        the view redirects to a few steps back in the journey so that the user can try again
-        as GOV.UK Pay has already shown an error page.
+        Test that if the GOV.UK payment is in status 'error' (e.g. GOV.UK Pay could not contact WorldPay)
+        an error page is shown (since GOV.UK Pay now defers error display to this service).
         """
         self.choose_debit_card_payment_method()
         self.fill_in_prisoner_details()
@@ -1168,7 +1166,7 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
                     'reference': self.ref,
                     'state': {
                         'status': 'error',
-                        'code': 'code',
+                        'code': 'P0050',
                         'message': 'message',
                     },
                     'payment_id': 1,
@@ -1183,21 +1181,21 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
                     follow=True,
                 )
 
-        self.assertOnPage(response, 'check_details')
+        # TODO: make this return a 500 status?
+        self.assertContains(response, 'We are experiencing technical problems')
+        self.assertEqual(response.templates[0].name, 'send_money/debit-card-error.html')
 
         self.assertEqual(len(mail.outbox), 0)
 
-        # check session is kept
+        # check session is cleared
         for key in self.complete_session_keys:
-            self.assertIn(key, self.client.session)
-        self.assertEqual(len(mail.outbox), 0)
+            self.assertNotIn(key, self.client.session)
 
     def test_handles_payments_cancelled_by_us(self):
         """
-        Test that if the GOV.UK payment is in status 'cancelled' because we cancelled it
+        Test that if the GOV.UK payment is in status 'cancelled' (P0040) because we cancelled it
         (if the user cancels the payment, the actual GOV.UK status is 'failed')
-        the view redirects to a few steps back in the journey so that the user can try again
-        as GOV.UK Pay has already shown an error page.
+        a cancelled page is shown (since GOV.UK Pay now defers error display to this service).
 
         NOTE: this never happens at the moment but it could with the introduction of delayed
         capture and it might need to change.
@@ -1219,7 +1217,7 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
                 govuk_url(f'/payments/{self.processor_id}/'),
                 json={
                     'reference': self.ref,
-                    'state': {'status': 'cancelled'},
+                    'state': {'status': 'cancelled', 'code': 'P0040'},
                     'email': 'sender@outside.local',
                 },
                 status=200,
@@ -1231,14 +1229,101 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
                     follow=True,
                 )
 
-        self.assertOnPage(response, 'check_details')
+        self.assertContains(response, 'Your payment has been cancelled')
+        self.assertEqual(response.templates[0].name, 'send_money/debit-card-cancelled.html')
 
         self.assertEqual(len(mail.outbox), 0)
 
         # check session is kept
         for key in self.complete_session_keys:
             self.assertIn(key, self.client.session)
+
+    def test_handles_payments_cancelled_by_user(self):
+        """
+        Test that if the GOV.UK payment is in status 'failed' (P0030) because the user cancelled it deliberately
+        a cancelled page is shown (since GOV.UK Pay now defers error display to this service).
+        """
+        self.choose_debit_card_payment_method()
+        self.fill_in_prisoner_details()
+        self.fill_in_amount()
+
+        with responses.RequestsMock() as rsps:
+            mock_auth(rsps)
+            rsps.add(
+                rsps.GET,
+                api_url(f'/payments/{self.ref}/'),
+                json=self.payment_data,
+                status=200,
+            )
+            rsps.add(
+                rsps.GET,
+                govuk_url(f'/payments/{self.processor_id}/'),
+                json={
+                    'reference': self.ref,
+                    'state': {'status': 'failed', 'code': 'P0030'},
+                    'email': 'sender@outside.local',
+                },
+                status=200,
+            )
+            with self.patch_prisoner_details_check(), silence_logger():
+                response = self.client.get(
+                    self.url,
+                    {'payment_ref': self.ref},
+                    follow=True,
+                )
+
+        self.assertContains(response, 'Your payment has been cancelled')
+        self.assertEqual(response.templates[0].name, 'send_money/debit-card-cancelled.html')
+
         self.assertEqual(len(mail.outbox), 0)
+
+        # check session is kept
+        for key in self.complete_session_keys:
+            self.assertIn(key, self.client.session)
+
+    def test_handles_payments_with_expired_session(self):
+        """
+        Test that if the GOV.UK payment is in status 'failed' (P0020) because the session expired
+        (if the user took too long on GOV.UK Pay forms)
+        a session-expired page is shown (since GOV.UK Pay now defers error display to this service).
+        """
+        self.choose_debit_card_payment_method()
+        self.fill_in_prisoner_details()
+        self.fill_in_amount()
+
+        with responses.RequestsMock() as rsps:
+            mock_auth(rsps)
+            rsps.add(
+                rsps.GET,
+                api_url(f'/payments/{self.ref}/'),
+                json=self.payment_data,
+                status=200,
+            )
+            rsps.add(
+                rsps.GET,
+                govuk_url(f'/payments/{self.processor_id}/'),
+                json={
+                    'reference': self.ref,
+                    'state': {'status': 'failed', 'code': 'P0020'},
+                    'email': 'sender@outside.local',
+                },
+                status=200
+            )
+            with self.patch_prisoner_details_check(), silence_logger():
+                response = self.client.get(
+                    self.url,
+                    {'payment_ref': self.ref},
+                    follow=True,
+                )
+
+        self.assertContains(response, 'Your payment session has expired')
+        self.assertEqual(response.templates[0].name, 'send_money/debit-card-session-expired.html')
+
+        self.assertEqual(len(mail.outbox), 0)
+
+        # check session is kept
+        for key in self.complete_session_keys:
+            self.assertIn(key, self.client.session)
 
     def test_refreshes_for_recently_completed_payments(self):
         """

@@ -44,9 +44,6 @@ class GovUkPaymentStatus(enum.Enum):
     def finished(self):
         return self in [self.success, self.failed, self.cancelled, self.error]
 
-    def finished_and_failed(self):
-        return self.finished() and self != self.success
-
     def is_awaiting_user_input(self):
         return self in [self.created, self.started, self.submitted]
 
@@ -204,7 +201,7 @@ class PaymentClient:
             )
 
         successfulish = govuk_status in [GovUkPaymentStatus.success, GovUkPaymentStatus.capturable]
-        # if nothing can be done, exist immediately
+        # if nothing can be done, exit immediately
         if not successfulish:
             return govuk_status
 
