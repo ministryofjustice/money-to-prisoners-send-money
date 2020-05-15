@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% load mtp_common %}
+
+{% block page_title %}{% trans 'We are experiencing technical problems' %} – {{ block.super }}{% endblock %}
+
+{% block inner_content %}
+<header>
+  <h1 class="heading-xlarge">{% trans 'We are experiencing technical problems' %}</h1>
+</header>
+
+<p>
+  {% trans 'We’re sorry, your payment could not be processed on this occasion.' %}
+  {% trans 'No money has been taken from your account.'%}
+</p>
+
+<p>
+  {% blocktrans trimmed %}
+    Your reference number is <strong>{{ short_payment_ref }}</strong>
+  {% endblocktrans %}
+</p>
+{% endblock %}

@@ -19,7 +19,7 @@ from send_money.utils import (
 
 
 class BaseEqualityTestCase(unittest.TestCase):
-    def assertCaseEquality(self, function, cases, msg=None):  # noqa
+    def assertCaseEquality(self, function, cases, msg=None):  # noqa: N802
         if not cases:
             self.fail('No cases to test')
         msg = msg or 'Expected %(value)s to be %(expected)s'

@@ -15,6 +15,7 @@ from oauthlib.oauth2 import OAuth2Error
 from requests.exceptions import RequestException
 
 from send_money import forms as send_money_forms
+from send_money.exceptions import GovUkPaymentStatusException
 from send_money.models import PaymentMethod
 from send_money.payments import is_active_payment, GovUkPaymentStatus, PaymentClient
 from send_money.mail import send_email_for_bank_transfer_reference
@@ -64,7 +65,7 @@ def should_be_capture_delayed():
     """
     Util function to roll out delayed payment capture gradually in order to limit damage caused by unknown problems.
     Returns True if the payment should be created with delayed_capture == True with a chance in
-    percentage uqual to settings.PAYMENT_DELAYED_CAPTURE_ROLLOUT_PERCENTAGE.
+    percentage equal to settings.PAYMENT_DELAYED_CAPTURE_ROLLOUT_PERCENTAGE.
 
     TODO remove (and always delay) or allow just an on/off value when happy and confident that things are
     working fine.
@@ -354,7 +355,7 @@ class DebitCardPaymentView(DebitCardFlow):
         except RequestException:
             logger.exception('Failed to create new payment (ref %s)' % payment_ref)
 
-        return render(request, 'send_money/debit-card-failure.html', failure_context)
+        return render(request, 'send_money/debit-card-error.html', failure_context)
 
 
 class DebitCardConfirmationView(TemplateView):
@@ -362,14 +363,14 @@ class DebitCardConfirmationView(TemplateView):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.status = GovUkPaymentStatus.failed
+        self.status = GovUkPaymentStatus.error
 
     def get_template_names(self):
         if self.status == GovUkPaymentStatus.success:
             return ['send_money/debit-card-confirmation.html']
         if self.status == GovUkPaymentStatus.capturable:
             return ['send_money/debit-card-on-hold.html']
-        return ['send_money/debit-card-failure.html']
+        return ['send_money/debit-card-error.html']
 
     def get(self, request, *args, **kwargs):
         payment_ref = self.request.GET.get('payment_ref')
@@ -405,27 +406,57 @@ class DebitCardConfirmationView(TemplateView):
 
                 self.status = payment_client.complete_payment_if_necessary(payment, govuk_payment)
 
-                # if status is error, failed or cancelled, redirect back to the start
-                # as GOV.UK Pay has already shown an error page.
-                if self.status.finished_and_failed():
-                    return redirect(build_view_url(self.request, DebitCardCheckView.url_name))
+                # here status can be either created, started, submitted, capturable, success, failed, cancelled, error
+                # or None
 
-                # here status can be either created, started, submitted, success, capturable
+                error_code = govuk_payment and govuk_payment.get('state', {}).get('code')
 
-                # treat statuses created, started, submitted as failed as they should have
-                # never got here
-                if self.status.is_awaiting_user_input():
-                    self.status = GovUkPaymentStatus.failed
+                # payment was cancelled programmatically (this would not currently happen)
+                if self.status == GovUkPaymentStatus.cancelled:
+                    # error_code is expected to be P0040
+                    error_code == 'P0040' or logger.error(
+                        f'Unexpected code for cancelled GOV.UK Pay payment {payment_ref}: {error_code}'
+                    )
+                    return render(request, 'send_money/debit-card-cancelled.html')
+
+                # the user cancelled the payment
+                if self.status == GovUkPaymentStatus.failed and error_code == 'P0030':
+                    return render(request, 'send_money/debit-card-cancelled.html')
+
+                # GOV.UK Pay session expired
+                if self.status == GovUkPaymentStatus.failed and error_code == 'P0020':
+                    return render(request, 'send_money/debit-card-session-expired.html')
+
+                # payment method was rejected by card issuer or processor
+                # e.g. due to insufficient funds or risk management
+                if self.status == GovUkPaymentStatus.failed:
+                    # error_code is expected to be P0010
+                    error_code == 'P0010' or logger.error(
+                        f'Unexpected code for failed GOV.UK Pay payment {payment_ref}: {error_code}'
+                    )
+                    return render(request, 'send_money/debit-card-declined.html')
+
+                # here status can be either created, started, submitted, capturable, success, error
+                # or None
+
+                # treat statuses created, started, submitted or None as error as they should have never got here
+                if not self.status or self.status.is_awaiting_user_input():
+                    self.status = GovUkPaymentStatus.error
+
+                # here status can be either capturable, success, error
 
         except OAuth2Error:
-            logger.exception('Authentication error while processing %s' % payment_ref)
-            self.status = GovUkPaymentStatus.failed
+            logger.exception('Authentication error while processing %s', payment_ref)
+            self.status = GovUkPaymentStatus.error
         except RequestException as error:
             error_message = 'Payment check failed for ref %s' % payment_ref
             if hasattr(error, 'response') and hasattr(error.response, 'content'):
                 error_message += '\nReceived: %s' % error.response.content
             logger.exception(error_message)
-            self.status = GovUkPaymentStatus.failed
+            self.status = GovUkPaymentStatus.error
+        except GovUkPaymentStatusException:
+            logger.exception('GOV.UK Pay returned unexpected status for ref %s', payment_ref)
+            self.status = GovUkPaymentStatus.error
 
         response = super().get(request, *args, **kwargs)
         request.session.flush()

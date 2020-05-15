@@ -25,7 +25,7 @@ class SendMoneyFunctionalTestCase(FunctionalTestCase):
     def patch_view_chain_form_checking(cls):
         return mock.patch('send_money.views.SendMoneyFormView.is_form_enabled', return_value=False)
 
-    def assertOnPage(self, url_name):  # noqa
+    def assertOnPage(self, url_name):  # noqa: N802
         self.assertInSource('<!-- %s -->' % url_name)
 
     def make_payment_method_choice(self, payment_method):
@@ -214,7 +214,17 @@ class SendMoneyConfirmationPage(SendMoneyFunctionalTestCase):
                     'events': {'href': govuk_url('/payments/%s/events' % processor_id), 'method': 'GET'}
                 }
             })
-            rsps.add(rsps.PATCH, api_url('/payments/%s/' % ref))
+            rsps.add(rsps.PATCH, api_url('/payments/%s/' % ref), json={
+                'uuid': ref,
+                'processor_id': processor_id,
+                'recipient_name': 'James Bond',
+                'amount': 2000,
+                'status': 'pending',
+                'created': datetime.datetime.now().isoformat() + 'Z',
+                'prisoner_number': 'A5544CD',
+                'prisoner_dob': '1992-12-05',
+                'email': 'sender@outside.local',
+            })
 
             self.driver.get(self.live_server_url + '/en-gb/debit-card/confirmation/?payment_ref=' + ref)
         self.assertInSource('Payment successful')

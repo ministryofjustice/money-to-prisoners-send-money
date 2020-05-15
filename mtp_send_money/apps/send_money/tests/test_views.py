@@ -736,7 +736,7 @@ class DebitCardPaymentTestCase(DebitCardFlowTestCase):
                 },
                 status=200,
             )
-            with self.patch_prisoner_details_check():
+            with self.patch_prisoner_details_check(), silence_logger(level=logging.WARNING):
                 response = self.client.get(self.url, follow=False)
 
             # check delayed param in govuk pay call
@@ -762,7 +762,7 @@ class DebitCardPaymentTestCase(DebitCardFlowTestCase):
             )
             with self.patch_prisoner_details_check(), silence_logger():
                 response = self.client.get(self.url, follow=False)
-            self.assertContains(response, 'We’re sorry, your payment could not be processed on this occasion')
+            self.assertContains(response, 'We are experiencing technical problems')
 
     def test_debit_card_payment_handles_govuk_errors(self):
         self.choose_debit_card_payment_method()
@@ -784,7 +784,7 @@ class DebitCardPaymentTestCase(DebitCardFlowTestCase):
             )
             with self.patch_prisoner_details_check(), silence_logger():
                 response = self.client.get(self.url, follow=False)
-            self.assertContains(response, 'We’re sorry, your payment could not be processed on this occasion')
+            self.assertContains(response, 'We are experiencing technical problems')
 
 
 @patch_notifications()
@@ -1029,6 +1029,66 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
         self.assertTrue('WARGLE-B' in mail.outbox[0].body)
         self.assertTrue('£17' in mail.outbox[0].body)
 
+    def assertOnPaymentDeclinedPage(self, response):  # noqa: N802
+        """
+        Payment was declined by card issuer or WorldPay (e.g. due to insufficient funds or risk management)
+        - card declined page presented
+        - no emails sent
+        - session remains
+        """
+        self.assertContains(response, 'Your payment has been declined')
+        self.assertEqual(response.templates[0].name, 'send_money/debit-card-declined.html')
+
+        self.assertEqual(len(mail.outbox), 0)
+
+        for key in self.complete_session_keys:
+            self.assertIn(key, self.client.session)
+
+    def assertOnPaymentCancelledPage(self, response):  # noqa: N802
+        """
+        Payment was cancelled by user or through GOV.UK Pay api
+        - payment cancelled page presented
+        - no emails sent
+        - session remains
+        """
+        self.assertContains(response, 'Your payment has been cancelled')
+        self.assertEqual(response.templates[0].name, 'send_money/debit-card-cancelled.html')
+
+        self.assertEqual(len(mail.outbox), 0)
+
+        for key in self.complete_session_keys:
+            self.assertIn(key, self.client.session)
+
+    def assertOnPaymentSessionExpiredPage(self, response):  # noqa: N802
+        """
+        User did not complete forms in GOV.UK Pay in allowed time
+        - payment session expired page presented
+        - no emails sent
+        - session remains
+        """
+        self.assertContains(response, 'Your payment session has expired')
+        self.assertEqual(response.templates[0].name, 'send_money/debit-card-session-expired.html')
+
+        self.assertEqual(len(mail.outbox), 0)
+
+        for key in self.complete_session_keys:
+            self.assertIn(key, self.client.session)
+
+    def assertOnPaymentErrorPage(self, response):  # noqa: N802
+        """
+        An unexpected error occurred communicating with mtp-api, GOV.UK Pay or GOV.UK Pay returned an explicit error
+        - payment error page presented with reference
+        - no emails sent
+        - session cleared
+        """
+        self.assertContains(response, 'We are experiencing technical problems')
+        self.assertContains(response, self.ref[:8].upper())
+
+        self.assertEqual(len(mail.outbox), 0)
+
+        for key in self.complete_session_keys:
+            self.assertNotIn(key, self.client.session)
+
     def test_handles_api_update_errors(self):
         """
         Test that if the MTP API call returns 500, the view shows a generic error page
@@ -1052,14 +1112,7 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
                     follow=False,
                 )
 
-        self.assertContains(response, 'your payment could not be processed')
-        self.assertContains(response, self.ref[:8].upper())
-
-        self.assertEqual(len(mail.outbox), 0)
-
-        # check session is cleared
-        for key in self.complete_session_keys:
-            self.assertNotIn(key, self.client.session)
+        self.assertOnPaymentErrorPage(response)
 
     def test_handles_govuk_errors(self):
         """
@@ -1090,20 +1143,43 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
                     follow=False,
                 )
 
-        self.assertContains(response, 'your payment could not be processed')
-        self.assertContains(response, self.ref[:8].upper())
+        self.assertOnPaymentErrorPage(response)
 
-        self.assertEqual(len(mail.outbox), 0)
-
-        # check session is cleared
-        for key in self.complete_session_keys:
-            self.assertNotIn(key, self.client.session)
-
-    def test_handles_rejected_card(self):
+    def test_handles_missing_govuk_payment(self):
         """
-        Test that if the GOV.UK payment is in status 'failed' (e.g. the card was rejected),
-        the view redirects to a few steps back in the journey so that the user can try again
-        as GOV.UK Pay has already shown an error page.
+        Test that if the GOV.UK API call returns 404, the view shows a generic error page
+        and no email is sent; even though MTP payment exists.
+        """
+        self.choose_debit_card_payment_method()
+        self.fill_in_prisoner_details()
+        self.fill_in_amount()
+
+        with responses.RequestsMock() as rsps:
+            mock_auth(rsps)
+            rsps.add(
+                rsps.GET,
+                api_url(f'/payments/{self.ref}/'),
+                json=self.payment_data,
+                status=200,
+            )
+            rsps.add(
+                rsps.GET,
+                govuk_url(f'/payments/{self.processor_id}/'),
+                status=404,
+            )
+            with self.patch_prisoner_details_check(), silence_logger():
+                response = self.client.get(
+                    self.url,
+                    {'payment_ref': self.ref},
+                    follow=True,
+                )
+
+        self.assertOnPaymentErrorPage(response)
+
+    def test_handles_unexpected_govuk_response(self):
+        """
+        Test that if the GOV.UK API call returns unexpected status, the view shows a generic error page
+        and no email is sent.
         """
         self.choose_debit_card_payment_method()
         self.fill_in_prisoner_details()
@@ -1122,7 +1198,7 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
                 govuk_url(f'/payments/{self.processor_id}/'),
                 json={
                     'reference': self.ref,
-                    'state': {'status': 'failed'},
+                    'state': {'status': 'UNEXPECTED', 'code': 'P9090'},
                     'email': 'sender@outside.local',
                 },
                 status=200
@@ -1134,20 +1210,48 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
                     follow=True,
                 )
 
-        self.assertOnPage(response, 'check_details')
+        self.assertOnPaymentErrorPage(response)
 
-        self.assertEqual(len(mail.outbox), 0)
+    def test_handles_declined_card(self):
+        """
+        Test that if the GOV.UK payment is in status 'failed' (P0010 e.g. because the card has insufficient funds),
+        an error page is shown (since GOV.UK Pay now defers error display to this service).
+        """
+        self.choose_debit_card_payment_method()
+        self.fill_in_prisoner_details()
+        self.fill_in_amount()
 
-        # check session is kept
-        for key in self.complete_session_keys:
-            self.assertIn(key, self.client.session)
-        self.assertEqual(len(mail.outbox), 0)
+        with responses.RequestsMock() as rsps:
+            mock_auth(rsps)
+            rsps.add(
+                rsps.GET,
+                api_url(f'/payments/{self.ref}/'),
+                json=self.payment_data,
+                status=200,
+            )
+            rsps.add(
+                rsps.GET,
+                govuk_url(f'/payments/{self.processor_id}/'),
+                json={
+                    'reference': self.ref,
+                    'state': {'status': 'failed', 'code': 'P0010'},
+                    'email': 'sender@outside.local',
+                },
+                status=200
+            )
+            with self.patch_prisoner_details_check(), silence_logger():
+                response = self.client.get(
+                    self.url,
+                    {'payment_ref': self.ref},
+                    follow=True,
+                )
+
+        self.assertOnPaymentDeclinedPage(response)
 
     def test_handles_payments_in_error(self):
         """
-        Test that if the GOV.UK payment is in status 'error' (e.g. Pay could contact Woldpay)
-        the view redirects to a few steps back in the journey so that the user can try again
-        as GOV.UK Pay has already shown an error page.
+        Test that if the GOV.UK payment is in status 'error' (P0050 e.g. GOV.UK Pay could not contact WorldPay)
+        an error page is shown (since GOV.UK Pay now defers error display to this service).
         """
         self.choose_debit_card_payment_method()
         self.fill_in_prisoner_details()
@@ -1168,36 +1272,31 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
                     'reference': self.ref,
                     'state': {
                         'status': 'error',
-                        'code': 'code',
-                        'message': 'message',
+                        'code': 'P0050',
+                        'message': 'Payment provider returned an error',
                     },
-                    'payment_id': 1,
+                    'payment_id': 12345,
                     'email': 'sender@outside.local',
                 },
                 status=200,
             )
-            with self.patch_prisoner_details_check(), silence_logger():
+            with self.patch_prisoner_details_check(), mock.patch('send_money.payments.logger') as logger:
                 response = self.client.get(
                     self.url,
                     {'payment_ref': self.ref},
                     follow=True,
                 )
+                error_log = logger.error.call_args[0][0]
+                self.assertIn('12345', error_log)
+                self.assertIn('P0050', error_log)
 
-        self.assertOnPage(response, 'check_details')
-
-        self.assertEqual(len(mail.outbox), 0)
-
-        # check session is kept
-        for key in self.complete_session_keys:
-            self.assertIn(key, self.client.session)
-        self.assertEqual(len(mail.outbox), 0)
+        self.assertOnPaymentErrorPage(response)
 
     def test_handles_payments_cancelled_by_us(self):
         """
-        Test that if the GOV.UK payment is in status 'cancelled' because we cancelled it
+        Test that if the GOV.UK payment is in status 'cancelled' (P0040) because we cancelled it
         (if the user cancels the payment, the actual GOV.UK status is 'failed')
-        the view redirects to a few steps back in the journey so that the user can try again
-        as GOV.UK Pay has already shown an error page.
+        a cancelled page is shown (since GOV.UK Pay now defers error display to this service).
 
         NOTE: this never happens at the moment but it could with the introduction of delayed
         capture and it might need to change.
@@ -1219,7 +1318,7 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
                 govuk_url(f'/payments/{self.processor_id}/'),
                 json={
                     'reference': self.ref,
-                    'state': {'status': 'cancelled'},
+                    'state': {'status': 'cancelled', 'code': 'P0040'},
                     'email': 'sender@outside.local',
                 },
                 status=200,
@@ -1231,14 +1330,199 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
                     follow=True,
                 )
 
-        self.assertOnPage(response, 'check_details')
+        self.assertOnPaymentCancelledPage(response)
 
-        self.assertEqual(len(mail.outbox), 0)
+    def test_handles_payments_cancelled_by_user(self):
+        """
+        Test that if the GOV.UK payment is in status 'failed' (P0030) because the user cancelled it deliberately
+        a cancelled page is shown (since GOV.UK Pay now defers error display to this service).
+        """
+        self.choose_debit_card_payment_method()
+        self.fill_in_prisoner_details()
+        self.fill_in_amount()
 
-        # check session is kept
-        for key in self.complete_session_keys:
-            self.assertIn(key, self.client.session)
-        self.assertEqual(len(mail.outbox), 0)
+        with responses.RequestsMock() as rsps:
+            mock_auth(rsps)
+            rsps.add(
+                rsps.GET,
+                api_url(f'/payments/{self.ref}/'),
+                json=self.payment_data,
+                status=200,
+            )
+            rsps.add(
+                rsps.GET,
+                govuk_url(f'/payments/{self.processor_id}/'),
+                json={
+                    'reference': self.ref,
+                    'state': {'status': 'failed', 'code': 'P0030'},
+                    'email': 'sender@outside.local',
+                },
+                status=200,
+            )
+            with self.patch_prisoner_details_check(), silence_logger():
+                response = self.client.get(
+                    self.url,
+                    {'payment_ref': self.ref},
+                    follow=True,
+                )
+
+        self.assertOnPaymentCancelledPage(response)
+
+    def test_handles_payments_with_expired_session(self):
+        """
+        Test that if the GOV.UK payment is in status 'failed' (P0020) because the session expired
+        (if the user took too long on GOV.UK Pay forms)
+        a session-expired page is shown (since GOV.UK Pay now defers error display to this service).
+        """
+        self.choose_debit_card_payment_method()
+        self.fill_in_prisoner_details()
+        self.fill_in_amount()
+
+        with responses.RequestsMock() as rsps:
+            mock_auth(rsps)
+            rsps.add(
+                rsps.GET,
+                api_url(f'/payments/{self.ref}/'),
+                json=self.payment_data,
+                status=200,
+            )
+            rsps.add(
+                rsps.GET,
+                govuk_url(f'/payments/{self.processor_id}/'),
+                json={
+                    'reference': self.ref,
+                    'state': {'status': 'failed', 'code': 'P0020'},
+                    'email': 'sender@outside.local',
+                },
+                status=200
+            )
+            with self.patch_prisoner_details_check(), silence_logger():
+                response = self.client.get(
+                    self.url,
+                    {'payment_ref': self.ref},
+                    follow=True,
+                )
+
+        self.assertOnPaymentSessionExpiredPage(response)
+
+    def test_handles_payments_with_unusual_failed_code(self):
+        """
+        A `failed` status with P0020 or P0030 are treated as special.
+        All others (including the very common P0010) should be treated equally.
+        Similar to DebitCardConfirmationTestCase.test_handles_declined_card
+        """
+        self.choose_debit_card_payment_method()
+        self.fill_in_prisoner_details()
+        self.fill_in_amount()
+
+        with responses.RequestsMock() as rsps:
+            mock_auth(rsps)
+            rsps.add(
+                rsps.GET,
+                api_url(f'/payments/{self.ref}/'),
+                json=self.payment_data,
+                status=200,
+            )
+            rsps.add(
+                rsps.GET,
+                govuk_url(f'/payments/{self.processor_id}/'),
+                json={
+                    'reference': self.ref,
+                    'state': {'status': 'failed', 'code': 'P990099'},
+                    'email': 'sender@outside.local',
+                },
+                status=200
+            )
+            with self.patch_prisoner_details_check(), mock.patch('send_money.views.logger') as logger:
+                response = self.client.get(
+                    self.url,
+                    {'payment_ref': self.ref},
+                    follow=True,
+                )
+                error_log = logger.error.call_args[0][0]
+                self.assertIn(self.ref, error_log)
+                self.assertIn('failed', error_log)
+                self.assertIn('P990099', error_log)
+
+        self.assertOnPaymentDeclinedPage(response)
+
+    def test_handles_payments_with_unusual_cancelled_code(self):
+        """
+        A `cancelled` status expects a P0040 code, but we should treat all cancellations equally.
+        Similar to DebitCardConfirmationTestCase.test_handles_payments_cancelled_by_us
+        """
+        self.choose_debit_card_payment_method()
+        self.fill_in_prisoner_details()
+        self.fill_in_amount()
+
+        with responses.RequestsMock() as rsps:
+            mock_auth(rsps)
+            rsps.add(
+                rsps.GET,
+                api_url(f'/payments/{self.ref}/'),
+                json=self.payment_data,
+                status=200,
+            )
+            rsps.add(
+                rsps.GET,
+                govuk_url(f'/payments/{self.processor_id}/'),
+                json={
+                    'reference': self.ref,
+                    'state': {'status': 'cancelled', 'code': 'P990099'},
+                    'email': 'sender@outside.local',
+                },
+                status=200,
+            )
+            with self.patch_prisoner_details_check(), mock.patch('send_money.views.logger') as logger:
+                response = self.client.get(
+                    self.url,
+                    {'payment_ref': self.ref},
+                    follow=True,
+                )
+                error_log = logger.error.call_args[0][0]
+                self.assertIn(self.ref, error_log)
+                self.assertIn('cancelled', error_log)
+                self.assertIn('P990099', error_log)
+
+        self.assertOnPaymentCancelledPage(response)
+
+    def test_handles_payments_with_unusual_error_code(self):
+        """
+        An `error` status with P0050 code is common, but we should treat all errors equally.
+        Similar to DebitCardConfirmationTestCase.test_handles_payments_in_error
+        """
+        self.choose_debit_card_payment_method()
+        self.fill_in_prisoner_details()
+        self.fill_in_amount()
+
+        with responses.RequestsMock() as rsps:
+            mock_auth(rsps)
+            rsps.add(
+                rsps.GET,
+                api_url(f'/payments/{self.ref}/'),
+                json=self.payment_data,
+                status=200,
+            )
+            rsps.add(
+                rsps.GET,
+                govuk_url(f'/payments/{self.processor_id}/'),
+                json={
+                    'reference': self.ref,
+                    'state': {'status': 'error'},
+                },
+                status=200,
+            )
+            with self.patch_prisoner_details_check(), mock.patch('send_money.payments.logger') as logger:
+                response = self.client.get(
+                    self.url,
+                    {'payment_ref': self.ref},
+                    follow=True,
+                )
+                error_log = logger.error.call_args[0][0]
+                self.assertIn(self.ref, error_log)
+                self.assertIn('None', error_log)
+
+        self.assertOnPaymentErrorPage(response)
 
     def test_refreshes_for_recently_completed_payments(self):
         """

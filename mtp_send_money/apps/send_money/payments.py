@@ -44,9 +44,6 @@ class GovUkPaymentStatus(enum.Enum):
     def finished(self):
         return self in [self.success, self.failed, self.cancelled, self.error]
 
-    def finished_and_failed(self):
-        return self.finished() and self != self.success
-
     def is_awaiting_user_input(self):
         return self in [self.created, self.started, self.submitted]
 
@@ -197,14 +194,14 @@ class PaymentClient:
             logger.error(
                 'GOV.UK Pay returned an error for %(govuk_id)s: %(code)s %(msg)s' %
                 {
-                    'govuk_id': govuk_payment['payment_id'],
-                    'code': govuk_payment['state']['code'],
-                    'msg': govuk_payment['state']['message'],
+                    'govuk_id': govuk_payment.get('payment_id') or payment['uuid'],
+                    'code': govuk_payment.get('state', {}).get('code'),
+                    'msg': govuk_payment.get('state', {}).get('message'),
                 },
             )
 
         successfulish = govuk_status in [GovUkPaymentStatus.success, GovUkPaymentStatus.capturable]
-        # if nothing can be done, exist immediately
+        # if nothing can be done, exit immediately
         if not successfulish:
             return govuk_status
 
