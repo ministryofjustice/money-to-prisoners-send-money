@@ -1,15 +1,100 @@
 // help area question lists
 
 .mtp-question-list {
+  clear: both;
+  overflow: hidden;
   margin-bottom: $gutter;
 
-  dt {
+  .mtp-question {
     @extend .heading-medium;
+    margin: $gutter-half 0;
+    padding: $gutter-half 0;
+    border-top: 1px solid $border-colour;
 
     a:visited {
       color: $link-colour;
     }
   }
+
+  .mtp-question-icon {
+    display: none;
+  }
+
+  .js-enabled & {
+    .mtp-question {
+      a {
+        display: block;
+        position: relative;
+        padding-right: 38px;
+      }
+
+      &:last-of-type {
+        border-bottom: 1px solid $border-colour;
+      }
+
+      &.mtp-question--open:last-of-type {
+        border-bottom: none;
+      }
+    }
+
+    .mtp-question-icon {
+      display: block;
+    }
+
+    .mtp-answer {
+      display: none;
+
+      &:last-of-type {
+        border-bottom: 1px solid $border-colour;
+      }
+    }
+  }
+}
+
+.mtp-question-list__open-all {
+  @include core-16;
+  float: right;
+  clear: both;
+
+  &:visited {
+    color: $link-colour;
+  }
+}
+
+.mtp-question-icon {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  width: 16px;
+  height: 16px;
+  margin-top: -8px;
+}
+
+.mtp-question-icon::before, .mtp-question-icon::after {
+  content: '';
+  box-sizing: border-box;
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  width: 25%;
+  height: 25%;
+  margin: auto;
+  border: 2px solid transparent;
+  background-color: $text-colour;
+}
+
+.mtp-question-icon::before {
+  width: 100%;
+}
+
+.mtp-question-icon::after {
+  height: 100%;
+}
+
+.mtp-question--open .mtp-question-icon::after {
+  display: none;
 }
 
 // contact us page

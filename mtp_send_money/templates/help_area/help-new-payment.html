@@ -23,36 +23,39 @@
 
       <dl class="mtp-question-list">
 
-        <dt>
-          <a href="#qna-1">
+        <dt class="mtp-question">
+          <a href="#answer-1" id="question-1">
             {% trans 'I want to know the prisoner number or date of birth' %}
+            <span class="mtp-question-icon"></span>
           </a>
         </dt>
-        <dd id="qna-1">
+        <dd id="answer-1" class="mtp-answer" aria-labelledby="question-1">
           <p>
             {% trans 'By law we can’t give out confidential prisoner information.' %}
             {% trans 'Ask the prisoner for these details.' %}
           </p>
         </dd>
 
-        <dt>
-          <a href="#qna-2">
+        <dt class="mtp-question">
+          <a href="#answer-2" id="question-2">
             {% trans 'I want to make a payment from abroad' %}
+            <span class="mtp-question-icon"></span>
           </a>
         </dt>
-        <dd id="qna-2">
+        <dd id="answer-2" class="mtp-answer" aria-labelledby="question-2">
           <p>
             {% trans 'You can only make a payment from outside the UK using a debit card (Visa, Mastercard or Maestro).' %}
             {% trans 'We don’t accept credit cards or prepaid debit cards.' %}
           </p>
         </dd>
 
-        <dt>
-          <a href="#qna-3">
+        <dt class="mtp-question">
+          <a href="#answer-3" id="question-3">
             {% trans 'I want to send money to a Scottish prison' %}
+            <span class="mtp-question-icon"></span>
           </a>
         </dt>
-        <dd id="qna-3">
+        <dd id="answer-3" class="mtp-answer" aria-labelledby="question-3">
           <p>
             {% url 'help_area:prison_list' as link %}
             {% blocktrans trimmed %}
