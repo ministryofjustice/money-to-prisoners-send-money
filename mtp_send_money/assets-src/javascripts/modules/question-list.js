@@ -50,5 +50,24 @@ exports.QuestionList = {
       });
       $questions.before($button);
     });
+
+    // allow linking directly to a question
+    try {
+      var $anchor = $(window.location.hash);
+      var $button = null;
+      if ($anchor.parent('.mtp-question').length) {
+        // linked to question trigger element
+        $button = $anchor;
+      } else if ($anchor.hasClass('mtp-answer')) {
+        // linked to answer
+        $button = $('#' + $anchor.attr('aria-labelledby'));
+      }
+      if ($button) {
+        $('html, body').scrollTop($button.offset().top - 10);
+        $button.click();
+      }
+    } catch (e) {
+      // eslint-disable-line no-empty
+    }
   }
 };
