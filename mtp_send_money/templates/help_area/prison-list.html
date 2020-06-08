@@ -6,29 +6,32 @@
 {% block page_title %}{% trans 'Prisons in England and Wales' %} – {{ block.super }}{% endblock %}
 
 {% block inner_content %}
-  <header>
-    <h1 class="heading-xlarge">
-      {% trans 'Prisons in England and Wales' %}
-    </h1>
-  </header>
+  <div class="grid-row">
+    <div class="column-two-thirds">
+      <header>
+        <h1 class="heading-xlarge">
+          {% trans 'Prisons in England and Wales' %}
+        </h1>
+      </header>
 
-  <p>{% trans 'The ‘Send money to someone in prison’ service is available in the following prisons, young offender institutions and immigration removal centres in England and Wales.' %}</p>
+      <p>{% trans 'The ‘Send money to someone in prison’ service is available in the following prisons, young offender institutions and immigration removal centres in England and Wales.' %}</p>
 
-  {% if prison_list %}
-    <div class="mtp-filtered-list">
-      <p>
-        <label class="visually-hidden" for="id_search">{% trans 'Search prison list' %}</label>
-        <input class="form-control form-control-1-3 mtp-filtered-list__input" id="id_search" type="search" value="" placeholder="{% trans 'Search' %}" />
-      </p>
-      <ul class="panel panel-border-narrow mtp-filtered-list__list" data-stop-words="{{ stop_words|join:' ' }}">
-        <li class="mtp-filtered-list__empty">{% trans 'No prisons found' %}</li>
-        {% for prison in prison_list %}
-          <li>{{ prison|describe_abbreviation }}</li>
-        {% endfor %}
-      </ul>
+      {% if prison_list %}
+        <div class="mtp-filtered-list">
+          <p>
+            <label class="visually-hidden" for="id_search">{% trans 'Search prison list' %}</label>
+            <input class="form-control form-control-1-3 mtp-filtered-list__input" id="id_search" type="search" value="" placeholder="{% trans 'Search' %}" />
+          </p>
+          <ul class="panel panel-border-narrow mtp-filtered-list__list" data-stop-words="{{ stop_words|join:' ' }}">
+            <li class="mtp-filtered-list__empty">{% trans 'No prisons found' %}</li>
+            {% for prison in prison_list %}
+              <li>{{ prison|describe_abbreviation }}</li>
+            {% endfor %}
+          </ul>
+        </div>
+      {% else %}
+        <p><strong>{% trans 'This service is currently unavailable' %}</strong></p>
+      {% endif %}
     </div>
-  {% else %}
-    <p><strong>{% trans 'This service is currently unavailable' %}</strong></p>
-  {% endif %}
-
+  </div>
 {% endblock %}

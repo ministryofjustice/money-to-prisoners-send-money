@@ -6,6 +6,7 @@ from django.shortcuts import render
 from django.urls import reverse, reverse_lazy
 from django.utils.http import is_safe_url
 from django.utils.translation import gettext_lazy as _
+from django.views.generic import TemplateView
 from mtp_common.api import retrieve_all_pages_for_path
 from mtp_common.views import GetHelpView as BaseGetHelpView, GetHelpSuccessView as BaseGetHelpSuccessView
 from oauthlib.oauth2 import OAuth2Error
@@ -56,34 +57,46 @@ def help_view(request, page='payment-issues'):
     return make_response_cacheable(response)
 
 
-def prison_list_view(request):
+class PrisonListView(TemplateView):
     """
     List the prisons that MTP supports
     """
-    prison_list = cache.get('prison_list')
-    if not prison_list:
-        try:
-            session = get_api_session()
-            prison_list = retrieve_all_pages_for_path(session, '/prisons/', exclude_empty_prisons=True)
-            prison_list = [
-                prison['name']
-                for prison in sorted(prison_list, key=lambda prison: prison['short_name'])
-            ]
-            if not prison_list:
-                raise ValueError('Empty prison list')
-            cache.set('prison_list', prison_list, timeout=60 * 60)
-        except (RequestException, OAuth2Error, ValueError):
-            logger.exception('Could not look up prison list')
-    response = render(request, 'help_area/prison-list.html', context={
-        'breadcrumbs_back': reverse('help_area:help'),
-        'prison_list': prison_list,
-        'stop_words': sorted([
-            # NB: these are output into a regular expression so must have special characters escaped
-            'and', 'the',
-            'prison', 'prisons',
-            'young', 'offender', 'institutions', 'institutions',
-            'immigration', 'removal', 'centre', 'centres',
-            'secure', 'training',
-        ]),
-    })
-    return make_response_cacheable(response)
+    template_name = 'help_area/prison-list.html'
+
+    @classmethod
+    def get_prison_list(cls):
+        prison_list = cache.get('prison_list')
+        if not prison_list:
+            try:
+                session = get_api_session()
+                prison_list = retrieve_all_pages_for_path(session, '/prisons/', exclude_empty_prisons=True)
+                prison_list = [
+                    prison['name']
+                    for prison in sorted(prison_list, key=lambda prison: prison['short_name'])
+                ]
+                if not prison_list:
+                    raise ValueError('Empty prison list')
+                cache.set('prison_list', prison_list, timeout=60 * 60)
+            except (RequestException, OAuth2Error, ValueError):
+                logger.exception('Could not look up prison list')
+        return prison_list
+
+    def get_context_data(self, **kwargs):
+        context_data = super().get_context_data(**kwargs)
+        context_data.update({
+            'breadcrumbs_back': reverse('help_area:help'),
+            'prison_list': self.get_prison_list(),
+            'stop_words': sorted([
+                # NB: these are output into a regular expression so must have special characters escaped
+                'and', 'the',
+                'prison', 'prisons',
+                'young', 'offender', 'institutions', 'institutions',
+                'immigration', 'removal', 'centre', 'centres',
+                'secure', 'training',
+            ]),
+        })
+        return context_data
+
+    def get(self, request, *args, **kwargs):
+        response = super().get(request, *args, **kwargs)
+        return make_response_cacheable(response)
