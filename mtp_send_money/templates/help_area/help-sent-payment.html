@@ -1,0 +1,172 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% load mtp_common %}
+
+{% block page_title %}{% trans 'Help with a payment I’ve already made' %} – {{ block.super }}{% endblock %}
+
+{% block inner_content %}
+  <div class="grid-row">
+    <div class="column-two-thirds">
+
+      <header>
+        <h1 class="heading-xlarge">
+          <span class="heading-secondary">
+            {% trans 'Help with' %}
+          </span>
+          {% trans 'A payment I’ve already made' %}
+        </h1>
+      </header>
+
+      <p class="lede">
+        {% trans 'Check if the answer is here before you contact us' %}
+      </p>
+
+      <dl class="mtp-question-list">
+
+        <dt>
+          <a href="#qna-1">
+            {% trans 'I want to cancel a payment' %}
+          </a>
+        </dt>
+        <dd id="qna-1">
+          <p>
+            {% trans 'We can’t cancel your payment because once it’s gone through the system, it’s non-refundable.' %}
+          </p>
+        </dd>
+
+        <dt>
+          <a href="#qna-2">
+            {% trans 'The prisoner has moved prisons' %}
+          </a>
+        </dt>
+        <dd id="qna-2">
+          <p>
+            {% trans 'Your payment will be transferred to the new prison but it may take a few days.' %}
+          </p>
+        </dd>
+
+        <dt>
+          <a href="#qna-3">
+            {% trans 'The prisoner has been released' %}
+          </a>
+        </dt>
+        <dd id="qna-3">
+          <p>
+            {% trans 'The prisoner needs to contact the prison and they’ll be sent a refund.' %}
+          </p>
+        </dd>
+
+        <dt>
+          <a href="#qna-4">
+            {% trans 'The prisoner hasn’t got my bank transfer' %}
+          </a>
+        </dt>
+        <dd id="qna-4">
+          <ol class="list list-number">
+            <li>
+              {% trans 'If you paid by bank transfer, you may have made a mistake with the prisoner reference.' %}
+              {% blocktrans trimmed with code='MTP NOMS' %}
+                If you did, you will get an automatic refund about 4 days later into your bank account (shown as ‘{{ code }}’).
+              {% endblocktrans %}
+              {% trans 'Check the refund is there, then use the service again, checking the details as you type.' %}
+            </li>
+            <li>
+              {% trans 'The prisoner will not get your money if you paid by bank transfer from abroad, by CHAPS or in a UK bank branch.' %}
+              {% trans 'To get a refund, write to the ‘finance department’ at the prison, including:' %}
+              <ul class="list list-bullet">
+                <li>
+                  {% trans 'the prisoner’s name, prisoner number and date of birth' %}
+                </li>
+                <li>
+                  {% trans 'your name and address' %}
+                </li>
+                <li>
+                  {% trans 'the payment date and the amount' %}
+                </li>
+              </ul>
+              {% trans 'The prison will refund you by cheque.' %}
+            </li>
+          </ol>
+        </dd>
+
+        <dt>
+          <a href="#qna-5">
+            {% trans 'My bank transfer has been refunded' %}
+          </a>
+        </dt>
+        <dd id="qna-5">
+          <p>
+            {% trans 'This is because a piece of information was wrong or missing when you made your bank transfer.' %}
+            {% trans 'Please try again.' %}
+            {% trans 'Check you’re using the right details.' %}
+            {% trans 'Check you’ve typed them in correctly, especially the bank transfer reference.' %}
+          </p>
+        </dd>
+
+        <dt>
+          <a href="#qna-6">
+            {% trans 'Does the prisoner know they’ve got my money?' %}
+          </a>
+        </dt>
+        <dd id="qna-6">
+          <p>
+            {% trans 'They might get an account slip from the wing officer when your money reaches their account, but this can take a few days and not all prisons use these slips.' %}
+          </p>
+          <p>
+            {% trans 'Ask the prisoner to check with their wing officer to see if your money has reached their account.' %}
+            {% trans 'Remember, a payment can take up to 5 days.' %}
+          </p>
+        </dd>
+
+        <dt>
+          <a href="#qna-7">
+            {% trans 'Does a prisoner know who sent the money?' %}
+          </a>
+        </dt>
+        <dd id="qna-7">
+          <p>
+            {% trans 'A prisoner will see the name of who sent the money on their account slip, but not all prisons give these out.' %}
+            {% trans 'They could also ask a wing officer for the sender’s name, but the prisoner has no access to a sender’s personal or banking details.' %}
+          </p>
+        </dd>
+
+        <dt>
+          <a href="#qna-8">
+            {% trans 'I’m worried about a prisoner' %}
+          </a>
+        </dt>
+        <dd id="qna-8">
+          <p>
+            {% trans 'Contact the prison and they will put you through to an orderly officer or to the Safer Custody team where you can leave a message.' %}
+            {% blocktrans trimmed with link='https://www.gov.uk/find-prisoner' %}
+              You can <a href="{{ link }}">find a prisoner</a> if unsure what prison they’re in.
+            {% endblocktrans %}
+          </p>
+        </dd>
+
+        <dt>
+          <a href="#qna-9">
+            {% trans 'You don’t ask which prison it is' %}
+          </a>
+        </dt>
+        <dd id="qna-9">
+          <p>
+            {% trans 'You don’t need the name of the prison to use this service.' %}
+          </p>
+        </dd>
+
+      </dl>
+
+      <p>
+        {% trans 'If you haven’t found the answer:' %}
+      </p>
+      <p>
+        <a href="{% url 'help_area:submit_ticket' %}" class="button">
+          {% trans 'Contact us' %}
+        </a>
+      </p>
+
+    </div>
+  </div>
+
+{% endblock %}

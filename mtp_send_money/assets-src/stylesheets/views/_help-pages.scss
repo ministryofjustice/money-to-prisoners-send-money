@@ -1,10 +1,20 @@
+// help area question lists
+
+.mtp-question-list {
+  margin-bottom: $gutter;
+
+  dt {
+    @extend .heading-medium;
+
+    a:visited {
+      color: $link-colour;
+    }
+  }
+}
+
 // contact us page
 
-.mtp-contact-columns {
-  #mtp-feedback-form {
-    margin-right: 5em;
-  }
-
+#mtp-feedback-form {
   #id_ticket_content-label, #id_contact_email-label {
     @extend .heading-medium;
     margin-bottom: 0 !important;
@@ -17,44 +27,6 @@
   #id_ticket_content {
     width: 100%;
     resize: vertical;
-  }
-
-  aside {
-    h2 {
-      display: none;
-    }
-
-    p {
-      margin-top: 0;
-    }
-
-    li {
-      margin-bottom: 0.4em;
-    }
-  }
-
-  @include media($min-width: $tablet-breakpoint,  $max-width: $desktop-breakpoint) {
-    #mtp-feedback-form {
-      margin-right: 1em;
-    }
-  }
-
-  @include media(mobile) {
-    #mtp-feedback-form {
-      margin-right: 0;
-    }
-
-    aside {
-      margin-top: 2em;
-
-      h2 {
-        display: block;
-      }
-
-      p {
-        display: none;
-      }
-    }
   }
 }
 

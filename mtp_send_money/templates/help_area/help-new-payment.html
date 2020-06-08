@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% load mtp_common %}
+
+{% block page_title %}{% trans 'Help with making a payment' %} – {{ block.super }}{% endblock %}
+
+{% block inner_content %}
+  <div class="grid-row">
+    <div class="column-two-thirds">
+
+      <header>
+        <h1 class="heading-xlarge">
+          <span class="heading-secondary">
+            {% trans 'Help with' %}
+          </span>
+          {% trans 'Making a payment' %}
+        </h1>
+      </header>
+
+      <p class="lede">
+        {% trans 'Check if the answer is here before you contact us' %}
+      </p>
+
+      <dl class="mtp-question-list">
+
+        <dt>
+          <a href="#qna-1">
+            {% trans 'I want to know the prisoner number or date of birth' %}
+          </a>
+        </dt>
+        <dd id="qna-1">
+          <p>
+            {% trans 'By law we can’t give out confidential prisoner information.' %}
+            {% trans 'Ask the prisoner for these details.' %}
+          </p>
+        </dd>
+
+        <dt>
+          <a href="#qna-2">
+            {% trans 'I want to make a payment from abroad' %}
+          </a>
+        </dt>
+        <dd id="qna-2">
+          <p>
+            {% trans 'You can only make a payment from outside the UK using a debit card (Visa, Mastercard or Maestro).' %}
+            {% trans 'We don’t accept credit cards or prepaid debit cards.' %}
+          </p>
+        </dd>
+
+        <dt>
+          <a href="#qna-3">
+            {% trans 'I want to send money to a Scottish prison' %}
+          </a>
+        </dt>
+        <dd id="qna-3">
+          <p>
+            {% url 'help_area:prison_list' as link %}
+            {% blocktrans trimmed %}
+              Our service is only available in <a href="{{ link }}">prisons in England and Wales</a>.
+            {% endblocktrans %}
+            {% blocktrans trimmed with link='https://www.sps.gov.uk/Corporate/Prisons/Prisons.aspx' %}
+              Contact the <a href="{{ link }}">Scottish prison</a> to find out how to send money to them.
+            {% endblocktrans %}
+          </p>
+        </dd>
+
+      </dl>
+
+      <p>
+        {% trans 'If you haven’t found the answer:' %}
+      </p>
+      <p>
+        <a href="{% url 'help_area:submit_ticket' %}" class="button">
+          {% trans 'Contact us' %}
+        </a>
+      </p>
+
+    </div>
+  </div>
+
+{% endblock %}

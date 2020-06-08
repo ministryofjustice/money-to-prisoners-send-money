@@ -79,7 +79,7 @@
           </li>
         </ol>
         <p>
-          {% url 'help_area:help_bank_transfer' as help_url %}
+          {% url 'help_area:help-sent-payment' as help_url %}
           {% url 'help_area:submit_ticket' as ticket_url %}
           {% blocktrans trimmed %}
             <a href="{{ help_url }}">Find further help</a> on how to use the service or <a href="{{ ticket_url }}">contact us</a>.

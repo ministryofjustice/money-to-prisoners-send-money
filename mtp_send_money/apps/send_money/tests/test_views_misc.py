@@ -129,8 +129,8 @@ class PlainViewTestCase(BaseTestCase):
             'results': [{'nomis_id': 'AAA', 'short_name': 'Prison', 'name': 'HMP Prison'}],
         }
         view_names = [
-            'help_area:help', 'help_area:prison_list',
-            'help_area:help_bank_transfer', 'help_area:help_delays', 'help_area:help_transfered',
+            'help_area:help', 'help_area:help-new-payment', 'help_area:help-sent-payment',
+            'help_area:prison_list',
             'terms', 'privacy',
             'js-i18n',
             'sitemap_xml',

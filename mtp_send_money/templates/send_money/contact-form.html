@@ -17,7 +17,7 @@
 
 {% block get_help_form %}
 
-  <div class="grid-row mtp-contact-columns">
+  <div class="grid-row">
     <div class="column-two-thirds">
       <form action="." method="post" id="mtp-feedback-form">
         {% include 'mtp_common/forms/error-summary.html' with form=form only %}
@@ -51,32 +51,6 @@
         </fieldset>
       </form>
     </div>
-
-    <aside class="column-one-third">
-      <h2 class="heading-medium">
-        {% trans 'Find help if you’ve already sent money but the:' %}
-      </h2>
-      <p>
-        {% trans 'Find help if you’ve already sent money but the:' %}
-      </p>
-      <ul class="list list-bullet">
-        <li>
-          <a href="{% url 'help_area:help_delays' %}">
-            {% trans 'Payment has taken longer than expected' %}
-          </a>
-        </li>
-        <li>
-          <a href="{% url 'help_area:help_transfered' %}">
-            {% trans 'Prisoner has been moved or released' %}
-          </a>
-        </li>
-        <li>
-          <a href="{% url 'help_area:help_bank_transfer' %}">
-            {% trans 'Bank transfer was returned or didn’t reach the prisoner' %}
-          </a>
-        </li>
-      </ul>
-    </aside>
   </div>
 
 {% endblock %}

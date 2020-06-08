@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% load mtp_common %}
+
+{% block page_title %}{% trans 'What do you need help with?' %} – {{ block.super }}{% endblock %}
+
+{% block inner_content %}
+  <div class="grid-row">
+    <div class="column-two-thirds">
+
+      <header>
+        <h1 class="heading-xlarge">
+          <span class="heading-secondary">
+            {% trans 'Help' %}
+          </span>
+          {% trans 'What do you need help with?' %}
+        </h1>
+      </header>
+
+      <ul>
+        <li>
+          <a href="{% url 'help_area:help-new-payment' %}">
+            {% trans 'Making a payment' %}
+          </a>
+        </li>
+        <li>
+          <a href="{% url 'help_area:help-sent-payment' %}">
+            {% trans 'A payment I’ve already made' %}
+          </a>
+        </li>
+        <li>
+          <a href="{% url 'help_area:submit_ticket' %}">
+            {% trans 'Using the service' %}
+          </a>
+        </li>
+      </ul>
+
+    </div>
+  </div>
+
+{% endblock %}

@@ -71,8 +71,9 @@ class SitemapXMLView(TemplateView):
     def make_links(self):
         url_names = [
             'send_money:choose_method',
-            'help_area:help', 'help_area:faq', 'help_area:prison_list',
-            'help_area:help_bank_transfer', 'help_area:help_delays', 'help_area:help_transfered',
+            'help_area:help', 'help_area:help-new-payment', 'help_area:help-sent-payment',
+            'help_area:prison_list',
+            'help_area:faq',
             'terms', 'privacy', 'cookies',
         ]
         links = {}
