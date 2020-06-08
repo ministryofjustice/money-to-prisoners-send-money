@@ -19,7 +19,7 @@ def cacheable_template(template):
 urlpatterns = i18n_patterns(
     url(r'^', include('send_money.urls', namespace='send_money')),
 
-    url(r'^', include('feedback.urls')),
+    url(r'^', include('help_area.urls')),
 
     url(r'^terms/$', cacheable_template('terms.html'), name='terms'),
     url(r'^privacy/$', cacheable_template('privacy.html'), name='privacy'),

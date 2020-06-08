@@ -12,7 +12,7 @@ def _send_notification_email(email, template_name, subject, tags, context):
     context.update({
         'site_url': settings.START_PAGE_URL,
         'feedback_url': site_url(reverse('submit_ticket')),
-        'help_url': site_url(reverse('send_money:help')),
+        'help_url': site_url(reverse('help')),
     })
     send_email(
         email,

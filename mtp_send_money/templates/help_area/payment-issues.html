@@ -25,19 +25,19 @@
       </p>
       <ul class="list list-bullet">
         <li>
-          {% url 'send_money:help_bank_transfer' as help_page_url %}
+          {% url 'help_bank_transfer' as help_page_url %}
           {% blocktrans trimmed %}
             why a <a href="{{ help_page_url }}">bank transfer didn’t reach the prisoner</a> or was returned
           {% endblocktrans %}
         </li>
         <li>
-          {% url 'send_money:help_delays' as help_page_url %}
+          {% url 'help_delays' as help_page_url %}
           {% blocktrans trimmed %}
             why a <a href="{{ help_page_url }}">payment has taken longer</a>
           {% endblocktrans %}
         </li>
         <li>
-          {% url 'send_money:help_transfered' as help_page_url %}
+          {% url 'help_transfered' as help_page_url %}
           {% blocktrans trimmed %}
             what happens to money sent when a <a href="{{ help_page_url }}">prisoner has been moved or released</a>
           {% endblocktrans %}
