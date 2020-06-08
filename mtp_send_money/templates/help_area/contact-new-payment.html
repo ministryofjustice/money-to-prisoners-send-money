@@ -34,8 +34,8 @@
           </div>
 
           {% block extra_ticket_fields %}
-            {% include 'mtp_common/forms/field.html' with field=form.prisoner_number only %}
-            {% include 'mtp_common/forms/field.html' with field=form.prisoner_dob only %}
+            {% include 'send_money/includes/prisoner-details-number.html' with field=form.prisoner_number only %}
+            {% include 'send_money/includes/prisoner-details-dob.html' with field=form.prisoner_dob only %}
 
             {% include 'mtp_common/forms/field.html' with field=form.contact_name only %}
             {% include 'mtp_common/forms/field.html' with field=form.contact_email value=request.GET.email|default:'' only %}

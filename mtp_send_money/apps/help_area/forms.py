@@ -3,6 +3,7 @@ import decimal
 from django import forms
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
+from mtp_common.forms.fields import SplitDateField
 from zendesk_tickets.forms import EmailTicketForm
 
 from send_money.utils import RejectCardNumberValidator, validate_prisoner_number
@@ -44,10 +45,9 @@ class ContactNewPaymentForm(ContactForm):
         max_length=7,
         validators=[validate_prisoner_number],
     )
-    prisoner_dob = forms.CharField(
+    prisoner_dob = SplitDateField(
         label=_('Prisoner date of birth'),
-        help_text=_('For example, 28/04/1996'),
-        validators=[RejectCardNumberValidator()],
+        help_text=_('For example, 28 04 1996'),
     )
     contact_name = forms.CharField(
         label=_('Your name'),
@@ -82,8 +82,7 @@ class ContactSentPaymentForm(ContactNewPaymentForm):
             'max_decimal_places': _('Only use 2 decimal places'),
         }
     )
-    payment_date = forms.CharField(
+    payment_date = SplitDateField(
         label=_('Date of payment'),
-        help_text=_('For example, 28/04/2020'),
-        validators=[RejectCardNumberValidator()],
+        help_text=_('For example, 8 6 2020'),
     )
