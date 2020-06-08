@@ -1,4 +1,0 @@
-{{ ticket_content|safe }}
-
-{% if prisoner_number %}Prisoner number: {{ prisoner_number|safe }}{% endif %}
-{% if prisoner_dob %}Prisoner date of birth: {{ prisoner_dob|safe }}{% endif %}

@@ -1,0 +1,23 @@
+{% extends 'help_area/contact-new-payment.html' %}
+{% load i18n %}
+{% load mtp_common %}
+
+{% block get_help_heading %}
+  <header>
+    <h1 class="heading-xlarge">
+      <span class="heading-secondary">
+        {% trans 'Help with' %}
+      </span>
+      {% trans 'A payment I’ve already made' %}
+    </h1>
+  </header>
+{% endblock %}
+
+{% block get_help_leading %}{% endblock %}
+
+{% block extra_ticket_fields %}
+  {{ block.super }}
+
+  {% include 'mtp_common/forms/field.html' with field=form.amount only %}
+  {% include 'mtp_common/forms/field.html' with field=form.payment_date only %}
+{% endblock %}

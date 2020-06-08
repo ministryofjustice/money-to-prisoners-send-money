@@ -100,15 +100,6 @@
 // contact us page
 
 #mtp-feedback-form {
-  #id_ticket_content-label, #id_contact_email-label {
-    @extend .heading-medium;
-    margin-bottom: 0 !important;
-  }
-
-  #id_ticket_content-label {
-    margin-top: 0;
-  }
-
   #id_ticket_content {
     width: 100%;
     resize: vertical;

@@ -1,0 +1,13 @@
+Help with a payment I’ve already made
+=====================================
+
+{{ ticket_content|safe }}
+
+---
+
+Query from: {{ contact_name|safe }} <{{ contact_email|safe }}>
+Prisoner number: {{ prisoner_number|safe }}
+Prisoner date of birth: {{ prisoner_dob|safe }}
+Payment method: {{ payment_method_name|safe }}
+Payment date: {{ payment_date|safe }}
+Payment amount: {{ amount|safe }}

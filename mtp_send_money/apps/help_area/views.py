@@ -9,27 +9,44 @@ from mtp_common.views import GetHelpView as BaseGetHelpView, GetHelpSuccessView 
 from oauthlib.oauth2 import OAuth2Error
 from requests import RequestException
 
-from help_area.forms import ContactForm
+from help_area.forms import ContactForm, ContactNewPaymentForm, ContactSentPaymentForm
 from send_money.utils import CacheableTemplateView, get_api_session
 
 logger = logging.getLogger('mtp')
 
 
-class GetHelpView(BaseGetHelpView):
+class ContactView(BaseGetHelpView):
     form_class = ContactForm
     success_url = reverse_lazy('help_area:feedback_success')
-    template_name = 'send_money/contact-form.html'
+    template_name = 'help_area/contact.html'
     ticket_subject = 'MTP for Family Services - Send money to someone in prison'
     ticket_tags = ['feedback', 'mtp', 'send-money', settings.ENVIRONMENT]
-    ticket_template_name = 'send_money/contact-form-ticket.txt'
+    ticket_template_name = 'help_area/contact-ticket.txt'
 
     def get_context_data(self, **kwargs):
-        kwargs['get_help_title'] = _('Contact us')
-        return super().get_context_data(**kwargs)
+        context_data = super().get_context_data(**kwargs)
+        context_data['get_help_title'] = _('Contact us')
+        if not context_data.get('breadcrumbs_back'):
+            context_data['breadcrumbs_back'] = reverse('help_area:help')
+        return context_data
 
 
-class GetHelpSuccessView(BaseGetHelpSuccessView):
-    template_name = 'send_money/contact-form-success.html'
+class ContactNewPaymentView(ContactView):
+    form_class = ContactNewPaymentForm
+    template_name = 'help_area/contact-new-payment.html'
+    ticket_tags = ContactView.ticket_tags + ['new-payment']
+    ticket_template_name = 'help_area/contact-new-payment-ticket.txt'
+
+
+class ContactSentPaymentView(ContactView):
+    form_class = ContactSentPaymentForm
+    template_name = 'help_area/contact-sent-payment.html'
+    ticket_tags = ContactView.ticket_tags + ['sent-payment']
+    ticket_template_name = 'help_area/contact-sent-payment-ticket.txt'
+
+
+class ContactSuccessView(BaseGetHelpSuccessView):
+    template_name = 'help_area/contact-success.html'
 
     def get_context_data(self, **kwargs):
         kwargs['get_help_title'] = _('Contact us')

@@ -6,9 +6,9 @@
   <header>
     <h1 class="heading-xlarge">
       <span class="heading-secondary">
-        {% trans 'Help' %}
+        {% trans 'Help with' %}
       </span>
-      {% trans 'Contact us' %}
+      {% trans 'Making a payment' %}
     </h1>
   </header>
 {% endblock %}
@@ -19,6 +19,10 @@
 
   <div class="grid-row">
     <div class="column-two-thirds">
+      <p class="lede">
+        {% trans 'Give exact details so we can get back to you as soon as possible.' %}
+      </p>
+
       <form action="." method="post" id="mtp-feedback-form">
         {% include 'mtp_common/forms/error-summary.html' with form=form only %}
 
@@ -29,19 +33,28 @@
             {% include 'mtp_common/forms/field.html' with field=form.subject only %}
           </div>
 
+          {% block extra_ticket_fields %}
+            {% include 'mtp_common/forms/field.html' with field=form.prisoner_number only %}
+            {% include 'mtp_common/forms/field.html' with field=form.prisoner_dob only %}
+
+            {% include 'mtp_common/forms/field.html' with field=form.contact_name only %}
+            {% include 'mtp_common/forms/field.html' with field=form.contact_email value=request.GET.email|default:'' only %}
+
+            <fieldset class="inline">
+              <legend>
+                {{ form.payment_method.label }}
+              </legend>
+              {% include 'mtp_common/forms/radio-field.html' with field=form.payment_method only %}
+            </fieldset>
+          {% endblock %}
+
           {% with field=form.ticket_content value=request.GET.message|default:'' %}
             <div class="form-group {% if field.errors %}form-group-error{% endif %}">
               {% include 'mtp_common/forms/field-label.html' with field=field only %}
               {% include 'mtp_common/forms/field-errors.html' with field=field only %}
-              <textarea class="form-control {% if field.errors %}form-control-error{% endif %}" id="{{ field.id_for_label }}" name="{{ field.html_name }}" cols="40" rows="10">{{ field.value|default:value }}</textarea>
+              <textarea class="form-control {% if field.errors %}form-control-error{% endif %}" id="{{ field.id_for_label }}" name="{{ field.html_name }}" cols="40" rows="6">{{ field.value|default:value }}</textarea>
             </div>
           {% endwith %}
-
-          <h2 class="heading-medium">{% trans 'If you’re having difficulties using the service, please send:' %}</h2>
-          {% include 'mtp_common/forms/field.html' with field=form.prisoner_number only %}
-          {% include 'mtp_common/forms/field.html' with field=form.prisoner_dob only %}
-
-          {% include 'mtp_common/forms/field.html' with field=form.contact_email value=request.GET.email|default:'' only %}
 
           <div class="form-group">
             {% csrf_token %}
