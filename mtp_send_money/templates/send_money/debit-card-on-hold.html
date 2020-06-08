@@ -43,9 +43,9 @@
       <p>{% trans 'To maintain a high level of prison safety we do regular security checks.' %}</p>
       <p>{% trans 'We’ll email you a payment update as soon as we can and are sorry for any inconvenience this may cause.' %}</p>
       <p>
-        {% url 'help_area:submit_ticket' as ticket_url %}
+        {% url 'help_area:contact-us-sent-payment' as link %}
         {% blocktrans trimmed %}
-          If you’re worried about a prisoner, <a href="{{ ticket_url }}">email us</a> and we can inform the prison.
+          If you’re worried about a prisoner, <a href="{{ link }}">contact us</a> and we can inform the prison.
         {% endblocktrans %}
       </p>
     </div>
