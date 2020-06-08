@@ -6,14 +6,13 @@ from django.shortcuts import render
 from django.urls import reverse, reverse_lazy
 from django.utils.http import is_safe_url
 from django.utils.translation import gettext_lazy as _
-from django.views.generic import TemplateView
 from mtp_common.api import retrieve_all_pages_for_path
 from mtp_common.views import GetHelpView as BaseGetHelpView, GetHelpSuccessView as BaseGetHelpSuccessView
 from oauthlib.oauth2 import OAuth2Error
 from requests import RequestException
 
 from help_area.forms import ContactForm
-from send_money.utils import get_api_session, make_response_cacheable
+from send_money.utils import CacheableTemplateView, get_api_session, make_response_cacheable
 
 logger = logging.getLogger('mtp')
 
@@ -57,7 +56,7 @@ def help_view(request, page='payment-issues'):
     return make_response_cacheable(response)
 
 
-class PrisonListView(TemplateView):
+class PrisonListView(CacheableTemplateView):
     """
     List the prisons that MTP supports
     """
@@ -96,7 +95,3 @@ class PrisonListView(TemplateView):
             ]),
         })
         return context_data
-
-    def get(self, request, *args, **kwargs):
-        response = super().get(request, *args, **kwargs)
-        return make_response_cacheable(response)

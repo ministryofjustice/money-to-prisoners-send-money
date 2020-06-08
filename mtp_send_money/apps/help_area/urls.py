@@ -1,7 +1,7 @@
 from django.conf.urls import url
-from django.views.generic import TemplateView
 
 from help_area import views
+from send_money.utils import CacheableTemplateView
 
 app_name = 'help_area'
 urlpatterns = [
@@ -14,7 +14,7 @@ urlpatterns = [
         name='help_transfered'),
     url(r'^help/prisons/$', views.PrisonListView.as_view(), name='prison_list'),
 
-    url(r'^help/faq/$', TemplateView.as_view(template_name='help_area/faq.html'), name='faq'),
+    url(r'^help/faq/$', CacheableTemplateView.as_view(template_name='help_area/faq.html'), name='faq'),
 
     url(r'^contact-us/$', views.GetHelpView.as_view(), name='submit_ticket'),
     url(r'^contact-us/success/$', views.GetHelpSuccessView.as_view(), name='feedback_success'),

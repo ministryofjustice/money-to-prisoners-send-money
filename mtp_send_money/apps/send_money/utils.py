@@ -12,6 +12,7 @@ from django.utils.dateformat import format as format_date
 from django.utils.dateparse import parse_date
 from django.utils.encoding import force_text
 from django.utils.translation import gettext_lazy as _
+from django.views.generic import TemplateView
 from mtp_common.auth import api_client, urljoin
 import requests
 from requests.exceptions import Timeout
@@ -184,3 +185,13 @@ def make_response_cacheable(response):
     """
     patch_cache_control(response, public=True, max_age=3600)
     return response
+
+
+class CacheableTemplateView(TemplateView):
+    """
+    For simple pages whose content rarely changes so can be cached for an hour
+    """
+
+    def get(self, request, *args, **kwargs):
+        response = super().get(request, *args, **kwargs)
+        return make_response_cacheable(response)
