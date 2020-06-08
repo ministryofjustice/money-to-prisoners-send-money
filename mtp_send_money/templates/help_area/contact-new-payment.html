@@ -59,7 +59,7 @@
           <div class="form-group">
             {% csrf_token %}
             {{ form.referer }}
-            <button type="submit" class="button" name="submit-feedback">{% trans 'Send' %}</button>
+            <button type="submit" class="button mtp-prevent-double-submit" name="submit-feedback">{% trans 'Send' %}</button>
           </div>
         </fieldset>
       </form>
