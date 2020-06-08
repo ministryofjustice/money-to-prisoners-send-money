@@ -19,7 +19,7 @@ logger = logging.getLogger('mtp')
 
 class GetHelpView(BaseGetHelpView):
     form_class = ContactForm
-    success_url = reverse_lazy('feedback_success')
+    success_url = reverse_lazy('help_area:feedback_success')
     template_name = 'send_money/contact-form.html'
     ticket_subject = 'MTP for Family Services - Send money to someone in prison'
     ticket_tags = ['feedback', 'mtp', 'send-money', settings.ENVIRONMENT]
@@ -75,7 +75,7 @@ def prison_list_view(request):
         except (RequestException, OAuth2Error, ValueError):
             logger.exception('Could not look up prison list')
     response = render(request, 'help_area/prison-list.html', context={
-        'breadcrumbs_back': reverse('help'),
+        'breadcrumbs_back': reverse('help_area:help'),
         'prison_list': prison_list,
         'stop_words': sorted([
             # NB: these are output into a regular expression so must have special characters escaped

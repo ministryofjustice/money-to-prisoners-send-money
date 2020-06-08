@@ -73,7 +73,7 @@
         {% trans 'The prison will send you a refund by cheque.' %}
       </p>
       <p>
-        {% url 'submit_ticket' as feedback_url %}
+        {% url 'help_area:submit_ticket' as feedback_url %}
         {% blocktrans trimmed %}
           If this doesn’t help, please <a href="{{ feedback_url }}">contact us</a>.
         {% endblocktrans %}

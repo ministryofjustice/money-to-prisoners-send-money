@@ -1,3 +1,5 @@
+import warnings
+
 from django import forms
 from django.conf import settings
 from django.http import HttpResponse
@@ -5,7 +7,7 @@ from django.shortcuts import redirect
 from django.urls import reverse, reverse_lazy
 from django.utils.http import is_safe_url
 from django.utils.translation import gettext_lazy as _, override as override_language
-from django.views.generic import FormView, TemplateView
+from django.views.generic import FormView, RedirectView, TemplateView
 from mtp_common.analytics import AnalyticsPolicy
 
 from send_money.utils import make_response_cacheable
@@ -69,8 +71,8 @@ class SitemapXMLView(TemplateView):
     def make_links(self):
         url_names = [
             'send_money:choose_method',
-            'help', 'faq', 'prison_list',
-            'help_bank_transfer', 'help_delays', 'help_transfered',
+            'help_area:help', 'help_area:faq', 'help_area:prison_list',
+            'help_area:help_bank_transfer', 'help_area:help_delays', 'help_area:help_transfered',
             'terms', 'privacy', 'cookies',
         ]
         links = {}
@@ -101,3 +103,12 @@ class SitemapXMLView(TemplateView):
     def get(self, request, *args, **kwargs):
         response = super().get(request, *args, **kwargs)
         return make_response_cacheable(response)
+
+
+class LegacyFeedbackView(RedirectView):
+    url = reverse_lazy('help_area:submit_ticket')
+    permanent = True
+
+    def dispatch(self, request, *args, **kwargs):
+        warnings.warn('`submit_ticket` view has been renamed')
+        return super().dispatch(request, *args, **kwargs)

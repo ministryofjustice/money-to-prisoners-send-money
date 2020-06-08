@@ -33,7 +33,7 @@
         </li>
       </ul>
       <p>
-        {% url 'submit_ticket' as feedback_url %}
+        {% url 'help_area:submit_ticket' as feedback_url %}
         {% blocktrans trimmed %}
           If this doesn’t help, please <a href="{{ feedback_url }}">contact us</a>.
         {% endblocktrans %}

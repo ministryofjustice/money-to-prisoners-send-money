@@ -11,8 +11,8 @@ from send_money.utils import site_url
 def _send_notification_email(email, template_name, subject, tags, context):
     context.update({
         'site_url': settings.START_PAGE_URL,
-        'feedback_url': site_url(reverse('submit_ticket')),
-        'help_url': site_url(reverse('help')),
+        'feedback_url': site_url(reverse('help_area:submit_ticket')),
+        'help_url': site_url(reverse('help_area:help')),
     })
     send_email(
         email,
@@ -71,7 +71,7 @@ def send_email_for_card_payment_accepted(email, payment):
 
 def send_email_for_card_payment_rejected(email, payment):
     context = _get_email_context_for_payment(payment)
-    context['compliance_contact'] = settings.COMPLIANCE_CONTACT_EMAIL or site_url(reverse('submit_ticket'))
+    context['compliance_contact'] = settings.COMPLIANCE_CONTACT_EMAIL or site_url(reverse('help_area:submit_ticket'))
 
     _send_notification_email(
         email,

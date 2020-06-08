@@ -1,9 +1,9 @@
 from django.conf.urls import url
-from django.urls import reverse_lazy
-from django.views.generic import RedirectView, TemplateView
+from django.views.generic import TemplateView
 
 from help_area import views
 
+app_name = 'help_area'
 urlpatterns = [
     url(r'^help/$', views.help_view, name='help'),
     url(r'^help/bank-transfer-issues/$', views.help_view, kwargs={'page': 'bank-transfer-issues'},
@@ -16,7 +16,6 @@ urlpatterns = [
 
     url(r'^help/faq/$', TemplateView.as_view(template_name='help_area/faq.html'), name='faq'),
 
-    url(r'^feedback/$', RedirectView.as_view(url=reverse_lazy('submit_ticket'))),
     url(r'^contact-us/$', views.GetHelpView.as_view(), name='submit_ticket'),
     url(r'^contact-us/success/$', views.GetHelpSuccessView.as_view(), name='feedback_success'),
 ]

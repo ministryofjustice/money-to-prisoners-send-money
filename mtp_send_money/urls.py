@@ -9,7 +9,7 @@ from moj_irat.views import HealthcheckView, PingJsonView
 from mtp_common.metrics.views import metrics_view
 
 from send_money.utils import make_response_cacheable
-from send_money.views_misc import CookiesView, SitemapXMLView, robots_txt_view
+from send_money.views_misc import CookiesView, LegacyFeedbackView, SitemapXMLView, robots_txt_view
 
 
 def cacheable_template(template):
@@ -19,7 +19,9 @@ def cacheable_template(template):
 urlpatterns = i18n_patterns(
     url(r'^', include('send_money.urls', namespace='send_money')),
 
-    url(r'^', include('help_area.urls')),
+    url(r'^', include('help_area.urls', namespace='help_area')),
+    # this is needed to warn about references to the legacy url path and name:
+    url(r'^feedback/$', LegacyFeedbackView.as_view(), name='submit_ticket'),
 
     url(r'^terms/$', cacheable_template('terms.html'), name='terms'),
     url(r'^privacy/$', cacheable_template('privacy.html'), name='privacy'),

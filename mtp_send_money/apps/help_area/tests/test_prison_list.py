@@ -29,7 +29,7 @@ class PrisonList(BaseTestCase):
                     ],
                 },
             )
-            response = self.client.get(reverse('prison_list'))
+            response = self.client.get(reverse('help_area:prison_list'))
             self.assertIn('exclude_empty_prisons=True', rsps.calls[-1].request.url)
         self.assertContains(response, 'Prison 1')
         response = response.content.decode(response.charset)

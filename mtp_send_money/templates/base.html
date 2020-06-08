@@ -65,7 +65,7 @@
         This “{{ name }}” website is for testing only.
       {% endblocktrans %}
     {% endif %}
-    {% url 'submit_ticket' as ticket_url %}
+    {% url 'help_area:submit_ticket' as ticket_url %}
     {% blocktrans trimmed %}
       <a href="{{ ticket_url }}">Contact us</a> if you need help or would like to give us some feedback.
     {% endblocktrans %}
@@ -78,7 +78,7 @@
     <li><a href="{% url 'terms' %}">{% trans 'Terms and conditions' %}</a></li>
     <li><a href="{% url 'privacy' %}">{% trans 'Privacy policy' %}</a></li>
     <li><a href="{% url 'cookies' %}">{% trans 'Cookies' %}</a></li>
-    <li><a href="{% url 'submit_ticket' %}">{% trans 'Feedback' %}</a></li>
+    <li><a href="{% url 'help_area:submit_ticket' %}">{% trans 'Feedback' %}</a></li>
     <li>
       {% trans 'Built by' %}
       <a href="https://mojdigital.blog.gov.uk/">

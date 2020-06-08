@@ -68,7 +68,7 @@ class PerformanceCookiesTestCase(BaseTestCase):
 
     @override_settings(GOOGLE_ANALYTICS_ID='ABC123')
     def test_cookie_prompt_safely_redirects_back(self):
-        for safe_page in ['send_money:choose_method', 'help']:
+        for safe_page in ['send_money:choose_method', 'help_area:help']:
             response = self.client.post(reverse('cookies'), data={
                 'accept_cookies': 'yes',
                 'next': reverse(safe_page),
@@ -129,8 +129,8 @@ class PlainViewTestCase(BaseTestCase):
             'results': [{'nomis_id': 'AAA', 'short_name': 'Prison', 'name': 'HMP Prison'}],
         }
         view_names = [
-            'help', 'prison_list',
-            'help_bank_transfer', 'help_delays', 'help_transfered',
+            'help_area:help', 'help_area:prison_list',
+            'help_area:help_bank_transfer', 'help_area:help_delays', 'help_area:help_transfered',
             'terms', 'privacy',
             'js-i18n',
             'sitemap_xml',
@@ -144,7 +144,7 @@ class PlainViewTestCase(BaseTestCase):
 
     def test_feedback_views_are_uncacheable(self):
         view_names = [
-            'submit_ticket', 'feedback_success',
+            'help_area:submit_ticket', 'help_area:feedback_success',
             'healthcheck_json', 'ping_json',
         ]
         with responses.RequestsMock() as rsps:
