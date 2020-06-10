@@ -19,13 +19,14 @@ class ContactView(BaseGetHelpView):
     form_class = ContactForm
     success_url = reverse_lazy('help_area:feedback_success')
     template_name = 'help_area/contact.html'
+    page_title = _('Help with something else')
     ticket_subject = 'MTP for Family Services - Send money to someone in prison'
     ticket_tags = ['feedback', 'mtp', 'send-money', settings.ENVIRONMENT]
     ticket_template_name = 'help_area/contact-ticket.txt'
 
     def get_context_data(self, **kwargs):
         context_data = super().get_context_data(**kwargs)
-        context_data['get_help_title'] = _('Contact us')
+        context_data['get_help_title'] = self.page_title
         if not context_data.get('breadcrumbs_back'):
             context_data['breadcrumbs_back'] = reverse('help_area:help')
         return context_data
@@ -34,6 +35,7 @@ class ContactView(BaseGetHelpView):
 class ContactNewPaymentView(ContactView):
     form_class = ContactNewPaymentForm
     template_name = 'help_area/contact-new-payment.html'
+    page_title = _('Help with making a payment')
     ticket_tags = ContactView.ticket_tags + ['new-payment']
     ticket_template_name = 'help_area/contact-new-payment-ticket.txt'
 
@@ -41,6 +43,7 @@ class ContactNewPaymentView(ContactView):
 class ContactSentPaymentView(ContactView):
     form_class = ContactSentPaymentForm
     template_name = 'help_area/contact-sent-payment.html'
+    page_title = _('Help with a payment I’ve already made')
     ticket_tags = ContactView.ticket_tags + ['sent-payment']
     ticket_template_name = 'help_area/contact-sent-payment-ticket.txt'
 

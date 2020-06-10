@@ -68,15 +68,21 @@
         <dd id="answer-4" class="mtp-answer" aria-labelledby="question-4">
           <ol class="list list-number">
             <li>
-              {% trans 'If you paid by bank transfer, you may have made a mistake with the prisoner reference.' %}
-              {% blocktrans trimmed with code='MTP NOMS' %}
-                If you did, you will get an automatic refund about 4 days later into your bank account (shown as ‘{{ code }}’).
-              {% endblocktrans %}
-              {% trans 'Check the refund is there, then use the service again, checking the details as you type.' %}
+              <p>
+                {% trans 'If you paid by bank transfer, you may have made a mistake with the prisoner reference.' %}
+                {% blocktrans trimmed with code='MTP NOMS' %}
+                  If you did, you will get an automatic refund about 4 days later into your bank account (shown as ‘{{ code }}’).
+                {% endblocktrans %}
+                {% trans 'Check the refund is there, then use the service again, checking the details as you type.' %}
+              </p>
             </li>
             <li>
-              {% trans 'The prisoner will not get your money if you paid by bank transfer from abroad, by CHAPS or in a UK bank branch.' %}
-              {% trans 'To get a refund, write to the ‘finance department’ at the prison, including:' %}
+              <p>
+                {% trans 'The prisoner will not get your money if you paid by bank transfer from abroad, by CHAPS or in a UK bank branch.' %}
+              </p>
+              <p>
+                {% trans 'To get a refund, write to the ‘finance department’ at the prison, including:' %}
+              </p>
               <ul class="list list-bullet">
                 <li>
                   {% trans 'the prisoner’s name, prisoner number and date of birth' %}

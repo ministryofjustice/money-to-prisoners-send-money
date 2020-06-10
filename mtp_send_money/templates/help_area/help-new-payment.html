@@ -51,7 +51,7 @@
 
         <dt class="mtp-question">
           <a href="#answer-3" id="question-3">
-            {% trans 'I want to send money to a Scottish prison' %}
+            {% trans 'I want to send money to a prison in Scotland or Northern Ireland' %}
             <span class="mtp-question-icon"></span>
           </a>
         </dt>
@@ -61,8 +61,8 @@
             {% blocktrans trimmed %}
               Our service is only available in <a href="{{ link }}">prisons in England and Wales</a>.
             {% endblocktrans %}
-            {% blocktrans trimmed with link='https://www.sps.gov.uk/Corporate/Prisons/Prisons.aspx' %}
-              Contact the <a href="{{ link }}">Scottish prison</a> to find out how to send money to them.
+            {% blocktrans trimmed with scottish_link='https://www.sps.gov.uk/Corporate/Prisons/Prisons.aspx' northern_irish_link='https://www.justice-ni.gov.uk/topics/prisons/prison-estate' %}
+              Contact the <a href="{{ scottish_link }}">Scottish</a> or <a href="{{ northern_irish_link }}">Northern Irish</a> prison directly to find out how to send money to them.
             {% endblocktrans %}
           </p>
         </dd>
