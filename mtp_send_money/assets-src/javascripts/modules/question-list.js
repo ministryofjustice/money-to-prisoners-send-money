@@ -35,20 +35,33 @@ exports.QuestionList = {
 
     // make it easy to see all answers
     $('.mtp-question-list').each(function () {
-      var $questions = $(this);
+      var $questionList = $(this);
+      var $questions = $questionList.find('.mtp-question');
       var $button = $('<a class="mtp-question-list__open-all" href="#"></a>');
       $button.text(django.gettext('Open all'));
+      $button.attr('aria-expanded', 'false');
       $button.click(function (e) {
         e.preventDefault();
-        $questions.find('.mtp-question').each(function () {
+        var allOpen = $questions.filter('.mtp-question--open').length === $questions.length;
+        $questions.each(function () {
           var $question = $(this);
           var open = $question.hasClass('mtp-question--open');
-          if (!open) {
+          if (allOpen || !open) {
             $question.find('a').click();
           }
         });
       });
-      $questions.before($button);
+      $questionList.before($button);
+      $questions.find('a').click(function () {
+        var allOpen = $questions.filter('.mtp-question--open').length === $questions.length;
+        if (allOpen) {
+          $button.text(django.gettext('Close all'));
+          $button.attr('aria-expanded', 'true');
+        } else {
+          $button.text(django.gettext('Open all'));
+          $button.attr('aria-expanded', 'false');
+        }
+      });
     });
 
     // allow linking directly to a question
@@ -63,7 +76,7 @@ exports.QuestionList = {
         $button = $('#' + $anchor.attr('aria-labelledby'));
       }
       if ($button) {
-        $('html, body').scrollTop($button.offset().top - 10);
+        $('html, body').scrollTop($button.offset().top - 15);
         $button.click();
       }
     } catch (e) {
