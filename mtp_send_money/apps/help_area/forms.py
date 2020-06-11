@@ -2,6 +2,7 @@ import decimal
 
 from django import forms
 from django.core.exceptions import ValidationError
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from mtp_common.forms.fields import SplitDateField
 from zendesk_tickets.forms import EmailTicketForm
@@ -86,3 +87,11 @@ class ContactSentPaymentForm(ContactNewPaymentForm):
         label=_('Date of payment'),
         help_text=_('For example, 8 6 2020'),
     )
+
+    def clean_payment_date(self):
+        payment_date = self.cleaned_data.get('payment_date')
+        if payment_date:
+            today = timezone.now().date()
+            if payment_date > today:
+                self.add_error('payment_date', _('Date can’t be in the future'))
+        return payment_date
