@@ -5,7 +5,8 @@ Help with making a payment
 
 ---
 
-Query from: {{ contact_name|safe }} <{{ contact_email|safe }}>
+Sender name: {{ contact_name|safe }}
+Sender email: {{ contact_email|safe }}
 Prisoner number: {{ prisoner_number|safe }}
-Prisoner date of birth: {{ prisoner_dob|safe }}
+Prisoner date of birth: {{ prisoner_dob|date:'SHORT_DATE_FORMAT'|safe }}
 Payment method: {{ payment_method_name|safe }}
