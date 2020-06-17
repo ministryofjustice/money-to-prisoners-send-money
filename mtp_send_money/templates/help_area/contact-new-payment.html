@@ -19,9 +19,12 @@
 
   <div class="grid-row">
     <div class="column-two-thirds">
-      <p class="lede">
-        {% trans 'Give exact details so we can get back to you as soon as possible.' %}
-      </p>
+      {% block contact_us_lede %}
+        <p class="lede">
+          {% trans 'Contact us about a payment you are finding it difficult to make.' %}
+          {% trans 'Give exact details so we can get back to you as soon as possible.' %}
+        </p>
+      {% endblock %}
 
       <form action="." method="post" id="mtp-feedback-form">
         {% include 'mtp_common/forms/error-summary.html' with form=form only %}
