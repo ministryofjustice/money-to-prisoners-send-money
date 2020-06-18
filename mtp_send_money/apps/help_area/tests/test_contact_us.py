@@ -1,3 +1,4 @@
+import datetime
 from unittest import mock
 
 from django.conf import settings
@@ -80,6 +81,17 @@ class ContactUsTestCase(BaseTestCase):
                     response = self.client.post(url, data=data)
                 self.assertContains(response, 'required',
                                     msg_prefix=f'{name} contact form should require {field}')
+
+    def test_future_payment_date_in_sent_payment_ticket(self):
+        url = self.contact_us_sent_payment_url
+        data = dict(self.sent_payment_sample_submission)
+        data['payment_date_0'] = '18'
+        data['payment_date_1'] = '6'
+        data['payment_date_2'] = '2020'
+        with responses.RequestsMock(), mock.patch('help_area.forms.timezone') as timezone:
+            timezone.now().date.return_value = datetime.date(2020, 6, 17)
+            response = self.client.post(url, data=data)
+        self.assertContains(response, 'Date can’t be in the future')
 
     @mock.patch('zendesk_tickets.client.create_ticket')
     def test_fields_in_new_payment_ticket(self, mocked_create_ticket):
