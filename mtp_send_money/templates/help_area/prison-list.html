@@ -30,7 +30,14 @@
           </ul>
         </div>
       {% else %}
-        <p><strong>{% trans 'This service is currently unavailable' %}</strong></p>
+        <h2 class="heading-medium">
+          {% trans 'Sorry, we can’t list the prisons right now' %}
+        </h2>
+        <p>
+          {% blocktrans trimmed with link='https://www.gov.uk/government/collections/prisons-in-england-and-wales' %}
+            You can see the full list of <a href="{{ link }}">prisons in England and Wales on GOV.UK</a>.
+          {% endblocktrans %}
+        </p>
       {% endif %}
     </div>
   </div>
