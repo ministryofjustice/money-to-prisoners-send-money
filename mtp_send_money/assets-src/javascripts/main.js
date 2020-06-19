@@ -12,4 +12,6 @@
   require('charges').Charges.init();
   require('reference').Reference.init();
   require('filtered-list').FilteredList.init();
+  require('question-list').QuestionList.init();
+  require('prevent-double-submit').PreventDoubleSubmit.init();
 }());

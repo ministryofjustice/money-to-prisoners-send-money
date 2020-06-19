@@ -10,8 +10,7 @@ from django.utils.translation import override as override_lang
 from mtp_common.analytics import AnalyticsPolicy
 import responses
 
-from send_money.tests import BaseTestCase, mock_auth, patch_notifications, patch_gov_uk_pay_availability_check
-from send_money.utils import api_url
+from send_money.tests import BaseTestCase, patch_notifications, patch_gov_uk_pay_availability_check
 
 
 @patch_notifications()
@@ -69,7 +68,7 @@ class PerformanceCookiesTestCase(BaseTestCase):
 
     @override_settings(GOOGLE_ANALYTICS_ID='ABC123')
     def test_cookie_prompt_safely_redirects_back(self):
-        for safe_page in ['send_money:choose_method', 'send_money:help']:
+        for safe_page in ['send_money:choose_method', 'help_area:help']:
             response = self.client.post(reverse('cookies'), data={
                 'accept_cookies': 'yes',
                 'next': reverse(safe_page),
@@ -122,48 +121,16 @@ class SitemapTestCase(BaseTestCase):
                 self.assertFalse(link_elements)
 
 
-class PrisonList(BaseTestCase):
-    def test_prison_list(self):
-        with responses.RequestsMock() as rsps, \
-                self.settings(CACHES={'default': {'BACKEND': 'django.core.cache.backends.dummy.DummyCache'}}):
-            mock_auth(rsps)
-            rsps.add(
-                rsps.GET,
-                api_url('/prisons/'),
-                json={
-                    'count': 2,
-                    'results': [
-                        {
-                            'nomis_id': 'BBB',
-                            'short_name': 'Prison 1',
-                            'name': 'YOI Prison 1',
-                        },
-                        {
-                            'nomis_id': 'AAA',
-                            'short_name': 'Prison 2',
-                            'name': 'HMP Prison 2',
-                        },
-                    ],
-                },
-            )
-            response = self.client.get(reverse('send_money:prison_list'))
-            self.assertIn('exclude_empty_prisons=True', rsps.calls[-1].request.url)
-        self.assertContains(response, 'Prison 1')
-        response = response.content.decode(response.charset)
-        self.assertIn('Prison 2', response)
-        self.assertLess(response.index('Prison 1'), response.index('Prison 2'))
-
-
 class PlainViewTestCase(BaseTestCase):
-    @mock.patch('send_money.views_misc.get_api_session')
+    @mock.patch('help_area.views.get_api_session')
     def test_plain_views_are_cacheable(self, mocked_api_session):
         mocked_api_session().get().json.return_value = {
             'count': 1,
             'results': [{'nomis_id': 'AAA', 'short_name': 'Prison', 'name': 'HMP Prison'}],
         }
         view_names = [
-            'send_money:help', 'send_money:prison_list',
-            'send_money:help_bank_transfer', 'send_money:help_delays', 'send_money:help_transfered',
+            'help_area:help', 'help_area:help-new-payment', 'help_area:help-sent-payment',
+            'help_area:prison_list',
             'terms', 'privacy',
             'js-i18n',
             'sitemap_xml',
@@ -177,7 +144,7 @@ class PlainViewTestCase(BaseTestCase):
 
     def test_feedback_views_are_uncacheable(self):
         view_names = [
-            'submit_ticket', 'feedback_success',
+            'help_area:submit_ticket', 'help_area:feedback_success',
             'healthcheck_json', 'ping_json',
         ]
         with responses.RequestsMock() as rsps:
