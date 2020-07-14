@@ -27,7 +27,7 @@ class FormTestCase(unittest.TestCase):
         def make_method(input_data):
             def test(self):
                 with patch_gov_uk_pay_availability_check():
-                    form = self.form_class(data=input_data)
+                    form = self.form_class(**input_data)
                     self.assertFormValid(form)
 
             return test
@@ -37,16 +37,27 @@ class FormTestCase(unittest.TestCase):
 
     @classmethod
     def make_invalid_tests(cls, data_sets):
-        def make_method(input_data):
+        def make_method(input_data, key_error):
             def test(self):
-                with patch_gov_uk_pay_availability_check():
-                    form = self.form_class(data=input_data)
-                    self.assertFormInvalid(form)
+                if key_error:
+                    with self.assertRaises(KeyError):
+                        form = self.form_class(**input_data)
+                else:
+                    with patch_gov_uk_pay_availability_check():
+                        form = self.form_class(**input_data)
+                        self.assertFormInvalid(form)
 
             return test
 
         for data_set in data_sets:
-            setattr(cls, 'test_invalid__%s' % data_set['name'], make_method(data_set['input_data']))
+            setattr(
+                cls,
+                'test_invalid__%s' % data_set['name'],
+                make_method(
+                    data_set['input_data'],
+                    key_error=data_set.get('key_error', False)
+                )
+            )
 
     def assertFormValid(self, form):  # noqa: N802
         is_valid = form.is_valid()
@@ -65,7 +76,9 @@ PaymentMethodChoiceFormTestCase.make_valid_tests(
     {
         'name': method_choice.name,
         'input_data': {
-            'payment_method': method_choice.name
+            'data': {
+                'payment_method': method_choice.name
+            }
         }
     }
     for method_choice in PaymentMethod
@@ -78,7 +91,9 @@ PaymentMethodChoiceFormTestCase.make_invalid_tests([
     {
         'name': 'empty_input_data',
         'input_data': {
-            'payment_method': ''
+            'data': {
+                'payment_method': ''
+            }
         }
     },
 ])
@@ -86,7 +101,9 @@ PaymentMethodChoiceFormTestCase.make_invalid_tests(
     {
         'name': 'random_data_%s' % i,
         'input_data': {
-            'payment_method': get_random_string(length=8)
+            'data': {
+                'payment_method': get_random_string(length=8)
+            }
         }
     }
     for i in range(3)
@@ -243,29 +260,34 @@ BankTransferPrisonerDetailsFormTestCase.make_valid_tests([
     {
         'name': 'normal',
         'input_data': {
-            'prisoner_number': 'A1234AB',
-            'prisoner_dob_0': '5',
-            'prisoner_dob_1': '10',
-            'prisoner_dob_2': '1980',
+            'data': {
+                'prisoner_number': 'A1234AB',
+                'prisoner_dob_0': '5',
+                'prisoner_dob_1': '10',
+                'prisoner_dob_2': '1980',
+            }
         }
     },
     {
         'name': 'lowercase',
         'input_data': {
-            'prisoner_number': 'a1234ab',
-            'prisoner_dob_0': '5',
-            'prisoner_dob_1': '10',
-            'prisoner_dob_2': '1980',
+            'data': {
+                'prisoner_number': 'a1234ab',
+                'prisoner_dob_0': '5',
+                'prisoner_dob_1': '10',
+                'prisoner_dob_2': '1980',
+            }
         }
     },
     {
         'name': 'short_year',
         'input_data': {
-            'prisoner_number': 'A1234AB',
-            'prisoner_dob_0': '5',
-            'prisoner_dob_1': '10',
-            'prisoner_dob_2': '80',
-
+            'data': {
+                'prisoner_number': 'A1234AB',
+                'prisoner_dob_0': '5',
+                'prisoner_dob_1': '10',
+                'prisoner_dob_2': '80',
+            }
         }
     },
 ])
@@ -275,75 +297,95 @@ BankTransferPrisonerDetailsFormTestCase.make_invalid_tests([
         'input_data': {}
     },
     {
+        'name': 'empty_data',
+        'input_data': {'data': {}}
+    },
+    {
         'name': 'missing_prisoner_number',
         'input_data': {
-            'prisoner_number': '',
-            'prisoner_dob_0': '5',
-            'prisoner_dob_1': '10',
-            'prisoner_dob_2': '1980',
+            'data': {
+                'prisoner_number': '',
+                'prisoner_dob_0': '5',
+                'prisoner_dob_1': '10',
+                'prisoner_dob_2': '1980',
+            }
         }
     },
     {
         'name': 'prisoner_number',
         'input_data': {
-            'prisoner_number': 'A12346',
-            'prisoner_dob_0': '5',
-            'prisoner_dob_1': '10',
-            'prisoner_dob_2': '1980',
+            'data': {
+                'prisoner_number': 'A12346',
+                'prisoner_dob_0': '5',
+                'prisoner_dob_1': '10',
+                'prisoner_dob_2': '1980',
+            }
         }
     },
     {
         'name': 'missing_prisoner_dob',
         'input_data': {
-            'prisoner_number': 'A1234AB',
-            'prisoner_dob_0': '',
-            'prisoner_dob_1': '',
-            'prisoner_dob_2': '',
+            'data': {
+                'prisoner_number': 'A1234AB',
+                'prisoner_dob_0': '',
+                'prisoner_dob_1': '',
+                'prisoner_dob_2': '',
+            }
         }
     },
     {
         'name': 'missing_prisoner_dob_day',
         'input_data': {
-            'prisoner_number': 'A1234AB',
-            'prisoner_dob_0': '',
-            'prisoner_dob_1': '10',
-            'prisoner_dob_2': '1980',
+            'data': {
+                'prisoner_number': 'A1234AB',
+                'prisoner_dob_0': '',
+                'prisoner_dob_1': '10',
+                'prisoner_dob_2': '1980',
+            }
         },
     },
     {
         'name': 'missing_prisoner_dob_month',
         'input_data': {
-            'prisoner_number': 'A1234AB',
-            'prisoner_dob_0': '5',
-            'prisoner_dob_1': '',
-            'prisoner_dob_2': '1980',
+            'data': {
+                'prisoner_number': 'A1234AB',
+                'prisoner_dob_0': '5',
+                'prisoner_dob_1': '',
+                'prisoner_dob_2': '1980',
+            }
         },
     },
     {
         'name': 'missing_prisoner_dob_year',
         'input_data': {
-            'prisoner_number': 'A1234AB',
-            'prisoner_dob_0': '5',
-            'prisoner_dob_1': '10',
-            'prisoner_dob_2': '',
+            'data': {
+                'prisoner_number': 'A1234AB',
+                'prisoner_dob_0': '5',
+                'prisoner_dob_1': '10',
+                'prisoner_dob_2': '',
+            }
         },
     },
     {
         'name': 'dob_format',
         'input_data': {
-            'prisoner_number': 'A1234AB',
-            'prisoner_dob_0': '5',
-            'prisoner_dob_1': 'Oct',
-            'prisoner_dob_2': '1980',
+            'data': {
+                'prisoner_number': 'A1234AB',
+                'prisoner_dob_0': '5',
+                'prisoner_dob_1': 'Oct',
+                'prisoner_dob_2': '1980',
+            }
         }
     },
     {
         'name': 'invalid_dob',
         'input_data': {
-            'prisoner_number': 'A1234AB',
-            'prisoner_dob_0': '31',
-            'prisoner_dob_1': '2',
-            'prisoner_dob_2': '1980',
+            'data': {
+                'prisoner_number': 'A1234AB',
+                'prisoner_dob_0': '31',
+                'prisoner_dob_1': '2',
+                'prisoner_dob_2': '1980',
+            }
         }
     },
 ])
@@ -357,43 +399,49 @@ DebitCardPrisonerDetailsFormTestCase.make_valid_tests([
     {
         'name': 'normal',
         'input_data': {
-            'prisoner_name': 'John Smith',
-            'prisoner_number': 'A1234AB',
-            'prisoner_dob_0': '5',
-            'prisoner_dob_1': '10',
-            'prisoner_dob_2': '1980',
+            'data': {
+                'prisoner_name': 'John Smith',
+                'prisoner_number': 'A1234AB',
+                'prisoner_dob_0': '5',
+                'prisoner_dob_1': '10',
+                'prisoner_dob_2': '1980',
+            }
         }
     },
     {
         'name': 'lowercase',
         'input_data': {
-            'prisoner_name': 'John Smith',
-            'prisoner_number': 'a1234ab',
-            'prisoner_dob_0': '5',
-            'prisoner_dob_1': '10',
-            'prisoner_dob_2': '1980',
+            'data': {
+                'prisoner_name': 'John Smith',
+                'prisoner_number': 'a1234ab',
+                'prisoner_dob_0': '5',
+                'prisoner_dob_1': '10',
+                'prisoner_dob_2': '1980',
+            }
         }
     },
     {
         'name': 'short_year',
         'input_data': {
-            'prisoner_name': 'John Smith',
-            'prisoner_number': 'A1234AB',
-            'prisoner_dob_0': '5',
-            'prisoner_dob_1': '10',
-            'prisoner_dob_2': '80',
-
+            'data': {
+                'prisoner_name': 'John Smith',
+                'prisoner_number': 'A1234AB',
+                'prisoner_dob_0': '5',
+                'prisoner_dob_1': '10',
+                'prisoner_dob_2': '80',
+            }
         }
     },
     {
         'name': 'another',
         'input_data': {
-            'prisoner_name': 'random name',
-            'prisoner_number': 'A1234AB',
-            'prisoner_dob_0': '5',
-            'prisoner_dob_1': '10',
-            'prisoner_dob_2': '1980',
-
+            'data': {
+                'prisoner_name': 'random name',
+                'prisoner_number': 'A1234AB',
+                'prisoner_dob_0': '5',
+                'prisoner_dob_1': '10',
+                'prisoner_dob_2': '1980',
+            }
         }
     },
 ])
@@ -403,112 +451,138 @@ DebitCardPrisonerDetailsFormTestCase.make_invalid_tests([
         'input_data': {}
     },
     {
+        'name': 'empty_data',
+        'input_data': {'data': {}}
+    },
+    {
         'name': 'missing_name',
         'input_data': {
-            'prisoner_number': 'A1234AB',
-            'prisoner_dob_0': '5',
-            'prisoner_dob_1': '10',
-            'prisoner_dob_2': '1980',
+            'data': {
+                'prisoner_number': 'A1234AB',
+                'prisoner_dob_0': '5',
+                'prisoner_dob_1': '10',
+                'prisoner_dob_2': '1980',
+            }
         }
     },
     {
         'name': 'empty_name',
         'input_data': {
-            'prisoner_name': '',
-            'prisoner_number': 'A1234AB',
-            'prisoner_dob_0': '5',
-            'prisoner_dob_1': '10',
-            'prisoner_dob_2': '1980',
+            'data': {
+                'prisoner_name': '',
+                'prisoner_number': 'A1234AB',
+                'prisoner_dob_0': '5',
+                'prisoner_dob_1': '10',
+                'prisoner_dob_2': '1980',
+            }
         }
     },
     {
         'name': 'card_number',
         'input_data': {
-            'prisoner_name': '4444333322221111',
-            'prisoner_number': 'A1234AB',
-            'prisoner_dob_0': '5',
-            'prisoner_dob_1': '10',
-            'prisoner_dob_2': '1980',
+            'data': {
+                'prisoner_name': '4444333322221111',
+                'prisoner_number': 'A1234AB',
+                'prisoner_dob_0': '5',
+                'prisoner_dob_1': '10',
+                'prisoner_dob_2': '1980',
+            }
         }
     },
     {
         'name': 'missing_prisoner_number',
         'input_data': {
-            'prisoner_name': 'John Smith',
-            'prisoner_number': '',
-            'prisoner_dob_0': '5',
-            'prisoner_dob_1': '10',
-            'prisoner_dob_2': '1980',
+            'data': {
+                'prisoner_name': 'John Smith',
+                'prisoner_number': '',
+                'prisoner_dob_0': '5',
+                'prisoner_dob_1': '10',
+                'prisoner_dob_2': '1980',
+            }
         }
     },
     {
         'name': 'prisoner_number',
         'input_data': {
-            'prisoner_name': 'John Smith',
-            'prisoner_number': 'A12346',
-            'prisoner_dob_0': '5',
-            'prisoner_dob_1': '10',
-            'prisoner_dob_2': '1980',
+            'data': {
+                'prisoner_name': 'John Smith',
+                'prisoner_number': 'A12346',
+                'prisoner_dob_0': '5',
+                'prisoner_dob_1': '10',
+                'prisoner_dob_2': '1980',
+            }
         }
     },
     {
         'name': 'missing_prisoner_dob',
         'input_data': {
-            'prisoner_name': 'John Smith',
-            'prisoner_number': 'A1234AB',
-            'prisoner_dob_0': '',
-            'prisoner_dob_1': '',
-            'prisoner_dob_2': '',
+            'data': {
+                'prisoner_name': 'John Smith',
+                'prisoner_number': 'A1234AB',
+                'prisoner_dob_0': '',
+                'prisoner_dob_1': '',
+                'prisoner_dob_2': '',
+            }
         }
     },
     {
         'name': 'missing_prisoner_dob_day',
         'input_data': {
-            'prisoner_name': 'John Smith',
-            'prisoner_number': 'A1234AB',
-            'prisoner_dob_0': '',
-            'prisoner_dob_1': '10',
-            'prisoner_dob_2': '1980',
+            'data': {
+                'prisoner_name': 'John Smith',
+                'prisoner_number': 'A1234AB',
+                'prisoner_dob_0': '',
+                'prisoner_dob_1': '10',
+                'prisoner_dob_2': '1980',
+            }
         },
     },
     {
         'name': 'missing_prisoner_dob_month',
         'input_data': {
-            'prisoner_name': 'John Smith',
-            'prisoner_number': 'A1234AB',
-            'prisoner_dob_0': '5',
-            'prisoner_dob_1': '',
-            'prisoner_dob_2': '1980',
+            'data': {
+                'prisoner_name': 'John Smith',
+                'prisoner_number': 'A1234AB',
+                'prisoner_dob_0': '5',
+                'prisoner_dob_1': '',
+                'prisoner_dob_2': '1980',
+            }
         },
     },
     {
         'name': 'missing_prisoner_dob_year',
         'input_data': {
-            'prisoner_name': 'John Smith',
-            'prisoner_number': 'A1234AB',
-            'prisoner_dob_0': '5',
-            'prisoner_dob_1': '10',
-            'prisoner_dob_2': '',
+            'data': {
+                'prisoner_name': 'John Smith',
+                'prisoner_number': 'A1234AB',
+                'prisoner_dob_0': '5',
+                'prisoner_dob_1': '10',
+                'prisoner_dob_2': '',
+            }
         },
     },
     {
         'name': 'dob_format',
         'input_data': {
-            'prisoner_name': 'John Smith',
-            'prisoner_number': 'A1234AB',
-            'prisoner_dob_0': '5',
-            'prisoner_dob_1': 'Oct',
-            'prisoner_dob_2': '1980',
+            'data': {
+                'prisoner_name': 'John Smith',
+                'prisoner_number': 'A1234AB',
+                'prisoner_dob_0': '5',
+                'prisoner_dob_1': 'Oct',
+                'prisoner_dob_2': '1980',
+            }
         }
     },
     {
         'name': 'invalid_dob',
         'input_data': {
-            'prisoner_name': 'John Smith',
-            'prisoner_number': 'A1234AB',
-            'prisoner_dob_0': '31',
-            'prisoner_dob_1': '2',
-            'prisoner_dob_2': '1980',
+            'data': {
+                'prisoner_name': 'John Smith',
+                'prisoner_number': 'A1234AB',
+                'prisoner_dob_0': '31',
+                'prisoner_dob_1': '2',
+                'prisoner_dob_2': '1980',
+            }
         }
     },
 ])
@@ -517,108 +591,199 @@ DebitCardPrisonerDetailsFormTestCase.make_invalid_tests([
 class DebitCardAmountFormTestCase(FormTestCase):
     form_class = DebitCardAmountForm
 
+    def assertFormValid(self, form):  # noqa: N802
+        with responses.RequestsMock() as rsps:
+            rsps.add(
+                rsps.GET,
+                api_url(f'/prisoner_account_balances/{form.prisoner_number}'),
+                json={
+                    'combined_account_balance': 3000
+                },
+                status=200,
+            )
+            self.assertTrue(form.is_valid(), msg='\n\n%s' % form.errors.as_text())
+
+    def assertFormInvalid(self, form):  # noqa: N802
+        with mock.patch('send_money.utils.api_client') as mocked_api_client:
+            is_valid = form.is_valid()
+        self.assertEqual(mocked_api_client.call_count, 0,
+                         'api_client called!')
+        self.assertEqual(mocked_api_client.authenticate.call_count, 0,
+                         'api_client.authenticate called!')
+        self.assertEqual(mocked_api_client.get_authenticated_connection.call_count, 0,
+                         'api_client.get_authenticated_connection called!')
+        self.assertFalse(is_valid)
+
 
 DebitCardAmountFormTestCase.make_valid_tests([
     {
         'name': 'amount_1',
         'input_data': {
-            'amount': '120.45',
+            'data': {
+                'amount': '120.45',
+            },
+            'prisoner_number': '24601'
         }
     },
     {
         'name': 'amount_2',
         'input_data': {
-            'amount': '120.00',
+            'data': {
+                'amount': '120.00',
+            },
+            'prisoner_number': '24601'
         }
     },
     {
         'name': 'amount_3',
         'input_data': {
-            'amount': '200.00',
+            'data': {
+                'amount': '200.00',
+            },
+            'prisoner_number': '24601'
         }
     },
     {
         'name': 'integer',
         'input_data': {
-            'amount': '10',
+            'data': {
+                'amount': '10',
+            },
+            'prisoner_number': '24601'
         }
     },
     {
         'name': 'pence_only_1',
         'input_data': {
-            'amount': '0.13',
+            'data': {
+                'amount': '0.13',
+            },
+            'prisoner_number': '24601'
         }
     },
     {
         'name': 'pence_only_2',
         'input_data': {
-            'amount': '.13',
+            'data': {
+                'amount': '.13',
+            },
+            'prisoner_number': '24601'
         }
     },
 ])
 DebitCardAmountFormTestCase.make_invalid_tests([
     {
         'name': 'no_data',
-        'input_data': {}
+        'input_data': {
+            'data': {}
+        },
+        'key_error': True
+    },
+    {
+        'name': 'no_amount',
+        'input_data': {
+            'data': {
+            },
+            'prisoner_number': '24601'
+        }
+    },
+    {
+        'name': 'no_prisoner_number',
+        'input_data': {
+            'data': {
+                'amount': '10.310',
+            },
+        },
+        'key_error': True
     },
     {
         'name': 'missing_amount',
         'input_data': {
-            'amount': '',
+            'data': {
+                'amount': '',
+            },
+            'prisoner_number': '24601'
         }
     },
     {
         'name': 'zero_amount_1',
         'input_data': {
-            'amount': '0',
+            'data': {
+                'amount': '0',
+            },
+            'prisoner_number': '24601'
         }
     },
     {
         'name': 'zero_amount_2',
         'input_data': {
-            'amount': '0.00',
+            'data': {
+                'amount': '0.00',
+            },
+            'prisoner_number': '24601'
         }
     },
     {
         'name': 'too_many_pence_digits',
         'input_data': {
-            'amount': '10.310',
+            'data': {
+                'amount': '10.310',
+            },
+            'prisoner_number': '24601'
         }
     },
     {
         'name': 'negative',
         'input_data': {
-            'amount': '-10',
+            'data': {
+                'amount': '-10',
+            },
+            'prisoner_number': '24601'
         }
     },
     {
         'name': 'negative_pence',
         'input_data': {
-            'amount': '-0.10',
+            'data': {
+                'amount': '-0.10',
+            },
+            'prisoner_number': '24601'
         }
     },
     {
         'name': 'too_much_1',
         'input_data': {
-            'amount': '200.01',
+            'data': {
+                'amount': '200.01',
+            },
+            'prisoner_number': '24601'
         }
     },
     {
         'name': 'too_much_2',
         'input_data': {
-            'amount': '1000',
+            'data': {
+                'amount': '1000',
+            },
+            'prisoner_number': '24601'
         }
     },
     {
         'name': 'pounds',
         'input_data': {
-            'amount': '£10.20',
+            'data': {
+                'amount': '£10.20',
+            },
+            'prisoner_number': '24601'
         }
     },
     {
         'name': 'pound_integer',
         'input_data': {
-            'amount': '£10',
+            'data': {
+                'amount': '£10',
+            },
+            'prisoner_number': '24601'
         }
     },
 ])

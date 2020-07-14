@@ -348,10 +348,16 @@ class DebitCardFlowTestCase(BaseTestCase):
         'prisoner_dob',
         'amount',
     ]
+    prisoner_number = 'A1231DE'
 
     @classmethod
     def patch_prisoner_details_check(cls):
         return mock.patch('send_money.forms.DebitCardPrisonerDetailsForm.is_prisoner_known',
+                          return_value=True)
+
+    @classmethod
+    def patch_prisoner_balance_check(cls):
+        return mock.patch('send_money.forms.DebitCardAmountForm.is_account_balance_below_threshold',
                           return_value=True)
 
     def choose_debit_card_payment_method(self):
@@ -363,13 +369,13 @@ class DebitCardFlowTestCase(BaseTestCase):
     def fill_in_prisoner_details(self, **kwargs):
         data = {
             'prisoner_name': 'John Smith',
-            'prisoner_number': 'A1231DE',
+            'prisoner_number': self.prisoner_number,
             'prisoner_dob_0': '4',
             'prisoner_dob_1': '10',
             'prisoner_dob_2': '1980',
         }
         data.update(kwargs)
-        with self.patch_prisoner_details_check():
+        with self.patch_prisoner_details_check(), self.patch_prisoner_balance_check():
             return self.client.post(DebitCardPrisonerDetailsTestCase.url, data=data, follow=True)
 
     def fill_in_amount(self, **kwargs):
@@ -377,7 +383,7 @@ class DebitCardFlowTestCase(BaseTestCase):
             'amount': '17'
         }
         data.update(kwargs)
-        with self.patch_prisoner_details_check():
+        with self.patch_prisoner_details_check(), self.patch_prisoner_balance_check():
             return self.client.post(DebitCardAmountTestCase.url, data=data, follow=True)
 
 
@@ -574,11 +580,111 @@ class DebitCardAmountTestCase(DebitCardFlowTestCase):
         self.choose_debit_card_payment_method()
         self.fill_in_prisoner_details()
 
-        with self.patch_prisoner_details_check():
+        with self.patch_prisoner_details_check(), self.patch_prisoner_balance_check():
             response = self.client.post(self.url, data={'amount': ''}, follow=True)
         self.assertOnPage(response, 'send_money_debit')
         form = response.context['form']
         self.assertTrue(form.errors)
+
+    @override_settings(
+        SERVICE_CHARGE_PERCENTAGE=Decimal('0'),
+        SERVICE_CHARGE_FIXED=Decimal('0'),
+        PRISONER_CAPPING_THRESHOLD_IN_POUNDS=Decimal('900')
+    )
+    def test_if_prisoner_cap_is_breached_error_displayed(self):
+        self.choose_debit_card_payment_method()
+        self.fill_in_prisoner_details()
+
+        with self.patch_prisoner_details_check(), responses.RequestsMock() as rsps:
+            # This mock_auth(rsps) call needs to remain, as there appears to be an
+            # issue where we need to call it in this test but not subsequent tests.
+            # This probably means there is something wrong with the test setup or reset
+            # to be investigated
+            mock_auth(rsps)
+            rsps.add(
+                rsps.GET,
+                api_url(f'/prisoner_account_balances/{self.prisoner_number}'),
+                json={
+                    'combined_account_balance': 80001
+                },
+                status=200,
+            )
+
+            response = self.client.post(self.url, data={'amount': '100'}, follow=True)
+            self.assertContains(response, 'It has reached its safe limit for now')
+            form = response.context['form']
+            self.assertTrue(form.errors)
+
+    @override_settings(
+        SERVICE_CHARGE_PERCENTAGE=Decimal('0'),
+        SERVICE_CHARGE_FIXED=Decimal('0'),
+        PRISONER_CAPPING_THRESHOLD_IN_POUNDS=Decimal('900')
+    )
+    def test_if_prisoner_cap_is_not_breached_when_prisoner_balance_will_be_900(self):
+        self.choose_debit_card_payment_method()
+        self.fill_in_prisoner_details()
+
+        with self.patch_prisoner_details_check(), responses.RequestsMock() as rsps:
+            # mock_auth(rsps)
+            rsps.add(
+                rsps.GET,
+                api_url(f'/prisoner_account_balances/{self.prisoner_number}'),
+                json={
+                    'combined_account_balance': 80000
+                },
+                status=200,
+            )
+
+            response = self.client.post(self.url, data={'amount': '100'}, follow=True)
+            self.assertOnPage(response, 'check_details')
+            self.assertEqual(self.client.session.get('amount'), '100.00')
+
+    @override_settings(
+        SERVICE_CHARGE_PERCENTAGE=Decimal('0'),
+        SERVICE_CHARGE_FIXED=Decimal('0'),
+        PRISONER_CAPPING_THRESHOLD_IN_POUNDS=Decimal('900')
+    )
+    def test_if_prisoner_cap_is_not_breached_when_prisoner_balance_will_be_899_99(self):
+        self.choose_debit_card_payment_method()
+        self.fill_in_prisoner_details()
+
+        with self.patch_prisoner_details_check(), responses.RequestsMock() as rsps:
+            rsps.add(
+                rsps.GET,
+                api_url(f'/prisoner_account_balances/{self.prisoner_number}'),
+                json={
+                    'combined_account_balance': 79999
+                },
+                status=200,
+            )
+
+            response = self.client.post(self.url, data={'amount': '100'}, follow=True)
+            self.assertOnPage(response, 'check_details')
+            self.assertEqual(self.client.session.get('amount'), '100.00')
+
+    @override_settings(
+        SERVICE_CHARGE_PERCENTAGE=Decimal('20'),
+        SERVICE_CHARGE_FIXED=Decimal('50'),
+        PRISONER_CAPPING_THRESHOLD_IN_POUNDS=Decimal('900')
+    )
+    def test_prisoner_cap_is_calculated_without_including_service_charge(self):
+        self.choose_debit_card_payment_method()
+        self.fill_in_prisoner_details()
+
+        with self.patch_prisoner_details_check(), responses.RequestsMock() as rsps:
+            # mock_auth(rsps)
+            rsps.add(
+                rsps.GET,
+                api_url(f'/prisoner_account_balances/{self.prisoner_number}'),
+                json={
+                    'combined_account_balance': 80000
+                },
+                status=200,
+            )
+
+            response = self.client.post(self.url, data={'amount': '100'}, follow=True)
+            self.assertOnPage(response, 'check_details')
+            self.assertEqual(self.client.session.get('amount'), '100.00')
 
     @override_settings(SERVICE_CHARGE_PERCENTAGE=Decimal('0'),
                        SERVICE_CHARGE_FIXED=Decimal('0'))
@@ -586,7 +692,7 @@ class DebitCardAmountTestCase(DebitCardFlowTestCase):
         self.choose_debit_card_payment_method()
         self.fill_in_prisoner_details()
 
-        with self.patch_prisoner_details_check():
+        with self.patch_prisoner_details_check(), self.patch_prisoner_balance_check():
             response = self.client.post(self.url, data={'amount': '50'}, follow=True)
             self.assertOnPage(response, 'check_details')
             self.assertEqual(self.client.session.get('amount'), '50.00')
@@ -675,7 +781,7 @@ class DebitCardPaymentTestCase(DebitCardFlowTestCase):
                 },
                 status=200,
             )
-            with self.patch_prisoner_details_check():
+            with self.patch_prisoner_details_check(), self.patch_prisoner_balance_check():
                 response = self.client.get(self.url, follow=False)
 
             # check amount and service charge submitted to api
@@ -736,7 +842,7 @@ class DebitCardPaymentTestCase(DebitCardFlowTestCase):
                 },
                 status=200,
             )
-            with self.patch_prisoner_details_check(), silence_logger(level=logging.WARNING):
+            with self.patch_prisoner_details_check(), self.patch_prisoner_balance_check(), silence_logger(level=logging.WARNING):  # noqa: E501
                 response = self.client.get(self.url, follow=False)
 
             # check delayed param in govuk pay call
@@ -760,7 +866,7 @@ class DebitCardPaymentTestCase(DebitCardFlowTestCase):
                 api_url('/payments/'),
                 status=500,
             )
-            with self.patch_prisoner_details_check(), silence_logger():
+            with self.patch_prisoner_details_check(), self.patch_prisoner_balance_check(), silence_logger():
                 response = self.client.get(self.url, follow=False)
             self.assertContains(response, 'We are experiencing technical problems')
 
@@ -782,7 +888,7 @@ class DebitCardPaymentTestCase(DebitCardFlowTestCase):
                 govuk_url('/payments/'),
                 status=500
             )
-            with self.patch_prisoner_details_check(), silence_logger():
+            with self.patch_prisoner_details_check(), self.patch_prisoner_balance_check(), silence_logger():
                 response = self.client.get(self.url, follow=False)
             self.assertContains(response, 'We are experiencing technical problems')
 
@@ -818,7 +924,7 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
         self.fill_in_prisoner_details()
         self.fill_in_amount()
 
-        with self.patch_prisoner_details_check():
+        with self.patch_prisoner_details_check(), self.patch_prisoner_balance_check():
             response = self.client.get(self.url, data={'payment_ref': ''}, follow=True)
         self.assertOnPage(response, 'choose_method')
 
@@ -832,7 +938,7 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
         self.fill_in_prisoner_details()
         self.fill_in_amount()
 
-        with self.patch_prisoner_details_check():
+        with self.patch_prisoner_details_check(), self.patch_prisoner_balance_check():
             self.client.get(self.url, data={'payment_ref': '../service-availability/'})
         mocked_api_session.get.assert_called_with('/payments/..%2Fservice-availability%2F/')
 
@@ -879,7 +985,7 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
                 },
                 status=200,
             )
-            with self.patch_prisoner_details_check():
+            with self.patch_prisoner_details_check(), self.patch_prisoner_balance_check():
                 response = self.client.get(
                     self.url,
                     {'payment_ref': self.ref},
@@ -949,7 +1055,7 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
                 govuk_url(f'/payments/{self.processor_id}/capture/'),
                 status=204,
             )
-            with self.patch_prisoner_details_check():
+            with self.patch_prisoner_details_check(), self.patch_prisoner_balance_check():
                 response = self.client.get(
                     self.url,
                     {'payment_ref': self.ref},
@@ -1012,7 +1118,7 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
                 },
                 status=200,
             )
-            with self.patch_prisoner_details_check():
+            with self.patch_prisoner_details_check(), self.patch_prisoner_balance_check():
                 response = self.client.get(
                     self.url,
                     {'payment_ref': self.ref},
@@ -1105,7 +1211,7 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
                 api_url(f'/payments/{self.ref}/'),
                 status=500,
             )
-            with self.patch_prisoner_details_check(), silence_logger():
+            with self.patch_prisoner_details_check(), self.patch_prisoner_balance_check(), silence_logger():
                 response = self.client.get(
                     self.url,
                     {'payment_ref': self.ref},
@@ -1136,7 +1242,7 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
                 govuk_url(f'/payments/{self.processor_id}/'),
                 status=500
             )
-            with self.patch_prisoner_details_check(), silence_logger():
+            with self.patch_prisoner_details_check(), self.patch_prisoner_balance_check(), silence_logger():
                 response = self.client.get(
                     self.url,
                     {'payment_ref': self.ref},
@@ -1167,7 +1273,7 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
                 govuk_url(f'/payments/{self.processor_id}/'),
                 status=404,
             )
-            with self.patch_prisoner_details_check(), silence_logger():
+            with self.patch_prisoner_details_check(), self.patch_prisoner_balance_check(), silence_logger():
                 response = self.client.get(
                     self.url,
                     {'payment_ref': self.ref},
@@ -1203,7 +1309,7 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
                 },
                 status=200
             )
-            with self.patch_prisoner_details_check(), silence_logger():
+            with self.patch_prisoner_details_check(), self.patch_prisoner_balance_check(), silence_logger():
                 response = self.client.get(
                     self.url,
                     {'payment_ref': self.ref},
@@ -1239,7 +1345,7 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
                 },
                 status=200
             )
-            with self.patch_prisoner_details_check(), silence_logger():
+            with self.patch_prisoner_details_check(), self.patch_prisoner_balance_check(), silence_logger():
                 response = self.client.get(
                     self.url,
                     {'payment_ref': self.ref},
@@ -1280,7 +1386,7 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
                 },
                 status=200,
             )
-            with self.patch_prisoner_details_check(), mock.patch('send_money.payments.logger') as logger:
+            with self.patch_prisoner_details_check(), self.patch_prisoner_balance_check(), mock.patch('send_money.payments.logger') as logger:  # noqa: E501
                 response = self.client.get(
                     self.url,
                     {'payment_ref': self.ref},
@@ -1323,7 +1429,7 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
                 },
                 status=200,
             )
-            with self.patch_prisoner_details_check(), silence_logger():
+            with self.patch_prisoner_details_check(), self.patch_prisoner_balance_check(), silence_logger():
                 response = self.client.get(
                     self.url,
                     {'payment_ref': self.ref},
@@ -1359,7 +1465,7 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
                 },
                 status=200,
             )
-            with self.patch_prisoner_details_check(), silence_logger():
+            with self.patch_prisoner_details_check(), self.patch_prisoner_balance_check(), silence_logger():
                 response = self.client.get(
                     self.url,
                     {'payment_ref': self.ref},
@@ -1396,7 +1502,7 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
                 },
                 status=200
             )
-            with self.patch_prisoner_details_check(), silence_logger():
+            with self.patch_prisoner_details_check(), self.patch_prisoner_balance_check(), silence_logger():
                 response = self.client.get(
                     self.url,
                     {'payment_ref': self.ref},
@@ -1433,7 +1539,7 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
                 },
                 status=200
             )
-            with self.patch_prisoner_details_check(), mock.patch('send_money.views.logger') as logger:
+            with self.patch_prisoner_details_check(), self.patch_prisoner_balance_check(), mock.patch('send_money.views.logger') as logger:  # noqa: E501
                 response = self.client.get(
                     self.url,
                     {'payment_ref': self.ref},
@@ -1473,7 +1579,7 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
                 },
                 status=200,
             )
-            with self.patch_prisoner_details_check(), mock.patch('send_money.views.logger') as logger:
+            with self.patch_prisoner_details_check(), self.patch_prisoner_balance_check(), mock.patch('send_money.views.logger') as logger:  # noqa: E501
                 response = self.client.get(
                     self.url,
                     {'payment_ref': self.ref},
@@ -1512,7 +1618,7 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
                 },
                 status=200,
             )
-            with self.patch_prisoner_details_check(), mock.patch('send_money.payments.logger') as logger:
+            with self.patch_prisoner_details_check(), self.patch_prisoner_balance_check(), mock.patch('send_money.payments.logger') as logger:  # noqa: E501
                 response = self.client.get(
                     self.url,
                     {'payment_ref': self.ref},
@@ -1545,7 +1651,7 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
                 },
                 status=200,
             )
-            with self.patch_prisoner_details_check(), silence_logger():
+            with self.patch_prisoner_details_check(), self.patch_prisoner_balance_check(), silence_logger():
                 response = self.client.get(
                     self.url,
                     {'payment_ref': self.ref},
@@ -1584,7 +1690,7 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
                 },
                 status=200,
             )
-            with self.patch_prisoner_details_check(), silence_logger():
+            with self.patch_prisoner_details_check(), self.patch_prisoner_balance_check(), silence_logger():
                 response = self.client.get(
                     self.url,
                     {'payment_ref': self.ref},
@@ -1620,7 +1726,7 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
                 },
                 status=200,
             )
-            with self.patch_prisoner_details_check(), silence_logger():
+            with self.patch_prisoner_details_check(), self.patch_prisoner_balance_check(), silence_logger():
                 response = self.client.get(
                     self.url,
                     {'payment_ref': self.ref},
@@ -1726,7 +1832,7 @@ class PaymentServiceUnavailableTestCase(DebitCardFlowTestCase):
                 },
                 status=200,
             )
-            with self.patch_prisoner_details_check():
+            with self.patch_prisoner_details_check(), self.patch_prisoner_balance_check():
                 response = self.client.get(
                     reverse('send_money:confirmation'),
                     {'payment_ref': payment_ref},
