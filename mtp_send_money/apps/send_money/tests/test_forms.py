@@ -596,9 +596,9 @@ class DebitCardAmountValidFormTestCase(FormTestCase):
     form_class = DebitCardAmountForm
 
     def assertFormValid(self, form):  # noqa: N802
-        with responses.RequestsMock() as rsps:
+        with mock.patch.object(self.form_class, 'get_api_session') as mock_session, responses.RequestsMock() as rsps:
+            mock_session.side_effect = lambda reconnect: get_api_session()
             mock_auth(rsps)
-            rsps.assert_all_requests_are_fired = False
             rsps.add(
                 rsps.GET,
                 api_url(f'/prisoner_account_balances/{form.prisoner_number}'),

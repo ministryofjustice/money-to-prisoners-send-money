@@ -592,7 +592,8 @@ class DebitCardAmountTestCase(DebitCardFlowTestCase):
         PRISONER_CAPPING_ENABLED=True,
         PRISONER_CAPPING_THRESHOLD_IN_POUNDS=Decimal('900')
     )
-    def test_if_prisoner_cap_is_breached_error_displayed(self):
+    @mock.patch('send_money.forms.DebitCardAmountForm.get_api_session', side_effect=lambda reconnect: get_api_session())
+    def test_if_prisoner_cap_is_breached_error_displayed(self, mocked_api_session):
         self.choose_debit_card_payment_method()
         self.fill_in_prisoner_details()
 
@@ -601,8 +602,11 @@ class DebitCardAmountTestCase(DebitCardFlowTestCase):
             # issue where we need to call it in this test but not subsequent tests.
             # This probably means there is something wrong with the test setup or reset
             # to be investigated
+            # The reason for this is due to the fact that `DebitCardAmountForm.get_api_session` binds
+            # the session state to the class, and implements logic to not fetch it if it is set (and reconnect isn't
+            # passed as an arg) This means that the auth call will only be made the first time
+            # `DebitCardAmountForm.get_api_session` is invoked after `DebitCardAmountForm` is imported
             mock_auth(rsps)
-            rsps.assert_all_requests_are_fired = False
             rsps.add(
                 rsps.GET,
                 api_url(f'/prisoner_account_balances/{self.prisoner_number}'),
@@ -623,12 +627,13 @@ class DebitCardAmountTestCase(DebitCardFlowTestCase):
         PRISONER_CAPPING_ENABLED=True,
         PRISONER_CAPPING_THRESHOLD_IN_POUNDS=Decimal('900')
     )
-    def test_if_prisoner_cap_is_not_breached_when_prisoner_balance_will_be_900(self):
+    @mock.patch('send_money.forms.DebitCardAmountForm.get_api_session', side_effect=lambda reconnect: get_api_session())
+    def test_if_prisoner_cap_is_not_breached_when_prisoner_balance_will_be_900(self, mocked_api_session):
         self.choose_debit_card_payment_method()
         self.fill_in_prisoner_details()
 
         with self.patch_prisoner_details_check(), responses.RequestsMock() as rsps:
-            # mock_auth(rsps)
+            mock_auth(rsps)
             rsps.add(
                 rsps.GET,
                 api_url(f'/prisoner_account_balances/{self.prisoner_number}'),
@@ -648,11 +653,13 @@ class DebitCardAmountTestCase(DebitCardFlowTestCase):
         PRISONER_CAPPING_ENABLED=True,
         PRISONER_CAPPING_THRESHOLD_IN_POUNDS=Decimal('900')
     )
-    def test_if_prisoner_cap_is_not_breached_when_prisoner_balance_will_be_899_99(self):
+    @mock.patch('send_money.forms.DebitCardAmountForm.get_api_session', side_effect=lambda reconnect: get_api_session())
+    def test_if_prisoner_cap_is_not_breached_when_prisoner_balance_will_be_899_99(self, mocked_api_session):
         self.choose_debit_card_payment_method()
         self.fill_in_prisoner_details()
 
         with self.patch_prisoner_details_check(), responses.RequestsMock() as rsps:
+            mock_auth(rsps)
             rsps.add(
                 rsps.GET,
                 api_url(f'/prisoner_account_balances/{self.prisoner_number}'),
@@ -672,12 +679,13 @@ class DebitCardAmountTestCase(DebitCardFlowTestCase):
         PRISONER_CAPPING_ENABLED=True,
         PRISONER_CAPPING_THRESHOLD_IN_POUNDS=Decimal('900')
     )
-    def test_prisoner_cap_is_calculated_without_including_service_charge(self):
+    @mock.patch('send_money.forms.DebitCardAmountForm.get_api_session', side_effect=lambda reconnect: get_api_session())
+    def test_prisoner_cap_is_calculated_without_including_service_charge(self, mocked_api_session):
         self.choose_debit_card_payment_method()
         self.fill_in_prisoner_details()
 
         with self.patch_prisoner_details_check(), responses.RequestsMock() as rsps:
-            # mock_auth(rsps)
+            mock_auth(rsps)
             rsps.add(
                 rsps.GET,
                 api_url(f'/prisoner_account_balances/{self.prisoner_number}'),
