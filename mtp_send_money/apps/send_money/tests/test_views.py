@@ -589,6 +589,7 @@ class DebitCardAmountTestCase(DebitCardFlowTestCase):
     @override_settings(
         SERVICE_CHARGE_PERCENTAGE=Decimal('0'),
         SERVICE_CHARGE_FIXED=Decimal('0'),
+        PRISONER_CAPPING_ENABLED=True,
         PRISONER_CAPPING_THRESHOLD_IN_POUNDS=Decimal('900')
     )
     def test_if_prisoner_cap_is_breached_error_displayed(self):
@@ -618,6 +619,7 @@ class DebitCardAmountTestCase(DebitCardFlowTestCase):
     @override_settings(
         SERVICE_CHARGE_PERCENTAGE=Decimal('0'),
         SERVICE_CHARGE_FIXED=Decimal('0'),
+        PRISONER_CAPPING_ENABLED=True,
         PRISONER_CAPPING_THRESHOLD_IN_POUNDS=Decimal('900')
     )
     def test_if_prisoner_cap_is_not_breached_when_prisoner_balance_will_be_900(self):
@@ -642,6 +644,7 @@ class DebitCardAmountTestCase(DebitCardFlowTestCase):
     @override_settings(
         SERVICE_CHARGE_PERCENTAGE=Decimal('0'),
         SERVICE_CHARGE_FIXED=Decimal('0'),
+        PRISONER_CAPPING_ENABLED=True,
         PRISONER_CAPPING_THRESHOLD_IN_POUNDS=Decimal('900')
     )
     def test_if_prisoner_cap_is_not_breached_when_prisoner_balance_will_be_899_99(self):
@@ -665,6 +668,7 @@ class DebitCardAmountTestCase(DebitCardFlowTestCase):
     @override_settings(
         SERVICE_CHARGE_PERCENTAGE=Decimal('20'),
         SERVICE_CHARGE_FIXED=Decimal('50'),
+        PRISONER_CAPPING_ENABLED=True,
         PRISONER_CAPPING_THRESHOLD_IN_POUNDS=Decimal('900')
     )
     def test_prisoner_cap_is_calculated_without_including_service_charge(self):
@@ -685,6 +689,20 @@ class DebitCardAmountTestCase(DebitCardFlowTestCase):
             response = self.client.post(self.url, data={'amount': '100'}, follow=True)
             self.assertOnPage(response, 'check_details')
             self.assertEqual(self.client.session.get('amount'), '100.00')
+
+    @override_settings(
+        PRISONER_CAPPING_ENABLED=False,
+        PRISONER_CAPPING_THRESHOLD_IN_POUNDS=Decimal('50')
+    )
+    def test_amount_form_works_when_prisoner_capping_disabled(self):
+        self.choose_debit_card_payment_method()
+        self.fill_in_prisoner_details()
+
+        with self.patch_prisoner_details_check():
+            response = self.client.post(self.url, data={'amount': '100'}, follow=True)
+            self.assertOnPage(response, 'check_details')
+            self.assertEqual(self.client.session.get('amount'), '100.00')
+
 
     @override_settings(SERVICE_CHARGE_PERCENTAGE=Decimal('0'),
                        SERVICE_CHARGE_FIXED=Decimal('0'))

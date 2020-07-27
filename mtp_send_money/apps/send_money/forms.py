@@ -245,6 +245,9 @@ class DebitCardAmountForm(SendMoneyForm):
         return self.cleaned_data
 
     def is_account_balance_below_threshold(self):
+        if not settings.PRISONER_CAPPING_ENABLED:
+            return True
+
         prisoner_account_balance_integer = self.lookup_prisoner_account_balance()['combined_account_balance']
 
         assert isinstance(prisoner_account_balance_integer, int), \
@@ -253,6 +256,7 @@ class DebitCardAmountForm(SendMoneyForm):
         prisoner_account_balance = decimal.Decimal(prisoner_account_balance_integer) / 100
         prisoner_account_balance += decimal.Decimal(self.data['amount'])
         return prisoner_account_balance <= settings.PRISONER_CAPPING_THRESHOLD_IN_POUNDS
+
 
     def lookup_prisoner_account_balance(self, tries=0):
         session = self.get_api_session(reconnect=(tries != 0))

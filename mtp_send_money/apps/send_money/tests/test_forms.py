@@ -4,6 +4,7 @@ import time
 import unittest
 from unittest import mock
 
+from django.test import override_settings
 from django.utils.crypto import get_random_string
 import responses
 
@@ -36,6 +37,9 @@ class FormTestCase(unittest.TestCase):
             setattr(cls, 'test_valid__%s' % data_set['name'], make_method(data_set['input_data']))
 
     @classmethod
+    @override_settings(
+        PRISONER_CAPPING_ENABLED=True
+    )
     def make_invalid_tests(cls, data_sets):
         def make_method(input_data, key_error):
             def test(self):
