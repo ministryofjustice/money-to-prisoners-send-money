@@ -1,9 +1,9 @@
 import logging
 import threading
 import time
-import unittest
 from unittest import mock
 
+from django.test.testcases import SimpleTestCase
 from django.test import override_settings
 from django.utils.crypto import get_random_string
 import responses
@@ -20,7 +20,7 @@ from send_money.utils import api_url, get_api_session
 logger = logging.getLogger('mtp')
 
 
-class FormTestCase(unittest.TestCase):
+class FormTestCase(SimpleTestCase):
     form_class = NotImplemented
 
     @classmethod
@@ -37,9 +37,6 @@ class FormTestCase(unittest.TestCase):
             setattr(cls, 'test_valid__%s' % data_set['name'], make_method(data_set['input_data']))
 
     @classmethod
-    @override_settings(
-        PRISONER_CAPPING_ENABLED=True
-    )
     def make_invalid_tests(cls, data_sets):
         def make_method(input_data, key_error):
             def test(self):
@@ -592,11 +589,16 @@ DebitCardPrisonerDetailsFormTestCase.make_invalid_tests([
 ])
 
 
-class DebitCardAmountFormTestCase(FormTestCase):
+@override_settings(
+    PRISONER_CAPPING_ENABLED=True
+)
+class DebitCardAmountValidFormTestCase(FormTestCase):
     form_class = DebitCardAmountForm
 
     def assertFormValid(self, form):  # noqa: N802
         with responses.RequestsMock() as rsps:
+            mock_auth(rsps)
+            rsps.assert_all_requests_are_fired = False
             rsps.add(
                 rsps.GET,
                 api_url(f'/prisoner_account_balances/{form.prisoner_number}'),
@@ -606,6 +608,10 @@ class DebitCardAmountFormTestCase(FormTestCase):
                 status=200,
             )
             self.assertTrue(form.is_valid(), msg='\n\n%s' % form.errors.as_text())
+
+
+class DebitCardAmountNotValidFormTestCase(FormTestCase):
+    form_class = DebitCardAmountForm
 
     def assertFormInvalid(self, form):  # noqa: N802
         with mock.patch('send_money.utils.api_client') as mocked_api_client:
@@ -619,7 +625,7 @@ class DebitCardAmountFormTestCase(FormTestCase):
         self.assertFalse(is_valid)
 
 
-DebitCardAmountFormTestCase.make_valid_tests([
+DebitCardAmountValidFormTestCase.make_valid_tests([
     {
         'name': 'amount_1',
         'input_data': {
@@ -675,7 +681,7 @@ DebitCardAmountFormTestCase.make_valid_tests([
         }
     },
 ])
-DebitCardAmountFormTestCase.make_invalid_tests([
+DebitCardAmountNotValidFormTestCase.make_invalid_tests([
     {
         'name': 'no_data',
         'input_data': {

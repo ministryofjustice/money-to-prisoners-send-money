@@ -257,7 +257,6 @@ class DebitCardAmountForm(SendMoneyForm):
         prisoner_account_balance += decimal.Decimal(self.data['amount'])
         return prisoner_account_balance <= settings.PRISONER_CAPPING_THRESHOLD_IN_POUNDS
 
-
     def lookup_prisoner_account_balance(self, tries=0):
         session = self.get_api_session(reconnect=(tries != 0))
         try:

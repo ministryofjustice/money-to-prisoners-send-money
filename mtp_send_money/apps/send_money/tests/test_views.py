@@ -602,6 +602,7 @@ class DebitCardAmountTestCase(DebitCardFlowTestCase):
             # This probably means there is something wrong with the test setup or reset
             # to be investigated
             mock_auth(rsps)
+            rsps.assert_all_requests_are_fired = False
             rsps.add(
                 rsps.GET,
                 api_url(f'/prisoner_account_balances/{self.prisoner_number}'),
@@ -702,7 +703,6 @@ class DebitCardAmountTestCase(DebitCardFlowTestCase):
             response = self.client.post(self.url, data={'amount': '100'}, follow=True)
             self.assertOnPage(response, 'check_details')
             self.assertEqual(self.client.session.get('amount'), '100.00')
-
 
     @override_settings(SERVICE_CHARGE_PERCENTAGE=Decimal('0'),
                        SERVICE_CHARGE_FIXED=Decimal('0'))

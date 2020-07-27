@@ -290,10 +290,14 @@ if MAILGUN_FROM_ADDRESS:
 
 CLOUD_PLATFORM_MIGRATION_MODE = os.environ.get('CLOUD_PLATFORM_MIGRATION_MODE', '')
 
-PRISONER_CAPPING_ENABLED = bool(int(os.environ.get(
-   'PRISONER_CAPPING_ENABLED',
-    '0'
-)))
+PRISONER_CAPPING_ENABLED = bool(
+    int(
+        os.environ.get(
+            'PRISONER_CAPPING_ENABLED',
+            '0'
+        )
+    )
+)
 
 PRISONER_CAPPING_THRESHOLD_IN_POUNDS = Decimal(
     os.environ.get('PRISONER_CAPPING_THRESHOLD_IN_POUNDS', '900')
