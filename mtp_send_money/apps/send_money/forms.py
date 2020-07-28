@@ -25,6 +25,7 @@ logger = logging.getLogger('mtp')
 
 
 class SendMoneyForm(GARequestErrorReportingMixin, forms.Form):
+
     @classmethod
     def unserialise_from_session(cls, request):
         session = request.session
@@ -42,7 +43,12 @@ class SendMoneyForm(GARequestErrorReportingMixin, forms.Form):
             }
         except KeyError:
             data = None
-        return cls(request=request, data=data)
+
+        extra_kwargs = {
+            field: get_value(field)
+            for field in getattr(cls, 'additional_fields_to_deserialize', [])
+        }
+        return cls(request=request, data=data, **extra_kwargs)
 
     def __init__(self, request=None, **kwargs):
         super().__init__(**kwargs)
@@ -56,6 +62,9 @@ class SendMoneyForm(GARequestErrorReportingMixin, forms.Form):
             if hasattr(cls, 'serialise_%s' % field):
                 value = getattr(cls, 'serialise_%s' % field)(value)
             session[field] = value
+
+        for field in getattr(cls, 'additional_fields_to_deserialize', []):
+            session[field] = getattr(self, field)
 
 
 class PaymentMethodChoiceForm(SendMoneyForm):
@@ -200,8 +209,67 @@ class DebitCardAmountForm(SendMoneyForm):
             'max_decimal_places': _('Only use 2 decimal places'),
         }
     )
+    error_messages = {
+        'connection': _('This service is currently unavailable'),
+        'missing_prisoner_number': _('This service is currently unavailable'),
+        'cap_exceeded': _(
+            'You can’t send money to this person’s account. It has reached its safe limit for now. '
+            'Please follow up with them about it.'
+        )
+    }
     serialise_amount = serialise_amount
     unserialise_amount = unserialise_amount
+    max_lookup_tries = 2
+    additional_fields_to_deserialize = ['prisoner_number']
+    shared_api_session_lock = threading.RLock()
+    shared_api_session = None
+
+    def __init__(self, *args, **kwargs):
+        self.prisoner_number = kwargs.pop('prisoner_number')
+        super().__init__(*args, **kwargs)
+
+    @classmethod
+    def get_api_session(cls, reconnect=False):
+        with cls.shared_api_session_lock:
+            if reconnect or not cls.shared_api_session:
+                cls.shared_api_session = get_api_session()
+            return cls.shared_api_session
+
+    def clean(self):
+        try:
+            if not self.errors and not self.is_account_balance_below_threshold():
+                raise ValidationError(self.error_messages['cap_exceeded'], code='cap_exceeded')
+        except (RequestException, OAuth2Error):
+            logger.exception('Could not look up prisoner account balance')
+            raise ValidationError(self.error_messages['connection'], code='connection')
+        return self.cleaned_data
+
+    def is_account_balance_below_threshold(self):
+        if not settings.PRISONER_CAPPING_ENABLED:
+            return True
+
+        prisoner_account_balance_integer = self.lookup_prisoner_account_balance()['combined_account_balance']
+
+        assert isinstance(prisoner_account_balance_integer, int), \
+            f'expected NOMIS balance to be int but is {type(prisoner_account_balance_integer)}'
+
+        prisoner_account_balance = decimal.Decimal(prisoner_account_balance_integer) / 100
+        prisoner_account_balance += decimal.Decimal(self.data['amount'])
+        return prisoner_account_balance <= settings.PRISONER_CAPPING_THRESHOLD_IN_POUNDS
+
+    def lookup_prisoner_account_balance(self, tries=0):
+        session = self.get_api_session(reconnect=(tries != 0))
+        try:
+            return session.get(f'/prisoner_account_balances/{self.prisoner_number}').json()
+        except TokenExpiredError:
+            pass
+        except RequestException as e:
+            if e.response.status_code != 401:
+                raise
+        if tries < self.max_lookup_tries:
+            return self.lookup_prisoner_account_balance(tries=tries + 1)
+        else:
+            raise ValidationError(self.error_messages['connection'], code='connection')
 
 
 class BankTransferEmailForm(SendMoneyForm):

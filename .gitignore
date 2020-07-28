@@ -25,3 +25,6 @@ spooler/
 /reports/
 geckodriver.log
 ghostdriver.log
+
+# linters / code intelligence
+.mypy_cache/

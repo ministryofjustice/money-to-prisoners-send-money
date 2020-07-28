@@ -282,6 +282,12 @@ class DebitCardAmountView(DebitCardFlow, SendMoneyFormView):
     def get_success_url(self):
         return build_view_url(self.request, DebitCardCheckView.url_name)
 
+    def get_form_kwargs(self):
+        return dict(
+            super().get_form_kwargs(),
+            prisoner_number=self.valid_form_data[DebitCardPrisonerDetailsView.url_name]['prisoner_number']
+        )
+
 
 class DebitCardCheckView(DebitCardFlow, TemplateView):
     url_name = 'check_details'
