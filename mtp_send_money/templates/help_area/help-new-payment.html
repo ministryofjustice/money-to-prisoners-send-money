@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% load i18n %}
 {% load mtp_common %}
+{% load send_money %}
 
 {% block page_title %}{% trans 'Help with making a payment' %} – {{ block.super }}{% endblock %}
 
@@ -22,40 +23,44 @@
       </p>
 
       <dl class="mtp-question-list">
+        {% create_counter 'question' %}
 
+        {% increment_counter 'question' as question_id %}
         <dt class="mtp-question">
-          <a href="#answer-1" id="question-1">
+          <a href="#answer-{{ question_id }}" id="question-{{ question_id }}">
             {% trans 'I want to know the prisoner number or date of birth' %}
             <span class="mtp-question-icon"></span>
           </a>
         </dt>
-        <dd id="answer-1" class="mtp-answer" aria-labelledby="question-1">
+        <dd id="answer-{{ question_id }}" class="mtp-answer" aria-labelledby="question-{{ question_id }}">
           <p>
             {% trans 'By law we can’t give out confidential prisoner information.' %}
             {% trans 'Ask the prisoner for these details.' %}
           </p>
         </dd>
 
+        {% increment_counter 'question' as question_id %}
         <dt class="mtp-question">
-          <a href="#answer-2" id="question-2">
+          <a href="#answer-{{ question_id }}" id="question-{{ question_id }}">
             {% trans 'I want to make a payment from abroad' %}
             <span class="mtp-question-icon"></span>
           </a>
         </dt>
-        <dd id="answer-2" class="mtp-answer" aria-labelledby="question-2">
+        <dd id="answer-{{ question_id }}" class="mtp-answer" aria-labelledby="question-{{ question_id }}">
           <p>
             {% trans 'You can only make a payment from outside the UK using a debit card (Visa, Mastercard or Maestro).' %}
             {% trans 'We don’t accept credit cards or prepaid debit cards.' %}
           </p>
         </dd>
 
+        {% increment_counter 'question' as question_id %}
         <dt class="mtp-question">
-          <a href="#answer-3" id="question-3">
+          <a href="#answer-{{ question_id }}" id="question-{{ question_id }}">
             {% trans 'I want to send money to a prison in Scotland or Northern Ireland' %}
             <span class="mtp-question-icon"></span>
           </a>
         </dt>
-        <dd id="answer-3" class="mtp-answer" aria-labelledby="question-3">
+        <dd id="answer-{{ question_id }}" class="mtp-answer" aria-labelledby="question-{{ question_id }}">
           <p>
             {% url 'help_area:prison_list' as link %}
             {% blocktrans trimmed %}

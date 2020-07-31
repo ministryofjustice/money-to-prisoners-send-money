@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% load i18n %}
 {% load mtp_common %}
+{% load send_money %}
 
 {% block page_title %}{% trans 'Help with a payment I’ve already made' %} – {{ block.super }}{% endblock %}
 
@@ -22,7 +23,9 @@
       </p>
 
       <dl class="mtp-question-list">
+        {% create_counter 'question' %}
 
+        {% increment_counter 'question' as question_id %}
         <dt class="mtp-question">
           <a href="#answer-1" id="question-1">
             {% trans 'I want to cancel a payment' %}
@@ -35,6 +38,7 @@
           </p>
         </dd>
 
+        {% increment_counter 'question' as question_id %}
         <dt class="mtp-question">
           <a href="#answer-2" id="question-2">
             {% trans 'The prisoner has moved prisons' %}
@@ -47,6 +51,7 @@
           </p>
         </dd>
 
+        {% increment_counter 'question' as question_id %}
         <dt class="mtp-question">
           <a href="#answer-3" id="question-3">
             {% trans 'The prisoner has been released' %}
@@ -59,6 +64,7 @@
           </p>
         </dd>
 
+        {% increment_counter 'question' as question_id %}
         <dt class="mtp-question">
           <a href="#answer-4" id="question-4">
             {% trans 'The prisoner hasn’t got my bank transfer' %}
@@ -99,6 +105,7 @@
           </ol>
         </dd>
 
+        {% increment_counter 'question' as question_id %}
         <dt class="mtp-question">
           <a href="#answer-5" id="question-5">
             {% trans 'My bank transfer has been refunded' %}
@@ -114,6 +121,7 @@
           </p>
         </dd>
 
+        {% increment_counter 'question' as question_id %}
         <dt class="mtp-question">
           <a href="#answer-6" id="question-6">
             {% trans 'Does the prisoner know they’ve got my money?' %}
@@ -130,6 +138,7 @@
           </p>
         </dd>
 
+        {% increment_counter 'question' as question_id %}
         <dt class="mtp-question">
           <a href="#answer-7" id="question-7">
             {% trans 'Does a prisoner know who sent the money?' %}
@@ -143,6 +152,7 @@
           </p>
         </dd>
 
+        {% increment_counter 'question' as question_id %}
         <dt class="mtp-question">
           <a href="#answer-8" id="question-8">
             {% trans 'I’m worried about a prisoner' %}
@@ -158,6 +168,7 @@
           </p>
         </dd>
 
+        {% increment_counter 'question' as question_id %}
         <dt class="mtp-question">
           <a href="#answer-9" id="question-9">
             {% trans 'You don’t ask which prison it is' %}

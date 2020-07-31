@@ -3,6 +3,7 @@ from unittest import mock
 from xml.etree import ElementTree
 
 from django.conf import settings
+from django.template import Context, Template
 from django.test import override_settings
 from django.urls import reverse
 from django.utils.cache import get_max_age
@@ -152,3 +153,31 @@ class PlainViewTestCase(BaseTestCase):
             for view_name in view_names:
                 response = self.client.get(reverse(view_name))
                 self.assertResponseNotCacheable(response)
+
+
+class TemplateTestCase(BaseTestCase):
+    def test_counter(self):
+        template = Template("""
+            {% load send_money %}
+            {% create_counter 'test' %}
+            {% increment_counter 'test' %}
+        """)
+        html = template.render(Context()).strip()
+        self.assertEqual(html, '1')
+
+        template = Template("""
+            {% load send_money %}
+            {% create_counter 'test' %}
+            {% increment_counter 'test' %},{% increment_counter 'test' %},{% increment_counter 'test' %}
+        """)
+        html = template.render(Context()).strip()
+        self.assertEqual(html, '1,2,3')
+
+        template = Template("""
+            {% load send_money %}
+            {% create_counter a %}
+            {% create_counter b %}
+            {% increment_counter a %},{% increment_counter a %},{% increment_counter b %},{% increment_counter a %}
+        """)
+        html = template.render(Context({'a': 'test1', 'b': 'test2'})).strip()
+        self.assertEqual(html, '1,2,1,3')
