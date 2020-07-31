@@ -28,6 +28,34 @@
         {% increment_counter 'question' as question_id %}
         <dt class="mtp-question">
           <a href="#answer-{{ question_id }}" id="question-{{ question_id }}">
+            {% trans 'It says my prisoner number and date of birth don’t match a prisoner' %}
+            <span class="mtp-question-icon"></span>
+          </a>
+        </dt>
+        <dd id="answer-{{ question_id }}" class="mtp-answer" aria-labelledby="question-{{ question_id }}">
+          <p>
+            {% trans 'If the person has just arrived in prison, try again tomorrow as it can take one working day for prisoner details to be updated on the system.' %}
+          </p>
+          <p>
+            {% trans 'But it could be that the prisoner details you’re using don’t match the ones on the prison system.' %}
+          </p>
+          <ul class="list list-bullet">
+            <li>
+              {% trans 'Check you’re using the right prisoner number and date of birth' %}
+            </li>
+            <li>
+              {% trans 'If you’re sure these are right, ask the person in prison to check with wing staff that the prison has the same details as you' %}
+            </li>
+            <li>
+              {% trans 'If the prison details are wrong, contact the prison directly to get them corrected.' %}
+              {% trans 'You won’t be able to send money using our service until your details match ours' %}
+            </li>
+          </ul>
+        </dd>
+
+        {% increment_counter 'question' as question_id %}
+        <dt class="mtp-question">
+          <a href="#answer-{{ question_id }}" id="question-{{ question_id }}">
             {% trans 'I want to know the prisoner number or date of birth' %}
             <span class="mtp-question-icon"></span>
           </a>
