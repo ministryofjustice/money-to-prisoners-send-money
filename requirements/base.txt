@@ -1,7 +1,7 @@
 # Dependencies needed for all environments
 # NB: this is not the complete set needed to run the app
-Django>=1.11,<2
-django-anymail[mailgun]~=3.0
+Django>=2.0,<2.1
+django-anymail[mailgun]~=7.2
 requests>=2.22,<3
 transifex-client>=0.12
 
