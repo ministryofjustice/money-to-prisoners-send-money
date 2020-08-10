@@ -7,7 +7,6 @@ GOV.UK - {% trans 'Send money to someone in prison' %}
 {% trans 'Your payment has been successful.' %} {% blocktrans trimmed %}Your confirmation number is {{ short_payment_ref }}.{% endblocktrans %}
 
 {% trans 'Money should reach the prisoner’s account in up to 3 working days.' %}
-{% trans 'You’ll get a further email when the prisoner’s account has been credited to confirm your money has arrived.' %}
 
 {% trans 'Payment to:' %} {{ prisoner_name }}
 {% trans 'Amount:' %} {{ amount|currency_format }}
