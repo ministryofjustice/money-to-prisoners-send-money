@@ -754,7 +754,7 @@ class CompletePaymentIfNecessaryTestCase(SimpleTestCase):
         self.assertEqual(status, GovUkPaymentStatus.capturable)
         self.assertEqual(len(mail.outbox), 1)
         self.assertEqual(payment['email'], 'sender@example.com')
-        self.assertEqual(mail.outbox[0].subject, 'Send money to someone in prison: your payment has been put on hold')
+        self.assertEqual(mail.outbox[0].subject, 'Send money to someone in prison: your payment is being processed')
 
     def test_capturable_payment_that_shouldnt_be_captured_yet_with_email_already_set(self):
         """

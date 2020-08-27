@@ -51,7 +51,7 @@ def send_email_for_card_payment_on_hold(email, payment):
     _send_notification_email(
         email,
         'debit-card-payment-on-hold',
-        gettext('your payment has been put on hold'),
+        gettext('your payment is being processed'),
         ['dc-on-hold'],
         context,
     )
