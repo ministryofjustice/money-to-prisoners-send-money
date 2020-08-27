@@ -1157,7 +1157,7 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
         for key in self.complete_session_keys:
             self.assertNotIn(key, self.client.session)
 
-        self.assertEqual('Send money to someone in prison: your payment has been put on hold', mail.outbox[0].subject)
+        self.assertEqual('Send money to someone in prison: your payment is being processed', mail.outbox[0].subject)
         self.assertTrue('WARGLE-B' in mail.outbox[0].body)
         self.assertTrue('£17' in mail.outbox[0].body)
 
