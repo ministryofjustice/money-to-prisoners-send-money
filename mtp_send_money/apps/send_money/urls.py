@@ -5,13 +5,14 @@ from send_money.views import (
     PaymentMethodChoiceView,
     BankTransferWarningView, BankTransferPrisonerDetailsView, BankTransferReferenceView,
     DebitCardPrisonerDetailsView, DebitCardAmountView, DebitCardCheckView,
-    DebitCardPaymentView, DebitCardConfirmationView,
+    DebitCardPaymentView, DebitCardConfirmationView, UserAgreementView
 )
 
 app_name = 'send_money'
 urlpatterns = [
-    url(r'^$', PaymentMethodChoiceView.as_view(),
-        name=PaymentMethodChoiceView.url_name),
+    url(r'^$', UserAgreementView.as_view(), name=UserAgreementView.url_name),
+
+    url(r'^payment-choice/$', PaymentMethodChoiceView.as_view(), name=PaymentMethodChoiceView.url_name),
 
     url(r'^bank-transfer/warning/$', BankTransferWarningView.as_view(),
         name=BankTransferWarningView.url_name),

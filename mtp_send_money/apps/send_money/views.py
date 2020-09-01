@@ -2,6 +2,7 @@ import datetime
 import decimal
 import logging
 import random
+from urllib.parse import urljoin
 
 from django.conf import settings
 from django.shortcuts import redirect, render
@@ -40,7 +41,7 @@ def clear_session_view(request):
     @param request: the HTTP request
     """
     request.session.flush()
-    return redirect(build_view_url(request, PaymentMethodChoiceView.url_name))
+    return redirect(build_view_url(request, UserAgreementView.url_name))
 
 
 def get_payment_delayed_capture_rollout_percentage():
@@ -146,10 +147,24 @@ class SendMoneyFormView(SendMoneyView, FormView):
         return super().form_valid(form)
 
 
+class UserAgreementView(SendMoneyView, TemplateView):
+    url_name = 'user_agreement'
+    template_name = 'send_money/user-agreement.html'
+
+    def get_context_data(self, **kwargs):
+        return dict(
+            super().get_context_data(**kwargs),
+            back_url=settings.START_PAGE_URL,
+            base_url=settings.SEND_MONEY_URL,
+            next_page=build_view_url(self.request, PaymentMethodChoiceView.url_name)
+        )
+
+
 class PaymentMethodChoiceView(SendMoneyFormView):
     url_name = 'choose_method'
     template_name = 'send_money/payment-method.html'
     form_class = send_money_forms.PaymentMethodChoiceForm
+    previous_view = UserAgreementView
 
     def dispatch(self, request, *args, **kwargs):
         # reset the session so that we can start fresh

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+{% extends 'base.html' %}
+
+{# saved from https://www.gov.uk/send-prisoner-money #}
+
+{% block title %}Before you continue - GOV.UK{% endblock %}
+
+{% block content %}
+
+<!-- <div class="govuk-width-container "> -->
+
+  <!-- <main class="govuk-main-wrapper govuk-main-wrapper--auto-spacing" id="main-content" role="main"> -->
+
+    <div style="margin-top:-50px; margin-bottom:40px">
+      <!-- <div class="govuk-phase-banner"> -->
+        <!-- <p class="govuk-phase-banner__content"> -->
+          <!-- <span class="govuk-phase-banner__text"> -->
+            <!-- <a class="govuk-link" href="index">Contact us</a> if you need help or would like to give us some feedback. -->
+          <!-- </span> -->
+        <!-- </p> -->
+      <!-- </div> -->
+      <a href="{{ back_url }}" class="govuk-back-link">Back</a>
+    </div>
+
+    <div class="flash-card">
+      <header>
+        <h1 class="govuk-heading-l">Before you continue</h1>
+      </header>
+      <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+          <p class="govuk-body-l mtp-paragraph">
+            We run compliance checks to prevent fraud and other criminal behaviour.</br></br>
+            By using this service you're agreeing to these checks and our <a href="{{ base_url }}/terms/">terms and conditions</a> and <a href="{{ base_url }}/privacy/">privacy policy</a>.
+          </p>
+
+          <div class="form-group" style="margin-top:25px;margin-bottom:0;">
+            <a class="govuk-button button-white" style="color:#0b0c0c;" href="{{ next_page }}">Continue</a>
+          </div>
+
+          <!-- <p class="govuk-body" style="color:white; margin-left:0px"> <a href="https://send-money-test.prisoner-money.service.justice.gov.uk/en-gb/terms/">Terms and conditions</a> and <a href="https://send-money-test.prisoner-money.service.justice.gov.uk/en-gb/privacy/">privacy policy</a>
+        </p> -->
+
+        </div>
+      </div>
+    </div>
+  <!-- </main> -->
+<!-- </div> -->
+
+{% endblock %}
