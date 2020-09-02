@@ -1,3 +1,8 @@
+body {
+	font-size: 160%;
+	margin: 0;
+}
+
 @media(min-width: 769px){
   .flash-card {
     margin-top: 1.25em;
@@ -7,6 +12,7 @@
 .flash-card {
   margin-top: 1em;
   padding: 30px;
+  // margin: 30px; // CSS FUDGE ALERT
   background: #005EA5;
   color: #FFF;
   block-size: 350px; // CSS FUDGE ALERT!
@@ -84,20 +90,6 @@
   }
 }
 
-@media(min-width: 40.0525em){
-  .govuk-body-l, .govuk-body-lead {
-    margin-bottom: 30px;
-  }
-}
-
-@media(min-width: 40.0525em){
-  .govuk-body-l, .govuk-body-lead {
-    font-size: 24px;
-    font-size: 1.5rem;
-    line-height: 1.25;
-  }
-}
-
 .govuk-body-l, .govuk-body-lead {
   font-family: "GDS Transport", Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -108,6 +100,20 @@
   margin-top: 0;
   margin-bottom: 20px;
   block-size: 180px; // CSS FUDGE ALERT!
+}
+
+@media(min-width: 40.0525em){
+  .govuk-body-l, .govuk-body-lead {
+    font-size: 24px;
+    font-size: 1.5rem;
+    line-height: 1.25;
+  }
+}
+
+@media(min-width: 40.0525em){
+  .govuk-body-l, .govuk-body-lead {
+    margin-bottom: 30px;
+  }
 }
 
 .mtp-paragraph {
