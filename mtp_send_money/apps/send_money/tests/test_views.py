@@ -1150,7 +1150,8 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
                     {'payment_ref': self.ref},
                     follow=False,
                 )
-        self.assertContains(response, 'on hold')
+        self.assertContains(response, 'being processed')
+        self.assertNotContains(response, 'on hold')
         self.assertResponseNotCacheable(response)
 
         # check session is cleared

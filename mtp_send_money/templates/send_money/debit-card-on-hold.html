@@ -2,12 +2,12 @@
 {% load i18n %}
 {% load send_money %}
 
-{% block page_title %}{% trans 'Payment on hold' %} – {{ block.super }}{% endblock %}
+{% block page_title %}{% trans 'Payment being processed' %} – {{ block.super }}{% endblock %}
 
 {% block inner_content %}
 
   <div class="govuk-box-highlight mtp-box-highlight-info">
-    <h1 class="heading-xlarge">{% trans 'This payment has been put on hold for up to 5 days' %}</h1>
+    <h1 class="heading-xlarge">{% trans 'This payment is being processed' %}</h1>
     <p>{% trans 'Reference:' %} <strong>{{ short_payment_ref }}</strong></p>
   </div>
 
@@ -40,8 +40,8 @@
         </table>
       </div>
 
-      <p>{% trans 'To maintain a high level of prison safety we do regular security checks.' %}</p>
-      <p>{% trans 'We’ll email you a payment update as soon as we can and are sorry for any inconvenience this may cause.' %}</p>
+      <p>{% trans 'We’ll email you a payment update in a few days' %}</p>
+      <p>{% trans 'Please don’t contact us until you have it' %}</p>
       <p>
         {% url 'help_area:contact-us-sent-payment' as link %}
         {% blocktrans trimmed %}
