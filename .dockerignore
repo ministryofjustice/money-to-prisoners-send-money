@@ -22,7 +22,6 @@ package.json
 package-lock.json
 webpack.config.js
 mtp_send_money/assets/
-mtp_send_money/settings/local.py
 mtp_send_money/templates/govuk_template
 static/
 media/
