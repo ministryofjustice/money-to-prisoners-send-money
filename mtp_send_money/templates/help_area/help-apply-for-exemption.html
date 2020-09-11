@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% load static %}
+{% load mtp_common %}
+{% load send_money %}
+
+{% block page_title %}{% trans 'Apply for an exemption to send money through the post' %} – {{ block.super }}{% endblock %}
+
+{% block inner_content %}
+  <div class="grid-row">
+    <div class="column-two-thirds">
+
+      <header>
+        <h1 class="heading-xlarge">
+          <span class="heading-secondary">
+            {% trans 'Help' %}
+          </span>
+          {% trans 'Apply for an exemption to send money through the post' %}
+        </h1>
+      </header>
+
+      <p>
+        {% trans 'If you can’t send money online, you can ask the prison for an ‘exemption’.' %}
+      </p>
+      <p>
+        {% static 'forms/apply-to-send-money-through-the-post.pdf' as link %}
+        {% blocktrans trimmed %}
+          <a href="{{ link }}">Print off and fill in this exemption request form</a>, then post it, along with the necessary proof, to the ‘Business Hub’ of the prison.
+        {% endblocktrans %}
+      </p>
+      <p>
+        {% trans 'Your request may not be granted so don’t send any money to the prison until you have your exemption letter.' %}
+      </p>
+      <p>
+        {% trans 'Exemptions are only given if it’s your only option to send money to friends and family by post.' %}
+        {% trans 'To keep prisons safe, the governor can withdraw an exemption at any time.' %}
+      </p>
+
+      <h2 class="heading-medium">
+        {% trans 'The proof you need to send in with the form' %}
+      </h2>
+      <ul class="list list-bullet">
+        <li>
+          {% trans 'An account refusal from one of the following:' %}
+          {% trans 'Barclays, Clydesdale and Yorkshire Bank, Co-operative Bank, HSBC Lloyds Banking Group (including Halifax and Bank of Scotland), Nationwide Royal Bank of Scotland (including NatWest and Ulster Bank), Santander, TSB' %}
+        </li>
+        <li>
+          {% trans 'Proof that your bank account does not give you access to a debit card or cheque book' %}
+        </li>
+        <li>
+          {% trans 'If you live overseas, proof of residence and account refusal from a bank in your country' %}
+        </li>
+      </ul>
+      <p>
+        {% static 'forms/apply-to-send-money-through-the-post.pdf' as link %}
+        <a href="{{ link }}">
+          {% trans 'Print off and fill in this exemption request form' %}
+        </a>
+      </p>
+
+    </div>
+  </div>
+
+{% endblock %}

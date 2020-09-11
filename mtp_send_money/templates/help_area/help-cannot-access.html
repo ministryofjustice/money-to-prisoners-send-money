@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% load mtp_common %}
+{% load send_money %}
+
+{% block page_title %}{% trans 'I don’t have a debit card / can’t access this service' %} – {{ block.super }}{% endblock %}
+
+{% block inner_content %}
+  <div class="grid-row">
+    <div class="column-two-thirds">
+
+      <header>
+        <h1 class="heading-xlarge">
+          <span class="heading-secondary">
+            {% trans 'Help' %}
+          </span>
+          {% trans 'I don’t have a debit card / can’t access this service' %}
+        </h1>
+      </header>
+
+      <h2 class="heading-medium">
+        {% trans 'I don’t have a debit card' %}
+      </h2>
+      <p>
+        {% url 'help_area:help-setup-basic-bank-account' as link %}
+        {% blocktrans trimmed %}
+          If you can’t use this service because you don’t have a debit card, <a href="{{ link }}">find out how to set up a bank account</a> that will give you one.
+        {% endblocktrans %}
+      </p>
+
+      <h2 class="heading-medium">
+        {% trans 'I can’t access this service' %}
+      </h2>
+      <p>
+        {% url 'help_area:help-apply-for-exemption' as link %}
+        {% blocktrans trimmed %}
+          If you can’t use this service because you can’t use a computer, a smart phone or the internet, you can <a href="{{ link }}">apply for an exemption</a> which may allow you to send money through the post.
+        {% endblocktrans %}
+        {% trans 'An exemption is only granted in exceptional circumstances.' %}
+      </p>
+
+    </div>
+  </div>
+
+{% endblock %}
