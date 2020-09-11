@@ -33,10 +33,6 @@
         {% trans 'You can make an international payment using a debit card.' %}
       </p>
 
-      <div class="panel panel-border-wide">
-        {% trans 'From January 2020, you will no longer be able to use a pre-paid debit card.' %}
-      </div>
-
       {% include 'mtp_common/forms/error-summary.html' with form=form only %}
 
       {% if form.payment_method.field.disabled %}
