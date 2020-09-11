@@ -213,7 +213,7 @@ class DebitCardAmountForm(SendMoneyForm):
         'connection': _('This service is currently unavailable'),
         'missing_prisoner_number': _('This service is currently unavailable'),
         'cap_exceeded': _(
-            'You can’t send money to this person’s account. It has reached its safe limit for now. '
+            'You can’t send money to this person’s account. It has reached its limit for now. '
             'Please follow up with them about it.'
         )
     }

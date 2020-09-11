@@ -617,7 +617,7 @@ class DebitCardAmountTestCase(DebitCardFlowTestCase):
             )
 
             response = self.client.post(self.url, data={'amount': '100'}, follow=True)
-            self.assertContains(response, 'It has reached its safe limit for now')
+            self.assertContains(response, 'It has reached its limit for now')
             form = response.context['form']
             self.assertTrue(form.errors)
 
