@@ -7,19 +7,6 @@
 {% block inner_content %}
   {% notifications_box request 'send_money_landing' %}
 
-  {# TODO: remove notification before putting up information regarding November 2 changes #}
-  <div class="mtp-notification mtp-notification--info">
-    <h1 class="mtp-notification__headline">
-      {% trans 'Do you know anyone who sends money to someone in prison by cash, cheque or postal order?' %}
-    </h1>
-    <div id="mtp-notification-UR" class="mtp-notification__message" style="display:block">
-      {% trans 'We want to hear from them so we can help them with upcoming changes to the service.' %}
-      {% blocktrans trimmed with link='https://docs.google.com/forms/d/e/1FAIpQLSe9-4U9yo9gl_n2AOHcdHCqhMqLFo8CPrITboRvGika8TmjLQ/viewform' %}
-         If you know someone who’d be happy to speak to us, <a href="{{ link }}" data-analytics="event,ur-form-nov2,banner-click">let us know here</a> so we can get in touch.
-      {% endblocktrans %}
-    </div>
-  </div>
-
   <div class="grid-row">
     <div class="column-two-thirds">
 
