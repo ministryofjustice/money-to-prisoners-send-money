@@ -6,6 +6,28 @@
 {% block page_title %}{% trans 'Get a prisoner reference to make your UK bank transfer' %} – {{ block.super }}{% endblock %}
 
 {% block inner_content %}
+  <div class="mtp-notification mtp-notification--warning">
+    <h1 class="mtp-notification__headline">
+      {% trans 'Service change from November 2nd' %}
+    </h1>
+    <div class="mtp-notification__message" style="display:block">
+      <p>
+        {% trans 'From November 2nd, you will no longer be able to send money by bank transfer.' %}
+        {% trans 'You will not be able to send in cash, cheques or postal orders by post either.' %}
+      </p>
+      <p>
+        {% trans 'This will mean the best way to send money to someone in prison will be by debit card.' %}
+      </p>
+      <p>
+        {% trans 'This change is to keep everyone who lives and works in prisons safe.' %}
+        {% url 'help_area:help-cannot-access' as link %}
+        {% blocktrans trimmed %}
+          If it means you can no longer use this service, there are <a href="{{ link }}">alternatives</a>.
+        {% endblocktrans %}
+      </p>
+    </div>
+  </div>
+
   <div class="grid-row">
     <div class="column-two-thirds">
 
