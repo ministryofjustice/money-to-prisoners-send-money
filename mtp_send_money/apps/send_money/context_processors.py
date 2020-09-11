@@ -24,8 +24,8 @@ def links(_):
                 'title': gettext('Cookies'),
             },
             {
-                'url': reverse('help_area:submit_ticket'),
-                'title': gettext('Feedback'),
+                'url': reverse('help_area:help'),
+                'title': gettext('Help'),
             },
         ],
     }

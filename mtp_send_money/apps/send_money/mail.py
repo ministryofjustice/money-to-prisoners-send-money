@@ -11,7 +11,6 @@ from send_money.utils import site_url
 def _send_notification_email(email, template_name, subject, tags, context):
     context.update({
         'site_url': settings.START_PAGE_URL,
-        'feedback_url': site_url(reverse('help_area:submit_ticket')),
         'help_url': site_url(reverse('help_area:help')),
     })
     send_email(
