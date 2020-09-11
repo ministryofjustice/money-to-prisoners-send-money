@@ -1,0 +1,15 @@
+{% load i18n %}
+
+<div class="error-summary">
+  <p>
+    {% trans 'Remember that from November 2nd, you will no longer be able to send money by bank transfer.' %}
+    {% trans 'This will mean the best way to send money to someone in prison will be by debit card.' %}
+    {% url 'help_area:help-cannot-access' as link %}
+    {% blocktrans trimmed %}
+      If it means you will no longer be able to use this service, there are <a href="{{ link }}">alternatives</a>.
+    {% endblocktrans %}
+  </p>
+  <p>
+    {% trans 'Bank transfers submitted before November 2 will still work.' %}
+  </p>
+</div>
