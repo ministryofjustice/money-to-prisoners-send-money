@@ -74,7 +74,9 @@
         {% trans 'What to do next' %}
       </h2>
       <p>
-        {% trans 'Go to your local bank or Citizens Advice and they will help you set up your basic bank account.' %}
+        {% blocktrans trimmed with link='https://www.citizensadvice.org.uk/' %}
+          Go to your local bank or <a href="{{ link }}">Citizens Advice</a> and they will help you set up your basic bank account.
+        {% endblocktrans %}
         {% trans 'Ask them to go to this page on GOV.UK, if it helps.' %}
       </p>
       <p>
