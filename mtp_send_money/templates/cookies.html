@@ -61,8 +61,8 @@
         <li>{% trans 'what you enter into pages on this site' %}</li>
       </ul>
 
-      <p>{% trans 'Google Analytics sets the following cookies:' %}</p>
-      <table>
+      <p id="table-caption-ga">{% trans 'Google Analytics sets the following cookies:' %}</p>
+      <table aria-describedby="table-caption-ga">
         <thead>
           <tr>
             <th scope="col">{% trans 'Name' %}</th>
@@ -92,11 +92,11 @@
       </p>
 
       <h3 class="heading-medium">{% trans 'Your progress when using the service' %}</h3>
-      <p>
+      <p id="table-caption-service">
         {% trans 'When you use the ‘Send money to someone in prison’ service, we’ll set cookies to remember your progress through this site.' %}
         {% trans 'These cookies don’t store your personal data and are deleted when you close this website.' %}
       </p>
-      <table>
+      <table aria-describedby="table-caption-service">
         <thead>
           <tr>
             <th scope="col">{% trans 'Name' %}</th>
@@ -119,11 +119,11 @@
       </table>
 
       <h3 class="heading-medium">{% trans 'Settings you’ve chosen' %}</h3>
-      <p>
+      <p id="table-caption-settings">
         {% trans 'When you use the ‘Send money to someone in prison’ service, we’ll set cookies to remember settings you change.' %}
         {% trans 'These cookies don’t store any personal data, but will be saved on your computer or mobile for some time.' %}
       </p>
-      <table>
+      <table aria-describedby="table-caption-settings">
         <thead>
           <tr>
             <th scope="col">{% trans 'Name' %}</th>

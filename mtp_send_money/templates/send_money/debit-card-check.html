@@ -19,8 +19,8 @@
       <section class="mtp-check-details">
         <div class="grid-row">
           <div class="column-two-thirds">
-            <h2 class="heading-medium">{% trans 'Prisoner details' %}</h2>
-            <table class="mtp-check-table">
+            <h2 class="heading-medium" id="table-caption-prisoner">{% trans 'Prisoner details' %}</h2>
+            <table class="mtp-check-table" aria-describedby="table-caption-prisoner">
               <tbody>
                 <tr>
                   <th scope="row">{% trans 'Name' %}:</th>
@@ -48,8 +48,8 @@
       <section class="mtp-check-details">
         <div class="grid-row">
           <div class="column-two-thirds">
-            <h2 class="heading-medium">{% trans 'Amount' %}</h2>
-            <table class="mtp-check-table">
+            <h2 class="heading-medium" id="table-caption-amount">{% trans 'Amount' %}</h2>
+            <table class="mtp-check-table" aria-describedby="table-caption-amount">
               <tbody>
                 {% if service_charged %}
                   <tr>

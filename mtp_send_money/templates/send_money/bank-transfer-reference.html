@@ -40,9 +40,11 @@
           </li>
 
           <li>
-            {% trans 'Copy and paste these details into the transfer:' %}
+            <span id="table-caption-transfer-details">
+              {% trans 'Copy and paste these details into the transfer:' %}
+            </span>
             <div class="mtp-account panel panel-border-wide">
-              <table>
+              <table aria-describedby="table-caption-transfer-details">
                 <tbody>
                   <tr>
                     <th scope="row">{% trans 'Account number:' %}</th>
