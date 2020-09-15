@@ -21,19 +21,19 @@
         <table>
           <tbody>
             <tr>
-              <th>{% trans 'Payment to' %}:</th>
+              <th scope="row">{% trans 'Payment to' %}:</th>
               <td>{{ prisoner_name }} ( {{ prisoner_number }})</td>
             </tr>
             <tr>
-              <th>{% trans 'Amount' %}:</th>
+              <th scope="row">{% trans 'Amount' %}:</th>
               <td>{{ amount|currency_format }}</td>
             </tr>
             <tr>
-              <th>{% trans 'Date' %}:</th>
+              <th scope="row">{% trans 'Date' %}:</th>
               <td>{% now 'd/m/Y' %}</td>
             </tr>
             <tr>
-              <th>{% trans 'Reference' %}:</th>
+              <th scope="row">{% trans 'Reference' %}:</th>
               <td>{{ short_payment_ref }}</td>
             </tr>
           </tbody>
