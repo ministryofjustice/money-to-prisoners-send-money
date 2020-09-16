@@ -7,6 +7,31 @@
 {% block inner_content %}
   {% notifications_box request 'send_money_landing' %}
 
+  <div class="mtp-notification mtp-notification--info">
+    <h1 class="mtp-notification__headline">
+      {% trans 'Service change from November 2nd' %}
+    </h1>
+    <div class="mtp-notification__message" style="display:block">
+      <p>
+        {% trans 'This will mean the best way to send money to someone in prison will be by debit card.' %}
+      </p>
+      <p>
+        {% trans 'From November 2nd, you will no longer be able to:' %}
+      </p>
+      <ul class="list list-bullet">
+        <li>{% trans 'send money by bank transfer' %}</li>
+        <li>{% trans 'send in cash, cheques or postal orders by post' %}</li>
+      </ul>
+      <p>
+        {% trans 'This change is to keep everyone who lives and works in prisons safe.' %}
+        {% url 'help_area:help' as link %}
+        {% blocktrans trimmed %}
+          If it means you can no longer use this service, you can <a href="{{ link }}">get help</a>.
+        {% endblocktrans %}
+      </p>
+    </div>
+  </div>
+
   <div class="grid-row">
     <div class="column-two-thirds">
 
@@ -15,9 +40,7 @@
       </header>
 
       <p class="lede">
-        {% blocktrans trimmed %}
-          Paying by debit card is the <strong>fastest</strong>, <strong>simplest</strong> and most <strong>reliable</strong> way of sending money to a prisoner – and it’s <strong>free</strong>
-        {% endblocktrans %}
+        {% trans 'Paying by debit card is fast, simple, reliable and free and the best way of sending money to a prisoner.' %}
       </p>
 
       <p>
@@ -32,10 +55,6 @@
       <p>
         {% trans 'You can make an international payment using a debit card.' %}
       </p>
-
-      <div class="panel panel-border-wide">
-        {% trans 'From January 2020, you will no longer be able to use a pre-paid debit card.' %}
-      </div>
 
       {% include 'mtp_common/forms/error-summary.html' with form=form only %}
 

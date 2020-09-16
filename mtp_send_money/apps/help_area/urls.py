@@ -26,6 +26,24 @@ urlpatterns = [
             back_url=reverse_lazy('help_area:help'),
         ),
         name='help-sent-payment'),
+    url(r'^help/cannot-access/$',
+        views.HelpView.as_view(
+            template_name='help_area/help-cannot-access.html',
+            back_url=reverse_lazy('help_area:help'),
+        ),
+        name='help-cannot-access'),
+    url(r'^help/setup-basic-bank-account/$',
+        views.HelpView.as_view(
+            template_name='help_area/help-setup-basic-bank-account.html',
+            back_url=reverse_lazy('help_area:help-cannot-access'),
+        ),
+        name='help-setup-basic-bank-account'),
+    url(r'^help/apply-for-exemption/$',
+        views.HelpView.as_view(
+            template_name='help_area/help-apply-for-exemption.html',
+            back_url=reverse_lazy('help_area:help-cannot-access'),
+        ),
+        name='help-apply-for-exemption'),
 
     url(r'^help/bank-transfer-issues/$',
         RedirectView.as_view(url=reverse_lazy('help_area:help-sent-payment'), permanent=True)),

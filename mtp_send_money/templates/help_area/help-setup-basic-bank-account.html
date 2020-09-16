@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% load mtp_common %}
+{% load send_money %}
+
+{% block page_title %}{% trans 'How to set up a basic bank account and get a debit card' %} – {{ block.super }}{% endblock %}
+
+{% block inner_content %}
+  <div class="grid-row">
+    <div class="column-two-thirds">
+
+      <header>
+        <h1 class="heading-xlarge">
+          <span class="heading-secondary">
+            {% trans 'Help' %}
+          </span>
+          {% trans 'How to set up a basic bank account and get a debit card' %}
+        </h1>
+      </header>
+
+      <p>
+        {% trans 'You can use the ‘Send money to someone in prison’ service if you have a debit card.' %}
+        {% trans 'You can get a debit card with most bank accounts.' %}
+      </p>
+
+      <p>
+        {% trans 'If you don’t have a bank account, or you don’t think you’d get one, you might be surprised to know there is a basic, fee-free bank account for people:' %}
+      </p>
+      <ul class="list list-bullet">
+        <li>
+          {% trans 'who don’t already have a bank account but want to give and receive money online' %}
+        </li>
+        <li>
+          {% trans 'who don’t qualify for a standard current account' %}
+        </li>
+        <li>
+          {% trans 'with poor credit history' %}
+        </li>
+        <li>
+          {% trans 'with no credit history' %}
+        </li>
+        <li>
+          {% trans 'who don’t have obvious proof of ID (for example, passport, driving licence)' %}
+        </li>
+        <li>
+          {% trans 'who don’t have obvious proof of address (for example, utility bills)' %}
+        </li>
+        <li>
+          {% trans 'who want to apply in person or by phone' %}
+        </li>
+        <li>
+          {% trans 'who don’t want to pay to have a bank account' %}
+        </li>
+      </ul>
+
+      <h2 class="heading-medium">
+        {% trans 'No proof of ID or address' %}
+      </h2>
+      <p>
+        {% trans 'Most banks will accept:' %}
+      </p>
+      <ul class="list list-bullet">
+        <li>
+          {% trans 'As proof of ID' %} –
+          {% trans 'a letter from your GP / social landlord / vicar / care home manager / warden of sheltered accommodation, hostel or refuge / armed services officer' %}
+        </li>
+        <li>
+          {% trans 'As proof of address' %} –
+          {% trans 'a letter from DWP / benefits / state pension / HMRC / JobCentre+ / your local council / a Blue Badge (disability) / your employer, college or training provider' %}
+        </li>
+      </ul>
+
+      <h2 class="heading-medium">
+        {% trans 'What to do next' %}
+      </h2>
+      <p>
+        {% blocktrans trimmed with link='https://www.citizensadvice.org.uk/' %}
+          Go to your local bank or <a href="{{ link }}">Citizens Advice</a> and they will help you set up your basic bank account.
+        {% endblocktrans %}
+        {% trans 'Ask them to go to this page on GOV.UK, if it helps.' %}
+      </p>
+      <p>
+        {% blocktrans trimmed with link=site_url %}
+          Then you can send money to a prisoner using your debit card at <a href="{{ link }}">www.gov.uk/send-prisoner-money</a>.
+        {% endblocktrans %}
+      </p>
+      <p>
+        {% trans 'You can also ask staff in the visitor centre for more information or search online for ‘Money Advice Service’, then type in ‘basic bank account’.' %}
+      </p>
+
+    </div>
+  </div>
+
+{% endblock %}

@@ -72,6 +72,8 @@ class SitemapXMLView(TemplateView):
         url_names = [
             'send_money:choose_method',
             'help_area:help', 'help_area:help-new-payment', 'help_area:help-sent-payment',
+            'help_area:help-cannot-access',
+            'help_area:help-setup-basic-bank-account', 'help_area:help-apply-for-exemption',
             'help_area:prison_list',
             'help_area:faq',
             'terms', 'privacy', 'cookies',
