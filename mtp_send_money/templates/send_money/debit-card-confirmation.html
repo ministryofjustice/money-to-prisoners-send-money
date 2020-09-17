@@ -20,21 +20,24 @@
     <div class="column-two-thirds">
       <div class="mtp-account panel panel-border-wide">
         <table>
+          <caption class="visually-hidden">
+            {% trans 'Details of your payment' %}
+          </caption>
           <tbody>
             <tr>
-              <th>{% trans 'Payment to' %}:</th>
+              <th scope="row">{% trans 'Payment to' %}:</th>
               <td>{{ prisoner_name }}</td>
             </tr>
             <tr>
-              <th>{% trans 'Amount' %}:</th>
+              <th scope="row">{% trans 'Amount' %}:</th>
               <td>{{ amount|currency_format }}</td>
             </tr>
             <tr>
-              <th>{% trans 'Date payment made' %}:</th>
+              <th scope="row">{% trans 'Date payment made' %}:</th>
               <td>{% now 'd/m/Y' %}</td>
             </tr>
             <tr>
-              <th>{% trans 'Confirmation number' %}:</th>
+              <th scope="row">{% trans 'Confirmation number' %}:</th>
               <td>{{ short_payment_ref }}</td>
             </tr>
           </tbody>

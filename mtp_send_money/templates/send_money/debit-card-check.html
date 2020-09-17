@@ -19,19 +19,19 @@
       <section class="mtp-check-details">
         <div class="grid-row">
           <div class="column-two-thirds">
-            <h2 class="heading-medium">{% trans 'Prisoner details' %}</h2>
-            <table class="mtp-check-table">
+            <h2 class="heading-medium" id="table-caption-prisoner">{% trans 'Prisoner details' %}</h2>
+            <table class="mtp-check-table" aria-describedby="table-caption-prisoner">
               <tbody>
                 <tr>
-                  <th>{% trans 'Name' %}:</th>
+                  <th scope="row">{% trans 'Name' %}:</th>
                   <td>{{ prisoner_name }}</td>
                 </tr>
                 <tr>
-                  <th>{% trans 'Date of birth' %}:</th>
+                  <th scope="row">{% trans 'Date of birth' %}:</th>
                   <td>{{ prisoner_dob|prepare_prisoner_dob|date:'d/m/Y' }}</td>
                 </tr>
                 <tr>
-                  <th>{% trans 'Prisoner number' %}:</th>
+                  <th scope="row">{% trans 'Prisoner number' %}:</th>
                   <td>{{ prisoner_number }}</td>
                 </tr>
               </tbody>
@@ -48,25 +48,25 @@
       <section class="mtp-check-details">
         <div class="grid-row">
           <div class="column-two-thirds">
-            <h2 class="heading-medium">{% trans 'Amount' %}</h2>
-            <table class="mtp-check-table">
+            <h2 class="heading-medium" id="table-caption-amount">{% trans 'Amount' %}</h2>
+            <table class="mtp-check-table" aria-describedby="table-caption-amount">
               <tbody>
                 {% if service_charged %}
                   <tr>
-                    <th>{% trans 'Total to prisoner' %}:</th>
+                    <th scope="row">{% trans 'Total to prisoner' %}:</th>
                     <td>
                       {{ amount|currency_format }}
                     </td>
                   </tr>
                   <tr>
-                    <th>{% trans 'Amount to be taken from your account' %}:</th>
+                    <th scope="row">{% trans 'Amount to be taken from your account' %}:</th>
                     <td>
                       {{ amount|add_service_charge|currency_format }}
                     </td>
                   </tr>
                 {% else %}
                   <tr>
-                    <th>{% trans 'Total' %}:</th>
+                    <th scope="row">{% trans 'Total' %}:</th>
                     <td>
                       {{ amount|currency_format }}
                     </td>
