@@ -273,6 +273,11 @@ class SendMoneySupportPages(SendMoneyFunctionalTestCase):
             'link_text': 'Cookies',
             'page_content': 'Cookies we use to improve our service',
         },
+        {
+            'link_name': 'accessibility',
+            'link_text': 'Accessibility statement',
+            'page_content': 'Accessibility statement for the Send money to someone in prison service',
+        },
     ]
 
     @classmethod

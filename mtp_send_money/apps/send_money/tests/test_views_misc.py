@@ -135,6 +135,7 @@ class PlainViewTestCase(BaseTestCase):
             'terms', 'privacy',
             'js-i18n',
             'sitemap_xml',
+            'accessibility'
         ]
         for view_name in view_names:
             response = self.client.get(reverse(view_name))

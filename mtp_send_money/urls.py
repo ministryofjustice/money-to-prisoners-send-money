@@ -22,6 +22,7 @@ urlpatterns = i18n_patterns(
     url(r'^terms/$', CacheableTemplateView.as_view(template_name='terms.html'), name='terms'),
     url(r'^privacy/$', CacheableTemplateView.as_view(template_name='privacy.html'), name='privacy'),
     url(r'^cookies/$', CookiesView.as_view(), name='cookies'),
+    url(r'^accessibility/$', CacheableTemplateView.as_view(template_name='accessibility.html'), name='accessibility'),
 
     url(r'^js-i18n.js$', cache_control(public=True, max_age=86400)(JavaScriptCatalog.as_view()), name='js-i18n'),
 
