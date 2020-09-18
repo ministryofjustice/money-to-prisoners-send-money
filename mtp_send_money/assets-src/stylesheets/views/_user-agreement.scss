@@ -1,0 +1,29 @@
+.mtp-user-agreement {
+  margin-top: em(25, 24);
+  background: $govuk-blue;
+  color: $white;
+
+  h1 {
+    margin-top: 0;
+  }
+
+  a {
+    color: $white;
+
+    &:focus {
+      color: $black;
+    }
+  }
+
+  .button {
+    @include button($white);
+
+    &:focus {
+      outline: 3px solid $focus-colour;
+    }
+  }
+}
+
+.mtp-user-agreement__contents {
+  padding: $gutter;
+}

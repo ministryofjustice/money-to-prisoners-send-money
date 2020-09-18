@@ -28,9 +28,11 @@ class SendMoneyFunctionalTestCase(FunctionalTestCase):
     def assertOnPage(self, url_name):  # noqa: N802
         self.assertInSource('<!-- %s -->' % url_name)
 
+    def confirm_user_agreement(self):
+        self.driver.find_element_by_id('id_next_btn').click()
+
     def make_payment_method_choice(self, payment_method):
         self.driver.find_element_by_id('id_%s' % payment_method).click()
-        self.click_on_text('Continue')
 
     def fill_in_form(self, data):
         for key, value in data.items():
@@ -44,6 +46,7 @@ class SendMoneyFlows(SendMoneyFunctionalTestCase):
     @override_settings(BANK_TRANSFERS_ENABLED=True)
     def test_bank_transfer_flow(self):
         self.driver.get(self.live_server_url + '/en-gb/')
+        self.confirm_user_agreement()
         self.make_payment_method_choice(PaymentMethod.bank_transfer)
         self.driver.find_element_by_id('id_next_btn').click()
         self.fill_in_form({
@@ -53,11 +56,12 @@ class SendMoneyFlows(SendMoneyFunctionalTestCase):
             'prisoner_dob_2': '1989',
         })
         self.driver.find_element_by_id('id_next_btn').click()
-        self.assertOnPage('prisoner_details_bank')
+        self.assertOnPage('bank_transfer')
 
     @unittest.skip('gov.uk pay functional testing not implemented')
     def test_debit_card_flow(self):
         self.driver.get(self.live_server_url + '/en-gb/')
+        self.confirm_user_agreement()
         self.make_payment_method_choice(PaymentMethod.debit_card)
         self.fill_in_form({
             'prisoner_name': 'James Halls',
@@ -97,12 +101,14 @@ class SendMoneyDetailsPage(SendMoneyFunctionalTestCase):
     @override_settings(BANK_TRANSFERS_ENABLED=True)
     def test_2_digit_year_entry_using_javascript_in_bank_transfer_flow(self):
         self.driver.get(self.live_server_url + '/en-gb/')
+        self.confirm_user_agreement()
         self.driver.find_element_by_id('id_bank_transfer').click()
         self.driver.find_element_by_id('id_next_btn').click()
         self.check_2_digit_entry()
 
     def test_2_digit_year_entry_using_javascript_in_debit_card_flow(self):
         self.driver.get(self.live_server_url + '/en-gb/')
+        self.confirm_user_agreement()
         self.driver.find_element_by_id('id_debit_card').click()
         self.check_2_digit_entry()
 
@@ -117,6 +123,7 @@ class SendMoneyDetailsPage(SendMoneyFunctionalTestCase):
             self.assertEqual(total_field.text, expected)
 
         self.driver.get(self.live_server_url + '/en-gb/')
+        self.confirm_user_agreement()
         self.driver.find_element_by_id('id_debit_card').click()
         self.fill_in_form({
             'prisoner_name': 'James Halls',
@@ -157,6 +164,7 @@ class SendMoneyDetailsPage(SendMoneyFunctionalTestCase):
 class SendMoneyCheckDetailsPage(SendMoneyFunctionalTestCase):
     def test_content(self):
         self.driver.get(self.live_server_url + '/en-gb/')
+        self.confirm_user_agreement()
         self.driver.find_element_by_id('id_debit_card').click()
         self.fill_in_form({
             'prisoner_name': 'James Halls',
