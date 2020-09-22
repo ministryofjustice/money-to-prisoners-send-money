@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% load mtp_common %}
+
+{% block page_title %}{% trans 'Accessibility statement' %} – {{ block.super }}{% endblock %}
+
+{% block inner_content %}
+  <header>
+    <h1 class="heading-xlarge">{% trans 'Accessibility statement for the Send money to someone in prison service' %}</h1>
+  </header>
+
+  <div class="grid-row">
+    <div class="column-two-thirds">
+
+      <p>{% trans 'This accessibility statement applies to the service <a href="https://send-money-to-prisoner.service.gov.uk">https://send-money-to-prisoner.service.gov.uk</a>' %}</p>
+      <p>{% trans 'This website is run by Her Majesty’s Prison and Probation Service (HMPPS). We want as many people as possible to be able to use this website. For example, that means you should be able to:' %}</p>
+
+      <ul class="list list-bullet">
+        <li>{% trans 'change colours, contrast levels and fonts' %}</li>
+        <li>{% trans 'zoom in up to 300% without the text spilling off the screen' %}</li>
+        <li>{% trans 'navigate the website using just a keyboard' %}</li>
+        <li>{% trans 'navigate most of the website using speech recognition software' %}</li>
+        <li>{% trans 'listen to most of the website using a screen reader (including the most recent versions of JAWS, NVDA and VoiceOver)' %}</li>
+      </ul>
+
+      <p>
+        {% trans 'We’ve also made the website text as simple as possible to understand.' %}
+      </p>
+
+      <p>
+        {% trans '<a href="https://mcmw.abilitynet.org.uk/" rel="external">AbilityNet</a> has advice on making your device easier to use if you have a disability.' %}
+      </p>
+
+      <h2 class="heading-medium">{% trans 'How accessible this website is' %}</h2>
+      <p>
+        {% trans 'We know some parts of this website are not fully accessible as colour contrast on links, buttons and form inputs is not sufficient when in focus state.' %}
+      </p>
+
+      <h2 class="heading-medium">{% trans 'Feedback and contact information' %}</h2>
+      <p>
+        {% trans 'If you have any feedback or need information on this website in a different format, email <a href="mailto:prisoner-money-accessibility@ministryofjustice.zendesk.com">prisoner-money-accessibility@ministryofjustice.zendesk.com</a>. We will look into your request and get back to you within 5 working days.' %}
+      </p>
+
+      <h2 class="heading-medium">{% trans 'Reporting accessibility problems with this website' %}</h2>
+      <p>
+        {% trans 'We’re always looking to improve the accessibility of this website. If you find any problems not listed on this page or think we’re not meeting accessibility requirements, contact us by email at <a href="mailto:prisoner-money-accessibility@ministryofjustice.zendesk.com">prisoner-money-accessibility@ministryofjustice.zendesk.com</a>.' %}
+      </p>
+
+      <h2 class="heading-medium">{% trans 'Enforcement procedure' %}</h2>
+      <p>
+        {% trans 'The Equality and Human Rights Commission (EHRC) is responsible for enforcing the Public Sector Bodies (Websites and Mobile Applications) (No. 2) Accessibility Regulations 2018 (the ‘accessibility regulations’). If you’re not happy with how we respond to your complaint, <a href="https://www.equalityadvisoryservice.com/" rel="external">contact the Equality Advisory and Support Service (EASS)</a>.' %}
+      </p>
+
+      <h2 class="heading-large">{% trans 'Technical information about this website’s accessibility' %}</h2>
+      <p>
+        {% trans 'Her Majesty’s Prison and Probation Service is committed to making its website accessible, in accordance with the Public Sector Bodies (Websites and Mobile Applications) (No. 2) Accessibility Regulations 2018.' %}
+      </p>
+
+      <h3 class="heading-medium">{% trans 'Compliance status' %}</h3>
+      <p>
+        {% trans 'This website is partially compliant with the <a href="https://www.w3.org/TR/WCAG21/" rel="external">Web Content Accessibility Guidelines version 2.1 AA standard</a>, due to the non-compliances listed below.' %}
+      </p>
+
+      <h3 class="heading-medium">{% trans 'Non-accessible content' %}</h3>
+      <p>
+        {% trans 'The content listed below is non-accessible for the following reasons.' %}
+      </p>
+
+      <h4 class="heading-medium">{% trans 'Non-compliance with the accessibility regulations' %}</h4>
+      <p>
+        {% trans 'Links, buttons and form inputs do not meet colour contrast requirements when in focus state. This contravenes the WCAG 2.1 AA success criteria 1.4.3: Contrast (Minimum).' %}
+      </p>
+      <p>
+        {% trans 'This is due to be resolved as part of an update of our service to use the <a href="https://design-system.service.gov.uk" rel="external">GOV.UK Design System</a> instead of the GOV.UK Front end elements and toolkit. This work is expected to be completed January 2021.' %}
+      </p>
+
+      <h2 class="heading-large">{% trans 'What we’re doing to improve accessibility' %}</h2>
+      <p>
+        {% trans 'We are currently working on using the updated <a href="https://design-system.service.gov.uk" rel="external">GOV.UK Design System</a> to improve accessibility throughout the service, which should be completed in January 2021. Following the completion of this work, we will procure a complete service accessibility assessment, following which we will action any further accessibility issues (and update this accessibility statement where relevant).' %}
+      </p>
+
+      <h2 class="heading-large">{% trans 'Preparation of this accessibility statement' %}</h2>
+      <p>
+        {% trans 'This statement was prepared on 21st September 2020. It was last reviewed on 21st September 2020.' %}
+      </p>
+      <p>
+        {% trans 'This website was last tested on 14th September 2020. The test was carried out by internal team members (an external assessment is planned for January 2021).' %}
+      </p>
+
+    </div>
+  </div>
+
+{% endblock %}
