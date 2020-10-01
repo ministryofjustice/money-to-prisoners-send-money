@@ -79,7 +79,8 @@ class PaymentMethodChoiceForm(SendMoneyForm):
         payment_service_available, message_to_users = check_payment_service_available()
         if not payment_service_available:
             payment_method_field.message_to_users = message_to_users
-            payment_method_field.initial = PaymentMethod.bank_transfer.name
+            if settings.BANK_TRANSFERS_ENABLED:
+                payment_method_field.initial = PaymentMethod.bank_transfer.name
             payment_method_field.disabled = True
 
 

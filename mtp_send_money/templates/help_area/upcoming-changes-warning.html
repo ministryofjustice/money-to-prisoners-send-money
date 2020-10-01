@@ -2,8 +2,13 @@
 
 <div class="error-summary">
   <p>
-    {% trans 'Remember that from November 2nd, you will no longer be able to send money by bank transfer.' %}
-    {% trans 'This will mean the best way to send money to someone in prison will be by debit card.' %}
+    {% if bank_transfers_enabled %}
+      {% trans 'Remember that from November 2nd, you will no longer be able to send money by bank transfer.' %}
+      {% trans 'This will mean the best way to send money to someone in prison will be by debit card.' %}
+    {% else %}
+      {% trans 'You can no longer send money by bank transfer.' %}
+      {% trans 'The best way to send money to someone in prison is by debit card.' %}
+    {% endif %}
     {% url 'help_area:help-cannot-access' as link %}
     {% blocktrans trimmed %}
       If it means you will no longer be able to use this service, there are <a href="{{ link }}">alternatives</a>.
