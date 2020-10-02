@@ -13,7 +13,7 @@ from send_money.forms import (
     BankTransferPrisonerDetailsForm,
     DebitCardPrisonerDetailsForm, DebitCardAmountForm,
 )
-from send_money.models import PaymentMethod
+from send_money.models import PaymentMethodBankTransferEnabled
 from send_money.tests import mock_auth, patch_gov_uk_pay_availability_check
 from send_money.utils import api_url, get_api_session
 
@@ -69,8 +69,16 @@ class FormTestCase(SimpleTestCase):
         self.assertFalse(is_valid)
 
 
+@override_settings(BANK_TRANSFERS_ENABLED=True)
 class PaymentMethodChoiceFormTestCase(FormTestCase):
     form_class = PaymentMethodChoiceForm
+
+    @mock.patch('send_money.forms.check_payment_service_available', return_value=(False, 'Bad bad, not good'))
+    @override_settings(BANK_TRANSFERS_ENABLED=False)
+    def test_initial_not_set_on_availability_fail_if_bank_transfer_not_enabled(self, *args):
+        form = self.form_class()
+        self.assertFalse(bool(form.fields['payment_method'].initial))
+        self.assertEqual(form.fields['payment_method'].message_to_users, 'Bad bad, not good')
 
 
 PaymentMethodChoiceFormTestCase.make_valid_tests(
@@ -82,7 +90,7 @@ PaymentMethodChoiceFormTestCase.make_valid_tests(
             }
         }
     }
-    for method_choice in PaymentMethod
+    for method_choice in PaymentMethodBankTransferEnabled
 )
 PaymentMethodChoiceFormTestCase.make_invalid_tests([
     {
@@ -143,6 +151,7 @@ class PrisonerDetailsFormTestCase(FormTestCase):
         self.assertFalse(is_valid)
 
 
+@override_settings(BANK_TRANSFERS_ENABLED=True)
 class BankTransferPrisonerDetailsFormTestCase(PrisonerDetailsFormTestCase):
     form_class = BankTransferPrisonerDetailsForm
 

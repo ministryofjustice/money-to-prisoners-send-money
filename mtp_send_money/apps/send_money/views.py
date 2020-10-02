@@ -17,7 +17,7 @@ from requests.exceptions import RequestException
 
 from send_money import forms as send_money_forms
 from send_money.exceptions import GovUkPaymentStatusException
-from send_money.models import PaymentMethod
+from send_money.models import PaymentMethodBankTransferEnabled as PaymentMethod
 from send_money.payments import is_active_payment, GovUkPaymentStatus, PaymentClient
 from send_money.mail import send_email_for_bank_transfer_reference
 from send_money.utils import (

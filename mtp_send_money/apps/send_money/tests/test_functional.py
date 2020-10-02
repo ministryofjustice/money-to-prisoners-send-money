@@ -10,7 +10,7 @@ from django.utils.timezone import now
 from mtp_common.test_utils.functional_tests import FunctionalTestCase
 import responses
 
-from send_money.models import PaymentMethod
+from send_money.models import PaymentMethodBankTransferEnabled as PaymentMethod
 from send_money.tests import mock_auth
 from send_money.utils import api_url, govuk_url
 
