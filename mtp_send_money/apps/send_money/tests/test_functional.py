@@ -40,6 +40,8 @@ class SendMoneyFunctionalTestCase(FunctionalTestCase):
 
 @unittest.skipIf('DJANGO_TEST_REMOTE_INTEGRATION_URL' in os.environ, 'test only runs locally')
 class SendMoneyFlows(SendMoneyFunctionalTestCase):
+
+    @override_settings(BANK_TRANSFERS_ENABLED=True)
     def test_bank_transfer_flow(self):
         self.driver.get(self.live_server_url + '/en-gb/')
         self.make_payment_method_choice(PaymentMethod.bank_transfer)
@@ -51,7 +53,7 @@ class SendMoneyFlows(SendMoneyFunctionalTestCase):
             'prisoner_dob_2': '1989',
         })
         self.driver.find_element_by_id('id_next_btn').click()
-        self.assertOnPage('bank_transfer')
+        self.assertOnPage('prisoner_details_bank')
 
     @unittest.skip('gov.uk pay functional testing not implemented')
     def test_debit_card_flow(self):
@@ -92,6 +94,7 @@ class SendMoneyDetailsPage(SendMoneyFunctionalTestCase):
         self.assertEqual(self.driver.execute_script(script), str(expected_year),
                          msg='2-digit year %s did not format to expected %s' % (entry_year, expected_year))
 
+    @override_settings(BANK_TRANSFERS_ENABLED=True)
     def test_2_digit_year_entry_using_javascript_in_bank_transfer_flow(self):
         self.driver.get(self.live_server_url + '/en-gb/')
         self.driver.find_element_by_id('id_bank_transfer').click()
@@ -167,7 +170,7 @@ class SendMoneyCheckDetailsPage(SendMoneyFunctionalTestCase):
             'amount': '34.50',
         })
         self.driver.find_element_by_id('id_next_btn').click()
-        self.assertCurrentUrl('/en-gb/debit-card/check/')
+        self.assertCurrentUrl(self.live_server_url + '/en-gb/debit-card/check/')
         self.assertIn('Check details', self.driver.title)
         self.assertInSource('James Halls')
         self.assertInSource('21/01/1989')
@@ -276,7 +279,7 @@ class SendMoneySupportPages(SendMoneyFunctionalTestCase):
         {
             'link_name': 'accessibility',
             'link_text': 'Accessibility statement',
-            'page_content': 'Accessibility statement for the Send money to someone in prison service',
+            'page_content': 'Accessibility statement',
         },
     ]
 

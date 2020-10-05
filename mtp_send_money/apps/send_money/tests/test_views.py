@@ -189,10 +189,7 @@ class BankTransferWarningTestCase(BankTransferFlowTestCase):
     @override_settings(BANK_TRANSFERS_ENABLED=False)
     def test_warning_page_does_not_show_if_bank_transfer_not_enabled(self):
         response = self.choose_bank_transfer_payment_method(should_fail=True)
-        # TODO double check this on monday, not sure this is correct behaviour
         self.assertOnPage(response, 'choose_method')
-        #  self.assertEqual(response.status_code, 400)
-        #  self.assertIn(response.content, b'Bank Transfers are no longer supported by this service')
 
 
 @patch_notifications()
