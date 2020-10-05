@@ -7,6 +7,7 @@
 {% block inner_content %}
   {% notifications_box request 'send_money_landing' %}
 
+  {% if bank_transfers_enabled %}
   <div class="mtp-notification mtp-notification--info">
     <h1 class="mtp-notification__headline">
       {% trans 'Service change from November 2nd' %}
@@ -31,6 +32,7 @@
       </p>
     </div>
   </div>
+  {% endif %}
 
   <div class="grid-row">
     <div class="column-two-thirds">
@@ -62,7 +64,11 @@
 
         <div class="error-summary" role="alert" aria-labelledby="error-summary-heading" tabindex="-1">
           <h1 class="heading-medium error-summary-heading">
-            {{ form.payment_method.field.message_to_users|default:_('Sending money by debit card is temporarily unavailable') }}
+            {% if bank_transfers_enabled %}
+              {{ form.payment_method.field.message_to_users|default:_('Sending money by debit card is temporarily unavailable') }}
+            {% else %}
+              {{ form.payment_method.field.message_to_users|default:_('This service is temporarily unavailable') }}
+            {% endif %}
           </h1>
           <p>
             {% trans 'Please try again later.' %}
@@ -84,6 +90,7 @@
 
       <br />
 
+      {% if bank_transfers_enabled %}
       <form method="post">
         {% csrf_token %}
         {% with payment_method=form.payment_method.field.choices.1.0 %}
@@ -92,6 +99,11 @@
           </button>
         {% endwith %}
       </form>
+      {% else %}
+      <a class="govuk-link" href="{% url 'help_area:help-cannot-access' %}">
+        {% trans 'I don’t have a debit card / can’t access this service' %}
+      </a>
+      {% endif %}
 
     </div>
   </div>

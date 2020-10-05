@@ -302,6 +302,30 @@ PRISONER_CAPPING_THRESHOLD_IN_POUNDS = Decimal(
     os.environ.get('PRISONER_CAPPING_THRESHOLD_IN_POUNDS', '900')
 )  # always use `Decimal` in pounds
 
+# Feature toggle for copy changes relating to bank transfers
+BANK_TRANSFERS_ENABLED = bool(
+    int(
+        os.environ.get(
+            'BANK_TRANSFERS_ENABLED',
+            '1'
+        )
+    )
+)
+
+# THIS SETTING OVERRIDES THE ABOVE SETTINGS
+NOVEMBER_SECOND_CHANGES_LIVE = bool(
+    int(
+        os.environ.get(
+            'NOVEMBER_SECOND_CHANGES_LIVE',
+            '0'
+        )
+    )
+)
+
+if NOVEMBER_SECOND_CHANGES_LIVE:
+    BANK_TRANSFERS_ENABLED = False
+    PRISONER_CAPPING_ENABLED = True
+
 try:
     from .local import *  # noqa
 except ImportError:

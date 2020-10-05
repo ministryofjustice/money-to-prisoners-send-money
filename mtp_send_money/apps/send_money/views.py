@@ -4,6 +4,7 @@ import logging
 import random
 
 from django.conf import settings
+from django.http import HttpResponseNotFound, HttpResponseBadRequest
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.utils import timezone
@@ -16,7 +17,7 @@ from requests.exceptions import RequestException
 
 from send_money import forms as send_money_forms
 from send_money.exceptions import GovUkPaymentStatusException
-from send_money.models import PaymentMethod
+from send_money.models import PaymentMethodBankTransferEnabled as PaymentMethod
 from send_money.payments import is_active_payment, GovUkPaymentStatus, PaymentClient
 from send_money.mail import send_email_for_bank_transfer_reference
 from send_money.utils import (
@@ -163,10 +164,16 @@ class PaymentMethodChoiceView(SendMoneyFormView):
             'service_charged': self.is_service_charged(),
             'service_charge_percentage': settings.SERVICE_CHARGE_PERCENTAGE,
             'service_charge_fixed': settings.SERVICE_CHARGE_FIXED,
+            'bank_transfers_enabled': settings.BANK_TRANSFERS_ENABLED
         })
         return context_data
 
     def form_valid(self, form):
+        if (
+            not settings.BANK_TRANSFERS_ENABLED
+            and form.cleaned_data['payment_method'] == PaymentMethod.bank_transfer.name
+        ):
+            return HttpResponseBadRequest('Bank Transfers are no longer supported by this service')
         if form.cleaned_data['payment_method'] == PaymentMethod.bank_transfer.name:
             self.success_url = build_view_url(self.request, BankTransferWarningView.url_name)
         else:
@@ -179,6 +186,11 @@ class PaymentMethodChoiceView(SendMoneyFormView):
 
 class BankTransferFlow(SendMoneyView):
     payment_method = PaymentMethod.bank_transfer
+
+    def dispatch(self, *args, **kwargs):
+        if not settings.BANK_TRANSFERS_ENABLED:
+            return HttpResponseNotFound('Bank Transfers are no longer supported by this service')
+        return super().dispatch(*args, **kwargs)
 
 
 class BankTransferWarningView(BankTransferFlow, TemplateView):

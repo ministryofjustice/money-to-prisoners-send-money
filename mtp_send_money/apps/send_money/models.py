@@ -3,9 +3,7 @@ from enum import Enum
 from django.utils.translation import gettext_lazy as _
 
 
-class PaymentMethod(Enum):
-    debit_card = _('Pay now by debit card')
-    bank_transfer = _('Get a prisoner reference to use in a UK bank transfer')
+class PaymentMethodBase(Enum):
 
     def __str__(self):
         return self.name
@@ -19,3 +17,12 @@ class PaymentMethod(Enum):
         if not isinstance(payment_method, cls):
             payment_method = cls[payment_method]
         return payment_method.value
+
+
+class PaymentMethodBankTransferEnabled(PaymentMethodBase):
+    debit_card = _('Pay now by debit card')
+    bank_transfer = _('Get a prisoner reference to use in a UK bank transfer')
+
+
+class PaymentMethodBankTransferDisabled(PaymentMethodBase):
+    debit_card = _('Pay now by debit card')

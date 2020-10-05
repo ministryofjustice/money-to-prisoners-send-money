@@ -62,6 +62,7 @@ class HelpView(CacheableTemplateView):
     def get_context_data(self, **kwargs):
         context_data = super().get_context_data(**kwargs)
         context_data['breadcrumbs_back'] = self.back_url
+        context_data['bank_transfers_enabled'] = settings.BANK_TRANSFERS_ENABLED
         return context_data
 
 

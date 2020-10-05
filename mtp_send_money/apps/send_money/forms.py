@@ -14,7 +14,10 @@ from mtp_common.forms.fields import SplitDateField
 from oauthlib.oauth2 import OAuth2Error, TokenExpiredError
 from requests.exceptions import RequestException
 
-from send_money.models import PaymentMethod
+from send_money.models import (
+    PaymentMethodBankTransferEnabled,
+    PaymentMethodBankTransferDisabled
+)
 from send_money.utils import (
     serialise_amount, unserialise_amount, serialise_date, unserialise_date,
     RejectCardNumberValidator, validate_prisoner_number,
@@ -31,7 +34,7 @@ class SendMoneyForm(GARequestErrorReportingMixin, forms.Form):
         session = request.session
 
         def get_value(f):
-            value = session[f]
+            value = session.get(f)
             if hasattr(cls, 'unserialise_%s' % f) and value is not None:
                 value = getattr(cls, 'unserialise_%s' % f)(value)
             return value
@@ -64,23 +67,32 @@ class SendMoneyForm(GARequestErrorReportingMixin, forms.Form):
             session[field] = value
 
         for field in getattr(cls, 'additional_fields_to_deserialize', []):
-            session[field] = getattr(self, field)
+            session[field] = getattr(self, field, self.cleaned_data.get(field))
 
 
 class PaymentMethodChoiceForm(SendMoneyForm):
-    payment_method = forms.ChoiceField(error_messages={
-        'required': _('Please choose how you want to send money')
-    }, choices=PaymentMethod.django_choices())
+    additional_fields_to_deserialize = ('payment_method',)
 
     def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        payment_method_field = self.fields['payment_method']
+        if settings.BANK_TRANSFERS_ENABLED:
+            django_choices = PaymentMethodBankTransferEnabled.django_choices()
+        else:
+            django_choices = PaymentMethodBankTransferDisabled.django_choices()
+        self.base_fields['payment_method'] = forms.ChoiceField(
+            error_messages={'required': _('Please choose how you want to send money')},
+            choices=django_choices
+        )
 
         payment_service_available, message_to_users = check_payment_service_available()
         if not payment_service_available:
-            payment_method_field.message_to_users = message_to_users
-            payment_method_field.initial = PaymentMethod.bank_transfer.name
-            payment_method_field.disabled = True
+            self.base_fields['payment_method'].message_to_users = message_to_users
+            if settings.BANK_TRANSFERS_ENABLED:
+                self.base_fields['payment_method'].initial = PaymentMethodBankTransferEnabled.bank_transfer.name
+            self.base_fields['payment_method'].disabled = True
+        # Handle session deserialization of fields defined against instance manually :(
+        if 'payment_method' in kwargs:
+            kwargs['data']['payment_method'] = kwargs.pop('payment_method')
+        super().__init__(**kwargs)
 
 
 class PrisonerDetailsForm(SendMoneyForm):
