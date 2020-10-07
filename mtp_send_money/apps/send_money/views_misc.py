@@ -39,7 +39,7 @@ class CookiesView(FormView):
 
     def form_valid(self, form):
         success_url = form.cleaned_data['next']
-        if success_url and is_safe_url(success_url, host=self.request.get_host()):
+        if success_url and is_safe_url(success_url, allowed_hosts={self.request.get_host()}):
             response = redirect(success_url)
         else:
             response = super().form_valid(form)
