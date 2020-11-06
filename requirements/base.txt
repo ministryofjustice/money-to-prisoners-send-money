@@ -1,6 +1,6 @@
 # Dependencies needed for all environments
 # NB: this is not the complete set needed to run the app
-Django>2.2,<2.3
+# Django version is now defined in money-to-prisoners-common dependency
 django-anymail[mailgun]~=7.2
 requests>=2.22,<3
 transifex-client>=0.12
