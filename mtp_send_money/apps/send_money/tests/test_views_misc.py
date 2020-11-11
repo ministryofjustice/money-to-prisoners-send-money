@@ -5,7 +5,7 @@ from xml.etree import ElementTree
 from django.conf import settings
 from django.template import Context, Template
 from django.test import override_settings
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.utils.cache import get_max_age
 from django.utils.translation import override as override_lang
 from mtp_common.analytics import AnalyticsPolicy
@@ -17,22 +17,24 @@ from send_money.tests import BaseTestCase, patch_notifications, patch_gov_uk_pay
 @patch_notifications()
 @patch_gov_uk_pay_availability_check()
 class PerformanceCookiesTestCase(BaseTestCase):
+    test_page = reverse_lazy('send_money:user_agreement')
+
     def test_prompt_visible_without_cookie(self):
-        response = self.client.get(reverse('send_money:choose_method'))
+        response = self.client.get(self.test_page)
         self.assertContains(response, 'mtp-cookie-prompt')
 
     def test_prompt_not_visible_when_cookie_policy_is_set(self):
         self.client.cookies[AnalyticsPolicy.cookie_name] = '{"usage":true}'
-        response = self.client.get(reverse('send_money:choose_method'))
+        response = self.client.get(self.test_page)
         self.assertNotContains(response, 'mtp-cookie-prompt')
 
         self.client.cookies[AnalyticsPolicy.cookie_name] = '{"usage":false}'
-        response = self.client.get(reverse('send_money:choose_method'))
+        response = self.client.get(self.test_page)
         self.assertNotContains(response, 'mtp-cookie-prompt')
 
     @override_settings(GOOGLE_ANALYTICS_ID='ABC123')
     def test_performance_analytics_off_by_default(self):
-        response = self.client.get(reverse('send_money:choose_method'))
+        response = self.client.get(self.test_page)
         self.assertNotContains(response, 'ABC123')
         self.assertNotContains(response, 'govuk_shared.send')
 
@@ -41,7 +43,7 @@ class PerformanceCookiesTestCase(BaseTestCase):
         response = self.client.post(reverse('cookies'), data={'accept_cookies': 'yes'})
         cookie = response.cookies.get(AnalyticsPolicy.cookie_name).value
         self.assertDictEqual(json.loads(cookie), {'usage': True})
-        response = self.client.get(reverse('send_money:choose_method'))
+        response = self.client.get(self.test_page)
         self.assertNotContains(response, 'mtp-cookie-prompt')
         self.assertContains(response, 'ABC123')
 
@@ -50,26 +52,26 @@ class PerformanceCookiesTestCase(BaseTestCase):
         response = self.client.post(reverse('cookies'), data={'accept_cookies': 'no'})
         cookie = response.cookies.get(AnalyticsPolicy.cookie_name).value
         self.assertDictEqual(json.loads(cookie), {'usage': False})
-        response = self.client.get(reverse('send_money:choose_method'))
+        response = self.client.get(self.test_page)
         self.assertNotContains(response, 'mtp-cookie-prompt')
         self.assertNotContains(response, 'ABC123')
 
     @override_settings(GOOGLE_ANALYTICS_ID='ABC123', GOOGLE_ANALYTICS_GDS_ID='GDS321')
     def test_gds_performance_analytics_off_by_default(self):
-        response = self.client.get(reverse('send_money:choose_method'))
+        response = self.client.get(self.test_page)
         self.assertNotContains(response, 'GDS321')
         self.assertNotContains(response, 'govuk_shared.send')
 
     @override_settings(GOOGLE_ANALYTICS_ID='ABC123', GOOGLE_ANALYTICS_GDS_ID='GDS321')
     def test_gds_performance_analytics_can_be_accepted(self):
         self.client.post(reverse('cookies'), data={'accept_cookies': 'yes'})
-        response = self.client.get(reverse('send_money:choose_method'))
+        response = self.client.get(self.test_page)
         self.assertContains(response, 'GDS321')
         self.assertContains(response, 'govuk_shared.send')
 
     @override_settings(GOOGLE_ANALYTICS_ID='ABC123')
     def test_cookie_prompt_safely_redirects_back(self):
-        for safe_page in ['send_money:choose_method', 'help_area:help']:
+        for safe_page in ['send_money:user_agreement', 'send_money:choose_method', 'help_area:help', 'terms']:
             response = self.client.post(reverse('cookies'), data={
                 'accept_cookies': 'yes',
                 'next': reverse(safe_page),

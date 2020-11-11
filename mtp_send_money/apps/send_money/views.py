@@ -41,7 +41,7 @@ def clear_session_view(request):
     @param request: the HTTP request
     """
     request.session.flush()
-    return redirect(build_view_url(request, PaymentMethodChoiceView.url_name))
+    return redirect(build_view_url(request, UserAgreementView.url_name))
 
 
 def get_payment_delayed_capture_rollout_percentage():
@@ -147,8 +147,22 @@ class SendMoneyFormView(SendMoneyView, FormView):
         return super().form_valid(form)
 
 
+class UserAgreementView(SendMoneyView, TemplateView):
+    url_name = 'user_agreement'
+    template_name = 'send_money/user-agreement.html'
+
+    def get_context_data(self, **kwargs):
+        context_data = super().get_context_data(**kwargs)
+        context_data['breadcrumbs_back'] = settings.START_PAGE_URL
+        return context_data
+
+    def get_success_url(self):
+        return build_view_url(self.request, PaymentMethodChoiceView.url_name)
+
+
 class PaymentMethodChoiceView(SendMoneyFormView):
     url_name = 'choose_method'
+    previous_view = UserAgreementView
     template_name = 'send_money/payment-method.html'
     form_class = send_money_forms.PaymentMethodChoiceForm
 

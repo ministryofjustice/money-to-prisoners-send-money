@@ -2,7 +2,7 @@ from django.conf.urls import url
 
 from send_money.views import (
     clear_session_view,
-    PaymentMethodChoiceView,
+    UserAgreementView, PaymentMethodChoiceView,
     BankTransferWarningView, BankTransferPrisonerDetailsView, BankTransferReferenceView,
     DebitCardPrisonerDetailsView, DebitCardAmountView, DebitCardCheckView,
     DebitCardPaymentView, DebitCardConfirmationView,
@@ -10,7 +10,9 @@ from send_money.views import (
 
 app_name = 'send_money'
 urlpatterns = [
-    url(r'^$', PaymentMethodChoiceView.as_view(),
+    url(r'^$', UserAgreementView.as_view(),
+        name=UserAgreementView.url_name),
+    url(r'^payment-choice/$', PaymentMethodChoiceView.as_view(),
         name=PaymentMethodChoiceView.url_name),
 
     url(r'^bank-transfer/warning/$', BankTransferWarningView.as_view(),
