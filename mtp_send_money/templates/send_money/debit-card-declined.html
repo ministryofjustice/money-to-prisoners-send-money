@@ -10,12 +10,8 @@
 </header>
 
 <p>{% trans 'No money has been taken from your account.' %}</p>
-
-<p>{% trans 'What next?' %}</p>
-
-<ul class="list list-bullet">
-  <li>{% trans 'Wait 5 days before you try to make another payment or your card could be declined again' %}</li>
-  <li>{% trans 'Check that the address and other card details are exactly the same as your bank holds' %}</li>
-  <li>{% trans 'Check with your bank for any problems with your card' %}</li>
-</ul>
+<p>
+  {% trans '<strong>You must wait 5 days </strong> before trying to make another payment, even if you have money in the bank.' %}
+</p>
+<p>{% trans 'In the meantime, check that the address and other card details are exactly the same as your bank holds.' %}</p>
 {% endblock %}
