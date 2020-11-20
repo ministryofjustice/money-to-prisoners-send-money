@@ -92,10 +92,10 @@
 
   <div class="grid-row mtp-check-details__confirm">
     <form class="column-one-third" action="{{ view.get_success_url }}" method="get">
-      <input class="button" id="id_next_btn" type="submit" value="{% trans 'Enter card details' %}">
+      <p><input class="button" id="id_next_btn" type="submit" value="{% trans 'Enter card details' %}"></p>
     </form>
     <form class="column-two-thirds" action="{% url 'send_money:clear_session' %}" method="get">
-      <input class="link" type="submit" value="{% trans 'Cancel and delete all details' %}">
+      <p><input class="link" type="submit" value="{% trans 'Cancel and delete all details' %}"></p>
     </form>
   </div>
 
