@@ -14,10 +14,7 @@ from mtp_common.forms.fields import SplitDateField
 from oauthlib.oauth2 import OAuth2Error, TokenExpiredError
 from requests.exceptions import RequestException
 
-from send_money.models import (
-    PaymentMethodBankTransferEnabled,
-    PaymentMethodBankTransferDisabled
-)
+from send_money.models import PaymentMethodBankTransferDisabled
 from send_money.utils import (
     serialise_amount, unserialise_amount, serialise_date, unserialise_date,
     RejectCardNumberValidator, validate_prisoner_number,
@@ -74,10 +71,7 @@ class PaymentMethodChoiceForm(SendMoneyForm):
     additional_fields_to_deserialize = ('payment_method',)
 
     def __init__(self, **kwargs):
-        if settings.BANK_TRANSFERS_ENABLED:
-            django_choices = PaymentMethodBankTransferEnabled.django_choices()
-        else:
-            django_choices = PaymentMethodBankTransferDisabled.django_choices()
+        django_choices = PaymentMethodBankTransferDisabled.django_choices()
         self.base_fields['payment_method'] = forms.ChoiceField(
             error_messages={'required': _('Please choose how you want to send money')},
             choices=django_choices
@@ -86,8 +80,6 @@ class PaymentMethodChoiceForm(SendMoneyForm):
         payment_service_available, message_to_users = check_payment_service_available()
         if not payment_service_available:
             self.base_fields['payment_method'].message_to_users = message_to_users
-            if settings.BANK_TRANSFERS_ENABLED:
-                self.base_fields['payment_method'].initial = PaymentMethodBankTransferEnabled.bank_transfer.name
             self.base_fields['payment_method'].disabled = True
         # Handle session deserialization of fields defined against instance manually :(
         if 'payment_method' in kwargs:

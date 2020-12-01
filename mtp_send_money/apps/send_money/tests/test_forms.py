@@ -1,6 +1,4 @@
 import logging
-import threading
-import time
 from unittest import mock
 
 from django.test.testcases import SimpleTestCase
@@ -10,10 +8,9 @@ import responses
 
 from send_money.forms import (
     PaymentMethodChoiceForm,
-    BankTransferPrisonerDetailsForm,
-    DebitCardPrisonerDetailsForm, DebitCardAmountForm,
+    DebitCardPrisonerDetailsForm,
+    DebitCardAmountForm,
 )
-from send_money.models import PaymentMethodBankTransferEnabled
 from send_money.tests import mock_auth, patch_gov_uk_pay_availability_check
 from send_money.utils import api_url, get_api_session
 
@@ -69,29 +66,26 @@ class FormTestCase(SimpleTestCase):
         self.assertFalse(is_valid)
 
 
-@override_settings(BANK_TRANSFERS_ENABLED=True)
 class PaymentMethodChoiceFormTestCase(FormTestCase):
     form_class = PaymentMethodChoiceForm
 
     @mock.patch('send_money.forms.check_payment_service_available', return_value=(False, 'Bad bad, not good'))
-    @override_settings(BANK_TRANSFERS_ENABLED=False)
     def test_initial_not_set_on_availability_fail_if_bank_transfer_not_enabled(self, *args):
         form = self.form_class()
         self.assertFalse(bool(form.fields['payment_method'].initial))
         self.assertEqual(form.fields['payment_method'].message_to_users, 'Bad bad, not good')
 
 
-PaymentMethodChoiceFormTestCase.make_valid_tests(
+PaymentMethodChoiceFormTestCase.make_valid_tests([
     {
-        'name': method_choice.name,
+        'name': 'debit_card',
         'input_data': {
             'data': {
-                'payment_method': method_choice.name
+                'payment_method': 'debit_card'
             }
         }
     }
-    for method_choice in PaymentMethodBankTransferEnabled
-)
+])
 PaymentMethodChoiceFormTestCase.make_invalid_tests([
     {
         'name': 'no_input_data',
@@ -102,6 +96,14 @@ PaymentMethodChoiceFormTestCase.make_invalid_tests([
         'input_data': {
             'data': {
                 'payment_method': ''
+            }
+        }
+    },
+    {
+        'name': 'bank_transfer',
+        'input_data': {
+            'data': {
+                'bank_transfer': ''
             }
         }
     },
@@ -149,256 +151,6 @@ class PrisonerDetailsFormTestCase(FormTestCase):
         self.assertEqual(mocked_api_client.get_authenticated_connection.call_count, 0,
                          'api_client.get_authenticated_connection called!')
         self.assertFalse(is_valid)
-
-
-@override_settings(BANK_TRANSFERS_ENABLED=True)
-class BankTransferPrisonerDetailsFormTestCase(PrisonerDetailsFormTestCase):
-    form_class = BankTransferPrisonerDetailsForm
-
-    def test_session_expiry(self):
-        from mtp_common.auth.api_client import get_request_token_url
-
-        form = self.form_class(data={
-            'prisoner_number': 'A1234AB',
-            'prisoner_dob_0': '5',
-            'prisoner_dob_1': '10',
-            'prisoner_dob_2': '1980',
-        })
-        create_session_calls = []
-
-        def mocked_get_api_session(reconnect=False):
-            create_session_calls.append(reconnect)
-            return get_api_session()
-
-        with responses.RequestsMock() as rsps, \
-                mock.patch('send_money.forms.PrisonerDetailsForm.get_api_session') as mocked_api_session:
-            mocked_api_session.side_effect = mocked_get_api_session
-            rsps.add(
-                rsps.POST,
-                get_request_token_url(),
-                json={
-                    'token_type': 'Bearer',
-                    'scope': 'read write',
-                    'access_token': get_random_string(length=30),
-                    'refresh_token': get_random_string(length=30),
-                    'expires_in': 0,
-                },
-                status=200,
-            )
-            rsps.add(
-                rsps.POST,
-                get_request_token_url(),
-                json={
-                    'token_type': 'Bearer',
-                    'scope': 'read write',
-                    'access_token': get_random_string(length=30),
-                    'refresh_token': get_random_string(length=30),
-                    'expires_in': 3600,
-                },
-                status=200,
-            )
-            rsps.add(
-                rsps.GET,
-                api_url('/prisoner_validity/'),
-                json={
-                    'count': 1,
-                    'results': [{
-                        'prisoner_number': 'A1234AB',
-                        'prisoner_dob': '1980-10-05',
-                    }],
-                },
-                status=200,
-            )
-            self.assertTrue(form.is_valid())
-        self.assertSequenceEqual(create_session_calls, [False, True])
-
-    @mock.patch('send_money.forms.get_api_session')
-    def test_validation_check_concurrency(self, mocked_api_session):
-        form_class = self.form_class
-        form_class.shared_api_session = None
-        lock = threading.RLock()
-        finished = threading.Event()
-        concurrency = 5
-        runs = 0
-        successes = 0
-
-        def delayed_response():
-            logger.debug('Call to API takes 1 second')
-            time.sleep(1)
-            logger.debug('API call returning')
-            return {
-                'count': 1,
-                'results': [{
-                    'prisoner_number': 'A1234AB',
-                    'prisoner_dob': '1980-10-05',
-                }]
-            }
-
-        mocked_api_call = mocked_api_session().get().json
-        mocked_api_call.side_effect = delayed_response
-        setup_call_count = mocked_api_session.call_count
-
-        class TestThread(threading.Thread):
-            def run(self):
-                nonlocal runs, successes
-
-                form = form_class(data={
-                    'prisoner_number': 'A1234AB',
-                    'prisoner_dob_0': '5',
-                    'prisoner_dob_1': '10',
-                    'prisoner_dob_2': '1980',
-                })
-                is_valid = form.is_valid()
-                with lock:
-                    runs += 1
-                    if is_valid:
-                        successes += 1
-                    if runs == concurrency:
-                        finished.set()
-
-        with patch_gov_uk_pay_availability_check():
-            for _ in range(concurrency):
-                TestThread().start()
-        finished.wait()
-        self.assertEqual(mocked_api_session.call_count, setup_call_count + 1, 'get_api_session called more than once, '
-                                                                              'but the response should be shared')
-        self.assertEqual(mocked_api_call.call_count, concurrency, 'validity should be called once for each thread')
-        self.assertEqual(successes, concurrency, 'all threads should report valid forms')
-
-
-BankTransferPrisonerDetailsFormTestCase.make_valid_tests([
-    {
-        'name': 'normal',
-        'input_data': {
-            'data': {
-                'prisoner_number': 'A1234AB',
-                'prisoner_dob_0': '5',
-                'prisoner_dob_1': '10',
-                'prisoner_dob_2': '1980',
-            }
-        }
-    },
-    {
-        'name': 'lowercase',
-        'input_data': {
-            'data': {
-                'prisoner_number': 'a1234ab',
-                'prisoner_dob_0': '5',
-                'prisoner_dob_1': '10',
-                'prisoner_dob_2': '1980',
-            }
-        }
-    },
-    {
-        'name': 'short_year',
-        'input_data': {
-            'data': {
-                'prisoner_number': 'A1234AB',
-                'prisoner_dob_0': '5',
-                'prisoner_dob_1': '10',
-                'prisoner_dob_2': '80',
-            }
-        }
-    },
-])
-BankTransferPrisonerDetailsFormTestCase.make_invalid_tests([
-    {
-        'name': 'no_data',
-        'input_data': {}
-    },
-    {
-        'name': 'empty_data',
-        'input_data': {'data': {}}
-    },
-    {
-        'name': 'missing_prisoner_number',
-        'input_data': {
-            'data': {
-                'prisoner_number': '',
-                'prisoner_dob_0': '5',
-                'prisoner_dob_1': '10',
-                'prisoner_dob_2': '1980',
-            }
-        }
-    },
-    {
-        'name': 'prisoner_number',
-        'input_data': {
-            'data': {
-                'prisoner_number': 'A12346',
-                'prisoner_dob_0': '5',
-                'prisoner_dob_1': '10',
-                'prisoner_dob_2': '1980',
-            }
-        }
-    },
-    {
-        'name': 'missing_prisoner_dob',
-        'input_data': {
-            'data': {
-                'prisoner_number': 'A1234AB',
-                'prisoner_dob_0': '',
-                'prisoner_dob_1': '',
-                'prisoner_dob_2': '',
-            }
-        }
-    },
-    {
-        'name': 'missing_prisoner_dob_day',
-        'input_data': {
-            'data': {
-                'prisoner_number': 'A1234AB',
-                'prisoner_dob_0': '',
-                'prisoner_dob_1': '10',
-                'prisoner_dob_2': '1980',
-            }
-        },
-    },
-    {
-        'name': 'missing_prisoner_dob_month',
-        'input_data': {
-            'data': {
-                'prisoner_number': 'A1234AB',
-                'prisoner_dob_0': '5',
-                'prisoner_dob_1': '',
-                'prisoner_dob_2': '1980',
-            }
-        },
-    },
-    {
-        'name': 'missing_prisoner_dob_year',
-        'input_data': {
-            'data': {
-                'prisoner_number': 'A1234AB',
-                'prisoner_dob_0': '5',
-                'prisoner_dob_1': '10',
-                'prisoner_dob_2': '',
-            }
-        },
-    },
-    {
-        'name': 'dob_format',
-        'input_data': {
-            'data': {
-                'prisoner_number': 'A1234AB',
-                'prisoner_dob_0': '5',
-                'prisoner_dob_1': 'Oct',
-                'prisoner_dob_2': '1980',
-            }
-        }
-    },
-    {
-        'name': 'invalid_dob',
-        'input_data': {
-            'data': {
-                'prisoner_number': 'A1234AB',
-                'prisoner_dob_0': '31',
-                'prisoner_dob_1': '2',
-                'prisoner_dob_2': '1980',
-            }
-        }
-    },
-])
 
 
 class DebitCardPrisonerDetailsFormTestCase(PrisonerDetailsFormTestCase):

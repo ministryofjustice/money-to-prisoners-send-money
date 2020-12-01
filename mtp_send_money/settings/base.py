@@ -302,8 +302,6 @@ PRISONER_CAPPING_THRESHOLD_IN_POUNDS = Decimal(
     os.environ.get('PRISONER_CAPPING_THRESHOLD_IN_POUNDS', '900')
 )  # always use `Decimal` in pounds
 
-BANK_TRANSFERS_ENABLED = False
-
 try:
     from .local import *  # noqa
 except ImportError:

@@ -2,7 +2,6 @@ import datetime
 from decimal import Decimal
 import json
 import logging
-import time
 from unittest import mock
 
 from django.core import mail
@@ -27,7 +26,6 @@ class SendMoneyTestCase(BaseTestCase):
     choose_method_url = reverse_lazy('send_money:choose_method')
 
 
-@override_settings(BANK_TRANSFERS_ENABLED=True)
 class PaymentOptionAvailabilityTestCase(SendMoneyTestCase):
     @patch_notifications()
     @patch_gov_uk_pay_availability_check()
@@ -62,36 +60,6 @@ class PaymentOptionAvailabilityTestCase(SendMoneyTestCase):
 
 @patch_notifications()
 @patch_gov_uk_pay_availability_check()
-@override_settings(BANK_TRANSFERS_ENABLED=True)
-class ChooseMethodViewTestCase(SendMoneyTestCase):
-    def test_shows_all_payment_options(self):
-        response = self.client.get(self.choose_method_url, follow=True)
-        self.assertOnPage(response, 'choose_method')
-        self.assertResponseNotCacheable(response)
-        content = response.content.decode('utf8')
-        for method in PaymentMethod:
-            self.assertIn('id_%s' % method.name, content)
-
-    def test_session_reset_if_returning_to_page(self):
-        response = self.client.post(self.choose_method_url, data={
-            'payment_method': PaymentMethod.debit_card.name
-        }, follow=True)
-        self.assertOnPage(response, 'prisoner_details_debit')
-        response = self.client.get(self.choose_method_url, follow=True)
-        content = response.content.decode('utf8')
-        self.assertNotIn('checked', content)
-        self.assertContains(response, 'Pay now by debit card')
-
-    def test_choice_must_be_made_before_proceeding(self):
-        response = self.client.post(self.choose_method_url)
-        self.assertOnPage(response, 'choose_method')
-        form = response.context['form']
-        self.assertTrue(form.errors)
-
-
-@patch_notifications()
-@patch_gov_uk_pay_availability_check()
-@override_settings(BANK_TRANSFERS_ENABLED=False)
 class ChooseMethodViewTestCaseBankTransferDisabled(SendMoneyTestCase):
     def test_shows_only_debit_card_payment_options(self):
         response = self.client.get(self.choose_method_url, follow=True)
@@ -117,331 +85,10 @@ class ChooseMethodViewTestCaseBankTransferDisabled(SendMoneyTestCase):
         form = response.context['form']
         self.assertTrue(form.errors)
 
-
-# BANK TRANSFER FLOW
-
-@patch_notifications()
-@override_settings(
-    BANK_TRANSFER_PRISONS='',
-    DEBIT_CARD_PRISONS='',
-    BANK_TRANSFERS_ENABLED=True,
-)
-class BankTransferFlowTestCase(SendMoneyTestCase):
-    complete_session_keys = [
-        'payment_method',
-        'prisoner_number',
-        'prisoner_dob',
-    ]
-
-    @classmethod
-    def patch_prisoner_details_check(cls):
-        return mock.patch('send_money.forms.BankTransferPrisonerDetailsForm.is_prisoner_known',
-                          return_value=True)
-
-    def choose_bank_transfer_payment_method(self, should_fail=False):
-        response = self.client.post(self.choose_method_url, data={
-            'payment_method': PaymentMethod.bank_transfer.name
-        }, follow=True)
-        if not should_fail:
-            self.assertOnPage(response, 'bank_transfer_warning')
-        return response
-
-    def fill_in_prisoner_details(self, **kwargs):
-        data = {
-            'prisoner_number': 'A1231DE',
-            'prisoner_dob_0': '4',
-            'prisoner_dob_1': '10',
-            'prisoner_dob_2': '1980',
-        }
-        data.update(kwargs)
-        with self.patch_prisoner_details_check():
-            return self.client.post(BankTransferPrisonerDetailsTestCase.url, data=data, follow=True)
-
-
-@patch_notifications()
-@patch_gov_uk_pay_availability_check()
-@override_settings(BANK_TRANSFERS_ENABLED=True)
-class BankTransferWarningTestCase(BankTransferFlowTestCase):
-    url = reverse_lazy('send_money:bank_transfer_warning')
-
-    def test_cannot_access_directly(self):
-        response = self.client.get(self.url, follow=True)
-        self.assertOnPage(response, 'choose_method')
-
-    def test_redirected_if_accessed_after_choosing_debit_card(self):
-        self.client.post(self.url, data={
-            'payment_method': PaymentMethod.debit_card.name
-        }, follow=True)
-        response = self.client.get(self.url, follow=True)
-        self.assertOnPage(response, 'choose_method')
-
-    @override_settings(BANK_TRANSFERS_ENABLED=False)
-    def test_not_redirected_if_accessed_after_choosing_debit_card_if_bank_transfer_not_enabled(self):
-        self.client.post(self.root_url, data={
-            'payment_method': PaymentMethod.debit_card.name
-        }, follow=True)
-        response = self.client.get(self.url, follow=True)
-        self.assertEqual(response.status_code, 404)
-        self.assertIn(response.content, b'Bank Transfers are no longer supported by this service')
-
-    def test_warning_page_shows(self):
-        response = self.choose_bank_transfer_payment_method()
-        self.assertOnPage(response, 'bank_transfer_warning')
-        self.assertResponseNotCacheable(response)
-
-    @override_settings(BANK_TRANSFERS_ENABLED=False)
-    def test_warning_page_does_not_show_if_bank_transfer_not_enabled(self):
-        response = self.choose_bank_transfer_payment_method(should_fail=True)
-        self.assertOnPage(response, 'choose_method')
-
-
-@patch_notifications()
-@patch_gov_uk_pay_availability_check()
-@override_settings(BANK_TRANSFERS_ENABLED=True)
-class BankTransferPrisonerDetailsTestCase(BankTransferFlowTestCase):
-    url = reverse_lazy('send_money:prisoner_details_bank')
-
-    def test_cannot_access_directly(self):
-        response = self.client.get(self.url, follow=True)
-        self.assertOnPage(response, 'choose_method')
-
-    @override_settings(BANK_TRANSFERS_ENABLED=False)
-    def test_cannot_access_if_bank_transfer_not_enabled(self):
-        self.choose_bank_transfer_payment_method(should_fail=True)
-
-        response = self.client.get(self.url, follow=True)
-        self.assertEqual(response.status_code, 404)
-        self.assertIn(response.content, b'Bank Transfers are no longer supported by this service')
-
-    @override_settings(BANK_TRANSFERS_ENABLED=False)
-    def test_cannot_submit_if_bank_transfer_not_enabled(self):
-        self.choose_bank_transfer_payment_method(should_fail=True)
-
-        with silence_logger():
-            response = self.client.post(self.url, data={
-                'prisoner_number': 'A1231DE',
-                'prisoner_dob_0': '4',
-                'prisoner_dob_1': '10',
-                'prisoner_dob_2': '1980',
-            }, follow=True)
-            self.assertEqual(response.status_code, 404)
-            self.assertIn(response.content, b'Bank Transfers are no longer supported by this service')
-
-    def test_cannot_submit_if_continuing_from_session_and_bank_transfer_not_enabled(self):
-        with override_settings(BANK_TRANSFERS_ENABLED=True):
-            self.choose_bank_transfer_payment_method()
-
-        with silence_logger() and override_settings(BANK_TRANSFERS_ENABLED=False):
-            response = self.client.post(self.url, data={
-                'prisoner_number': 'A1231DE',
-                'prisoner_dob_0': '4',
-                'prisoner_dob_1': '10',
-                'prisoner_dob_2': '1980',
-            }, follow=True)
-            self.assertEqual(response.status_code, 404)
-            self.assertIn(response.content, b'Bank Transfers are no longer supported by this service')
-
-    def test_can_pass_warning_page(self):
-        self.choose_bank_transfer_payment_method()
-
-        response = self.client.get(self.url, follow=True)
-        self.assertOnPage(response, 'prisoner_details_bank')
-        self.assertResponseNotCacheable(response)
-
-    def test_can_skip_back_to_payment_choice_page(self):
-        self.choose_bank_transfer_payment_method()
-
-        response = self.client.get(self.choose_method_url, follow=True)
-        self.assertOnPage(response, 'choose_method')
-
-    @mock.patch('send_money.forms.BankTransferPrisonerDetailsForm.is_prisoner_known')
-    def test_displays_errors_for_dropped_api_connection(self, mocked_is_prisoner_known):
-        self.choose_bank_transfer_payment_method()
-
-        mocked_is_prisoner_known.side_effect = ConnectionError
-        with silence_logger():
-            response = self.client.post(self.url, data={
-                'prisoner_number': 'A1231DE',
-                'prisoner_dob_0': '4',
-                'prisoner_dob_1': '10',
-                'prisoner_dob_2': '1980',
-            }, follow=True)
-        self.assertContains(response, 'This service is currently unavailable')
-        form = response.context['form']
-        self.assertTrue(form.errors)
-
-    @mock.patch('send_money.forms.BankTransferPrisonerDetailsForm.is_prisoner_known')
-    def test_empty_form_submission_shows_errors(self, mocked_is_prisoner_known):
-        self.choose_bank_transfer_payment_method()
-
-        response = self.client.post(self.url, follow=True)
-        self.assertOnPage(response, 'prisoner_details_bank')
-        form = response.context['form']
-        self.assertTrue(form.errors)
-        self.assertEqual(mocked_is_prisoner_known.call_count, 0)
-
-    @mock.patch('send_money.forms.BankTransferPrisonerDetailsForm.is_prisoner_known')
-    def test_displays_errors_for_invalid_prisoner_number(self, mocked_is_prisoner_known):
-        self.choose_bank_transfer_payment_method()
-
-        response = self.client.post(self.url, data={
-            'prisoner_number': 'a1231a1',
-            'prisoner_dob_0': '4',
-            'prisoner_dob_1': '10',
-            'prisoner_dob_2': '1980',
-        }, follow=True)
-        self.assertContains(response, 'Incorrect prisoner number format')
-        form = response.context['form']
-        self.assertTrue(form.errors)
-        self.assertEqual(mocked_is_prisoner_known.call_count, 0)
-
-    @mock.patch('send_money.forms.BankTransferPrisonerDetailsForm.is_prisoner_known')
-    def test_displays_errors_for_missing_prisoner_dob(self, mocked_is_prisoner_known):
-        self.choose_bank_transfer_payment_method()
-
-        response = self.client.post(self.url, data={
-            'prisoner_number': 'A1231DE',
-        }, follow=True)
-        self.assertContains(response, 'This field is required')
-        form = response.context['form']
-        self.assertTrue(form.errors)
-        self.assertEqual(mocked_is_prisoner_known.call_count, 0)
-
-    @mock.patch('send_money.forms.BankTransferPrisonerDetailsForm.is_prisoner_known')
-    def test_displays_errors_for_invalid_prisoner_details(self, mocked_is_prisoner_known):
-        self.choose_bank_transfer_payment_method()
-
-        mocked_is_prisoner_known.return_value = False
-        response = self.client.post(self.url, data={
-            'prisoner_number': 'A1231DE',
-            'prisoner_dob_0': '4',
-            'prisoner_dob_1': '10',
-            'prisoner_dob_2': '1980',
-        }, follow=True)
-        self.assertContains(response, 'No prisoner matches the details')
-        form = response.context['form']
-        self.assertTrue(form.errors)
-
-    @override_settings(BANK_TRANSFER_PRISONS='')
-    @mock.patch('send_money.forms.PrisonerDetailsForm.get_api_session')
-    def test_search_not_limited_to_specific_prisons(self, mocked_api_session):
-        mocked_api_session.side_effect = get_api_session
-        self.choose_bank_transfer_payment_method()
-
-        with responses.RequestsMock() as rsps:
-            mock_auth(rsps)
-            rsps.add(
-                rsps.GET,
-                api_url('/prisoner_validity/') + '?prisoner_number=A1231DE'
-                                                 '&prisoner_dob=1980-10-04',
-                match_querystring=True,
-                json={
-                    'count': 0,
-                    'results': []
-                },
-            )
-            self.client.post(self.url, data={
-                'prisoner_number': 'A1231DE',
-                'prisoner_dob_0': '4',
-                'prisoner_dob_1': '10',
-                'prisoner_dob_2': '1980',
-            }, follow=True)
-
-    @override_settings(BANK_TRANSFER_PRISONS='DEF,ABC')
-    @mock.patch('send_money.forms.PrisonerDetailsForm.get_api_session')
-    def test_can_limit_search_to_specific_prisons(self, mocked_api_session):
-        mocked_api_session.side_effect = get_api_session
-        self.choose_bank_transfer_payment_method()
-
-        with responses.RequestsMock() as rsps:
-            mock_auth(rsps)
-            rsps.add(
-                rsps.GET,
-                api_url('/prisoner_validity/') + '?prisoner_number=A1231DE'
-                                                 '&prisoner_dob=1980-10-04'
-                                                 '&prisons=ABC,DEF',
-                match_querystring=True,
-                json={
-                    'count': 0,
-                    'results': []
-                },
-            )
-            self.client.post(self.url, data={
-                'prisoner_number': 'A1231DE',
-                'prisoner_dob_0': '4',
-                'prisoner_dob_1': '10',
-                'prisoner_dob_2': '1980',
-            }, follow=True)
-
-
-@patch_notifications()
-@patch_gov_uk_pay_availability_check()
-@override_settings(BANK_TRANSFERS_ENABLED=True)
-class BankTransferReferenceTestCase(BankTransferFlowTestCase):
-    url = reverse_lazy('send_money:bank_transfer')
-
-    def test_cannot_access_directly(self):
-        response = self.client.get(self.url, follow=True)
-        self.assertOnPage(response, 'choose_method')
-
-    def test_can_reach_reference_page(self):
-        self.choose_bank_transfer_payment_method()
-
-        response = self.fill_in_prisoner_details()
-        self.assertOnPage(response, 'bank_transfer')
-        self.assertResponseNotCacheable(response)
-
-    @override_settings(BANK_TRANSFERS_ENABLED=False)
-    def test_cannot_submit_if_bank_transfer_not_enabled(self):
-        self.choose_bank_transfer_payment_method(should_fail=True)
-
-        response = self.fill_in_prisoner_details()
-        self.assertEqual(response.status_code, 404)
-        self.assertIn(response.content, b'Bank Transfers are no longer supported by this service')
-
-    def test_bank_transfer_page_clears_session_after_delay(self):
-        with self.settings(CONFIRMATION_EXPIRES=0):
-            self.choose_bank_transfer_payment_method()
-            for key in ['payment_method']:
-                self.assertIn(key, self.client.session)
-
-            self.fill_in_prisoner_details()
-            time.sleep(0.1)
-            response = self.client.get(self.url, follow=True)
-            for key in self.complete_session_keys:
-                self.assertNotIn(key, self.client.session)
-        self.assertOnPage(response, 'user_agreement')
-
-    @override_settings(NOMS_HOLDING_ACCOUNT_NAME='NOMS',
-                       NOMS_HOLDING_ACCOUNT_NUMBER='1001001',
-                       NOMS_HOLDING_ACCOUNT_SORT_CODE='10-20-30')
-    def test_noms_account_details_presented_correctly(self):
-        self.choose_bank_transfer_payment_method()
-
-        response = self.fill_in_prisoner_details()
-        expected_data = {
-            'account_number': '1001001',
-            'sort_code': '10-20-30',
-        }
-        for key, value in expected_data.items():
-            self.assertContains(response, value)
-            self.assertEqual(response.context[key], value)
-
-    def test_reference_number_presented_correctly(self):
-        self.choose_bank_transfer_payment_method()
-
-        response = self.fill_in_prisoner_details()
-        bank_transfer_reference = 'A1231DE/04/10/80'
-        self.assertContains(response, bank_transfer_reference)
-        self.assertEqual(response.context['bank_transfer_reference'], bank_transfer_reference)
-
-
 # DEBIT CARD FLOW
 
 
 @patch_notifications()
-@override_settings(BANK_TRANSFER_PRISONS='',
-                   DEBIT_CARD_PRISONS='')
 class DebitCardFlowTestCase(SendMoneyTestCase):
     complete_session_keys = [
         'payment_method',
@@ -495,13 +142,6 @@ class DebitCardPrisonerDetailsTestCase(DebitCardFlowTestCase):
     url = reverse_lazy('send_money:prisoner_details_debit')
 
     def test_cannot_access_directly(self):
-        response = self.client.get(self.url, follow=True)
-        self.assertOnPage(response, 'choose_method')
-
-    def test_redirected_if_accessed_after_choosing_bank_transfer(self):
-        self.client.post(self.choose_method_url, data={
-            'payment_method': PaymentMethod.bank_transfer.name
-        }, follow=True)
         response = self.client.get(self.url, follow=True)
         self.assertOnPage(response, 'choose_method')
 
@@ -1869,27 +1509,10 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
     'send_money.forms.check_payment_service_available',
     mock.Mock(return_value=(False, 'Scheduled work message')),
 )
-@override_settings(BANK_TRANSFERS_ENABLED=True)
 class PaymentServiceUnavailableTestCase(DebitCardFlowTestCase):
-    def test_gov_uk_service_unavailable_hides_debit_card_route(self):
-        response = self.client.get(self.choose_method_url, follow=True)
-        self.assertNotContains(response, 'id_debit_card')
-        self.assertContains(response, 'id_bank_transfer')
-
     def test_gov_uk_service_unavailable_can_show_message_to_users(self):
         response = self.client.get(self.choose_method_url, follow=True)
         self.assertContains(response, 'Scheduled work message')
-
-    def test_gov_uk_service_unavailable_always_goes_to_bank_transfer(self):
-        # no post data
-        response = self.client.post(self.choose_method_url, follow=True)
-        self.assertOnPage(response, 'bank_transfer_warning')
-
-        # debit card chosen
-        self.client.post(self.choose_method_url, data={
-            'payment_method': PaymentMethod.debit_card.name
-        }, follow=True)
-        self.assertOnPage(response, 'bank_transfer_warning')
 
     @override_settings(
         ENVIRONMENT='prod',  # because non-prod environments don't send to @outside.local
