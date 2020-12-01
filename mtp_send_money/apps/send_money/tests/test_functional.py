@@ -10,7 +10,6 @@ from django.utils.timezone import now
 from mtp_common.test_utils.functional_tests import FunctionalTestCase
 import responses
 
-from send_money.models import PaymentMethodBankTransferEnabled as PaymentMethod
 from send_money.tests import mock_auth
 from send_money.utils import api_url, govuk_url
 
@@ -31,8 +30,8 @@ class SendMoneyFunctionalTestCase(FunctionalTestCase):
     def confirm_user_agreement(self):
         self.driver.find_element_by_id('id_next_btn').click()
 
-    def make_payment_method_choice(self, payment_method):
-        self.driver.find_element_by_id('id_%s' % payment_method).click()
+    def press_continue(self):
+        self.driver.find_element_by_id('id_debit_card').click()
 
     def fill_in_form(self, data):
         for key, value in data.items():
@@ -41,28 +40,13 @@ class SendMoneyFunctionalTestCase(FunctionalTestCase):
 
 
 @unittest.skipIf('DJANGO_TEST_REMOTE_INTEGRATION_URL' in os.environ, 'test only runs locally')
-class SendMoneyFlows(SendMoneyFunctionalTestCase):
-
-    @override_settings(BANK_TRANSFERS_ENABLED=True)
-    def test_bank_transfer_flow(self):
-        self.driver.get(self.live_server_url + '/en-gb/')
-        self.confirm_user_agreement()
-        self.make_payment_method_choice(PaymentMethod.bank_transfer)
-        self.driver.find_element_by_id('id_next_btn').click()
-        self.fill_in_form({
-            'prisoner_number': 'A1409AE',
-            'prisoner_dob_0': '21',
-            'prisoner_dob_1': '1',
-            'prisoner_dob_2': '1989',
-        })
-        self.driver.find_element_by_id('id_next_btn').click()
-        self.assertOnPage('bank_transfer')
+class SendMoneyFlow(SendMoneyFunctionalTestCase):
 
     @unittest.skip('gov.uk pay functional testing not implemented')
     def test_debit_card_flow(self):
         self.driver.get(self.live_server_url + '/en-gb/')
         self.confirm_user_agreement()
-        self.make_payment_method_choice(PaymentMethod.debit_card)
+        self.press_continue()
         self.fill_in_form({
             'prisoner_name': 'James Halls',
             'prisoner_number': 'A1409AE',
@@ -97,14 +81,6 @@ class SendMoneyDetailsPage(SendMoneyFunctionalTestCase):
                  'return document.getElementById("id_prisoner_dob_2").value;'
         self.assertEqual(self.driver.execute_script(script), str(expected_year),
                          msg='2-digit year %s did not format to expected %s' % (entry_year, expected_year))
-
-    @override_settings(BANK_TRANSFERS_ENABLED=True)
-    def test_2_digit_year_entry_using_javascript_in_bank_transfer_flow(self):
-        self.driver.get(self.live_server_url + '/en-gb/')
-        self.confirm_user_agreement()
-        self.driver.find_element_by_id('id_bank_transfer').click()
-        self.driver.find_element_by_id('id_next_btn').click()
-        self.check_2_digit_entry()
 
     def test_2_digit_year_entry_using_javascript_in_debit_card_flow(self):
         self.driver.get(self.live_server_url + '/en-gb/')
