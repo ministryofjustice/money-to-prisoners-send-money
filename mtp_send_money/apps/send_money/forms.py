@@ -274,7 +274,3 @@ class DebitCardAmountForm(SendMoneyForm):
             return self.lookup_prisoner_account_balance(tries=tries + 1)
         else:
             raise ValidationError(self.error_messages['connection'], code='connection')
-
-
-class BankTransferEmailForm(SendMoneyForm):
-    email = forms.EmailField(label=_('Your email address'))
