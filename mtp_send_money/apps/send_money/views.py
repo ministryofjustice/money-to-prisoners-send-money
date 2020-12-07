@@ -193,18 +193,9 @@ class BankTransferFlow(SendMoneyView):
         return HttpResponseNotFound('Bank Transfers are no longer supported by this service')
 
 
-class BankTransferWarningView(BankTransferFlow, TemplateView):
-    url_name = 'bank_transfer_warning'
-    previous_view = PaymentMethodChoiceView
-    template_name = 'send_money/bank-transfer-warning.html'
-
-    def get_success_url(self):
-        return build_view_url(self.request, BankTransferPrisonerDetailsView.url_name)
-
-
 class BankTransferPrisonerDetailsView(BankTransferFlow, SendMoneyFormView):
     url_name = 'prisoner_details_bank'
-    previous_view = BankTransferWarningView
+    previous_view = None
     template_name = 'send_money/bank-transfer-prisoner-details.html'
     form_class = send_money_forms.BankTransferPrisonerDetailsForm
 
