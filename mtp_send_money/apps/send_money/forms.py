@@ -177,12 +177,6 @@ class PrisonerDetailsForm(SendMoneyForm):
         return self.cleaned_data
 
 
-class BankTransferPrisonerDetailsForm(PrisonerDetailsForm):
-    @classmethod
-    def get_prison_set(cls):
-        return set(filter(None, settings.BANK_TRANSFER_PRISONS.split(',')))
-
-
 class DebitCardPrisonerDetailsForm(PrisonerDetailsForm):
     field_order = ('prisoner_name', 'prisoner_dob', 'prisoner_number',)
     prisoner_name = forms.CharField(

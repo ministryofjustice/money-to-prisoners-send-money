@@ -3,7 +3,7 @@ import logging
 import random
 
 from django.conf import settings
-from django.http import HttpResponseNotFound, HttpResponseBadRequest
+from django.http import HttpResponseBadRequest
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.utils.translation import gettext, gettext_lazy as _
@@ -181,28 +181,6 @@ class PaymentMethodChoiceView(SendMoneyFormView):
 
         self.success_url = build_view_url(self.request, DebitCardPrisonerDetailsView.url_name)
         return super().form_valid(form)
-
-
-# BANK TRANSFER FLOW
-
-
-class BankTransferFlow(SendMoneyView):
-    payment_method = PaymentMethod.bank_transfer
-
-    def dispatch(self, *args, **kwargs):
-        return HttpResponseNotFound('Bank Transfers are no longer supported by this service')
-
-
-class BankTransferPrisonerDetailsView(BankTransferFlow, SendMoneyFormView):
-    url_name = 'prisoner_details_bank'
-    previous_view = None
-    template_name = 'send_money/bank-transfer-prisoner-details.html'
-    form_class = send_money_forms.BankTransferPrisonerDetailsForm
-
-    def get_success_url(self): pass
-
-
-# DEBIT CARD FLOW
 
 
 class DebitCardFlowException(Exception):
