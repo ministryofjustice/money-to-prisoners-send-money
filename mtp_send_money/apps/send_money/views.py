@@ -1,4 +1,3 @@
-import datetime
 import decimal
 import logging
 import random
@@ -7,9 +6,6 @@ from django.conf import settings
 from django.http import HttpResponseNotFound, HttpResponseBadRequest
 from django.shortcuts import redirect, render
 from django.urls import reverse
-from django.utils import timezone
-from django.utils.dateformat import format as format_date
-from django.utils.dateparse import parse_datetime
 from django.utils.translation import gettext, gettext_lazy as _
 from django.views.generic import FormView, TemplateView, View
 from oauthlib.oauth2 import OAuth2Error
@@ -19,9 +15,7 @@ from send_money import forms as send_money_forms
 from send_money.exceptions import GovUkPaymentStatusException
 from send_money.models import PaymentMethodBankTransferEnabled as PaymentMethod
 from send_money.payments import is_active_payment, GovUkPaymentStatus, PaymentClient
-from send_money.mail import send_email_for_bank_transfer_reference
 from send_money.utils import (
-    bank_transfer_reference,
     get_link_by_rel,
     get_service_charge,
     site_url,
@@ -214,51 +208,7 @@ class BankTransferPrisonerDetailsView(BankTransferFlow, SendMoneyFormView):
     template_name = 'send_money/bank-transfer-prisoner-details.html'
     form_class = send_money_forms.BankTransferPrisonerDetailsForm
 
-    def get_success_url(self):
-        return build_view_url(self.request, BankTransferReferenceView.url_name)
-
-
-class BankTransferReferenceView(BankTransferFlow, SendMoneyFormView):
-    url_name = 'bank_transfer'
-    previous_view = BankTransferPrisonerDetailsView
-    template_name = 'send_money/bank-transfer-reference.html'
-    form_class = send_money_forms.BankTransferEmailForm
-
-    def dispatch(self, request, *args, **kwargs):
-        now = timezone.now()
-        expires = request.session.get('expires')
-        if not expires:
-            request.session['expires'] = format_date(
-                now + datetime.timedelta(minutes=settings.CONFIRMATION_EXPIRES), 'c'
-            )
-        elif parse_datetime(expires) < now:
-            return clear_session_view(request)
-        return super().dispatch(request, *args, **kwargs)
-
-    def get_context_data(self, **kwargs):
-        context_data = super().get_context_data(**kwargs)
-        prisoner_details = self.valid_form_data[BankTransferPrisonerDetailsView.url_name]
-        context_data.update({
-            'account_number': settings.NOMS_HOLDING_ACCOUNT_NUMBER,
-            'sort_code': settings.NOMS_HOLDING_ACCOUNT_SORT_CODE,
-            'bank_transfer_reference': bank_transfer_reference(
-                prisoner_details['prisoner_number'],
-                prisoner_details['prisoner_dob'],
-            ),
-        })
-        return context_data
-
-    def form_valid(self, form):
-        email = form.cleaned_data['email']
-        context = self.get_context_data()
-        context.pop('form', None)
-        context.pop('view', None)
-
-        send_email_for_bank_transfer_reference(email, context)
-        return super().form_valid(form)
-
-    def get_success_url(self):
-        return build_view_url(self.request, self.url_name)
+    def get_success_url(self): pass
 
 
 # DEBIT CARD FLOW

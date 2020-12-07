@@ -91,13 +91,3 @@ def send_email_for_card_payment_timed_out(email, payment):
         ['dc-timeout'],
         context,
     )
-
-
-def send_email_for_bank_transfer_reference(email, context):
-    _send_notification_email(
-        email,
-        'bank-transfer-reference',
-        gettext('your prisoner reference is %(bank_transfer_reference)s') % context,
-        ['bt-reference'],
-        context,
-    )
