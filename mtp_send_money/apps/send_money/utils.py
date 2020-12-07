@@ -150,10 +150,6 @@ def lenient_unserialise_date(date_text):
     raise ValueError('Invalid date')
 
 
-def bank_transfer_reference(prisoner_number, prisoner_dob):
-    return '%s/%s' % (prisoner_number, format_date(prisoner_dob, 'd/m/y'))
-
-
 def govuk_headers():
     return {
         'Accept': 'application/json',
