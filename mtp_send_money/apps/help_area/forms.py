@@ -54,22 +54,6 @@ class ContactNewPaymentForm(ContactForm):
         label=_('Your name'),
         validators=[RejectCardNumberValidator()],
     )
-    payment_method = forms.ChoiceField(
-        label=_('Type of payment'),
-        choices=(
-            ('debit_card', _('Debit card')),
-            ('bank_transfer', _('Bank transfer')),
-        ),
-    )
-
-    def clean_payment_method(self):
-        payment_method = self.cleaned_data.get('payment_method')
-        if payment_method:
-            for value, name in self.fields['payment_method'].choices:
-                if value == payment_method:
-                    self.cleaned_data['payment_method_name'] = name
-                    break
-        return payment_method
 
 
 class ContactSentPaymentForm(ContactNewPaymentForm):
@@ -83,10 +67,26 @@ class ContactSentPaymentForm(ContactNewPaymentForm):
             'max_decimal_places': _('Only use 2 decimal places'),
         }
     )
+    payment_method = forms.ChoiceField(
+        label=_('Type of payment'),
+        choices=(
+            ('debit_card', _('Debit card')),
+            ('bank_transfer', _('Bank transfer')),
+        ),
+    )
     payment_date = SplitDateField(
         label=_('Date of payment'),
         help_text=_('For example, 8 6 2020'),
     )
+
+    def clean_payment_method(self):
+        payment_method = self.cleaned_data.get('payment_method')
+        if payment_method:
+            for value, name in self.fields['payment_method'].choices:
+                if value == payment_method:
+                    self.cleaned_data['payment_method_name'] = name
+                    break
+        return payment_method
 
     def clean_payment_date(self):
         payment_date = self.cleaned_data.get('payment_date')

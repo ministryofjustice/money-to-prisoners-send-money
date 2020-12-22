@@ -42,13 +42,6 @@
 
             {% include 'mtp_common/forms/field.html' with field=form.contact_name only %}
             {% include 'mtp_common/forms/field.html' with field=form.contact_email value=request.GET.email|default:'' only %}
-
-            <fieldset class="inline">
-              <legend>
-                {{ form.payment_method.label }}
-              </legend>
-              {% include 'mtp_common/forms/radio-field.html' with field=form.payment_method only %}
-            </fieldset>
           {% endblock %}
 
           {% with field=form.ticket_content value=request.GET.message|default:'' %}
