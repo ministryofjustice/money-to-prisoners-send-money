@@ -26,6 +26,13 @@
   {{ block.super }}
 
   {% with field=form.amount %}
+    <fieldset class="inline">
+      <legend>
+        {{ form.payment_method.label }}
+      </legend>
+      {% include 'mtp_common/forms/radio-field.html' with field=form.payment_method only %}
+    </fieldset>
+
     <fieldset>
       <legend class="visually-hidden">{% trans 'Please enter the amount in pounds' %}</legend>
 
