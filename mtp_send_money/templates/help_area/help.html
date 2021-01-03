@@ -17,18 +17,18 @@
         </h1>
       </header>
 
-      <ul class="mtp-help-area-index">
-        <li>
+      <ul class="govuk-list">
+        <li class="govuk-!-margin-bottom-2">
           <a href="{% url 'help_area:help-new-payment' %}">
             {% trans 'Making a payment' %}
           </a>
         </li>
-        <li>
+        <li class="govuk-!-margin-bottom-2">
           <a href="{% url 'help_area:help-sent-payment' %}">
             {% trans 'A payment I’ve already made' %}
           </a>
         </li>
-        <li>
+        <li class="govuk-!-margin-bottom-2">
           <a href="{% url 'help_area:help-cannot-access' %}">
             {% trans 'I don’t have a debit card / can’t access this service' %}
           </a>
