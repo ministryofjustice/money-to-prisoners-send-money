@@ -80,7 +80,7 @@
         <form method="post">
           {% csrf_token %}
           {% with payment_method=form.payment_method.field.choices.0.0 %}
-            <button name="{{ form.payment_method.html_name }}" value="{{ payment_method }}" id="id_{{ payment_method }}" class="button">
+            <button name="{{ form.payment_method.html_name }}" value="{{ payment_method }}" id="id_{{ payment_method }}" class="govuk-button" data-module="govuk-button" data-prevent-double-click="true">
               {% trans 'Continue' %}
             </button>
           {% endwith %}

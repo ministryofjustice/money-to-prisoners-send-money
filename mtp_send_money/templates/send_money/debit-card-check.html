@@ -92,7 +92,7 @@
 
   <div class="govuk-grid-row mtp-check-details__confirm">
     <form class="govuk-grid-column-one-third" action="{{ view.get_success_url }}" method="get">
-      <p><input class="button" id="id_next_btn" type="submit" value="{% trans 'Enter card details' %}"></p>
+      <p><input class="govuk-button" data-module="govuk-button" data-prevent-double-click="true" id="id_next_btn" type="submit" value="{% trans 'Enter card details' %}"></p>
     </form>
     <form class="govuk-grid-column-two-thirds" action="{% url 'send_money:clear_session' %}" method="get">
       <p><input class="link" type="submit" value="{% trans 'Cancel and delete all details' %}"></p>
