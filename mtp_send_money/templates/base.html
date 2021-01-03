@@ -18,7 +18,7 @@
         <input type="hidden" name="next" value="{{ request.get_full_path }}" />
         <button class="govuk-button" data-module="govuk-button" type="submit" name="accept_cookies" value="yes">{% trans 'Accept cookies' %}</button>
         <button class="govuk-button" data-module="govuk-button" type="submit" name="accept_cookies" value="no">{% trans 'Reject cookies' %}</button>
-        <a class="mtp-cancel-button" href="{% url 'cookies' %}">{% trans 'View more information' %}</a>
+        <a class="mtp-link--form-cancel" href="{% url 'cookies' %}">{% trans 'View more information' %}</a>
       </form>
     </aside>
   {% endif %}
