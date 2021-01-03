@@ -5,7 +5,7 @@
 
 {% block cookie_message %}
   {% if not actioned_cookie_prompt %}
-    <aside class="mtp-cookie-prompt">
+    <aside class="govuk-width-container mtp-cookie-prompt">
       <p>
         {% trans 'This service uses cookies which are essential for the site to work.' %}
         {% trans 'We also use non-essential cookies to help us improve your experience.' %}
@@ -16,9 +16,11 @@
       <form action="{% url 'cookies' %}" method="post">
         {% csrf_token %}
         <input type="hidden" name="next" value="{{ request.get_full_path }}" />
-        <button class="govuk-button" data-module="govuk-button" type="submit" name="accept_cookies" value="yes">{% trans 'Accept cookies' %}</button>
-        <button class="govuk-button" data-module="govuk-button" type="submit" name="accept_cookies" value="no">{% trans 'Reject cookies' %}</button>
-        <a class="mtp-link--form-cancel" href="{% url 'cookies' %}">{% trans 'View more information' %}</a>
+        <p>
+          <button class="govuk-button govuk-!-margin-right-1" data-module="govuk-button" type="submit" name="accept_cookies" value="yes">{% trans 'Accept cookies' %}</button>
+          <button class="govuk-button" data-module="govuk-button" type="submit" name="accept_cookies" value="no">{% trans 'Reject cookies' %}</button>
+          <a class="mtp-link--form-cancel" href="{% url 'cookies' %}">{% trans 'View more information' %}</a>
+        </p>
       </form>
     </aside>
   {% endif %}
