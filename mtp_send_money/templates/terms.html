@@ -6,6 +6,8 @@
 {% block page_title %}{% trans 'Terms and conditions' %} – {{ block.super }}{% endblock %}
 
 {% block content %}
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
 
 <header>
   <h1 class="govuk-heading-xl">{% trans 'Terms and conditions' %}</h1>
@@ -112,4 +114,6 @@
   {% trans 'This does not affect our liability for fraudulent misrepresentation or misrepresentation as to a fundamental matter, nor any other liability which cannot be excluded or limited under applicable law.' %}
 </p>
 
+  </div>
+</div>
 {% endblock %}
