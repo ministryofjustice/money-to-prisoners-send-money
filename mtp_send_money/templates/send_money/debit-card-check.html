@@ -13,12 +13,12 @@
     </h1>
   </header>
 
-  <div class="grid-row">
-    <div class="column-two-thirds">
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
 
       <section class="mtp-check-details">
-        <div class="grid-row">
-          <div class="column-two-thirds">
+        <div class="govuk-grid-row">
+          <div class="govuk-grid-column-two-thirds">
             <h2 class="heading-medium" id="table-caption-prisoner">{% trans 'Prisoner details' %}</h2>
             <table class="mtp-check-table" aria-describedby="table-caption-prisoner">
               <tbody>
@@ -37,7 +37,7 @@
               </tbody>
             </table>
           </div>
-          <div class="column-one-third">
+          <div class="govuk-grid-column-one-third">
             <a href="{{ view.get_prisoner_details_url }}?focus=id_prisoner_name">
               {% trans 'Change' %} <span class="visually-hidden">{% trans 'Name, date of birth or prisoner number' %}</span>
             </a>
@@ -46,8 +46,8 @@
       </section>
 
       <section class="mtp-check-details">
-        <div class="grid-row">
-          <div class="column-two-thirds">
+        <div class="govuk-grid-row">
+          <div class="govuk-grid-column-two-thirds">
             <h2 class="heading-medium" id="table-caption-amount">{% trans 'Amount' %}</h2>
             <table class="mtp-check-table" aria-describedby="table-caption-amount">
               <tbody>
@@ -75,7 +75,7 @@
               </tbody>
             </table>
           </div>
-          <div class="column-one-third">
+          <div class="govuk-grid-column-one-third">
             <a href="{{ view.get_amount_url }}?focus=id_amount">
               {% trans 'Change' %} <span class="visually-hidden">{% trans 'Amount' %}</span>
             </a>
@@ -90,11 +90,11 @@
     </div>
   </div>
 
-  <div class="grid-row mtp-check-details__confirm">
-    <form class="column-one-third" action="{{ view.get_success_url }}" method="get">
+  <div class="govuk-grid-row mtp-check-details__confirm">
+    <form class="govuk-grid-column-one-third" action="{{ view.get_success_url }}" method="get">
       <p><input class="button" id="id_next_btn" type="submit" value="{% trans 'Enter card details' %}"></p>
     </form>
-    <form class="column-two-thirds" action="{% url 'send_money:clear_session' %}" method="get">
+    <form class="govuk-grid-column-two-thirds" action="{% url 'send_money:clear_session' %}" method="get">
       <p><input class="link" type="submit" value="{% trans 'Cancel and delete all details' %}"></p>
     </form>
   </div>
