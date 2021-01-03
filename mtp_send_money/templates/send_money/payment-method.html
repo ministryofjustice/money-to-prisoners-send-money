@@ -5,7 +5,7 @@
 {% block page_title %}{% trans 'Pay now by debit card' %} – {{ block.super }}{% endblock %}
 
 {% block content %}
-  {% notifications_box request 'send_money_landing' %}
+  {% notification_banners request 'send_money_landing' %}
 
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">

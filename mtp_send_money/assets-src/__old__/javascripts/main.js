@@ -6,7 +6,6 @@
   require('element-focus').ElementFocus.init();
   require('year-field-completion').YearFieldCompletion.init();
   require('disclosure').Disclosure.init();
-  require('notifications').Notifications.init();
 
   // send-money
   require('charges').Charges.init();
