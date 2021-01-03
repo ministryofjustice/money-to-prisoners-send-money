@@ -27,7 +27,7 @@
 
   {% with field=form.amount %}
     <fieldset>
-      <legend class="visually-hidden">{% trans 'Please enter the amount in pounds' %}</legend>
+      <legend class="govuk-visually-hidden">{% trans 'Please enter the amount in pounds' %}</legend>
 
       {% include 'mtp_common/forms/field-label.html' with field=field only %}
       <div class="form-group mtp-money-amount {% if field.errors %}form-group-error{% endif %}">

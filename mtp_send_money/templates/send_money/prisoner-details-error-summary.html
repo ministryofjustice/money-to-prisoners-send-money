@@ -14,7 +14,7 @@
       {% get_form_errors form as errors %}
 
       {% for error in errors.non_field %}
-        <li class="non-field-error">{{ error }}<span class="visually-hidden">.</span></li>
+        <li class="non-field-error">{{ error }}<span class="govuk-visually-hidden">.</span></li>
       {% endfor %}
       {% if errors.non_field|prisoner_details_not_found %}
         <li class="non-field-error">
@@ -41,7 +41,7 @@
           <a href="#{{ field.id_for_label }}-label">{{ field.label }}</a>
           <ul>
             {% for field_error in field_errors %}
-              <li>{{ field_error }}<span class="visually-hidden">.</span></li>
+              <li>{{ field_error }}<span class="govuk-visually-hidden">.</span></li>
             {% endfor %}
           </ul>
         </li>
