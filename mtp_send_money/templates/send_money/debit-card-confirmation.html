@@ -7,7 +7,7 @@
 {% block content %}
 
   <div class="govuk-box-highlight mtp-box-highlight-success">
-    <h1 class="heading-xlarge">{% trans 'Payment successful' %}</h1>
+    <h1 class="govuk-heading-xl">{% trans 'Payment successful' %}</h1>
     <p>{% trans 'Your confirmation number is' %}<p>
     <strong>{{ short_payment_ref }}</strong>
   </div>
@@ -44,7 +44,7 @@
         </table>
       </div>
 
-      <h2 class="heading-medium">{% trans 'What happens next' %}</h2>
+      <h2 class="govuk-heading-m">{% trans 'What happens next' %}</h2>
       <ol class="list list-number">
         <li>
           {% trans 'We’ll email you a copy of this confirmation page.' %}

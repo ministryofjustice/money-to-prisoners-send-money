@@ -38,7 +38,7 @@
     <div class="govuk-grid-column-two-thirds">
 
       <header>
-        <h1 class="heading-xlarge">{% trans 'Pay now by debit card' %}</h1>
+        <h1 class="govuk-heading-xl">{% trans 'Pay now by debit card' %}</h1>
       </header>
 
       <p class="lede">
@@ -63,7 +63,7 @@
       {% if form.payment_method.field.disabled %}
 
         <div class="error-summary" role="alert" aria-labelledby="error-summary-heading" tabindex="-1">
-          <h1 class="heading-medium error-summary-heading">
+          <h1 class="govuk-heading-m error-summary-heading">
             {% if bank_transfers_enabled %}
               {{ form.payment_method.field.message_to_users|default:_('Sending money by debit card is temporarily unavailable') }}
             {% else %}

@@ -7,8 +7,8 @@
 
 {% block content %}
   <header>
-    <h1 class="heading-xlarge">
-      <span class="heading-secondary">{% trans 'Pay now by debit card' %}</span>
+    <h1 class="govuk-heading-xl">
+      <span class="govuk-caption-xl">{% trans 'Pay now by debit card' %}</span>
       {% trans 'Check details' %}
     </h1>
   </header>
@@ -19,7 +19,7 @@
       <section class="mtp-check-details">
         <div class="govuk-grid-row">
           <div class="govuk-grid-column-two-thirds">
-            <h2 class="heading-medium" id="table-caption-prisoner">{% trans 'Prisoner details' %}</h2>
+            <h2 class="govuk-heading-m" id="table-caption-prisoner">{% trans 'Prisoner details' %}</h2>
             <table class="mtp-check-table" aria-describedby="table-caption-prisoner">
               <tbody>
                 <tr>
@@ -48,7 +48,7 @@
       <section class="mtp-check-details">
         <div class="govuk-grid-row">
           <div class="govuk-grid-column-two-thirds">
-            <h2 class="heading-medium" id="table-caption-amount">{% trans 'Amount' %}</h2>
+            <h2 class="govuk-heading-m" id="table-caption-amount">{% trans 'Amount' %}</h2>
             <table class="mtp-check-table" aria-describedby="table-caption-amount">
               <tbody>
                 {% if service_charged %}
