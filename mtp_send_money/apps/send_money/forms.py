@@ -102,7 +102,7 @@ class PrisonerDetailsForm(SendMoneyForm):
     unserialise_prisoner_dob = unserialise_date
     error_messages = {
         'connection': _('This service is currently unavailable'),
-        'not_found': _('No prisoner matches the details you’ve supplied.'),
+        'not_found': _('No prisoner matches the details you’ve supplied'),
     }
 
     shared_api_session_lock = threading.RLock()
