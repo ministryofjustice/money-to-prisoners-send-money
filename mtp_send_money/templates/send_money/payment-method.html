@@ -4,7 +4,7 @@
 
 {% block page_title %}{% trans 'Pay now by debit card' %} – {{ block.super }}{% endblock %}
 
-{% block inner_content %}
+{% block content %}
   {% notifications_box request 'send_money_landing' %}
 
   {% if bank_transfers_enabled %}
