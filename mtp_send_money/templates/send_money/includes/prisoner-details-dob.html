@@ -17,7 +17,7 @@
       </div>
       <div class="form-group form-group-year">
         <label id="{{ field.auto_id }}_2-label" class="form-label" for="{{ field.auto_id }}_2">{% trans 'Year' %}</label>
-        <input class="form-control {% if field.errors %}form-control-error{% endif %} form-year-field" id="{{ field.auto_id }}_2" name="{{ field.html_name }}_2" value="{{ field.value.2|default:'' }}" type="number" min="0" max="{% now 'Y' %}" data-era-boundary="{{ field.field.fields.2.era_boundary }}" >
+        <input class="form-control {% if field.errors %}form-control-error{% endif %} mtp-input__year-completion" id="{{ field.auto_id }}_2" name="{{ field.html_name }}_2" value="{{ field.value.2|default:'' }}" type="number" min="0" max="{% now 'Y' %}" data-era-boundary="{{ field.field.fields.2.era_boundary }}" >
       </div>
     </div>
   </fieldset>
