@@ -45,7 +45,7 @@
         {% if service_charged %}
           <div class="govuk-form-group">
             <fieldset class="mtp-charges-js" style="display:none">
-              <legend class="form-label">
+              <legend class="govuk-label">
                 {% trans "Service charge:" %}
                 <span class="mtp-charges-charges"></span>
               </legend>
@@ -55,8 +55,8 @@
                 {% endblocktrans %}
                 {% trans 'This fee is charged by your card provider.' %}
               </p>
-              <p class="form-label-bold mtp-charges-total">
-                {% trans "Total to pay:" %}
+              <p class="govuk-label mtp-charges-total">
+                {% trans 'Total to pay:' %}
                 <span></span>
               </p>
             </fieldset>
