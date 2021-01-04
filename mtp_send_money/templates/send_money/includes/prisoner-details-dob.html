@@ -1,6 +1,6 @@
 {% load i18n %}
 
-<div class="form-group {% if field.errors %}form-group-error{% endif %}">
+<div class="govuk-form-group {% if field.errors %}govuk-form-group--error{% endif %}">
   <fieldset>
     <legend>{{ field.label }}</legend>
     {% include 'mtp_common/forms/field-help-text.html' with field=field only %}

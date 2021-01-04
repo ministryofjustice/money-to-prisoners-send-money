@@ -30,7 +30,7 @@
       <legend class="govuk-visually-hidden">{% trans 'Please enter the amount in pounds' %}</legend>
 
       {% include 'mtp_common/forms/field-label.html' with field=field only %}
-      <div class="form-group mtp-money-amount {% if field.errors %}form-group-error{% endif %}">
+      <div class="govuk-form-group mtp-money-amount {% if field.errors %}govuk-form-group--error{% endif %}">
         {% include 'mtp_common/forms/field-errors.html' with field=field only %}
         <div class="mtp-money-box">
           <span class="form-control mtp-currency-sign">

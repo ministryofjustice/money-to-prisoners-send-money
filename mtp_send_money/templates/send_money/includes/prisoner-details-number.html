@@ -1,6 +1,6 @@
 {% load i18n %}
 
-<div class="form-group {% if field.errors %}form-group-error{% endif %}">
+<div class="govuk-form-group {% if field.errors %}govuk-form-group--error{% endif %}">
   {% include 'mtp_common/forms/field-label.html' with field=field only %}
   {% include 'mtp_common/forms/field-errors.html' with field=field only %}
   <input class="form-control {% if field.errors %}form-control-error{% endif %} mtp-prisoner-number" id="{{ field.id_for_label }}" name="{{ field.html_name }}" value="{{ field.value|default:'' }}" type="text"  />

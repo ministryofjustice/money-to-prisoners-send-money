@@ -45,14 +45,14 @@
           {% endblock %}
 
           {% with field=form.ticket_content value=request.GET.message|default:'' %}
-            <div class="form-group {% if field.errors %}form-group-error{% endif %}">
+            <div class="govuk-form-group {% if field.errors %}govuk-form-group--error{% endif %}">
               {% include 'mtp_common/forms/field-label.html' with field=field only %}
               {% include 'mtp_common/forms/field-errors.html' with field=field only %}
               <textarea class="form-control {% if field.errors %}form-control-error{% endif %}" id="{{ field.id_for_label }}" name="{{ field.html_name }}" cols="40" rows="6">{{ field.value|default:value }}</textarea>
             </div>
           {% endwith %}
 
-          <div class="form-group">
+          <div class="govuk-form-group">
             {% csrf_token %}
             {{ form.referer }}
             <button type="submit" class="govuk-button" data-module="govuk-button" data-prevent-double-click="true" name="submit-feedback">{% trans 'Send' %}</button>
