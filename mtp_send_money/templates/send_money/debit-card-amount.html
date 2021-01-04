@@ -49,7 +49,7 @@
                 {% trans "Service charge:" %}
                 <span class="mtp-charges-charges"></span>
               </legend>
-              <p class="form-hint">
+              <p class="govuk-hint">
                 {% blocktrans trimmed with charge_percentage=service_charge_percentage|format_percentage charge_fixed=service_charge_fixed|currency_format_pence %}
                   The service charge is {{ charge_percentage }} of the amount you’re sending, plus {{ charge_fixed }}.
                 {% endblocktrans %}
