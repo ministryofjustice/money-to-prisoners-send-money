@@ -208,12 +208,13 @@ class DebitCardAmountView(DebitCardFlow, SendMoneyFormView):
     form_class = send_money_forms.DebitCardAmountForm
 
     def get_context_data(self, **kwargs):
-        kwargs.update({
-            'service_charged': self.is_service_charged(),
-            'service_charge_percentage': settings.SERVICE_CHARGE_PERCENTAGE,
-            'service_charge_fixed': settings.SERVICE_CHARGE_FIXED,
-            'sample_amount': 20,  # in pounds
-        })
+        kwargs['service_charged'] = self.is_service_charged()
+        if kwargs['service_charged']:
+            kwargs.update({
+                'service_charge_percentage': settings.SERVICE_CHARGE_PERCENTAGE,
+                'service_charge_fixed': settings.SERVICE_CHARGE_FIXED,
+                'sample_amount': 20,  # in pounds
+            })
         return super().get_context_data(**kwargs)
 
     def get_success_url(self):

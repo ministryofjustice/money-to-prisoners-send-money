@@ -12,4 +12,6 @@ YearFieldCompletion.init();
 
 // app components
 import {FilteredList} from './components/filtered-list';
+import {ServiceCharge} from './components/service-charge';
 FilteredList.init();
+ServiceCharge.init();
