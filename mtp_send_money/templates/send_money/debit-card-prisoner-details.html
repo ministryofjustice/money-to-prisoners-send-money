@@ -22,7 +22,7 @@
       <legend class="govuk-visually-hidden">{% trans 'Prisoner details' %}</legend>
       {% include 'mtp_common/forms/field.html' with field=form.prisoner_name input_classes='govuk-input--width-20' only %}
       {% include 'mtp_common/forms/date-field.html' with field=form.prisoner_dob year_field_completion=True only %}
-      {% include 'mtp_common/forms/field.html' with field=form.prisoner_number input_classes='govuk-input--width-10' only %}
+      {% include 'mtp_common/forms/field.html' with field=form.prisoner_number input_classes='govuk-input--width-10 mtp-input--prisoner-number' only %}
     </fieldset>
 
     <p>

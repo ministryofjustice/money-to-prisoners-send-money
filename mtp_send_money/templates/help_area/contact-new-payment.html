@@ -37,7 +37,7 @@
           </div>
 
           {% block extra_ticket_fields %}
-            {% include 'mtp_common/forms/field.html' with field=form.prisoner_number input_classes='govuk-input--width-10' only %}
+            {% include 'mtp_common/forms/field.html' with field=form.prisoner_number input_classes='govuk-input--width-10 mtp-input--prisoner-number' only %}
             {% include 'mtp_common/forms/date-field.html' with field=form.prisoner_dob year_field_completion=True only %}
 
             {% include 'mtp_common/forms/field.html' with field=form.contact_name input_classes='govuk-input--width-20' only %}
