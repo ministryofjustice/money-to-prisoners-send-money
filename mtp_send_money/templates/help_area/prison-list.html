@@ -20,10 +20,10 @@
 
       {% if prison_list %}
         <div class="mtp-filtered-list">
-          <p>
+          <div class="govuk-form-group">
             <label class="govuk-visually-hidden" for="id_search">{% trans 'Search for a prison' %}</label>
-            <input class="form-control form-control-1-3 mtp-filtered-list__input" id="id_search" type="search" value="" placeholder="{% trans 'Search' %}" />
-          </p>
+            <input class="govuk-input govuk-input--width-10 mtp-filtered-list__input" id="id_search" value="" type="search" placeholder="{% trans 'Search' %}" />
+          </div>
           <div class="govuk-inset-text">
             <ul class="mtp-filtered-list__list" data-stop-words="{{ stop_words|join:' ' }}">
               <li class="mtp-filtered-list__empty">{% trans 'No prisons found' %}</li>

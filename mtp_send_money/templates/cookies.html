@@ -38,15 +38,13 @@
       <form method="post">
         {% csrf_token %}
 
-        <div class="govuk-form-group">
-          <fieldset class="inline">
-            <legend>
-              {% trans 'Do you agree to the Ministry of Justice and other UK government departments using Google Analytics to help improve the ‘Send money to someone in prison’ service?' %}
-            </legend>
-            {% include 'mtp_common/forms/radio-field.html' with field=form.accept_cookies only %}
-            <input class="govuk-button" data-module="govuk-button" type="submit" value="{% trans 'Save changes' %}">
-          </fieldset>
-        </div>
+        <fieldset class="govuk-fieldset">
+          <legend class="govuk-fieldset__legend">
+            {% trans 'Do you agree to the Ministry of Justice and other UK government departments using Google Analytics to help improve the ‘Send money to someone in prison’ service?' %}
+          </legend>
+          {% include 'mtp_common/forms/radio-field.html' with field=form.accept_cookies inline=True label_classes='govuk-!-display-none' only %}
+          <input class="govuk-button" data-module="govuk-button" type="submit" value="{% trans 'Save changes' %}">
+        </fieldset>
       </form>
 
       <p>{% trans 'Google Analytics stores information about:' %}</p>

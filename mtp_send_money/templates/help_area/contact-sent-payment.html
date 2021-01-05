@@ -26,7 +26,7 @@
   {{ block.super }}
 
   {% with field=form.amount %}
-    <fieldset>
+    <fieldset class="govuk-fieldset">
       <legend class="govuk-visually-hidden">{% trans 'Please enter the amount in pounds' %}</legend>
 
       {% include 'mtp_common/forms/field-label.html' with field=field only %}
@@ -47,5 +47,5 @@
     </fieldset>
   {% endwith %}
 
-  {% include 'send_money/includes/prisoner-details-dob.html' with field=form.payment_date only %}
+  {% include 'mtp_common/forms/date-field.html' with field=form.payment_date year_field_completion=True only %}
 {% endblock %}

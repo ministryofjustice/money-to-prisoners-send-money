@@ -18,11 +18,11 @@
 
     {% include 'send_money/prisoner-details-error-summary.html' with form=form only %}
 
-    <fieldset>
+    <fieldset class="govuk-fieldset">
       <legend class="govuk-visually-hidden">{% trans 'Prisoner details' %}</legend>
-      {% include 'mtp_common/forms/field.html' with field=form.prisoner_name only %}
-      {% include 'send_money/includes/prisoner-details-dob.html' with field=form.prisoner_dob only %}
-      {% include 'send_money/includes/prisoner-details-number.html' with field=form.prisoner_number only %}
+      {% include 'mtp_common/forms/field.html' with field=form.prisoner_name input_classes='govuk-input--width-20' only %}
+      {% include 'mtp_common/forms/date-field.html' with field=form.prisoner_dob year_field_completion=True only %}
+      {% include 'mtp_common/forms/field.html' with field=form.prisoner_number input_classes='govuk-input--width-10' only %}
     </fieldset>
 
     <p>
