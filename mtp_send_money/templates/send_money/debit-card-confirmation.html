@@ -6,19 +6,23 @@
 
 {% block content %}
 
-  <div class="govuk-box-highlight mtp-box-highlight-success">
-    <h1 class="govuk-heading-xl">{% trans 'Payment successful' %}</h1>
-    <p>{% trans 'Your confirmation number is' %}<p>
-    <strong>{{ short_payment_ref }}</strong>
+  <div class="govuk-panel mtp-panel--success">
+    <h1 class="govuk-panel__title">{% trans 'Payment successful' %}</h1>
+    <div class="govuk-panel__body">
+      {% trans 'Your confirmation number is' %}
+      <br />
+      <strong>{{ short_payment_ref }}</strong>
+    </div>
   </div>
 
-  <div class="mtp-reference-actions">
-    <a class="mtp-print-reference" href="#">{% trans 'Print this page' %}</a>
+  <div class="mtp-reference-actions govuk-!-margin-bottom-6 govuk-!-display-none-print">
+    <a class="mtp-reference-actions__print" href="#">{% trans 'Print this page' %}</a>
   </div>
 
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-      <div class="govuk-inset-text mtp-account">
+
+      <div class="govuk-inset-text">
         <table class="govuk-table">
           <caption class="govuk-visually-hidden">
             {% trans 'Details of your payment' %}
@@ -56,6 +60,7 @@
       <p>
         <a href="https://www.gov.uk/done/send-prisoner-money">{% trans 'Take a moment to rate this service' %}</a> {% trans '(takes 30 seconds)' %}
       </p>
+
     </div>
   </div>
 {% endblock %}
