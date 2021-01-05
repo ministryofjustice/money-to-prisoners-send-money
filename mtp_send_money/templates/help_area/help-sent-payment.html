@@ -27,12 +27,12 @@
 
         {% increment_counter 'question' as question_id %}
         <dt class="mtp-question">
-          <a href="#answer-1" id="question-1">
+          <a href="#answer-{{ question_id }}" id="question-{{ question_id }}">
             {% trans 'I want to cancel a payment' %}
             <span class="mtp-question-icon"></span>
           </a>
         </dt>
-        <dd id="answer-1" class="mtp-answer" aria-labelledby="question-1">
+        <dd id="answer-{{ question_id }}" class="mtp-answer" aria-labelledby="question-{{ question_id }}">
           <p>
             {% trans 'We can’t cancel your payment because once it’s gone through the system, it’s non-refundable.' %}
           </p>
@@ -40,12 +40,12 @@
 
         {% increment_counter 'question' as question_id %}
         <dt class="mtp-question">
-          <a href="#answer-2" id="question-2">
+          <a href="#answer-{{ question_id }}" id="question-{{ question_id }}">
             {% trans 'The prisoner has moved prisons' %}
             <span class="mtp-question-icon"></span>
           </a>
         </dt>
-        <dd id="answer-2" class="mtp-answer" aria-labelledby="question-2">
+        <dd id="answer-{{ question_id }}" class="mtp-answer" aria-labelledby="question-{{ question_id }}">
           <p>
             {% trans 'Your payment will be transferred to the new prison but it may take a few days.' %}
           </p>
@@ -53,12 +53,12 @@
 
         {% increment_counter 'question' as question_id %}
         <dt class="mtp-question">
-          <a href="#answer-3" id="question-3">
+          <a href="#answer-{{ question_id }}" id="question-{{ question_id }}">
             {% trans 'The prisoner has been released' %}
             <span class="mtp-question-icon"></span>
           </a>
         </dt>
-        <dd id="answer-3" class="mtp-answer" aria-labelledby="question-3">
+        <dd id="answer-{{ question_id }}" class="mtp-answer" aria-labelledby="question-{{ question_id }}">
           <p>
             {% trans 'The prisoner needs to contact the prison and they’ll be sent a refund.' %}
           </p>
@@ -66,12 +66,12 @@
 
         {% increment_counter 'question' as question_id %}
         <dt class="mtp-question">
-          <a href="#answer-6" id="question-6">
+          <a href="#answer-{{ question_id }}" id="question-{{ question_id }}">
             {% trans 'Does the prisoner know they’ve got my money?' %}
             <span class="mtp-question-icon"></span>
           </a>
         </dt>
-        <dd id="answer-6" class="mtp-answer" aria-labelledby="question-6">
+        <dd id="answer-{{ question_id }}" class="mtp-answer" aria-labelledby="question-{{ question_id }}">
           <p>
             {% trans 'They might get an account slip from the wing officer when your money reaches their account, but this can take a few days and not all prisons use these slips.' %}
           </p>
@@ -83,12 +83,12 @@
 
         {% increment_counter 'question' as question_id %}
         <dt class="mtp-question">
-          <a href="#answer-7" id="question-7">
+          <a href="#answer-{{ question_id }}" id="question-{{ question_id }}">
             {% trans 'Does a prisoner know who sent the money?' %}
             <span class="mtp-question-icon"></span>
           </a>
         </dt>
-        <dd id="answer-7" class="mtp-answer" aria-labelledby="question-7">
+        <dd id="answer-{{ question_id }}" class="mtp-answer" aria-labelledby="question-{{ question_id }}">
           <p>
             {% trans 'A prisoner will see the name of who sent the money on their account slip, but not all prisons give these out.' %}
             {% trans 'They could also ask a wing officer for the sender’s name, but the prisoner has no access to a sender’s personal or banking details.' %}
@@ -97,12 +97,12 @@
 
         {% increment_counter 'question' as question_id %}
         <dt class="mtp-question">
-          <a href="#answer-8" id="question-8">
+          <a href="#answer-{{ question_id }}" id="question-{{ question_id }}">
             {% trans 'I’m worried about a prisoner' %}
             <span class="mtp-question-icon"></span>
           </a>
         </dt>
-        <dd id="answer-8" class="mtp-answer" aria-labelledby="question-8">
+        <dd id="answer-{{ question_id }}" class="mtp-answer" aria-labelledby="question-{{ question_id }}">
           <p>
             {% trans 'Contact the prison and they will put you through to an orderly officer or to the Safer Custody team where you can leave a message.' %}
             {% blocktrans trimmed with link='https://www.gov.uk/find-prisoner' %}
@@ -113,12 +113,12 @@
 
         {% increment_counter 'question' as question_id %}
         <dt class="mtp-question">
-          <a href="#answer-9" id="question-9">
+          <a href="#answer-{{ question_id }}" id="question-{{ question_id }}">
             {% trans 'You don’t ask which prison it is' %}
             <span class="mtp-question-icon"></span>
           </a>
         </dt>
-        <dd id="answer-9" class="mtp-answer" aria-labelledby="question-9">
+        <dd id="answer-{{ question_id }}" class="mtp-answer" aria-labelledby="question-{{ question_id }}">
           <p>
             {% trans 'You don’t need the name of the prison to use this service.' %}
           </p>
