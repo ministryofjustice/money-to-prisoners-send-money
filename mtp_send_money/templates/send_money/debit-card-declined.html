@@ -5,13 +5,19 @@
 {% block page_title %}{% trans 'Your payment has been declined' %} – {{ block.super }}{% endblock %}
 
 {% block content %}
-<header>
-  <h1 class="govuk-heading-xl">{% trans 'Your payment has been declined' %}</h1>
-</header>
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
 
-<p>{% trans 'No money has been taken from your account.' %}</p>
-<p>
-  {% trans '<strong>You must wait 3 days</strong> before trying to make another payment, even if you have money in the bank.' %}
-</p>
-<p>{% trans 'In the meantime, check that the address and other card details are exactly the same as your bank holds.' %}</p>
+      <header>
+        <h1 class="govuk-heading-xl">{% trans 'Your payment has been declined' %}</h1>
+      </header>
+
+      <p>{% trans 'No money has been taken from your account.' %}</p>
+      <p>
+        {% trans '<strong>You must wait 3 days</strong> before trying to make another payment, even if you have money in the bank.' %}
+      </p>
+      <p>{% trans 'In the meantime, check that the address and other card details are exactly the same as your bank holds.' %}</p>
+
+    </div>
+  </div>
 {% endblock %}

@@ -5,16 +5,22 @@
 {% block page_title %}{% trans 'Your payment session has expired' %} – {{ block.super }}{% endblock %}
 
 {% block content %}
-<header>
-  <h1 class="govuk-heading-xl">{% trans 'Your payment session has expired' %}</h1>
-</header>
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
 
-<p>
-  {% trans 'Your payment session has expired.' %}
-  {% trans 'This may be because you have completed your payment or your session has timed out.' %}
-</p>
+      <header>
+        <h1 class="govuk-heading-xl">{% trans 'Your payment session has expired' %}</h1>
+      </header>
 
-<p>
-  <a class="govuk-button" data-module="govuk-button" href="{% url 'send_money:clear_session' %}">{% trans 'Continue' %}</a>
-</p>
+      <p>
+        {% trans 'Your payment session has expired.' %}
+        {% trans 'This may be because you have completed your payment or your session has timed out.' %}
+      </p>
+
+      <p>
+        <a class="govuk-button" data-module="govuk-button" href="{% url 'send_money:clear_session' %}">{% trans 'Continue' %}</a>
+      </p>
+
+    </div>
+  </div>
 {% endblock %}
