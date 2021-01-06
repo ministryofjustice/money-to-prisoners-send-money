@@ -6,8 +6,10 @@ initAll();
 
 // mtp common components
 import {initDefaults} from 'mtp_common';
+import {AccordionDirectLink} from 'mtp_common/components/accordion';
 import {YearFieldCompletion} from 'mtp_common/components/year-field-completion';
 initDefaults();
+AccordionDirectLink.init();
 YearFieldCompletion.init();
 
 // app components
