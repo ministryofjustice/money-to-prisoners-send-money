@@ -21,99 +21,58 @@
         {% trans 'Check if the answer is here before you contact us' %}
       </p>
 
-      <div class="govuk-accordion" data-module="govuk-accordion" id="help-new-payment">
-        {% create_counter 'question' %}
+      {% accordion name='help-new-payment' %}
 
-        {% increment_counter 'question' as question_id %}
-        <div class="govuk-accordion__section">
-          <div class="govuk-accordion__section-header">
-            <h2 class="govuk-accordion__section-heading">
-              <span class="govuk-accordion__section-button" id="help-new-payment-heading-{{ question_id }}">
-                {% trans 'It says my prisoner number and date of birth don’t match a prisoner' %}
-              </span>
-            </h2>
-          </div>
-          <div id="help-new-payment-content-{{ question_id }}" class="govuk-accordion__section-content" aria-labelledby="help-new-payment-heading-{{ question_id }}">
-            <p>
-              {% trans 'If the person has just arrived in prison, try again tomorrow as it can take one working day for prisoner details to be updated on the system.' %}
-            </p>
-            <p>
-              {% trans 'But it could be that the prisoner details you’re using don’t match the ones on the prison system.' %}
-            </p>
-            <ul class="govuk-list govuk-list--bullet">
-              <li>
-                {% trans 'Check you’re using the right prisoner number and date of birth' %}
-              </li>
-              <li>
-                {% trans 'If these are right, the person in prison should check with wing staff that the prison has the same details and get them corrected if not' %}
-              </li>
-              <li>
-                {% trans 'If you still have a problem, write a letter to the prison asking for the details to be corrected' %}
-              </li>
-            </ul>
-            <p>
-              {% trans 'You won’t be able to send money using our service until your details match what the prison has.' %}
-            </p>
-          </div>
-        </div>
+        {% accordionsection heading=_('It says my prisoner number and date of birth don’t match a prisoner') %}
+          <p>
+            {% trans 'If the person has just arrived in prison, try again tomorrow as it can take one working day for prisoner details to be updated on the system.' %}
+          </p>
+          <p>
+            {% trans 'But it could be that the prisoner details you’re using don’t match the ones on the prison system.' %}
+          </p>
+          <ul class="govuk-list govuk-list--bullet">
+            <li>
+              {% trans 'Check you’re using the right prisoner number and date of birth' %}
+            </li>
+            <li>
+              {% trans 'If these are right, the person in prison should check with wing staff that the prison has the same details and get them corrected if not' %}
+            </li>
+            <li>
+              {% trans 'If you still have a problem, write a letter to the prison asking for the details to be corrected' %}
+            </li>
+          </ul>
+          <p>
+            {% trans 'You won’t be able to send money using our service until your details match what the prison has.' %}
+          </p>
+        {% endaccordionsection %}
 
-        {% increment_counter 'question' as question_id %}
-        <div class="govuk-accordion__section">
-          <div class="govuk-accordion__section-header">
-            <h2 class="govuk-accordion__section-heading">
-              <span class="govuk-accordion__section-button" id="help-new-payment-heading-{{ question_id }}">
-                {% trans 'I want to know the prisoner number or date of birth' %}
-              </span>
-            </h2>
-          </div>
-          <div id="help-new-payment-content-{{ question_id }}" class="govuk-accordion__section-content" aria-labelledby="help-new-payment-heading-{{ question_id }}">
-            <p>
-              {% trans 'By law we can’t give out confidential prisoner information.' %}
-              {% trans 'Ask the prisoner for these details.' %}
-            </p>
-          </div>
-        </div>
+        {% accordionsection heading=_('I want to know the prisoner number or date of birth') %}
+          <p>
+            {% trans 'By law we can’t give out confidential prisoner information.' %}
+            {% trans 'Ask the prisoner for these details.' %}
+          </p>
+        {% endaccordionsection %}
 
-        {% increment_counter 'question' as question_id %}
-        <div class="govuk-accordion__section">
-          <div class="govuk-accordion__section-header">
-            <h2 class="govuk-accordion__section-heading">
-              <span class="govuk-accordion__section-button" id="help-new-payment-heading-{{ question_id }}">
-                {% trans 'I want to make a payment from abroad' %}
-              </span>
-            </h2>
-          </div>
-          <div id="help-new-payment-content-{{ question_id }}" class="govuk-accordion__section-content" aria-labelledby="help-new-payment-heading-{{ question_id }}">
-            <p>
-              {% trans 'You can only make a payment from outside the UK using a debit card (Visa, Mastercard or Maestro).' %}
-              {% trans 'We don’t accept credit cards or prepaid debit cards.' %}
-            </p>
-          </div>
-        </div>
+        {% accordionsection heading=_('I want to make a payment from abroad') %}
+          <p>
+            {% trans 'You can only make a payment from outside the UK using a debit card (Visa, Mastercard or Maestro).' %}
+            {% trans 'We don’t accept credit cards or prepaid debit cards.' %}
+          </p>
+        {% endaccordionsection %}
 
-        {% increment_counter 'question' as question_id %}
-        <div class="govuk-accordion__section">
-          <div class="govuk-accordion__section-header">
-            <h2 class="govuk-accordion__section-heading">
-              <span class="govuk-accordion__section-button" id="help-new-payment-heading-{{ question_id }}">
-                {% trans 'I want to send money to a prison in Scotland or Northern Ireland' %}
-              </span>
-            </h2>
-          </div>
-          <div id="help-new-payment-content-{{ question_id }}" class="govuk-accordion__section-content" aria-labelledby="help-new-payment-heading-{{ question_id }}">
-            <p>
-              {% url 'help_area:prison_list' as link %}
-              {% blocktrans trimmed %}
-                Our service is only available in <a href="{{ link }}">prisons in England and Wales</a>.
-              {% endblocktrans %}
-              {% blocktrans trimmed with scottish_link='https://www.sps.gov.uk/Corporate/Prisons/Prisons.aspx' northern_irish_link='https://www.justice-ni.gov.uk/topics/prisons/prison-estate' %}
-                Contact the <a href="{{ scottish_link }}">Scottish</a> or <a href="{{ northern_irish_link }}">Northern Irish</a> prison directly to find out how to send money to them.
-              {% endblocktrans %}
-            </p>
-          </div>
-        </div>
+        {% accordionsection heading=_('I want to send money to a prison in Scotland or Northern Ireland') %}
+          <p>
+            {% url 'help_area:prison_list' as link %}
+            {% blocktrans trimmed %}
+              Our service is only available in <a href="{{ link }}">prisons in England and Wales</a>.
+            {% endblocktrans %}
+            {% blocktrans trimmed with scottish_link='https://www.sps.gov.uk/Corporate/Prisons/Prisons.aspx' northern_irish_link='https://www.justice-ni.gov.uk/topics/prisons/prison-estate' %}
+              Contact the <a href="{{ scottish_link }}">Scottish</a> or <a href="{{ northern_irish_link }}">Northern Irish</a> prison directly to find out how to send money to them.
+            {% endblocktrans %}
+          </p>
+        {% endaccordionsection %}
 
-      </div>
+      {% endaccordion %}
 
       <p>
         {% trans 'If you haven’t found the answer:' %}
