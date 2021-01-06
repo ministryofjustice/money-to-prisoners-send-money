@@ -53,15 +53,3 @@ def card_acceptance_signage(width):
         'width': width,
         'height': height,
     }
-
-
-@register.simple_tag(takes_context=True)
-def create_counter(context, var):
-    context[var] = 0
-    return ''
-
-
-@register.simple_tag(takes_context=True)
-def increment_counter(context, var):
-    context[var] += 1
-    return context[var]
