@@ -1,6 +1,5 @@
 {% extends 'mtp_common/feedback/submit_feedback.html' %}
 {% load i18n %}
-{% load mtp_common %}
 
 {% block get_help_heading %}
   <header>
@@ -17,43 +16,39 @@
 
 {% block get_help_form %}
 
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds">
-      {% block contact_us_lede %}
-        <p class="govuk-body-l">
-          {% trans 'Contact us about a payment you are finding it difficult to make.' %}
-          {% trans 'Give exact details so we can get back to you as soon as possible.' %}
-        </p>
+  {% block contact_us_lede %}
+    <p class="govuk-body-l">
+      {% trans 'Contact us about a payment you are finding it difficult to make.' %}
+      {% trans 'Give exact details so we can get back to you as soon as possible.' %}
+    </p>
+  {% endblock %}
+
+  <form action="." method="post" id="mtp-feedback-form">
+    {% include 'govuk-frontend/components/error-summary.html' with form=form only %}
+
+    <fieldset class="govuk-fieldset">
+      <legend class="govuk-visually-hidden">{% trans 'Your message' %}</legend>
+
+      <div class="govuk-!-display-none">
+        {% include 'mtp_common/forms/field.html' with field=form.subject only %}
+      </div>
+
+      {% block extra_ticket_fields %}
+        {% include 'mtp_common/forms/field.html' with field=form.prisoner_number input_classes='govuk-input--width-10 mtp-input--prisoner-number' only %}
+        {% include 'mtp_common/forms/date-field.html' with field=form.prisoner_dob year_field_completion=True only %}
+
+        {% include 'mtp_common/forms/field.html' with field=form.contact_name input_classes='govuk-input--width-20' autocomplete='name' only %}
+        {% include 'mtp_common/forms/field.html' with field=form.contact_email input_classes='govuk-input--width-20' autocomplete='email' value=request.GET.email|default:'' only %}
       {% endblock %}
 
-      <form action="." method="post" id="mtp-feedback-form">
-        {% include 'govuk-frontend/components/error-summary.html' with form=form only %}
+      {% include 'mtp_common/forms/textarea.html' with field=form.ticket_content value=request.GET.message|default:None rows=6 only %}
 
-        <fieldset class="govuk-fieldset">
-          <legend class="govuk-visually-hidden">{% trans 'Your message' %}</legend>
-
-          <div class="govuk-!-display-none">
-            {% include 'mtp_common/forms/field.html' with field=form.subject only %}
-          </div>
-
-          {% block extra_ticket_fields %}
-            {% include 'mtp_common/forms/field.html' with field=form.prisoner_number input_classes='govuk-input--width-10 mtp-input--prisoner-number' only %}
-            {% include 'mtp_common/forms/date-field.html' with field=form.prisoner_dob year_field_completion=True only %}
-
-            {% include 'mtp_common/forms/field.html' with field=form.contact_name input_classes='govuk-input--width-20' only %}
-            {% include 'mtp_common/forms/field.html' with field=form.contact_email input_classes='govuk-input--width-20' value=request.GET.email|default:'' only %}
-          {% endblock %}
-
-          {% include 'mtp_common/forms/textarea.html' with field=form.ticket_content value=request.GET.message|default:None rows=6 only %}
-
-          <div class="govuk-form-group">
-            {% csrf_token %}
-            {{ form.referer }}
-            <button type="submit" class="govuk-button" data-module="govuk-button" data-prevent-double-click="true" name="submit-feedback">{% trans 'Send' %}</button>
-          </div>
-        </fieldset>
-      </form>
-    </div>
-  </div>
+      <div class="govuk-form-group">
+        {% csrf_token %}
+        {{ form.referer }}
+        <button type="submit" class="govuk-button" data-module="govuk-button" data-prevent-double-click="true" name="submit-feedback">{% trans 'Send' %}</button>
+      </div>
+    </fieldset>
+  </form>
 
 {% endblock %}
