@@ -93,7 +93,7 @@
             {% url 'help_area:prison_list' as link %}
 
             {% blocktrans trimmed %}
-              Our service is only available in <a href="{{ link }}">prisons in England and Wales</a> (except HMP Thameside).
+              Our service is only available in <a href="{{ link }}">prisons in England and Wales</a>.
             {% endblocktrans %}
             {% blocktrans trimmed with scottish_link='https://www.sps.gov.uk/Corporate/Prisons/Prisons.aspx' northern_irish_link='https://www.justice-ni.gov.uk/topics/prisons/prison-estate' %}
               Contact the <a href="{{ scottish_link }}">Scottish</a> or <a href="{{ northern_irish_link }}">Northern Irish</a> prison directly to find out how to send money to them.
