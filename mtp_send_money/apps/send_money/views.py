@@ -166,15 +166,6 @@ class PaymentMethodChoiceView(SendMoneyFormView):
             request.session.flush()
         return super().dispatch(request, *args, **kwargs)
 
-    def get_context_data(self, **kwargs):
-        context_data = super().get_context_data(**kwargs)
-        context_data.update({
-            'service_charged': self.is_service_charged(),
-            'service_charge_percentage': settings.SERVICE_CHARGE_PERCENTAGE,
-            'service_charge_fixed': settings.SERVICE_CHARGE_FIXED
-        })
-        return context_data
-
     def form_valid(self, form):
         if form.cleaned_data['payment_method'] == PaymentMethod.bank_transfer.name:
             return HttpResponseBadRequest('Bank Transfers are no longer supported by this service')
