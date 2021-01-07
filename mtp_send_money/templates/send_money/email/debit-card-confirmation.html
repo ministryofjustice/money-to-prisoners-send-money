@@ -3,18 +3,6 @@
 {% load send_money %}
 
 {% block inner_content %}
-  <p>
-    <strong style="font-weight: bold">
-      {% trans 'Do you, or someone you know, send in money by cash, cheque or postal order?' %}
-    </strong>
-  </p>
-  <p>
-    {% blocktrans trimmed with link='https://docs.google.com/forms/d/e/1FAIpQLScsTPe2OJrXxqRwlphnm-LItBe-BbZ3STSRARzc4KNpPvjx0g/viewform' %}
-      If so, <a href="{{ link }}">let us know here</a> so we can get in touch about changes to the service.
-    {% endblocktrans %}
-  </p>
-  <hr size="1" />
-
   <p>{% trans 'Dear sender,' %}</p>
 
   <p>

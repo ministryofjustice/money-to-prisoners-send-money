@@ -2,12 +2,6 @@
 {% load send_money %}
 GOV.UK - {% trans 'Send money to someone in prison' %}
 
-
-* {% trans 'Do you, or someone you know, send in money by cash, cheque or postal order?' %} *
-{% trans 'If so, let us know here so we can get in touch about changes to the service' %}:
-https://docs.google.com/forms/d/e/1FAIpQLScsTPe2OJrXxqRwlphnm-LItBe-BbZ3STSRARzc4KNpPvjx0g/viewform
-
-
 {% trans 'Dear sender,' %}
 
 {% trans 'Your payment has been successful.' %} {% blocktrans trimmed %}Your confirmation number is {{ short_payment_ref }}.{% endblocktrans %}
