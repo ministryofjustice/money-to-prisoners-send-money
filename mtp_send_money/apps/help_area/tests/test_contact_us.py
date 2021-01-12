@@ -31,7 +31,6 @@ class ContactUsTestCase(BaseTestCase):
         'ticket_content': 'I’d like some help',
         'contact_name': 'Ms Smith',
         'contact_email': 's.smith@localhost',
-        'payment_method': 'debit_card',
         'prisoner_number': 'A1401AE',
         'prisoner_dob_0': '21',
         'prisoner_dob_1': '1',
@@ -113,6 +112,5 @@ class ContactUsTestCase(BaseTestCase):
         self.assertIn('s.smith@localhost', ticket_body)
         self.assertIn('A1401AE', ticket_body)
         self.assertIn('21/01/1989', ticket_body)
-        self.assertIn('Debit card', ticket_body)
         self.assertIn('£35.10', ticket_body)
         self.assertIn('08/06/2020', ticket_body)
