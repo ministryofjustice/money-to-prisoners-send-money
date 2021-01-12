@@ -42,10 +42,12 @@
   </p>
 
   <p>
-    {% blocktrans trimmed %}
-      Book a social visit with a prisoner online using the <a href="https://www.gov.uk/prison-visits">Visit someone in prison</a> service.
+    <strong>
+      {% trans 'Take part in research and receive a £20 gift voucher' %}
+    </strong>
+    {% blocktrans trimmed with link='https://www.surveymonkey.co.uk/r/VX8GPTR' %}
+      We are carrying out research to understand how we can improve prison services. If you have booked either a video call or a face-to-face visit with a friend or family member in prison in the last 12 months, we’d like to hear from you. Please fill out our <a href="{{ link }}">quick screener survey here</a>, to see if you are eligible for one of our upcoming research studies.
     {% endblocktrans %}
-    {% trans 'It’s the faster and simpler way to plan to see friends and family in prisons in England or Wales.' %}
   </p>
 
   <p><a href="{{ site_url }}">{% trans 'Back to the service' %}</a></p>

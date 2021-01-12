@@ -17,7 +17,10 @@ GOV.UK - {% trans 'Send money to someone in prison' %}
 
 {% trans 'Help with problems using this service:' %} {{ help_url }}
 
-{% trans 'Book a social visit with a prisoner online using the ‘Visit someone in prison’ service:' %} https://www.gov.uk/prison-visits
-{% trans 'It’s the faster and simpler way to plan to see friends and family in prisons in England or Wales.' %}
+{% trans 'Take part in research and receive a £20 gift voucher' %}
+{% trans 'We are carrying out research to understand how we can improve prison services.' %}
+{% trans 'If you have booked either a video call or a face-to-face visit with a friend or family member in prison in the last 12 months, we’d like to hear from you.' %}
+{% trans 'Please fill out our quick screener survey here, to see if you are eligible for one of our upcoming research studies.' %}
+https://www.surveymonkey.co.uk/r/VX8GPTR
 
 {% trans 'Back to the service:' %} {{ site_url }}
