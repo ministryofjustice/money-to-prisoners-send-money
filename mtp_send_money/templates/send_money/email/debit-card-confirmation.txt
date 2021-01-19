@@ -21,6 +21,6 @@ GOV.UK - {% trans 'Send money to someone in prison' %}
 {% trans 'We are carrying out research to understand how we can improve prison services.' %}
 {% trans 'If you have booked either a video call or a face-to-face visit with a friend or family member in prison in the last 12 months, we’d like to hear from you.' %}
 {% trans 'Please fill out our quick screener survey here, to see if you are eligible for one of our upcoming research studies.' %}
-https://www.surveymonkey.co.uk/r/VX8GPTR
+https://www.surveymonkey.co.uk/r/MX2FXGZ
 
 {% trans 'Back to the service:' %} {{ site_url }}
