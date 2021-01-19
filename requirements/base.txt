@@ -1,9 +1,12 @@
 # Dependencies needed for all environments
-# NB: this is not the complete set needed to run the app
+
+money-to-prisoners-common~=10.1.0
+
 Django>2.2,<2.3
 django-anymail[mailgun]~=7.2
 requests>=2.22,<3
 transifex-client>=0.12
+uWSGI==2.0.19.1
 
 django-form-error-reporting>=0.9
 django-moj-irat>=0.6
