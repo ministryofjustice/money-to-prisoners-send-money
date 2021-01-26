@@ -1,3 +1,4 @@
+/* globals Sentry */
 'use strict';
 
 export var Reference = {
@@ -6,7 +7,11 @@ export var Reference = {
       e.preventDefault();
       try {
         window.print();
-      } catch (e) {}  // eslint-disable-line
+      } catch (error) {
+        if (Sentry !== undefined) {
+          Sentry.captureException(error);
+        }
+      }
     });
   }
 };
