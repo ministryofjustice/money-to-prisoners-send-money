@@ -1,7 +1,6 @@
-// Filter-as-you-type lists
 'use strict';
 
-exports.FilteredList = {
+export var FilteredList = {
   init: function () {
     $('.mtp-filtered-list__input').each(this.bind);
   },
@@ -63,6 +62,8 @@ exports.FilteredList = {
         });
         if (hiddenCount === $listItems.length - $emptyItem.length) {
           $emptyItem.show();
+        } else {
+          $emptyItem.hide();
         }
       }
     });

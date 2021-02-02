@@ -2,10 +2,10 @@
 {% load i18n %}
 {% load mtp_common %}
 
-{% block cookie_message %}{% endblock %}
-{% block body_start %}
+
+{% block cookie_message %}
   {% if not actioned_cookie_prompt %}
-    <aside class="mtp-cookie-prompt">
+    <aside class="govuk-width-container mtp-cookie-prompt">
       <p>
         {% trans 'This service uses cookies which are essential for the site to work.' %}
         {% trans 'We also use non-essential cookies to help us improve your experience.' %}
@@ -16,13 +16,16 @@
       <form action="{% url 'cookies' %}" method="post">
         {% csrf_token %}
         <input type="hidden" name="next" value="{{ request.get_full_path }}" />
-        <button class="button" type="submit" name="accept_cookies" value="yes">{% trans 'Accept cookies' %}</button>
-        <button class="button" type="submit" name="accept_cookies" value="no">{% trans 'Reject cookies' %}</button>
-        <a class="mtp-cancel-button" href="{% url 'cookies' %}">{% trans 'View more information' %}</a>
+        <p>
+          <button class="govuk-button govuk-!-margin-right-1" data-module="govuk-button" type="submit" name="accept_cookies" value="yes">{% trans 'Accept cookies' %}</button>
+          <button class="govuk-button" data-module="govuk-button" type="submit" name="accept_cookies" value="no">{% trans 'Reject cookies' %}</button>
+          <a class="mtp-link--form-cancel" href="{% url 'cookies' %}">{% trans 'View more information' %}</a>
+        </p>
       </form>
     </aside>
   {% endif %}
 {% endblock %}
+
 
 {% block google_analytics_end %}
   {% if GOOGLE_ANALYTICS_GDS_ID %}
@@ -55,36 +58,22 @@
 
 
 {% block phase_banner %}
-  <div class="phase-banner">
-    {% if ENVIRONMENT != 'prod' %}
-      <strong class="phase-tag phase-tag-dev" title="{{ APP }}-{{ ENVIRONMENT }}:
-        {{ APP_GIT_COMMIT_SHORT }}{% if APP_BUILD_DATE %}, built {{ APP_BUILD_DATE }}{% endif %}">
-        {% trans 'Warning' %}
-      </strong>
-      {% blocktrans trimmed with name=ENVIRONMENT %}
-        This “{{ name }}” website is for testing only.
-      {% endblocktrans %}
-    {% endif %}
-    {% url 'help_area:help' as link %}
-    {% blocktrans trimmed %}
-      <a href="{{ link }}">Contact us</a> if you need help or would like to give us some feedback.
-    {% endblocktrans %}
+  <div class="govuk-phase-banner">
+    <p class="govuk-phase-banner__content">
+      {% if ENVIRONMENT != 'prod' %}
+        <strong class="govuk-tag mtp-tag--error govuk-phase-banner__content__tag">
+          {% trans 'Warning' %}
+        </strong>
+      {% endif %}
+      <span class="govuk-phase-banner__text">
+        {% if ENVIRONMENT != 'prod' %}
+          {% trans 'This website is only for testing!' %}
+        {% endif %}
+        {% url 'help_area:help' as ticket_url %}
+        {% blocktrans trimmed %}
+          <a href="{{ ticket_url }}">Contact us</a> if you need help or would like to give us some feedback.
+        {% endblocktrans %}
+      </span>
+    </p>
   </div>
-{% endblock %}
-
-
-{% block footer_support_links %}
-  <ul>
-    <li><a href="{% url 'terms' %}">{% trans 'Terms and conditions' %}</a></li>
-    <li><a href="{% url 'privacy' %}">{% trans 'Privacy policy' %}</a></li>
-    <li><a href="{% url 'cookies' %}">{% trans 'Cookies' %}</a></li>
-    <li><a href="{% url 'help_area:help' %}">{% trans 'Help' %}</a></li>
-    <li><a href="{% url 'accessibility' %}">{% trans 'Accessibility statement' %}</a></li>
-    <li>
-      {% trans 'Built by' %}
-      <a href="https://mojdigital.blog.gov.uk/">
-        <abbr title="{% trans 'Ministry of Justice' %}">MOJ</abbr> Digital
-      </a>
-    </li>
-  </ul>
 {% endblock %}

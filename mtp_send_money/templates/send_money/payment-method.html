@@ -4,44 +4,17 @@
 
 {% block page_title %}{% trans 'Pay now by debit card' %} – {{ block.super }}{% endblock %}
 
-{% block inner_content %}
-  {% notifications_box request 'send_money_landing' %}
+{% block content %}
+  {% notification_banners request 'send_money_landing' %}
 
-  {% if bank_transfers_enabled %}
-  <div class="mtp-notification mtp-notification--info">
-    <h1 class="mtp-notification__headline">
-      {% trans 'Service change from November 2nd' %}
-    </h1>
-    <div class="mtp-notification__message" style="display:block">
-      <p>
-        {% trans 'This will mean the best way to send money to someone in prison will be by debit card.' %}
-      </p>
-      <p>
-        {% trans 'From November 2nd, you will no longer be able to:' %}
-      </p>
-      <ul class="list list-bullet">
-        <li>{% trans 'send money by bank transfer or standing order' %}</li>
-        <li>{% trans 'send in cash, cheques or postal orders by post' %}</li>
-      </ul>
-      <p>
-        {% trans 'This change is to keep everyone who lives and works in prisons safe.' %}
-        {% url 'help_area:help' as link %}
-        {% blocktrans trimmed %}
-          If it means you can no longer use this service, you can <a href="{{ link }}">get help</a>.
-        {% endblocktrans %}
-      </p>
-    </div>
-  </div>
-  {% endif %}
-
-  <div class="grid-row">
-    <div class="column-two-thirds">
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
 
       <header>
-        <h1 class="heading-xlarge">{% trans 'Pay now by debit card' %}</h1>
+        <h1 class="govuk-heading-xl">{% trans 'Pay now by debit card' %}</h1>
       </header>
 
-      <p class="lede">
+      <p class="govuk-body-l">
         {% trans 'Paying by debit card is fast, simple, reliable and free and the best way of sending money to a prisoner.' %}
       </p>
 
@@ -58,21 +31,19 @@
         {% trans 'You can make an international payment using a debit card.' %}
       </p>
 
-      {% include 'mtp_common/forms/error-summary.html' with form=form only %}
+      {% include 'govuk-frontend/components/error-summary.html' with form=form only %}
 
       {% if form.payment_method.field.disabled %}
 
-        <div class="error-summary" role="alert" aria-labelledby="error-summary-heading" tabindex="-1">
-          <h1 class="heading-medium error-summary-heading">
-            {% if bank_transfers_enabled %}
-              {{ form.payment_method.field.message_to_users|default:_('Sending money by debit card is temporarily unavailable') }}
-            {% else %}
-              {{ form.payment_method.field.message_to_users|default:_('This service is temporarily unavailable') }}
-            {% endif %}
-          </h1>
-          <p>
-            {% trans 'Please try again later.' %}
-          </p>
+        <div class="govuk-error-summary" aria-labelledby="service-unavailable-heading" role="alert" tabindex="-1" data-module="govuk-error-summary">
+          <h2 class="govuk-error-summary__title" id="service-unavailable-heading">
+            {{ form.payment_method.field.message_to_users|default:_('This service is temporarily unavailable') }}
+          </h2>
+          <div class="govuk-error-summary__body">
+            <p>
+              {% trans 'Please try again later.' %}
+            </p>
+          </div>
         </div>
 
       {% else %}
@@ -80,7 +51,7 @@
         <form method="post">
           {% csrf_token %}
           {% with payment_method=form.payment_method.field.choices.0.0 %}
-            <button name="{{ form.payment_method.html_name }}" value="{{ payment_method }}" id="id_{{ payment_method }}" class="button">
+            <button name="{{ form.payment_method.html_name }}" value="{{ payment_method }}" id="id_{{ payment_method }}" class="govuk-button" data-module="govuk-button" data-prevent-double-click="true">
               {% trans 'Continue' %}
             </button>
           {% endwith %}
@@ -90,20 +61,11 @@
 
       <br />
 
-      {% if bank_transfers_enabled %}
-      <form method="post">
-        {% csrf_token %}
-        {% with payment_method=form.payment_method.field.choices.1.0 %}
-          <button name="{{ form.payment_method.html_name }}" value="{{ payment_method }}" id="id_{{ payment_method }}" class="mtp-link-button link font-xsmall">
-            {% trans 'I don’t have a debit card' %}
-          </button>
-        {% endwith %}
-      </form>
-      {% else %}
-      <a class="govuk-link" href="{% url 'help_area:help-cannot-access' %}">
-        {% trans 'I don’t have a debit card / can’t access this service' %}
-      </a>
-      {% endif %}
+      <p>
+        <a href="{% url 'help_area:help-cannot-access' %}">
+          {% trans 'I don’t have a debit card / can’t access this service' %}
+        </a>
+      </p>
 
     </div>
   </div>

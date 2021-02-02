@@ -1,0 +1,28 @@
+.mtp-cookie-prompt {
+  display: none;
+  padding: govuk-spacing(8) 0 govuk-spacing(4);
+
+  .js-enabled & {
+    display: block;
+
+    @media print {
+      display: none;
+    }
+  }
+
+  p, a {
+    color: govuk-shade(govuk-colour('green'), 50%);
+  }
+
+  a:visited {
+    color: govuk-shade(govuk-colour('green'), 75%);
+  }
+
+  @include govuk-media-query($until: tablet) {
+    padding-bottom: govuk-spacing(6);
+
+    .govuk-button {
+      width: 40%;
+    }
+  }
+}

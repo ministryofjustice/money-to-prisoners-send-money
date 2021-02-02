@@ -1,112 +1,69 @@
 {% extends 'base.html' %}
 {% load mtp_common %}
 
-{% block inner_content %}
+{% block content %}
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
 
-<header>
-  <h1 class="heading-xlarge">Send money to someone in prison – FAQs</h1>
-</header>
+    <header>
+      <h1 class="govuk-heading-xl">Send money to someone in prison – FAQs</h1>
+    </header>
 
-<div class="grid-row">
-  <div class="column-two-thirds">
-    <p class="lede">
+    <p class="govuk-body-l">
       Information for prison switchboard, Family Services and business hub staff to help answer questions from the public regarding the <a href="{{ site_url }}">Send money to someone in prison</a> service.
     </p>
 
-    <dl class="mtp-qna">
-      <dt>How can I send money to a prisoner using the new service?</dt>
-      <dd>
-        <p>Directly through the service with your <strong>debit card</strong>.</p>
-        <p>Or by <strong>bank transfer</strong> using your online banking website, a mobile banking app or telephone banking. You need to use the service first to get a reference for your bank transfer.</p>
-      </dd>
+    <div class="mtp-staff-faqs">
 
-      <dt>What bank cards can I use?</dt>
-      <dd>
-        <p>You can use Visa, Mastercard and Maestro <strong>debit</strong> cards.</p>
-      </dd>
+      <h2 class="govuk-heading-m">How can I send money to a prisoner using the new service?</h2>
+      <p>Directly through the service with your <strong>debit card</strong>.</p>
 
-      <dt>What payment methods do not work?</dt>
-      <dd>
-        <p>You can <strong>not</strong> use CHAPS.</p>
-        <p>You can <strong>not</strong> make a payment in-person at a bank.</p>
-        <p>You can <strong>not</strong> make an international payment using IBAN.</p>
-      </dd>
+      <h2 class="govuk-heading-m">What bank cards can I use?</h2>
+      <p>You can use Visa, Mastercard and Maestro <strong>debit</strong> cards.</p>
 
-      <dt>Can I send money to a prisoner using this service?</dt>
-      <dd>
-        <p>Yes. The digital service (bank transfers and debit cards) is available to all <a href="{% url 'help_area:prison_list' %}">prisons in England and Wales</a>.</p>
-      </dd>
+      <h2 class="govuk-heading-m">What payment methods do not work?</h2>
+      <p>You can <strong>not</strong> make a bank transfer.</p>
 
-      <dt>How long will it take for the prisoner to receive the money?</dt>
-      <dd>
-        <p>Usually the next day.</p>
-      </dd>
+      <h2 class="govuk-heading-m">Can I send money to a prisoner using this service?</h2>
+      <p>Yes. The digital service is available to all <a href="{% url 'help_area:prison_list' %}">prisons in England and Wales</a>.</p>
 
-      <dt>Has the prisoner received my money?</dt>
-      <dd>
-        <p>Ask the prisoner when they call you.</p>
-        <p>If you sent money by debit card, you will also receive an email.</p>
-      </dd>
+      <h2 class="govuk-heading-m">How long will it take for the prisoner to receive the money?</h2>
+      <p>Usually the next day.</p>
 
-      <dt>Why didn’t the money reach the prisoner?</dt>
-      <dd>
-        <p>If you paid by <strong>debit card</strong>, contact your bank.</p>
-        <p>If you paid by <strong>bank transfer</strong>, it may be because:</p>
-        <ul class="list list-bullet">
-          <li>the reference you inserted for the bank transfer is wrong – check with the prisoner that you have the prisoner’s correct date of birth and correct prisoner number</li>
-          <li>the prisoner has left prison</li>
-          <li>you paid cash in-branch (not allowed)</li>
-          <li>you made an international transfer (not allowed)</li>
-        </ul>
-        <p>You’ll <strong>only</strong> get a refund if the reference you inserted for the bank transfer is incorrect or if the prisoner has left prison.</p>
-      </dd>
+      <h2 class="govuk-heading-m">Has the prisoner received my money?</h2>
+      <p>Ask the prisoner when they call you.</p>
+      <p>If you sent money by debit card, you will also receive an email.</p>
 
-      <dt>How do I check the correct reference number for my bank transfer?</dt>
-      <dd>
-        <p>Go to: <a href="{{ site_url }}">{{ site_url }}</a></p>
-        <p>Try to generate the reference.</p>
-        <p>If the reference can’t be generated, check with the prisoner that you have their correct date of birth and correct prisoner number.</p>
-        <p>Sometimes the date of birth is entered incorrectly into the prison system. The prisoner might need to ask an officer on the wing to check it and let you know.</p>
-      </dd>
+      <h2 class="govuk-heading-m">Why didn’t the money reach the prisoner?</h2>
+      <p>If you paid by <strong>debit card</strong>, contact your bank.</p>
+      <p>If you paid by <strong>bank transfer</strong> (not available since November 2020), it may be because:</p>
+      <ul class="govuk-list govuk-list--bullet">
+        <li>the reference you inserted for the bank transfer is wrong – check with the prisoner that you have the prisoner’s correct date of birth and correct prisoner number</li>
+        <li>the prisoner has left prison</li>
+        <li>you paid cash in-branch (not allowed)</li>
+        <li>you made an international transfer (not allowed)</li>
+      </ul>
+      <p>You’ll <strong>only</strong> get a refund if the reference you inserted for the bank transfer is incorrect or if the prisoner has left prison.</p>
 
-      <dt>Can I use the bank transfer reference again?</dt>
-      <dd>
-        <p>If you want to send money to the <strong>same prisoner</strong>, you can use the code you generated again.</p>
-      </dd>
+      <h2 class="govuk-heading-m">How do I get my money back if I made a bank transfer in-branch or by international transfer?</h2>
+      <p>Since November 2020, paying by bank transfer is not available.</p>
+      <p>You need to talk to the prison business hub staff to identify the payment. When it’s been identified you will need to write to them confirming:</p>
+      <ul class="govuk-list govuk-list--bullet">
+        <li>who you are</li>
+        <li>your address</li>
+        <li>how you made the payment (in-branch or international transfer)</li>
+        <li>if in-branch, what bank/branch you went to</li>
+        <li>your bank</li>
+        <li>your sort code, account number</li>
+        <li>prisoner’s name</li>
+        <li>prisoner’s prison number</li>
+      </ul>
+      <p>When the prison business hub staff get your letter, they’ll send you a cheque.</p>
 
-      <dt>How long will it take for me to get a refund from my bank transfer?</dt>
-      <dd>
-        <p>If you used an incorrect reference, we will attempt to refund you within 4 working days.</p>
-      </dd>
+      <h2 class="govuk-heading-m">If I send money using the service how will my data be used or stored?</h2>
+      <p>Go to: <a href="{% url 'terms' %}">Terms and conditions</a></p>
 
-      <dt>How will I know I’ve got my refund?</dt>
-      <dd>
-        <p>Check your bank account 4 working days after you sent the money.</p>
-        <p>On your bank statement you’ll see the refund appear as ‘MTP NOMS’.</p>
-      </dd>
-
-      <dt>How do I get my money back if I made a bank transfer in-branch or by international transfer?</dt>
-      <dd>
-        <p>You need to talk to the prison business hub staff to identify the payment. When it’s been identified you will need to write to them confirming:</p>
-        <ul class="list list-bullet">
-          <li>who you are</li>
-          <li>your address</li>
-          <li>how you made the payment (in-branch or international transfer)</li>
-          <li>if in-branch, what bank/branch you went to</li>
-          <li>your bank</li>
-          <li>your sort code, account number</li>
-          <li>prisoner’s name</li>
-          <li>prisoner’s prison number</li>
-        </ul>
-        <p>When the prison business hub staff get your letter, they’ll send you a cheque.</p>
-      </dd>
-
-      <dt>If I send money using the service how will my data be used or stored?</dt>
-      <dd>
-        <p>Go to: <a href="{% url 'terms' %}">Terms and conditions</a></p>
-      </dd>
-    </dl>
-
+    </div>
   </div>
 </div>
 {% endblock %}

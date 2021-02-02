@@ -93,7 +93,7 @@ class SendMoneyDetailsPage(SendMoneyFunctionalTestCase):
     def test_service_charge_js(self):
         def check_service_charge(amount, expected):
             amount_field = self.driver.find_element_by_id('id_amount')
-            total_field = self.driver.find_element_by_css_selector('.mtp-charges-total span')
+            total_field = self.driver.find_element_by_css_selector('.mtp-service-charge__total')
             amount_field.clear()
             amount_field.send_keys(amount)
             self.assertEqual(total_field.text, expected)
@@ -109,7 +109,6 @@ class SendMoneyDetailsPage(SendMoneyFunctionalTestCase):
             'prisoner_dob_2': '1989',
         })
         self.driver.find_element_by_id('id_next_btn').click()
-        check_service_charge('0', '£0.20')
         check_service_charge('10', '£10.44')
         check_service_charge('120.40', '£123.49')
         check_service_charge('0.01', '£0.21')
@@ -118,16 +117,16 @@ class SendMoneyDetailsPage(SendMoneyFunctionalTestCase):
         check_service_charge('17', '£17.61')
         check_service_charge('3.14     ', '£3.42')
         check_service_charge('a', '')
+        check_service_charge('£10', '')
         check_service_charge('3', '£3.28')
         check_service_charge('-12', '')
         check_service_charge('.12', '')
         check_service_charge('32345', '£33,121.48')
         check_service_charge('10000000', '£10,240,000.20')
         check_service_charge('0.01', '£0.21')
-        check_service_charge('9999999999999999999999', '£10,239,999,999.18')
         check_service_charge('three', '')
         check_service_charge('  3.1415     ', '')
-        check_service_charge('0', '£0.20')
+        check_service_charge('0', '')
         check_service_charge('0.01', '£0.21')
         check_service_charge('0.1', '')
         check_service_charge('0.10', '£0.31')
@@ -189,7 +188,7 @@ class SendMoneyConfirmationPage(SendMoneyFunctionalTestCase):
                 'status': 'pending',
                 'created': datetime.datetime.now().isoformat() + 'Z',
                 'prisoner_number': 'A5544CD',
-                'prisoner_dob': '1992-12-05'
+                'prisoner_dob': '1992-12-05',
             })
             rsps.add(rsps.GET, govuk_url('/payments/%s' % processor_id), json={
                 'reference': ref,
@@ -232,7 +231,7 @@ class SendMoneyConfirmationPage(SendMoneyFunctionalTestCase):
                 'status': 'pending',
                 'created': datetime.datetime.now().isoformat() + 'Z',
                 'prisoner_number': 'A5544CD',
-                'prisoner_dob': '1992-12-05'
+                'prisoner_dob': '1992-12-05',
             })
             rsps.add(rsps.GET, govuk_url('/payments/%s' % processor_id), json={
                 'state': {'status': 'failed'}

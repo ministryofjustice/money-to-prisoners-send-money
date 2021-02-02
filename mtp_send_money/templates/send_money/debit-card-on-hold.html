@@ -4,22 +4,27 @@
 
 {% block page_title %}{% trans 'Payment being processed' %} – {{ block.super }}{% endblock %}
 
-{% block inner_content %}
+{% block content %}
 
-  <div class="govuk-box-highlight mtp-box-highlight-info">
-    <h1 class="heading-xlarge">{% trans 'This payment is being processed' %}</h1>
-    <p>{% trans 'Reference:' %} <strong>{{ short_payment_ref }}</strong></p>
+  <div class="govuk-panel mtp-panel--information">
+    <h1 class="govuk-panel__title">{% trans 'This payment is being processed' %}</h1>
+    <div class="govuk-panel__body">
+      {% trans 'Your reference is' %}
+      <br />
+      <strong>{{ short_payment_ref }}</strong>
+    </div>
   </div>
 
-  <div class="print-hidden mtp-reference-actions">
-    <a class="mtp-print-reference" href="#">{% trans 'Print this page' %}</a>
+  <div class="mtp-reference-actions govuk-!-margin-bottom-6 govuk-!-display-none-print">
+    <a class="mtp-reference-actions__print" href="#">{% trans 'Print this page' %}</a>
   </div>
 
-  <div class="grid-row">
-    <div class="column-two-thirds">
-      <div class="mtp-account panel panel-border-wide">
-        <table>
-          <caption class="visually-hidden">
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+
+      <div class="govuk-inset-text">
+        <table class="govuk-table">
+          <caption class="govuk-visually-hidden">
             {% trans 'Details of your payment' %}
           </caption>
           <tbody>
@@ -45,6 +50,7 @@
 
       <p>{% trans 'We’ll email you a payment update in a few days.' %}</p>
       <p>{% trans 'Please don’t contact us until you have it.' %}</p>
+
     </div>
   </div>
 {% endblock %}

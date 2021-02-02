@@ -5,81 +5,59 @@
 
 {% block page_title %}{% trans 'Enter amount to send' %} – {{ block.super }}{% endblock %}
 
-{% block inner_content %}
-  <header>
-    <h1 class="heading-xlarge">
-      <span class="heading-secondary">{% trans 'Pay now by debit card' %}</span>
-      {% trans 'Enter amount to send' %}
-    </h1>
-  </header>
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
 
-  <form method="post" action=".">
-    {% csrf_token %}
+      <header>
+        <h1 class="govuk-heading-xl">
+          <span class="govuk-caption-xl">{% trans 'Pay now by debit card' %}</span>
+          {% trans 'Enter amount to send' %}
+        </h1>
+      </header>
 
-    {% include 'mtp_common/forms/error-summary.html' with form=form only %}
+      <form method="post" action=".">
+        {% csrf_token %}
 
-    {% with field=form.amount %}
-      <div class="mtp-amount">
-        <fieldset>
-          <legend class="visually-hidden">{% trans 'Please enter the amount in pounds' %}</legend>
+        {% include 'govuk-frontend/components/error-summary.html' with form=form only %}
 
-          {% include 'mtp_common/forms/field-label.html' with field=field only %}
-          <div class="form-group mtp-money-amount {% if field.errors %}form-group-error{% endif %}">
-            {% include 'mtp_common/forms/field-errors.html' with field=field only %}
-            <div class="mtp-money-box">
-              <span class="form-control mtp-currency-sign">
-                £
-              </span><input id="{{ field.id_for_label }}"
-                    class="form-control  {% if field.errors %}form-control-error{% endif %} mtp-charges-amount"
-                    maxlength="10"
-                    name="{{ field.html_name }}"
-                    value="{{ field.value|default:'' }}"
-                    type="text"
-                    autocomplete="off"
-                    data-percentage-charge="{{ service_charge_percentage }}"
-                    data-fixed-charge="{{ service_charge_fixed }}" />
-            </div>
-          </div>
-        </fieldset>
+        <div {% if service_charged %}class="mtp-service-charge" data-percentage-charge="{{ service_charge_percentage }}" data-fixed-charge="{{ service_charge_fixed }}"{% endif %}>
+          {% include 'mtp_common/forms/amount-field.html' with field=form.amount only %}
 
-        {% if service_charged %}
-          <div class="form-group">
-            <fieldset class="mtp-charges-js" style="display:none">
-              <legend class="form-label">
-                {% trans "Service charge:" %}
-                <span class="mtp-charges-charges"></span>
-              </legend>
-              <p class="form-hint">
-                {% blocktrans trimmed with charge_percentage=service_charge_percentage|format_percentage charge_fixed=service_charge_fixed|currency_format_pence %}
-                  The service charge is {{ charge_percentage }} of the amount you’re sending, plus {{ charge_fixed }}.
-                {% endblocktrans %}
-                {% trans 'This fee is charged by your card provider.' %}
-              </p>
-              <p class="form-label-bold mtp-charges-total">
-                {% trans "Total to pay:" %}
-                <span></span>
-              </p>
-            </fieldset>
-            <div class="mtp-charges-no-js">
-              <p>
-                {% blocktrans trimmed with charge_percentage=service_charge_percentage|format_percentage charge_fixed=service_charge_fixed|currency_format_pence %}
-                  The service charge is {{ charge_percentage }} of the amount you’re sending, plus {{ charge_fixed }}.
-                {% endblocktrans %}
-                {% trans 'This fee is charged by your card provider.' %}
-              </p>
-              <p>
-                {% blocktrans trimmed with sample_amount=sample_amount|currency_format sample_amount_total_charge=sample_amount|add_service_charge|currency_format %}
-                  For instance, if you want to send {{ sample_amount }}, you will be charged {{ sample_amount_total_charge }}.
-                {% endblocktrans %}
-              </p>
-            </div>
-          </div>
-        {% endif %}
-      </div>
-    {% endwith %}
+          {% if service_charged %}
+            <p>
+              {% blocktrans trimmed with charge_percentage=service_charge_percentage|format_percentage charge_fixed=service_charge_fixed|currency_format_pence %}
+                The service charge is {{ charge_percentage }} of the amount you’re sending, plus {{ charge_fixed }}.
+              {% endblocktrans %}
+              {% trans 'This fee is charged by your card provider.' %}
+            </p>
+            <p class="mtp-service-charge__description">
+              {% blocktrans trimmed with sample_amount=sample_amount|currency_format sample_amount_total_charge=sample_amount|add_service_charge|currency_format %}
+                For instance, if you want to send {{ sample_amount }}, you will be charged {{ sample_amount_total_charge }}.
+              {% endblocktrans %}
+            </p>
+            <dl class="govuk-summary-list mtp-service-charge__totals">
+              <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key">
+                  {% trans 'Service charge' %}
+                </dt>
+                <dd class="govuk-summary-list__value mtp-service-charge__service-charge"></dd>
+              </div>
+              <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key">
+                  {% trans 'Total to pay' %}
+                </dt>
+                <dd class="govuk-summary-list__value mtp-service-charge__total"></dd>
+              </div>
+            </dl>
+          {% endif %}
+        </div>
 
-    <p>
-      <input id="id_next_btn" class="button" type="submit" value="{% trans 'Check details' %}">
-    </p>
-  </form>
+        <p>
+          <input id="id_next_btn" class="govuk-button" data-module="govuk-button" data-prevent-double-click="true" type="submit" value="{% trans 'Check details' %}">
+        </p>
+      </form>
+
+    </div>
+  </div>
 {% endblock %}

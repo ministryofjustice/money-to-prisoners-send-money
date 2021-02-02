@@ -1,0 +1,7 @@
+.mtp-reference-actions {
+  display: none;
+
+  .js-enabled & {
+    display: block;
+  }
+}

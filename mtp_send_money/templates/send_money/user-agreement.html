@@ -4,29 +4,27 @@
 
 {% block page_title %}{% trans 'Before you continue' %} – {{ block.super }}{% endblock %}
 
-{% block inner_content %}
+{% block content %}
 
   <div class="mtp-user-agreement">
-    <div class="grid-row ">
-      <div class="column-two-thirds">
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds">
         <div class="mtp-user-agreement__contents">
           <header>
-            <h1 class="heading-large">{% trans 'Before you continue' %}</h1>
+            <h1 class="govuk-heading-xl">{% trans 'Before you continue' %}</h1>
           </header>
 
-          <p class="lede">
+          <p class="govuk-body-l">
             {% trans 'We run compliance checks to prevent fraud and other criminal behaviour.' %}
           </p>
-          <p class="lede">
+          <p class="govuk-body-l">
             {% url 'terms' as terms_url %}
             {% url 'privacy' as privacy_url %}
             {% blocktrans trimmed %}
               By using this service you’re agreeing to these checks and our <a href="{{ terms_url }}">terms and conditions</a> and <a href="{{ privacy_url }}">privacy policy</a>.
             {% endblocktrans %}
           </p>
-          <p>
-            <a id="id_next_btn" class="button" href="{{ view.get_success_url }}">{% trans 'Continue' %}</a>
-          </p>
+          <a id="id_next_btn" class="govuk-button" data-module="govuk-button" href="{{ view.get_success_url }}">{% trans 'Continue' %}</a>
         </div>
       </div>
     </div>

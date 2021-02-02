@@ -5,10 +5,12 @@
 
 {% block page_title %}{% trans 'Terms and conditions' %} – {{ block.super }}{% endblock %}
 
-{% block inner_content %}
+{% block content %}
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
 
 <header>
-  <h1 class="heading-xlarge">{% trans 'Terms and conditions' %}</h1>
+  <h1 class="govuk-heading-xl">{% trans 'Terms and conditions' %}</h1>
 </header>
 
 <p>
@@ -16,7 +18,7 @@
   {% trans 'Please read them carefully.' %}
 </p>
 
-<h2 class="heading-small">{% trans 'Purpose of these terms and conditions' %}</h2>
+<h2 class="govuk-heading-s">{% trans 'Purpose of these terms and conditions' %}</h2>
 
 <p>
   {% trans 'These terms and conditions affect your rights and liabilities under the law.' %}
@@ -32,9 +34,9 @@
   {% trans 'If you don’t agree to the terms and conditions set out in this document, you should not send money to prisoners using this service.' %}
 </p>
 
-<h2 class="heading-small">{% trans 'Making payments' %}</h2>
+<h2 class="govuk-heading-s">{% trans 'Making payments' %}</h2>
 
-<div class="mtp-card-acceptance-signage" aria-hidden="true" role="presentation">
+<div class="mtp-card-acceptance-signage govuk-!-display-none-print" aria-hidden="true" role="presentation">
   <div class="mtp-card-acceptance-signage--large">
     {% card_acceptance_signage width=160 %}
   </div>
@@ -61,12 +63,12 @@
   {% trans 'Information recorded on this system may be used in the investigation of money laundering or other offences by HMPPS or its partners.' %}
 </p>
 
-<h2 class="heading-small">{% trans 'Applicable law' %}</h2>
+<h2 class="govuk-heading-s">{% trans 'Applicable law' %}</h2>
 
 <p>
   {% trans 'Your use of this service and any dispute arising from its use will be governed by and construed in accordance with the laws of England and Wales, including but not limited to the:' %}
 </p>
-<ul class="list list-bullet">
+<ul class="govuk-list govuk-list--bullet">
   <li>Computer Misuse Act 1990</li>
   <li>Data Protection Act 2018</li>
   <li>Mental Capacity Act 2005</li>
@@ -74,7 +76,7 @@
   <li>Terrorism Act 2000</li>
 </ul>
 
-<h2 class="heading-small">{% trans 'Using this service responsibly' %}</h2>
+<h2 class="govuk-heading-s">{% trans 'Using this service responsibly' %}</h2>
 
 <p>
   {% trans 'There are risks in using a shared computer, for example in an internet café, to use this service.' %}
@@ -92,7 +94,7 @@
   {% trans 'You must not attack our site via a denial-of-service attack or a distributed denial-of-service attack.' %}
 </p>
 
-<h2 class="heading-small">{% trans 'Feedback and complaints' %}</h2>
+<h2 class="govuk-heading-s">{% trans 'Feedback and complaints' %}</h2>
 
 <p>
   {% url 'help_area:help' as link %}
@@ -101,7 +103,7 @@
   {% endblocktrans %}
 </p>
 
-<h2 class="heading-small">{% trans 'Disclaimer' %}</h2>
+<h2 class="govuk-heading-s">{% trans 'Disclaimer' %}</h2>
 
 <p>
   {% trans 'We don’t accept liability for loss or damage incurred by users of this service, whether direct, indirect or consequential, whether caused by tort, breach of contract or otherwise.' %}
@@ -112,4 +114,6 @@
   {% trans 'This does not affect our liability for fraudulent misrepresentation or misrepresentation as to a fundamental matter, nor any other liability which cannot be excluded or limited under applicable law.' %}
 </p>
 
+  </div>
+</div>
 {% endblock %}

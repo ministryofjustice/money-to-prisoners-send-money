@@ -1,0 +1,32 @@
+.mtp-user-agreement {
+  background: govuk-colour('blue');
+  color: govuk-colour('white');
+
+  h1, p {
+    color: govuk-colour('white');
+  }
+
+  a {
+    color: govuk-colour('white');
+
+    &:focus {
+      color: govuk-colour('black');
+    }
+  }
+
+  .govuk-button {
+    background-color: govuk-colour('white');
+
+    &, &:link, &:visited, &:active, &:hover {
+      color: govuk-colour('black');
+    }
+
+    &:hover {
+      background-color: govuk-shade(govuk-colour('white'), 10%);
+    }
+  }
+}
+
+.mtp-user-agreement__contents {
+  padding: $govuk-gutter;
+}
