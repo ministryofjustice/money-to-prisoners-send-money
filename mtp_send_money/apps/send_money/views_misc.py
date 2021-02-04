@@ -110,7 +110,7 @@ class SitemapXMLView(TemplateView):
 
 
 class LegacyFeedbackView(RedirectView):
-    url = reverse_lazy('help_area:submit_ticket')
+    url = reverse_lazy('help_area:help')
     permanent = True
 
     def dispatch(self, request, *args, **kwargs):

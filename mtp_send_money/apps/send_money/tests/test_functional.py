@@ -163,11 +163,11 @@ class SendMoneyCheckDetailsPage(SendMoneyFunctionalTestCase):
 
 class SendMoneyFeedbackPages(SendMoneyFunctionalTestCase):
     def test_feedback_page(self):
-        self.driver.get(self.live_server_url + '/en-gb/contact-us/')
-        self.assertInSource('Enter your questions or feedback')
+        self.driver.get(self.live_server_url + '/help/with-making-a-payment/contact-us/')
+        self.assertInSource('Contact us about a payment you are finding it difficult to make')
 
     def test_feedback_received_page(self):
-        self.driver.get(self.live_server_url + '/en-gb/contact-us/success/')
+        self.driver.get(self.live_server_url + '/contact-us/success/')
         self.assertInSource('Thank you')
 
 

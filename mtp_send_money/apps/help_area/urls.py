@@ -56,7 +56,9 @@ urlpatterns = [
 
     url(r'^help/faq/$', CacheableTemplateView.as_view(template_name='help_area/faq.html'), name='faq'),
 
-    url(r'^contact-us/$', views.ContactView.as_view(), name='submit_ticket'),
+    url(r'^contact-us/$',
+        RedirectView.as_view(url=reverse_lazy('help_area:help'), permanent=True),
+        name='submit_ticket'),
     url(r'^contact-us/success/$', views.ContactSuccessView.as_view(), name='feedback_success'),
     url(r'^help/with-making-a-payment/contact-us/$',
         views.ContactNewPaymentView.as_view(),

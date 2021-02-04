@@ -18,6 +18,7 @@ logger = logging.getLogger('mtp')
 class ContactView(BaseGetHelpView):
     """
     Contact us page for general queries/feedback: does not ask for additional information about payments
+    NB: no longer accessible, but retained in case needed in future
     """
     form_class = ContactForm
     success_url = reverse_lazy('help_area:feedback_success')

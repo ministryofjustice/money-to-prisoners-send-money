@@ -42,7 +42,8 @@ class ContactUsTestCase(BaseTestCase):
     }
 
     forms = {
-        'generic': (contact_us_url, sample_submission),
+        # NB: the "generic" (help with the service in general) view is now inaccessible
+        # 'generic': (contact_us_url, sample_submission),
         'new_payment': (contact_us_new_payment_url, new_payment_sample_submission),
         'sent_payment': (contact_us_sent_payment_url, sent_payment_sample_submission),
     }
@@ -50,6 +51,17 @@ class ContactUsTestCase(BaseTestCase):
     def test_legacy_url_name(self):
         url = reverse('submit_ticket')
         self.assertTrue(url, msg='Unnamespaced `submit_ticket` url name should exist for mtp-common compatibility')
+
+    def test_old_links_redirect_to_help_landing_page(self):
+        old_links = [
+            # original url (there are probably no links there anymore)
+            '/feedback/',
+            # former "generic" form (this link is still around but should no longer point to the generic form)
+            '/contact-us/',
+        ]
+        for link in old_links:
+            response = self.client.get(link, follow=True)
+            self.assertEqual(response.resolver_match.view_name, 'help_area:help')
 
     def test_sample_submissions(self):
         for conf in self.forms.values():
