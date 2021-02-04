@@ -16,6 +16,9 @@ logger = logging.getLogger('mtp')
 
 
 class ContactView(BaseGetHelpView):
+    """
+    Contact us page for general queries/feedback: does not ask for additional information about payments
+    """
     form_class = ContactForm
     success_url = reverse_lazy('help_area:feedback_success')
     template_name = 'help_area/contact.html'
@@ -33,6 +36,9 @@ class ContactView(BaseGetHelpView):
 
 
 class ContactNewPaymentView(ContactView):
+    """
+    Contact us page for queries about making a payment: asks for additional information
+    """
     form_class = ContactNewPaymentForm
     template_name = 'help_area/contact-new-payment.html'
     page_title = _('Help with making a payment')
@@ -41,6 +47,9 @@ class ContactNewPaymentView(ContactView):
 
 
 class ContactSentPaymentView(ContactView):
+    """
+    Contact us page for queries about a payment already made: asks for additional information
+    """
     form_class = ContactSentPaymentForm
     template_name = 'help_area/contact-sent-payment.html'
     page_title = _('Help with a payment I’ve already made')
@@ -49,6 +58,9 @@ class ContactSentPaymentView(ContactView):
 
 
 class ContactSuccessView(BaseGetHelpSuccessView):
+    """
+    Success page for all contact us routes
+    """
     template_name = 'help_area/contact-success.html'
 
     def get_context_data(self, **kwargs):
@@ -57,6 +69,9 @@ class ContactSuccessView(BaseGetHelpSuccessView):
 
 
 class HelpView(CacheableTemplateView):
+    """
+    Pages in the help area without forms
+    """
     back_url = None
 
     def get_context_data(self, **kwargs):
