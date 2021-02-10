@@ -191,13 +191,18 @@ class PaymentClient:
             return
 
         if govuk_status == GovUkPaymentStatus.error:
+            error_code = govuk_payment.get('state', {}).get('code')
+            error_msg = govuk_payment.get('state', {}).get('message')
+
             logger.error(
-                'GOV.UK Pay returned an error for %(govuk_id)s: %(code)s %(msg)s' %
+                f'GOV.UK Pay returned an error: {error_code} {error_msg}',
                 {
-                    'govuk_id': govuk_payment.get('payment_id') or payment['uuid'],
-                    'code': govuk_payment.get('state', {}).get('code'),
-                    'msg': govuk_payment.get('state', {}).get('message'),
-                },
+                    'code': error_code,
+                    'msg': error_msg,
+                    # Additional context for Sentry issue
+                    'govuk_id': govuk_payment.get('payment_id'),
+                    'payment_uuid': payment.get('uuid'),
+                }
             )
 
         successfulish = govuk_status in [GovUkPaymentStatus.success, GovUkPaymentStatus.capturable]
