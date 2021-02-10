@@ -1133,6 +1133,10 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
         self.fill_in_amount()
 
         with responses.RequestsMock() as rsps:
+            govuk_pay_id = 12345
+            govuk_state_code = 'P0050'
+            govuk_state_message = 'Payment provider returned an error'
+
             mock_auth(rsps)
             rsps.add(
                 rsps.GET,
@@ -1147,10 +1151,10 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
                     'reference': self.ref,
                     'state': {
                         'status': 'error',
-                        'code': 'P0050',
-                        'message': 'Payment provider returned an error',
+                        'code': govuk_state_code,
+                        'message': govuk_state_message,
                     },
-                    'payment_id': 12345,
+                    'payment_id': govuk_pay_id,
                     'email': 'sender@outside.local',
                 },
                 status=200,
@@ -1161,9 +1165,13 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
                     {'payment_ref': self.ref},
                     follow=True,
                 )
-                error_log = logger.error.call_args[0][0]
-                self.assertIn('12345', error_log)
-                self.assertIn('P0050', error_log)
+
+                error_msg = logger.error.call_args[0][0]
+                error_context = logger.error.call_args[0][1]
+
+                self.assertEqual(f'GOV.UK Pay returned an error: {govuk_state_code} {govuk_state_message}', error_msg)
+                self.assertEqual(govuk_pay_id, error_context['govuk_id'])
+                self.assertEqual(self.payment_data['uuid'], error_context['payment_uuid'])
 
         self.assertOnPaymentErrorPage(response)
 
@@ -1393,9 +1401,13 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
                     {'payment_ref': self.ref},
                     follow=True,
                 )
-                error_log = logger.error.call_args[0][0]
-                self.assertIn(self.ref, error_log)
-                self.assertIn('None', error_log)
+
+                error_msg = logger.error.call_args[0][0]
+                error_context = logger.error.call_args[0][1]
+
+                self.assertEqual('GOV.UK Pay returned an error: None None', error_msg)
+                self.assertEqual(None, error_context['govuk_id'])
+                self.assertEqual(self.payment_data['uuid'], error_context['payment_uuid'])
 
         self.assertOnPaymentErrorPage(response)
 
