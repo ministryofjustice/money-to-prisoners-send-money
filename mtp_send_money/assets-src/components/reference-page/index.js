@@ -1,4 +1,3 @@
-/* globals Sentry */
 'use strict';
 
 export var Reference = {
@@ -8,7 +7,7 @@ export var Reference = {
       try {
         window.print();
       } catch (error) {
-        if (Sentry !== undefined) {
+        if (typeof Sentry !== 'undefined') {
           Sentry.captureException(error);
         }
       }

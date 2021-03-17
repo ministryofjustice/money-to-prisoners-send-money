@@ -109,12 +109,12 @@
       {% include 'govuk-frontend/components/warning-text.html' with text=_('Please be aware that you can’t request a refund once money is sent.')  %}
 
       <form action="{{ view.get_success_url }}" method="get">
-        <p>
+        <div class="govuk-button-group">
           <input id="id_next_btn" class="govuk-button" type="submit" value="{% trans 'Enter card details' %}" data-module="govuk-button" data-prevent-double-click="true">
-          <a href="{% url 'send_money:clear_session' %}" class="mtp-link--form-cancel">
+          <a href="{% url 'send_money:clear_session' %}" class="govuk-link">
             {% trans 'Cancel and delete all details' %}
           </a>
-        </p>
+        </div>
       </form>
 
     </div>

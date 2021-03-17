@@ -16,11 +16,11 @@
       <form action="{% url 'cookies' %}" method="post">
         {% csrf_token %}
         <input type="hidden" name="next" value="{{ request.get_full_path }}" />
-        <p>
-          <button class="govuk-button govuk-!-margin-right-1" data-module="govuk-button" type="submit" name="accept_cookies" value="yes">{% trans 'Accept cookies' %}</button>
+        <div class="govuk-button-group">
+          <button class="govuk-button" data-module="govuk-button" type="submit" name="accept_cookies" value="yes">{% trans 'Accept cookies' %}</button>
           <button class="govuk-button" data-module="govuk-button" type="submit" name="accept_cookies" value="no">{% trans 'Reject cookies' %}</button>
-          <a class="mtp-link--form-cancel" href="{% url 'cookies' %}">{% trans 'View more information' %}</a>
-        </p>
+          <a class="govuk-link" href="{% url 'cookies' %}">{% trans 'View more information' %}</a>
+        </div>
       </form>
     </aside>
   {% endif %}
