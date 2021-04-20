@@ -82,13 +82,17 @@ class Command(BaseCommand):
                 payment_client.update_completed_payment(payment, govuk_payment)
             except OAuth2Error:
                 logger.exception(
-                    'Scheduled job: Authentication error while processing %s' % payment_ref
+                    'Scheduled job: Authentication error while processing %(payment_ref)s',
+                    {'payment_ref': payment_ref},
                 )
             except RequestException as error:
-                error_message = 'Scheduled job: Payment check failed for ref %s' % payment_ref
+                response_content = None
                 if hasattr(error, 'response') and hasattr(error.response, 'content'):
-                    error_message += '\nReceived: %s' % error.response.content
-                logger.exception(error_message)
+                    response_content = error.response.content
+                logger.exception(
+                    'Scheduled job: Payment check failed for ref %(payment_ref)s. Received: %(response_content)s',
+                    {'payment_ref': payment_ref, 'response_content': response_content},
+                )
             except GovUkPaymentStatusException:
                 # expected much of the time
                 pass

@@ -155,7 +155,10 @@ class PaymentClient:
         """
         security_check = payment.get('security_check')
         if not security_check:
-            logging.warning(f'Could not find any security check for payment {payment["uuid"]}')
+            logger.warning(
+                'Could not find any security check for payment %(payment_id)s',
+                {'payment_id': payment['uuid']},
+            )
             return CheckResult.capture
 
         check_status = security_check['status']
@@ -166,7 +169,10 @@ class PaymentClient:
         elif check_status == 'pending':
             return CheckResult.delay
 
-        logging.warning(f'Unrecognised check status {check_status} for payment {payment["uuid"]}')
+        logger.error(
+            'Unrecognised check status %(check_status)s for payment %(payment_id)s',
+            {'payment_id': payment['uuid'], 'check_status': check_status},
+        )
         return CheckResult.capture
 
     def complete_payment_if_necessary(self, payment, govuk_payment):
@@ -377,7 +383,10 @@ class PaymentClient:
                     send_email_for_card_payment_timed_out(email, payment)
 
                 if not security_check.get('user_actioned'):
-                    logger.warning(f'Payment {payment["uuid"]} timed out before being actioned by FIU')
+                    logger.warning(
+                        'Payment %(payment_id)s timed out before being actioned by FIU',
+                        {'payment_id': payment['uuid']},
+                    )
 
     def get_govuk_payment(self, govuk_id):
         response = requests.get(
@@ -470,6 +479,6 @@ class PaymentClient:
             return govuk_data
         except (KeyError, ValueError):
             logger.exception(
-                'Failed to create new GOV.UK payment for MTP payment %s. Received: %s'
-                % (payment_ref, govuk_response.content)
+                'Failed to create new GOV.UK payment for MTP payment %(payment_ref)s. Received: %(response)r',
+                {'payment_ref': payment_ref, 'response': govuk_response.content}
             )
