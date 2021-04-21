@@ -19,6 +19,7 @@ from send_money.utils import (
     get_link_by_rel,
     get_service_charge,
     site_url,
+    get_requests_exception_for_logging,
 )
 
 logger = logging.getLogger('mtp')
@@ -280,7 +281,7 @@ class DebitCardPaymentView(DebitCardFlow):
                 ) + '?payment_ref=' + payment_ref,
             }
             if new_govuk_payment['delayed_capture']:
-                logger.info(f'Starting delayed capture for {payment_ref}')
+                logger.info('Starting delayed capture for %(payment_ref)s', {'payment_ref': payment_ref})
 
             govuk_payment = payment_client.create_govuk_payment(payment_ref, new_govuk_payment)
             if govuk_payment:
@@ -288,7 +289,7 @@ class DebitCardPaymentView(DebitCardFlow):
         except OAuth2Error:
             logger.exception('Authentication error')
         except RequestException:
-            logger.exception('Failed to create new payment (ref %s)' % payment_ref)
+            logger.exception('Failed to create new payment (ref %s)', payment_ref)
 
         return render(request, 'send_money/debit-card-error.html', failure_context)
 
@@ -381,16 +382,23 @@ class DebitCardConfirmationView(TemplateView):
                 # here status can be either capturable, success, error
 
         except OAuth2Error:
-            logger.exception('Authentication error while processing %s', payment_ref)
+            logger.exception(
+                'Authentication error while processing %(payment_ref)s',
+                {'payment_ref': payment_ref},
+            )
             self.status = GovUkPaymentStatus.error
         except RequestException as error:
-            error_message = 'Payment check failed for ref %s' % payment_ref
-            if hasattr(error, 'response') and hasattr(error.response, 'content'):
-                error_message += '\nReceived: %s' % error.response.content
-            logger.exception(error_message)
+            response_content = get_requests_exception_for_logging(error)
+            logger.exception(
+                'Payment check failed for ref %(payment_ref)s. Received: %(response_content)s',
+                {'payment_ref': payment_ref, 'response_content': response_content},
+            )
             self.status = GovUkPaymentStatus.error
         except GovUkPaymentStatusException:
-            logger.exception('GOV.UK Pay returned unexpected status for ref %s', payment_ref)
+            logger.exception(
+                'GOV.UK Pay returned unexpected status for ref %(payment_ref)s',
+                {'payment_ref': payment_ref},
+            )
             self.status = GovUkPaymentStatus.error
 
         response = super().get(request, *args, **kwargs)
