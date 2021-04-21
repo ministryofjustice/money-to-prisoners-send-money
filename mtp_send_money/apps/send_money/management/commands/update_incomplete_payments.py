@@ -10,6 +10,7 @@ from requests.exceptions import RequestException
 
 from send_money.exceptions import GovUkPaymentStatusException
 from send_money.payments import GovUkPaymentStatus, PaymentClient
+from send_money.utils import get_requests_exception_for_logging
 from send_money.views import get_payment_delayed_capture_rollout_percentage
 
 logger = logging.getLogger('mtp')
@@ -86,9 +87,7 @@ class Command(BaseCommand):
                     {'payment_ref': payment_ref},
                 )
             except RequestException as error:
-                response_content = None
-                if hasattr(error, 'response') and hasattr(error.response, 'content'):
-                    response_content = error.response.content
+                response_content = get_requests_exception_for_logging(error)
                 logger.exception(
                     'Scheduled job: Payment check failed for ref %(payment_ref)s. Received: %(response_content)s',
                     {'payment_ref': payment_ref, 'response_content': response_content},

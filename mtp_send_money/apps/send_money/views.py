@@ -19,6 +19,7 @@ from send_money.utils import (
     get_link_by_rel,
     get_service_charge,
     site_url,
+    get_requests_exception_for_logging,
 )
 
 logger = logging.getLogger('mtp')
@@ -387,9 +388,7 @@ class DebitCardConfirmationView(TemplateView):
             )
             self.status = GovUkPaymentStatus.error
         except RequestException as error:
-            response_content = None
-            if hasattr(error, 'response') and hasattr(error.response, 'content'):
-                response_content = error.response.content
+            response_content = get_requests_exception_for_logging(error)
             logger.exception(
                 'Payment check failed for ref %(payment_ref)s. Received: %(response_content)s',
                 {'payment_ref': payment_ref, 'response_content': response_content},

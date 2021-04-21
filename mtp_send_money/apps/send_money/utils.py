@@ -191,3 +191,9 @@ class CacheableTemplateView(TemplateView):
     def get(self, request, *args, **kwargs):
         response = super().get(request, *args, **kwargs)
         return make_response_cacheable(response)
+
+
+def get_requests_exception_for_logging(error: requests.RequestException):
+    if hasattr(error, 'response') and getattr(error.response, 'content', None):
+        return error.response.content
+    return None
