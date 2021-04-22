@@ -136,7 +136,7 @@ class PrisonerDetailsForm(SendMoneyForm):
         except TokenExpiredError:
             pass
         except RequestException as e:
-            if e.response.status_code != 401:
+            if getattr(e.response, 'status_code', None) != 401:
                 raise
         session = self.get_api_session(reconnect=True)
         return session.get('/prisoner_validity/', params=filters).json()
@@ -262,7 +262,7 @@ class DebitCardAmountForm(SendMoneyForm):
         except TokenExpiredError:
             pass
         except RequestException as e:
-            if e.response.status_code != 401:
+            if getattr(e.response, 'status_code', None) != 401:
                 raise
         if tries < self.max_lookup_tries:
             return self.lookup_prisoner_account_balance(tries=tries + 1)
