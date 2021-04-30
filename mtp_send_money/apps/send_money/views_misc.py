@@ -76,7 +76,6 @@ class SitemapXMLView(TemplateView):
             'help_area:help-cannot-access',
             'help_area:help-setup-basic-bank-account', 'help_area:help-apply-for-exemption',
             'help_area:prison_list',
-            'help_area:faq',
             'terms', 'privacy', 'cookies',
         ]
         links = {}
