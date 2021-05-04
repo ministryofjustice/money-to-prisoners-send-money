@@ -42,6 +42,12 @@ urlpatterns += [
     url(r'^robots.txt$', robots_txt_view),
     url(r'^sitemap.xml$', SitemapXMLView.as_view(), name='sitemap_xml'),
 
+    url(r'^\.well-known/security\.txt$', RedirectView.as_view(
+        url='https://raw.githubusercontent.com/ministryofjustice/security-guidance'
+            '/main/contact/vulnerability-disclosure-security.txt',
+        permanent=True,
+    )),
+
     url(r'^favicon.ico$', RedirectView.as_view(url=settings.STATIC_URL + 'images/favicon.ico', permanent=True)),
 ]
 
