@@ -4,7 +4,7 @@ from django.urls import reverse_lazy
 from django.views.generic import RedirectView
 
 from help_area import views
-from send_money.utils import CacheableTemplateView
+
 
 app_name = 'help_area'
 urlpatterns = [
@@ -53,8 +53,6 @@ urlpatterns = [
         RedirectView.as_view(url=reverse_lazy('help_area:help-sent-payment'), permanent=True)),
 
     url(r'^help/prisons/$', views.PrisonListView.as_view(), name='prison_list'),
-
-    url(r'^help/faq/$', CacheableTemplateView.as_view(template_name='help_area/faq.html'), name='faq'),
 
     url(r'^contact-us/$',
         RedirectView.as_view(url=reverse_lazy('help_area:help'), permanent=False),
