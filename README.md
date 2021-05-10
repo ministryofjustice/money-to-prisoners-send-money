@@ -4,7 +4,7 @@ Public-facing site for [Prisoner Money suite of apps](https://github.com/ministr
 
 ## Requirements
 
-- Unix-like platform with Python 3.6+ and NodeJS 10 (e.g. via [nvm](https://github.com/nvm-sh/nvm#nvmrc))
+- Unix-like platform with Python 3.8+ and NodeJS 10 (e.g. via [nvm](https://github.com/nvm-sh/nvm#nvmrc))
 
 ## Running locally
 
