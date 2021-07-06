@@ -1,16 +1,23 @@
+from http import HTTPStatus
 import json
 from unittest import mock
 from xml.etree import ElementTree
 
 from django.conf import settings
-from django.test import override_settings
+from django.test import override_settings, SimpleTestCase
 from django.urls import reverse, reverse_lazy
 from django.utils.cache import get_max_age
 from django.utils.translation import override as override_lang
 from mtp_common.analytics import AnalyticsPolicy
+from mtp_common.test_utils import silence_logger
 import responses
 
-from send_money.tests import BaseTestCase, patch_notifications, patch_gov_uk_pay_availability_check
+from send_money.tests import (
+    BaseTestCase,
+    mock_auth,
+    patch_notifications,
+    patch_gov_uk_pay_availability_check
+)
 
 
 @patch_notifications()
@@ -155,3 +162,109 @@ class PlainViewTestCase(BaseTestCase):
             for view_name in view_names:
                 response = self.client.get(reverse(view_name))
                 self.assertResponseNotCacheable(response)
+
+
+class PerformancePlatformTestCase(SimpleTestCase):
+
+    def setUp(self):
+        # NOTE: The structure of the API response is the same (e.g. with headers/results) but
+        # the headers and obviously the data itself are not.
+        # This is a simpler response to test conversion to CSV, caching, filtering etc...
+        self.headers = {
+            'week_commencing': 'Week commencing',
+            'credits_total': 'Transactions – total',
+        }
+        api_response = {
+            'headers': self.headers,
+            'results': [
+                {'week_commencing': '2021-06-07', 'credits_total': 100},
+                {'week_commencing': '2021-06-14'},  # Missing value (although it shouldn't happen)
+                {'credits_total': 200, 'week_commencing': '2021-06-21'},  # Different order
+            ]
+        }
+
+        with responses.RequestsMock() as rsps:
+            mock_auth(rsps)
+            rsps.add(rsps.GET, f'{settings.API_URL}/performance/data/', json=api_response)
+
+            self.response = self.client.get(reverse_lazy('performance_platform_csv'))
+
+    def test_responds_200(self):
+        self.assertEqual(self.response.status_code, HTTPStatus.OK)
+
+    def test_csv_response_type(self):
+        self.assertEqual(self.response['Content-Type'], 'text/csv')
+
+    def test_csv_response_format(self):
+        csv_content = self.response.content.decode('utf8')
+        expected_csv_content = 'Week commencing,Transactions – total\r\n2021-06-07,100\r\n2021-06-14,\r\n2021-06-21,200\r\n'  # noqa: E501
+        self.assertEqual(expected_csv_content, csv_content)
+
+    def test_caching(self):
+        self.assertTrue(self.response.has_header('Cache-Control'), msg='response has no Cache-Control header')
+        self.assertIn('public', self.response['Cache-Control'], msg='response is private')
+
+        expected_max_age = 7 * 24 * 60 * 60  # 7 days in seconds
+        self.assertGreaterEqual(get_max_age(self.response), expected_max_age, msg='max-age is less than a week')
+
+    def test_invalid_date_params(self):
+        with responses.RequestsMock(), silence_logger(name='django.request'):
+            response = self.client.get(reverse_lazy('performance_platform_csv') + '?from=invalid')
+            self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
+            self.assertIn('Date "invalid" could not be parsed - use YYYY-MM-DD format', response.json()['errors'])
+            self.assertEqual(0, get_max_age(response))
+
+        with responses.RequestsMock(), silence_logger(name='django.request'):
+            response = self.client.get(reverse_lazy('performance_platform_csv') + '?from=2021-01-01&to=invalid')
+            self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
+            self.assertIn('Date "invalid" could not be parsed - use YYYY-MM-DD format', response.json()['errors'])
+            self.assertEqual(0, get_max_age(response))
+
+    def test_date_filtering(self):
+        with self.subTest('only "from" query parameter passed'):
+            from_param = '2021-06-10'
+            api_response = {
+                'headers': self.headers,
+                'results': [
+                    {'week_commencing': '2021-06-28', 'credits_total': 100},
+                    {'week_commencing': '2021-07-05', 'credits_total': 200},
+                ]
+            }
+            with responses.RequestsMock() as rsps:
+                mock_auth(rsps)
+                rsps.add(rsps.GET, f'{settings.API_URL}/performance/data/', json=api_response)
+
+                query_params = f'?from={from_param}'
+                response = self.client.get(reverse_lazy('performance_platform_csv') + query_params)
+
+                self.assertEqual(response.status_code, HTTPStatus.OK)
+                self.assertEqual(response['Content-Type'], 'text/csv')
+                csv = response.content.decode('utf8')
+                self.assertEqual(csv, 'Week commencing,Transactions – total\r\n2021-06-28,100\r\n2021-07-05,200\r\n')
+
+                api_request = rsps.calls[1].request
+                self.assertDictEqual(api_request.params, {'week__gte': from_param})
+
+        with self.subTest('both "from" and "to" query parameters passed'):
+            from_param = '2021-06-10'
+            to_param = '2021-07-01'
+            api_response = {
+                'headers': self.headers,
+                'results': [
+                    {'week_commencing': '2021-06-28', 'credits_total': 100},
+                ]
+            }
+            with responses.RequestsMock() as rsps:
+                mock_auth(rsps)
+                rsps.add(rsps.GET, f'{settings.API_URL}/performance/data/', json=api_response)
+
+                query_params = f'?from={from_param}&to={to_param}'
+                response = self.client.get(reverse_lazy('performance_platform_csv') + query_params)
+
+                self.assertEqual(response.status_code, HTTPStatus.OK)
+                self.assertEqual(response['Content-Type'], 'text/csv')
+                csv = response.content.decode('utf8')
+                self.assertEqual(csv, 'Week commencing,Transactions – total\r\n2021-06-28,100\r\n')
+
+                api_request = rsps.calls[1].request
+                self.assertDictEqual(api_request.params, {'week__gte': from_param, 'week__lt': to_param})
