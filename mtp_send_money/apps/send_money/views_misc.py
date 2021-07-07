@@ -1,4 +1,5 @@
 import csv
+import datetime
 import json
 import warnings
 
@@ -65,8 +66,11 @@ def robots_txt_view(request):
     return make_response_cacheable(response)
 
 
-class InvalidDateException(Exception):
-    pass
+class InvalidDatesException(Exception):
+
+    def __init__(self, errors: list):
+        self.errors = errors
+        super().__init__('Could not parse some of the dates')
 
 
 class PerformanceDataCsvView(View):
@@ -79,26 +83,13 @@ class PerformanceDataCsvView(View):
     """
 
     def get(self, request):
-        errors = []
-
         try:
-            date_from = self.parse_date(request.GET.get('from'))
-        except InvalidDateException as e:
-            errors.append(str(e))
-
-        try:
-            date_to = self.parse_date(request.GET.get('to'))
-        except InvalidDateException as e:
-            errors.append(str(e))
-
-        if errors:
-            response_body = json.dumps({'errors': errors})
+            date_from, date_to = self.parse_date_range(request)
+        except InvalidDatesException as e:
+            response_body = json.dumps({'errors': e.errors})
             return HttpResponse(response_body, status=400, content_type='application/json')
 
-        api_client = get_api_session()
-        api_params = {'week__gte': date_from, 'week__lt': date_to}
-        data = api_client.get(api_url('performance/data'), params=api_params)
-        data = data.json()
+        data = self.get_performance_data(date_from, date_to)
 
         response = HttpResponse(content_type='text/csv')
 
@@ -111,16 +102,36 @@ class PerformanceDataCsvView(View):
 
         return response
 
-    def parse_date(self, date_input):
-        if not date_input:
-            return None
+    def get_performance_data(self, date_from: datetime.date, date_to: datetime.date):
+        api_client = get_api_session()
 
-        date = parse_date(date_input)
-        if not date:
-            error = _('Date "%s" could not be parsed - use YYYY-MM-DD format') % date_input
-            raise InvalidDateException(error)
+        date_range = {'week__gte': date_from, 'week__lt': date_to}
+        data = api_client.get(api_url('performance/data'), params=date_range)
+        return data.json()
 
-        return date
+    def parse_date_range(self, request):
+        date_from = None
+        date_to = None
+
+        errors = []
+        error_message = _('Date "%s" could not be parsed - use YYYY-MM-DD format')
+
+        from_param = request.GET.get('from')
+        if from_param:
+            date_from = parse_date(from_param)
+            if not date_from:
+                errors.append(error_message % from_param)
+
+        to_param = request.GET.get('to')
+        if to_param:
+            date_to = parse_date(to_param)
+            if not date_to:
+                errors.append(error_message % to_param)
+
+        if errors:
+            raise InvalidDatesException(errors)
+
+        return (date_from, date_to)
 
 
 class SitemapXMLView(TemplateView):
