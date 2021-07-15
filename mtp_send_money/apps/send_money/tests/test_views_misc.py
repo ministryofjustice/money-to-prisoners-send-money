@@ -193,7 +193,8 @@ class PerformancePlatformTestCase(SimpleTestCase):
         self.assertEqual(self.response.status_code, HTTPStatus.OK)
 
     def test_csv_response_type(self):
-        self.assertEqual(self.response['Content-Type'], 'text/csv')
+        self.assertEqual(self.response['Content-Type'], 'text/csv; charset=UTF-8')
+        self.assertEqual(self.response['Content-Disposition'], 'attachment; filename="performance-data.csv"')
 
     def test_csv_response_format(self):
         csv_content = self.response.content.decode('utf8')
@@ -238,7 +239,7 @@ class PerformancePlatformTestCase(SimpleTestCase):
                 response = self.client.get(reverse_lazy('performance_platform_csv') + query_params)
 
                 self.assertEqual(response.status_code, HTTPStatus.OK)
-                self.assertEqual(response['Content-Type'], 'text/csv')
+                self.assertEqual(response['Content-Type'], 'text/csv; charset=UTF-8')
                 csv = response.content.decode('utf8')
                 self.assertEqual(csv, 'Week commencing,Transactions – total\r\n2021-06-28,100\r\n2021-07-05,200\r\n')
 
@@ -262,7 +263,7 @@ class PerformancePlatformTestCase(SimpleTestCase):
                 response = self.client.get(reverse_lazy('performance_platform_csv') + query_params)
 
                 self.assertEqual(response.status_code, HTTPStatus.OK)
-                self.assertEqual(response['Content-Type'], 'text/csv')
+                self.assertEqual(response['Content-Type'], 'text/csv; charset=UTF-8')
                 csv = response.content.decode('utf8')
                 self.assertEqual(csv, 'Week commencing,Transactions – total\r\n2021-06-28,100\r\n')
 

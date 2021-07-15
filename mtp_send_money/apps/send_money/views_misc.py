@@ -91,7 +91,8 @@ class PerformanceDataCsvView(View):
 
         data = self.get_performance_data(date_from, date_to)
 
-        response = HttpResponse(content_type='text/csv')
+        response = HttpResponse(content_type='text/csv; charset=UTF-8')
+        response['Content-Disposition'] = 'attachment; filename="performance-data.csv"'
 
         writer = csv.DictWriter(response, fieldnames=data['headers'].keys())
         writer.writerow(data['headers'])
