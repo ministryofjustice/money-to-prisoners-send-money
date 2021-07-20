@@ -46,7 +46,7 @@ urlpatterns += [
     url(r'^metrics.txt$', metrics_view, name='prometheus_metrics'),
 
     url(r'^robots.txt$', robots_txt_view),
-    url(r'^performance-data.csv$', PerformanceDataCsvView.as_view(), name='performance_platform_csv'),
+    url(r'^performance-data.csv$', PerformanceDataCsvView.as_view(), name='performance_data_csv'),
     url(r'^sitemap.xml$', SitemapXMLView.as_view(), name='sitemap_xml'),
 
     url(r'^\.well-known/security\.txt$', RedirectView.as_view(

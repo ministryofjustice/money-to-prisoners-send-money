@@ -187,7 +187,7 @@ class PerformancePlatformTestCase(SimpleTestCase):
             mock_auth(rsps)
             rsps.add(rsps.GET, f'{settings.API_URL}/performance/data/', json=api_response)
 
-            self.response = self.client.get(reverse_lazy('performance_platform_csv'))
+            self.response = self.client.get(reverse_lazy('performance_data_csv'))
 
     def test_responds_200(self):
         self.assertEqual(self.response.status_code, HTTPStatus.OK)
@@ -210,13 +210,13 @@ class PerformancePlatformTestCase(SimpleTestCase):
 
     def test_invalid_date_params(self):
         with responses.RequestsMock(), silence_logger(name='django.request'):
-            response = self.client.get(reverse_lazy('performance_platform_csv') + '?from=invalid')
+            response = self.client.get(reverse_lazy('performance_data_csv') + '?from=invalid')
             self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
             self.assertIn('Date "invalid" could not be parsed - use YYYY-MM-DD format', response.json()['errors'])
             self.assertEqual(0, get_max_age(response))
 
         with responses.RequestsMock(), silence_logger(name='django.request'):
-            response = self.client.get(reverse_lazy('performance_platform_csv') + '?from=2021-01-01&to=invalid')
+            response = self.client.get(reverse_lazy('performance_data_csv') + '?from=2021-01-01&to=invalid')
             self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
             self.assertIn('Date "invalid" could not be parsed - use YYYY-MM-DD format', response.json()['errors'])
             self.assertEqual(0, get_max_age(response))
@@ -236,7 +236,7 @@ class PerformancePlatformTestCase(SimpleTestCase):
                 rsps.add(rsps.GET, f'{settings.API_URL}/performance/data/', json=api_response)
 
                 query_params = f'?from={from_param}'
-                response = self.client.get(reverse_lazy('performance_platform_csv') + query_params)
+                response = self.client.get(reverse_lazy('performance_data_csv') + query_params)
 
                 self.assertEqual(response.status_code, HTTPStatus.OK)
                 self.assertEqual(response['Content-Type'], 'text/csv; charset=UTF-8')
@@ -260,7 +260,7 @@ class PerformancePlatformTestCase(SimpleTestCase):
                 rsps.add(rsps.GET, f'{settings.API_URL}/performance/data/', json=api_response)
 
                 query_params = f'?from={from_param}&to={to_param}'
-                response = self.client.get(reverse_lazy('performance_platform_csv') + query_params)
+                response = self.client.get(reverse_lazy('performance_data_csv') + query_params)
 
                 self.assertEqual(response.status_code, HTTPStatus.OK)
                 self.assertEqual(response['Content-Type'], 'text/csv; charset=UTF-8')
