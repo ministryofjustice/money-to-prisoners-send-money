@@ -1,3 +1,6 @@
+import csv
+import datetime
+import json
 import warnings
 
 from django import forms
@@ -5,12 +8,14 @@ from django.conf import settings
 from django.http import HttpResponse
 from django.shortcuts import redirect
 from django.urls import reverse, reverse_lazy
+from django.utils.cache import patch_cache_control
+from django.utils.dateparse import parse_date
 from django.utils.http import is_safe_url
 from django.utils.translation import gettext_lazy as _, override as override_language
-from django.views.generic import FormView, RedirectView, TemplateView
+from django.views.generic import FormView, RedirectView, TemplateView, View
 from mtp_common.analytics import AnalyticsPolicy
 
-from send_money.utils import make_response_cacheable
+from send_money.utils import api_url, get_api_session, make_response_cacheable
 
 
 class CookiesForm(forms.Form):
@@ -59,6 +64,75 @@ def robots_txt_view(request):
         robots_txt = 'Sitemap: %s' % request.build_absolute_uri(reverse('sitemap_xml'))
     response = HttpResponse(robots_txt, content_type='text/plain')
     return make_response_cacheable(response)
+
+
+class InvalidDatesException(Exception):
+
+    def __init__(self, errors: list):
+        self.errors = errors
+        super().__init__('Could not parse some of the dates')
+
+
+class PerformanceDataCsvView(View):
+    """
+    Gets Performance Data from API and send it as CSV file.
+
+    Result shouldn't change for a week hence the caching.
+
+    @param request: the HTTP request
+    """
+
+    def get(self, request):
+        try:
+            date_from, date_to = self.parse_date_range(request)
+        except InvalidDatesException as e:
+            response_body = json.dumps({'errors': e.errors})
+            return HttpResponse(response_body, status=400, content_type='application/json')
+
+        data = self.get_performance_data(date_from, date_to)
+
+        response = HttpResponse(content_type='text/csv; charset=UTF-8')
+        response['Content-Disposition'] = 'attachment; filename="performance-data.csv"'
+
+        writer = csv.DictWriter(response, fieldnames=data['headers'].keys())
+        writer.writerow(data['headers'])
+        writer.writerows(data['results'])
+
+        # Public and cachable for a week
+        patch_cache_control(response, public=True, max_age=604800)
+
+        return response
+
+    def get_performance_data(self, date_from: datetime.date, date_to: datetime.date):
+        api_client = get_api_session()
+
+        date_range = {'week__gte': date_from, 'week__lt': date_to}
+        data = api_client.get(api_url('performance/data'), params=date_range)
+        return data.json()
+
+    def parse_date_range(self, request):
+        date_from = None
+        date_to = None
+
+        errors = []
+        error_message = _('Date "%s" could not be parsed - use YYYY-MM-DD format')
+
+        from_param = request.GET.get('from')
+        if from_param:
+            date_from = parse_date(from_param)
+            if not date_from:
+                errors.append(error_message % from_param)
+
+        to_param = request.GET.get('to')
+        if to_param:
+            date_to = parse_date(to_param)
+            if not date_to:
+                errors.append(error_message % to_param)
+
+        if errors:
+            raise InvalidDatesException(errors)
+
+        return (date_from, date_to)
 
 
 class SitemapXMLView(TemplateView):
