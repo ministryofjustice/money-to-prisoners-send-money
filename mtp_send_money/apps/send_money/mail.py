@@ -2,92 +2,52 @@ from decimal import Decimal
 
 from django.conf import settings
 from django.urls import reverse
-from django.utils.translation import gettext
+from django.utils import timezone
 from mtp_common.tasks import send_email
 
-from send_money.utils import site_url
+from send_money.notify.templates import SendMoneyNotifyTemplates
+from send_money.utils import currency_format, site_url
 
 
-def _send_notification_email(email, template_name, subject, tags, context):
-    context.update({
+def _send_notification_email(email, payment, template_name):
+    personalisation = {
         'site_url': settings.START_PAGE_URL,
         'help_url': site_url(reverse('help_area:help')),
-    })
-    send_email(
-        email,
-        f'send_money/email/{template_name}.txt',
-        gettext('Send money to someone in prison: %(subject)s') % {'subject': subject},
-        context=context,
-        html_template=f'send_money/email/{template_name}.html',
-        anymail_tags=tags,
-    )
+        'compliance_contact': settings.COMPLIANCE_CONTACT_EMAIL or site_url(reverse('help_area:help')),
+        'today': timezone.localdate().strftime('%d/%m/%Y'),
 
-
-def _get_email_context_for_payment(payment):
-    return {
         'short_payment_ref': payment['uuid'][:8].upper(),
         'prisoner_name': payment['recipient_name'],
         'prisoner_number': payment['prisoner_number'],
-        'amount': Decimal(payment['amount']) / 100,
+        'amount': currency_format(Decimal(payment['amount']) / 100),
     }
+    personalisation = {
+        field: personalisation[field]
+        for field in SendMoneyNotifyTemplates.templates[template_name]['personalisation']
+    }
+    send_email(
+        template_name=template_name,
+        to=email,
+        personalisation=personalisation,
+        staff_email=False,
+    )
 
 
 def send_email_for_card_payment_confirmation(email, payment):
-    context = _get_email_context_for_payment(payment)
-
-    _send_notification_email(
-        email,
-        'debit-card-confirmation',
-        gettext('your payment was successful'),
-        ['dc-received'],
-        context,
-    )
+    _send_notification_email(email, payment, 'send-money-debit-card-confirmation')
 
 
 def send_email_for_card_payment_on_hold(email, payment):
-    context = _get_email_context_for_payment(payment)
-
-    _send_notification_email(
-        email,
-        'debit-card-payment-on-hold',
-        gettext('your payment is being processed'),
-        ['dc-on-hold'],
-        context,
-    )
+    _send_notification_email(email, payment, 'send-money-debit-card-payment-on-hold')
 
 
 def send_email_for_card_payment_accepted(email, payment):
-    context = _get_email_context_for_payment(payment)
-
-    _send_notification_email(
-        email,
-        'debit-card-payment-accepted',
-        gettext('your payment has now gone through'),
-        ['dc-accepted'],
-        context,
-    )
+    _send_notification_email(email, payment, 'send-money-debit-card-payment-accepted')
 
 
 def send_email_for_card_payment_rejected(email, payment):
-    context = _get_email_context_for_payment(payment)
-    context['compliance_contact'] = settings.COMPLIANCE_CONTACT_EMAIL or site_url(reverse('help_area:help'))
-
-    _send_notification_email(
-        email,
-        'debit-card-payment-rejected',
-        gettext('your payment has NOT been sent to the prisoner'),
-        ['dc-rejected'],
-        context,
-    )
+    _send_notification_email(email, payment, 'send-money-debit-card-payment-rejected')
 
 
 def send_email_for_card_payment_timed_out(email, payment):
-    context = _get_email_context_for_payment(payment)
-
-    _send_notification_email(
-        email,
-        'debit-card-payment-timeout',
-        gettext('payment session expired'),
-        ['dc-timeout'],
-        context,
-    )
+    _send_notification_email(email, payment, 'send-money-debit-card-payment-timeout')

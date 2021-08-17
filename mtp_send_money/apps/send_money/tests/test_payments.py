@@ -1,6 +1,6 @@
 import json
+from unittest import mock
 
-from django.core import mail
 from django.test import override_settings
 from django.test.testcases import SimpleTestCase
 from mtp_common.test_utils import silence_logger
@@ -200,12 +200,13 @@ class GovUkPaymentStatusTestCase(SimpleTestCase):
     GOVUK_PAY_URL='https://pay.gov.local/v1',
     ENVIRONMENT='prod',  # because non-prod environments don't send to @outside.local
 )
+@mock.patch('send_money.mail.send_email')
 class CaptureGovukPaymentTestCase(SimpleTestCase):
     """
     Tests related to the capture_govuk_payment method.
     """
 
-    def test_capture(self):
+    def test_capture(self, mock_send_email):
         """
         Test that if the govuk payment is in 'capturable' state, the method captures the payment
         and no email is sent.
@@ -238,13 +239,13 @@ class CaptureGovukPaymentTestCase(SimpleTestCase):
             GovUkPaymentStatus.success.name,
         )
 
-        self.assertEqual(len(mail.outbox), 0)
+        mock_send_email.assert_not_called()
 
         # try to capture the payment again, nothing should happen
         client.capture_govuk_payment(govuk_payment)
-        self.assertEqual(len(mail.outbox), 0)
+        mock_send_email.assert_not_called()
 
-    def test_do_nothing_if_payment_in_finished_state(self):
+    def test_do_nothing_if_payment_in_finished_state(self, mock_send_email):
         """
         Test that if the govuk payment is already in a finished state, the method doesn't
         do anything.
@@ -266,9 +267,9 @@ class CaptureGovukPaymentTestCase(SimpleTestCase):
             returned_status = client.capture_govuk_payment(govuk_payment)
             self.assertEqual(returned_status, status)
 
-            self.assertEqual(len(mail.outbox), 0)
+            mock_send_email.assert_not_called()
 
-    def test_do_nothing_if_govukpayment_is_falsy(self):
+    def test_do_nothing_if_govukpayment_is_falsy(self, mock_send_email):
         """
         Test that if the passed in govuk payment dict is falsy, the method doesn't do anything.
         """
@@ -278,9 +279,9 @@ class CaptureGovukPaymentTestCase(SimpleTestCase):
         returned_status = client.capture_govuk_payment(govuk_payment)
         self.assertEqual(returned_status, None)
 
-        self.assertEqual(len(mail.outbox), 0)
+        mock_send_email.assert_not_called()
 
-    def test_payment_not_found(self):
+    def test_payment_not_found(self, mock_send_email):
         """
         Test that if GOV.UK Pay returns 404 when capturing a payment, the method raises an HTTPError.
         """
@@ -308,7 +309,9 @@ class CaptureGovukPaymentTestCase(SimpleTestCase):
                 404,
             )
 
-    def test_conflict(self):
+        mock_send_email.assert_not_called()
+
+    def test_conflict(self, mock_send_email):
         """
         Test that if GOV.UK Pay returns 409 when capturing a payment, the method raises an HTTPError.
         """
@@ -336,17 +339,20 @@ class CaptureGovukPaymentTestCase(SimpleTestCase):
                 409,
             )
 
+        mock_send_email.assert_not_called()
+
 
 @override_settings(
     GOVUK_PAY_URL='https://pay.gov.local/v1',
     ENVIRONMENT='prod',  # because non-prod environments don't send to @outside.local
 )
+@mock.patch('send_money.mail.send_email')
 class CancelGovukPaymentTestCase(SimpleTestCase):
     """
     Tests related to the cancel_govuk_payment method.
     """
 
-    def test_cancel(self):
+    def test_cancel(self, mock_send_email):
         """
         Test that if the govuk payment is in 'capturable' state, the method cancels the payment.
 
@@ -378,13 +384,13 @@ class CancelGovukPaymentTestCase(SimpleTestCase):
             GovUkPaymentStatus.cancelled.name,
         )
 
-        self.assertEqual(len(mail.outbox), 0)
+        mock_send_email.assert_not_called()
 
         # try to capture the payment again, nothing should happen
         client.cancel_govuk_payment(govuk_payment)
-        self.assertEqual(len(mail.outbox), 0)
+        mock_send_email.assert_not_called()
 
-    def test_do_nothing_if_payment_in_finished_state(self):
+    def test_do_nothing_if_payment_in_finished_state(self, mock_send_email):
         """
         Test that if the govuk payment is already in a finished state, the method doesn't
         do anything.
@@ -406,9 +412,9 @@ class CancelGovukPaymentTestCase(SimpleTestCase):
             returned_status = client.cancel_govuk_payment(govuk_payment)
             self.assertEqual(returned_status, status)
 
-            self.assertEqual(len(mail.outbox), 0)
+            mock_send_email.assert_not_called()
 
-    def test_do_nothing_if_govukpayment_is_falsy(self):
+    def test_do_nothing_if_govukpayment_is_falsy(self, mock_send_email):
         """
         Test that if the passed in govuk payment dict is falsy, the method doesn't do anything.
         """
@@ -418,9 +424,9 @@ class CancelGovukPaymentTestCase(SimpleTestCase):
         returned_status = client.cancel_govuk_payment(govuk_payment)
         self.assertEqual(returned_status, None)
 
-        self.assertEqual(len(mail.outbox), 0)
+        mock_send_email.assert_not_called()
 
-    def test_payment_not_found(self):
+    def test_payment_not_found(self, mock_send_email):
         """
         Test that if GOV.UK Pay returns 404 when cancelling a payment, the method raises an HTTPError.
         """
@@ -448,7 +454,9 @@ class CancelGovukPaymentTestCase(SimpleTestCase):
                 404,
             )
 
-    def test_conflict(self):
+        mock_send_email.assert_not_called()
+
+    def test_conflict(self, mock_send_email):
         """
         Test that if GOV.UK Pay returns 409 when cancelling a payment, the method raises an HTTPError.
         """
@@ -475,6 +483,8 @@ class CancelGovukPaymentTestCase(SimpleTestCase):
                 e.exception.response.status_code,
                 409,
             )
+
+        mock_send_email.assert_not_called()
 
 
 @override_settings(
@@ -590,12 +600,13 @@ class GetGovukPaymentEvents(SimpleTestCase):
     GOVUK_PAY_URL='https://pay.gov.local/v1',
     ENVIRONMENT='prod',  # because non-prod environments don't send to @outside.local
 )
+@mock.patch('send_money.mail.send_email')
 class CompletePaymentIfNecessaryTestCase(SimpleTestCase):
     """
     Tests related to the complete_payment_if_necessary method.
     """
 
-    def test_success_status(self):
+    def test_success_status(self, mock_send_email):
         """
         Test that if the govuk payment is in 'success' state and the MTP payment record
         doesn't have all the card details and email field filled in:
@@ -667,9 +678,9 @@ class CompletePaymentIfNecessaryTestCase(SimpleTestCase):
             )
 
         self.assertEqual(status, GovUkPaymentStatus.success)
-        self.assertEqual(len(mail.outbox), 0)
+        mock_send_email.assert_not_called()
 
-    def test_capturable_payment_that_shouldnt_be_captured_yet(self):
+    def test_capturable_payment_that_shouldnt_be_captured_yet(self, mock_send_email):
         """
         Test that if the govuk payment is in 'capturable' state, the MTP payment record
         doesn't have the email field filled in and the payment should not be captured yet:
@@ -752,11 +763,12 @@ class CompletePaymentIfNecessaryTestCase(SimpleTestCase):
                 payment_extra_details,
             )
         self.assertEqual(status, GovUkPaymentStatus.capturable)
-        self.assertEqual(len(mail.outbox), 1)
-        self.assertEqual(payment['email'], 'sender@example.com')
-        self.assertEqual(mail.outbox[0].subject, 'Send money to someone in prison: your payment is being processed')
+        self.assertEqual(len(mock_send_email.call_args_list), 1)
+        send_email_kwargs = mock_send_email.call_args_list[0].kwargs
+        self.assertEqual(send_email_kwargs['template_name'], 'send-money-debit-card-payment-on-hold')
+        self.assertEqual(send_email_kwargs['to'], 'sender@example.com')
 
-    def test_capturable_payment_that_shouldnt_be_captured_yet_with_email_already_set(self):
+    def test_capturable_payment_that_shouldnt_be_captured_yet_with_email_already_set(self, mock_send_email):
         """
         Test that if the govuk payment is in 'capturable' state, the MTP payment record
         has already the email field filled in and the payment should not be captured yet:
@@ -813,9 +825,9 @@ class CompletePaymentIfNecessaryTestCase(SimpleTestCase):
         status = client.complete_payment_if_necessary(payment, govuk_payment)
 
         self.assertEqual(status, GovUkPaymentStatus.capturable)
-        self.assertEqual(len(mail.outbox), 0)
+        mock_send_email.assert_not_called()
 
-    def test_capturable_payment_that_should_be_captured(self):
+    def test_capturable_payment_that_should_be_captured(self, mock_send_email):
         """
         Test that if the govuk payment is in 'capturable' state and the payment should be captured:
 
@@ -900,9 +912,9 @@ class CompletePaymentIfNecessaryTestCase(SimpleTestCase):
                 payment_extra_details,
             )
         self.assertEqual(status, GovUkPaymentStatus.success)
-        self.assertEqual(len(mail.outbox), 0)
+        mock_send_email.assert_not_called()
 
-    def test_capturable_payment_that_should_be_cancelled(self):
+    def test_capturable_payment_that_should_be_cancelled(self, mock_send_email):
         """
         Test that if the govuk payment is in 'capturable' state and the payment should be cancelled:
 
@@ -991,9 +1003,9 @@ class CompletePaymentIfNecessaryTestCase(SimpleTestCase):
                 payment_extra_details,
             )
         self.assertEqual(status, GovUkPaymentStatus.cancelled)
-        self.assertEqual(len(mail.outbox), 0)
+        mock_send_email.assert_not_called()
 
-    def test_dont_send_email(self):
+    def test_dont_send_email(self, mock_send_email):
         """
         Test that the method only sends any email if the govuk payment status is 'capturable'
         and the MTP payment didn't have the email field set
@@ -1038,9 +1050,9 @@ class CompletePaymentIfNecessaryTestCase(SimpleTestCase):
                 actual_status = client.complete_payment_if_necessary(payment, govuk_payment)
 
                 self.assertEqual(actual_status, status)
-                self.assertEqual(len(mail.outbox), 0)
+                mock_send_email.assert_not_called()
 
-    def test_do_nothing_if_govukpayment_is_falsy(self):
+    def test_do_nothing_if_govukpayment_is_falsy(self, mock_send_email):
         """
         Test that if the passed in govuk payment dict is falsy, the method returns None and
         doesn't send any email.
@@ -1052,7 +1064,7 @@ class CompletePaymentIfNecessaryTestCase(SimpleTestCase):
         status = client.complete_payment_if_necessary(payment, govuk_payment)
 
         self.assertEqual(status, None)
-        self.assertEqual(len(mail.outbox), 0)
+        mock_send_email.assert_not_called()
 
 
 class GetCompletionPaymentAttrUpdatesTestCase(SimpleTestCase):

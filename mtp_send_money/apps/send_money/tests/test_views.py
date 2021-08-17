@@ -4,7 +4,6 @@ import json
 import logging
 from unittest import mock
 
-from django.core import mail
 from django.test import override_settings
 from django.test.testcases import SimpleTestCase
 from django.urls import reverse, reverse_lazy
@@ -666,6 +665,7 @@ class DebitCardPaymentTestCase(DebitCardFlowTestCase):
 @override_settings(SERVICE_CHARGE_PERCENTAGE=Decimal('2.4'),
                    SERVICE_CHARGE_FIXED=Decimal('0.20'),
                    GOVUK_PAY_URL='https://pay.gov.local/v1')
+@mock.patch('send_money.mail.send_email')
 class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
     url = reverse_lazy('send_money:confirmation')
     ref = 'wargle-blargle'
@@ -683,11 +683,12 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
         'prisoner_dob': '1989-01-21',
     }
 
-    def test_cannot_access_directly(self):
+    def test_cannot_access_directly(self, mock_send_email):
         response = self.client.get(self.url, follow=True)
         self.assertOnPage(response, 'user_agreement')
+        mock_send_email.assert_not_called()
 
-    def test_redirects_if_no_reference_param(self):
+    def test_redirects_if_no_reference_param(self, mock_send_email):
         self.choose_debit_card_payment_method()
         self.fill_in_prisoner_details()
         self.fill_in_amount()
@@ -695,9 +696,10 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
         with self.patch_prisoner_details_check(), self.patch_prisoner_balance_check():
             response = self.client.get(self.url, data={'payment_ref': ''}, follow=True)
         self.assertOnPage(response, 'user_agreement')
+        mock_send_email.assert_not_called()
 
     @mock.patch('send_money.payments.PaymentClient.api_session')
-    def test_escapes_reference_param(self, mocked_api_session):
+    def test_escapes_reference_param(self, mocked_api_session, mock_send_email):
         from mtp_common.auth.exceptions import HttpNotFoundError
 
         mocked_api_session.get.side_effect = HttpNotFoundError
@@ -709,9 +711,10 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
         with self.patch_prisoner_details_check(), self.patch_prisoner_balance_check():
             self.client.get(self.url, data={'payment_ref': '../service-availability/'})
         mocked_api_session.get.assert_called_with('/payments/..%2Fservice-availability%2F/')
+        mock_send_email.assert_not_called()
 
     @override_settings(ENVIRONMENT='prod')  # because non-prod environments don't send to @outside.local
-    def test_success_confirmation(self):
+    def test_success_confirmation(self, mock_send_email):
         """
         Test that if the GOV.UK payment is in status 'success', the view:
         - updates the MTP payment record with the email address provided by GOV.UK Pay
@@ -766,10 +769,10 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
         for key in self.complete_session_keys:
             self.assertNotIn(key, self.client.session)
 
-        self.assertEqual(len(mail.outbox), 0)
+        mock_send_email.assert_not_called()
 
     @override_settings(ENVIRONMENT='prod')  # because non-prod environments don't send to @outside.local
-    def test_automatically_captures_payment(self):
+    def test_automatically_captures_payment(self, mock_send_email):
         """
         Test that if the GOV.UK payment is in status 'capturable' and the payment should be
         automatically captured, the view:
@@ -836,10 +839,10 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
         for key in self.complete_session_keys:
             self.assertNotIn(key, self.client.session)
 
-        self.assertEqual(len(mail.outbox), 0)
+        mock_send_email.assert_not_called()
 
     @override_settings(ENVIRONMENT='prod')  # because non-prod environments don't send to @outside.local
-    def test_puts_payment_on_hold(self):
+    def test_puts_payment_on_hold(self, mock_send_email):
         """
         Test that if the GOV.UK payment is in status 'capturable' and the payment should not be captured, the view:
         - updates the MTP payment record with the email address and other details provided by GOV.UK Pay
@@ -900,11 +903,13 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
         for key in self.complete_session_keys:
             self.assertNotIn(key, self.client.session)
 
-        self.assertEqual('Send money to someone in prison: your payment is being processed', mail.outbox[0].subject)
-        self.assertTrue('WARGLE-B' in mail.outbox[0].body)
-        self.assertTrue('£17' in mail.outbox[0].body)
+        self.assertEqual(len(mock_send_email.call_args_list), 1)
+        send_email_kwargs = mock_send_email.call_args_list[0].kwargs
+        self.assertEqual(send_email_kwargs['template_name'], 'send-money-debit-card-payment-on-hold')
+        self.assertEqual(send_email_kwargs['personalisation']['short_payment_ref'], 'WARGLE-B')
+        self.assertEqual(send_email_kwargs['personalisation']['amount'], '£17.00')
 
-    def assertOnPaymentDeclinedPage(self, response):  # noqa: N802
+    def assertOnPaymentDeclinedPage(self, response, mock_send_email):  # noqa: N802
         """
         Payment was declined by card issuer or WorldPay (e.g. due to insufficient funds or risk management)
         - card declined page presented
@@ -914,12 +919,12 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
         self.assertContains(response, 'Your payment has been declined')
         self.assertEqual(response.templates[0].name, 'send_money/debit-card-declined.html')
 
-        self.assertEqual(len(mail.outbox), 0)
+        mock_send_email.assert_not_called()
 
         for key in self.complete_session_keys:
             self.assertIn(key, self.client.session)
 
-    def assertOnPaymentCancelledPage(self, response):  # noqa: N802
+    def assertOnPaymentCancelledPage(self, response, mock_send_email):  # noqa: N802
         """
         Payment was cancelled by user or through GOV.UK Pay api
         - payment cancelled page presented
@@ -929,12 +934,12 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
         self.assertContains(response, 'Your payment has been cancelled')
         self.assertEqual(response.templates[0].name, 'send_money/debit-card-cancelled.html')
 
-        self.assertEqual(len(mail.outbox), 0)
+        mock_send_email.assert_not_called()
 
         for key in self.complete_session_keys:
             self.assertIn(key, self.client.session)
 
-    def assertOnPaymentSessionExpiredPage(self, response):  # noqa: N802
+    def assertOnPaymentSessionExpiredPage(self, response, mock_send_email):  # noqa: N802
         """
         User did not complete forms in GOV.UK Pay in allowed time
         - payment session expired page presented
@@ -944,12 +949,12 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
         self.assertContains(response, 'Your payment session has expired')
         self.assertEqual(response.templates[0].name, 'send_money/debit-card-session-expired.html')
 
-        self.assertEqual(len(mail.outbox), 0)
+        mock_send_email.assert_not_called()
 
         for key in self.complete_session_keys:
             self.assertIn(key, self.client.session)
 
-    def assertOnPaymentErrorPage(self, response):  # noqa: N802
+    def assertOnPaymentErrorPage(self, response, mock_send_email):  # noqa: N802
         """
         An unexpected error occurred communicating with mtp-api, GOV.UK Pay or GOV.UK Pay returned an explicit error
         - payment error page presented with reference
@@ -959,12 +964,12 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
         self.assertContains(response, 'We are experiencing technical problems')
         self.assertContains(response, self.ref[:8].upper())
 
-        self.assertEqual(len(mail.outbox), 0)
+        mock_send_email.assert_not_called()
 
         for key in self.complete_session_keys:
             self.assertNotIn(key, self.client.session)
 
-    def test_handles_api_update_errors(self):
+    def test_handles_api_update_errors(self, mock_send_email):
         """
         Test that if the MTP API call returns 500, the view shows a generic error page
         and no email is sent.
@@ -987,9 +992,9 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
                     follow=False,
                 )
 
-        self.assertOnPaymentErrorPage(response)
+        self.assertOnPaymentErrorPage(response, mock_send_email)
 
-    def test_handles_govuk_errors(self):
+    def test_handles_govuk_errors(self, mock_send_email):
         """
         Test that if the GOV.UK API call returns 500, the view shows a generic error page
         and no email is sent.
@@ -1018,9 +1023,9 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
                     follow=False,
                 )
 
-        self.assertOnPaymentErrorPage(response)
+        self.assertOnPaymentErrorPage(response, mock_send_email)
 
-    def test_handles_missing_govuk_payment(self):
+    def test_handles_missing_govuk_payment(self, mock_send_email):
         """
         Test that if the GOV.UK API call returns 404, the view shows a generic error page
         and no email is sent; even though MTP payment exists.
@@ -1049,9 +1054,9 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
                     follow=True,
                 )
 
-        self.assertOnPaymentErrorPage(response)
+        self.assertOnPaymentErrorPage(response, mock_send_email)
 
-    def test_handles_unexpected_govuk_response(self):
+    def test_handles_unexpected_govuk_response(self, mock_send_email):
         """
         Test that if the GOV.UK API call returns unexpected status, the view shows a generic error page
         and no email is sent.
@@ -1085,9 +1090,9 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
                     follow=True,
                 )
 
-        self.assertOnPaymentErrorPage(response)
+        self.assertOnPaymentErrorPage(response, mock_send_email)
 
-    def test_handles_declined_card(self):
+    def test_handles_declined_card(self, mock_send_email):
         """
         Test that if the GOV.UK payment is in status 'failed' (P0010 e.g. because the card has insufficient funds),
         an error page is shown (since GOV.UK Pay now defers error display to this service).
@@ -1121,9 +1126,9 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
                     follow=True,
                 )
 
-        self.assertOnPaymentDeclinedPage(response)
+        self.assertOnPaymentDeclinedPage(response, mock_send_email)
 
-    def test_handles_payments_in_error(self):
+    def test_handles_payments_in_error(self, mock_send_email):
         """
         Test that if the GOV.UK payment is in status 'error' (P0050 e.g. GOV.UK Pay could not contact WorldPay)
         an error page is shown (since GOV.UK Pay now defers error display to this service).
@@ -1173,9 +1178,9 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
                 self.assertEqual(govuk_pay_id, error_context['govuk_id'])
                 self.assertEqual(self.payment_data['uuid'], error_context['payment_uuid'])
 
-        self.assertOnPaymentErrorPage(response)
+        self.assertOnPaymentErrorPage(response, mock_send_email)
 
-    def test_handles_payments_cancelled_by_us(self):
+    def test_handles_payments_cancelled_by_us(self, mock_send_email):
         """
         Test that if the GOV.UK payment is in status 'cancelled' (P0040) because we cancelled it
         (if the user cancels the payment, the actual GOV.UK status is 'failed')
@@ -1213,9 +1218,9 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
                     follow=True,
                 )
 
-        self.assertOnPaymentCancelledPage(response)
+        self.assertOnPaymentCancelledPage(response, mock_send_email)
 
-    def test_handles_payments_cancelled_by_user(self):
+    def test_handles_payments_cancelled_by_user(self, mock_send_email):
         """
         Test that if the GOV.UK payment is in status 'failed' (P0030) because the user cancelled it deliberately
         a cancelled page is shown (since GOV.UK Pay now defers error display to this service).
@@ -1249,9 +1254,9 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
                     follow=True,
                 )
 
-        self.assertOnPaymentCancelledPage(response)
+        self.assertOnPaymentCancelledPage(response, mock_send_email)
 
-    def test_handles_payments_with_expired_session(self):
+    def test_handles_payments_with_expired_session(self, mock_send_email):
         """
         Test that if the GOV.UK payment is in status 'failed' (P0020) because the session expired
         (if the user took too long on GOV.UK Pay forms)
@@ -1286,9 +1291,9 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
                     follow=True,
                 )
 
-        self.assertOnPaymentSessionExpiredPage(response)
+        self.assertOnPaymentSessionExpiredPage(response, mock_send_email)
 
-    def test_handles_payments_with_unusual_failed_code(self):
+    def test_handles_payments_with_unusual_failed_code(self, mock_send_email):
         """
         A `failed` status with P0020 or P0030 are treated as special.
         All others (including the very common P0010) should be treated equally.
@@ -1327,9 +1332,9 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
                 self.assertIn('failed', error_log)
                 self.assertIn('P990099', error_log)
 
-        self.assertOnPaymentDeclinedPage(response)
+        self.assertOnPaymentDeclinedPage(response, mock_send_email)
 
-    def test_handles_payments_with_unusual_cancelled_code(self):
+    def test_handles_payments_with_unusual_cancelled_code(self, mock_send_email):
         """
         A `cancelled` status expects a P0040 code, but we should treat all cancellations equally.
         Similar to DebitCardConfirmationTestCase.test_handles_payments_cancelled_by_us
@@ -1367,9 +1372,9 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
                 self.assertIn('cancelled', error_log)
                 self.assertIn('P990099', error_log)
 
-        self.assertOnPaymentCancelledPage(response)
+        self.assertOnPaymentCancelledPage(response, mock_send_email)
 
-    def test_handles_payments_with_unusual_error_code(self):
+    def test_handles_payments_with_unusual_error_code(self, mock_send_email):
         """
         An `error` status with P0050 code is common, but we should treat all errors equally.
         Similar to DebitCardConfirmationTestCase.test_handles_payments_in_error
@@ -1409,9 +1414,9 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
                 self.assertEqual(None, error_context['govuk_id'])
                 self.assertEqual(self.payment_data['uuid'], error_context['payment_uuid'])
 
-        self.assertOnPaymentErrorPage(response)
+        self.assertOnPaymentErrorPage(response, mock_send_email)
 
-    def test_refreshes_for_recently_completed_payments(self):
+    def test_refreshes_for_recently_completed_payments(self, mock_send_email):
         """
         Test that if the user refreshes the page after the MTP payment was moved to the 'taken' status
         by the cronjob x mins after the GOV.UK payment succeeded, the user sees a success confirmation
@@ -1441,9 +1446,9 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
 
         self.assertContains(response, 'success')
         # check no new email sent
-        self.assertEqual(len(mail.outbox), 0)
+        mock_send_email.assert_not_called()
 
-    def test_redirects_for_old_payments(self):
+    def test_redirects_for_old_payments(self, mock_send_email):
         """
         Test that if the user refreshes the page a long time after the MTP payment was moved to the 'taken' status
         by the cronjob x mins after the GOV.UK payment succeeded, the user is redirected to the
@@ -1479,7 +1484,7 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
                 )
             self.assertRedirects(response, '/en-gb/', fetch_redirect_response=False)
 
-    def test_redirects_for_old_failed_payments(self):
+    def test_redirects_for_old_failed_payments(self, mock_send_email):
         """
         Test that if the user click on the 'Continue' button on GOV.UK Pay to return to
         our service a long time after it failed, the view redirects to the start of the

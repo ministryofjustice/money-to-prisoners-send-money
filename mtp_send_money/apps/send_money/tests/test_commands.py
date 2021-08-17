@@ -2,7 +2,6 @@ from datetime import datetime, timedelta
 import json
 from unittest import mock
 
-from django.core import mail
 from django.core.management import call_command
 from django.test import override_settings
 from django.test.testcases import SimpleTestCase
@@ -46,8 +45,26 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
         self.mocked_is_first_instance.stop()
         super().tearDown()
 
+    def assertEmailSent(  # noqa: N802
+        self,
+        send_email_call,
+        expected_template_name,
+        expected_to,
+        expected_short_payment_ref,
+        expected_prisoner_name,
+        expected_amount,
+    ):
+        send_email_kwargs = send_email_call.kwargs
+        self.assertFalse(send_email_kwargs['staff_email'])
+        self.assertEqual(send_email_kwargs['template_name'], expected_template_name)
+        self.assertEqual(send_email_kwargs['to'], expected_to)
+        self.assertEqual(send_email_kwargs['personalisation']['short_payment_ref'], expected_short_payment_ref)
+        self.assertEqual(send_email_kwargs['personalisation']['prisoner_name'], expected_prisoner_name)
+        self.assertEqual(send_email_kwargs['personalisation']['amount'], expected_amount)
+
     @override_settings(ENVIRONMENT='prod')  # because non-prod environments don't send to @outside.local
-    def test_update_incomplete_payments(self):
+    @mock.patch('send_money.mail.send_email')
+    def test_update_incomplete_payments(self, mock_send_email):
         """
         Test that incomplete payments get updated appropriately.
 
@@ -422,12 +439,14 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
                     'received_at': '2016-10-27T15:11:05+00:00',
                 },
             )
-            self.assertEqual(
-                mail.outbox[0].subject,
-                'Send money to someone in prison: your payment was successful',
+            self.assertEmailSent(
+                mock_send_email.call_args_list[0],
+                'send-money-debit-card-confirmation',
+                'success_sender@outside.local',
+                'WARGLE-1',
+                'John',
+                '£17.00',
             )
-            self.assertTrue('John' in mail.outbox[0].body)
-            self.assertTrue('£17' in mail.outbox[0].body)
 
             # check wargle-3333
             self.assertEqual(
@@ -446,12 +465,14 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
                     'status': 'rejected',
                 },
             )
-            self.assertEqual(
-                mail.outbox[1].subject,
-                'Send money to someone in prison: your payment has NOT been sent to the prisoner',
+            self.assertEmailSent(
+                mock_send_email.call_args_list[1],
+                'send-money-debit-card-payment-rejected',
+                'cancelled_sender@outside.local',
+                'WARGLE-4',
+                'Lisa',
+                '£6.00',
             )
-            self.assertTrue('Lisa' in mail.outbox[1].body)
-            self.assertTrue('£6' in mail.outbox[1].body)
 
             # check wargle-5555
             self.assertEqual(
@@ -461,12 +482,14 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
                     'status': 'expired',
                 },
             )
-            self.assertEqual(
-                mail.outbox[2].subject,
-                'Send money to someone in prison: payment session expired',
+            self.assertEmailSent(
+                mock_send_email.call_args_list[2],
+                'send-money-debit-card-payment-timeout',
+                'timedout_sender@outside.local',
+                'WARGLE-5',
+                'Tom',
+                '£7.00',
             )
-            self.assertTrue('Tom' in mail.outbox[2].body)
-            self.assertTrue('£7' in mail.outbox[2].body)
 
             # check wargle-6666
             self.assertEqual(
@@ -480,12 +503,14 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
                     'received_at': '2016-10-27T15:11:05+00:00',
                 },
             )
-            self.assertEqual(
-                mail.outbox[3].subject,
-                'Send money to someone in prison: your payment has now gone through',
+            self.assertEmailSent(
+                mock_send_email.call_args_list[3],
+                'send-money-debit-card-payment-accepted',
+                'success_after_delay_sender@outside.local',
+                'WARGLE-6',
+                'Tim',
+                '£8.00',
             )
-            self.assertTrue('Tim' in mail.outbox[3].body)
-            self.assertTrue('£8' in mail.outbox[3].body)
 
             # check wargle-7777
             self.assertEqual(
@@ -495,21 +520,24 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
                     'status': 'expired',
                 },
             )
-            self.assertEqual(
-                mail.outbox[4].subject,
-                'Send money to someone in prison: your payment has NOT been sent to the prisoner',
+            self.assertEmailSent(
+                mock_send_email.call_args_list[4],
+                'send-money-debit-card-payment-rejected',
+                'timedout_sender@outside.local',
+                'WARGLE-7',
+                'Jim',
+                '£9.00',
             )
-            self.assertTrue('Jim' in mail.outbox[4].body)
-            self.assertTrue('£9' in mail.outbox[4].body)
 
             # double-check that no more emails were sent
-            self.assertEqual(len(mail.outbox), 5)
+            self.assertEqual(len(mock_send_email.call_args_list), 5)
 
     @override_settings(
         ENVIRONMENT='prod',   # because non-prod environments don't send to @outside.local
         PAYMENT_DELAYED_CAPTURE_ROLLOUT_PERCENTAGE='100',
     )
-    def test_skip_payments(self):
+    @mock.patch('send_money.mail.send_email')
+    def test_skip_payments(self, mock_send_email):
         """
         Test that checks for some payments get skipped and some get included
 
@@ -706,12 +734,14 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
                     'received_at': '2016-10-27T15:11:05+00:00',
                 },
             )
-            self.assertEqual(
-                mail.outbox[0].subject,
-                'Send money to someone in prison: your payment was successful',
+            self.assertEmailSent(
+                mock_send_email.call_args_list[0],
+                'send-money-debit-card-confirmation',
+                'success_sender@outside.local',
+                'WARGLE-D',
+                'Lisa',
+                '£6.00',
             )
-            self.assertTrue('Lisa' in mail.outbox[0].body)
-            self.assertTrue('£6' in mail.outbox[0].body)
 
             # check wargle-eeee
             self.assertEqual(
@@ -721,18 +751,21 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
                     'status': 'rejected',
                 },
             )
-            self.assertEqual(
-                mail.outbox[1].subject,
-                'Send money to someone in prison: your payment has NOT been sent to the prisoner',
+            self.assertEmailSent(
+                mock_send_email.call_args_list[1],
+                'send-money-debit-card-payment-rejected',
+                'cancelled_sender@outside.local',
+                'WARGLE-E',
+                'Tom',
+                '£7.00',
             )
-            self.assertTrue('Tom' in mail.outbox[1].body)
-            self.assertTrue('£7' in mail.outbox[1].body)
 
             # double-check that no more emails were sent
-            self.assertEqual(len(mail.outbox), 2)
+            self.assertEqual(len(mock_send_email.call_args_list), 2)
 
     @override_settings(ENVIRONMENT='prod')  # because non-prod environments don't send to @outside.local
-    def test_update_incomplete_payments_extracts_card_details(self):
+    @mock.patch('send_money.mail.send_email')
+    def test_update_incomplete_payments_extracts_card_details(self, mock_send_email):
         """
         Test that card details are extracted from the GOV.UK payment and saved on the MTP payment.
         """
@@ -823,9 +856,11 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
                     'status': 'taken',
                 },
             )
+            self.assertEqual(len(mock_send_email.call_args_list), 1)
 
     @override_settings(ENVIRONMENT='prod')  # because non-prod environments don't send to @outside.local
-    def test_update_incomplete_payments_no_govuk_payment_found(self):
+    @mock.patch('send_money.mail.send_email')
+    def test_update_incomplete_payments_no_govuk_payment_found(self, mock_send_email):
         """
         Test that if GOV.UK Pay returns 404 for one payment, the command marks the related
         MTP payment as failed.
@@ -859,9 +894,11 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
             call_command('update_incomplete_payments', verbosity=0)
 
             self.assertEqual(rsps.calls[3].request.body.decode(), '{"status": "failed"}')
+            mock_send_email.assert_not_called()
 
     @override_settings(ENVIRONMENT='prod')  # because non-prod environments don't send to @outside.local
-    def test_update_incomplete_payments_doesnt_sent_email_if_no_captured_date(self):
+    @mock.patch('send_money.mail.send_email')
+    def test_update_incomplete_payments_doesnt_sent_email_if_no_captured_date(self, mock_send_email):
         """
         Test that if the MTP payment is in 'pending' and the GOV.UK payment is in 'success'
         but no captured_date is found in the response, the MTP payment is not marked
@@ -896,10 +933,11 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
 
             call_command('update_incomplete_payments', verbosity=0)
 
-            self.assertEqual(len(mail.outbox), 0)
+            mock_send_email.assert_not_called()
 
     @override_settings(ENVIRONMENT='prod')  # because non-prod environments don't send to @outside.local
-    def _test_update_incomplete_payments_doesnt_update_before_capture(self, settlement_summary):
+    @mock.patch('send_money.mail.send_email')
+    def _test_update_incomplete_payments_doesnt_update_before_capture(self, settlement_summary, mock_send_email):
         with responses.RequestsMock() as rsps:
             mock_auth(rsps)
             rsps.add(
@@ -925,7 +963,7 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
 
             call_command('update_incomplete_payments', verbosity=0)
 
-            self.assertEqual(len(mail.outbox), 0)
+            mock_send_email.assert_not_called()
 
     def test_update_incomplete_payments_doesnt_update_with_missing_captured_date(self):
         self._test_update_incomplete_payments_doesnt_update_before_capture({
@@ -951,7 +989,8 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
         })
 
     @override_settings(ENVIRONMENT='prod')  # because non-prod environments don't send to @outside.local
-    def test_captured_payment_with_captured_date_gets_updated(self):
+    @mock.patch('send_money.mail.send_email')
+    def test_captured_payment_with_captured_date_gets_updated(self, mock_send_email):
         """
         Test that when a MTP pending payment is captured, if the captured date
         is immediately available, the payment is marked as 'taken' and a confirmation
@@ -1023,7 +1062,7 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
 
             call_command('update_incomplete_payments', verbosity=0)
 
-            self.assertEqual(len(mail.outbox), 1)
+            self.assertEqual(len(mock_send_email.call_args_list), 1)
 
             self.assertEqual(
                 json.loads(rsps.calls[-1].request.body.decode()),
@@ -1034,7 +1073,8 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
             )
 
     @override_settings(ENVIRONMENT='prod')  # because non-prod environments don't send to @outside.local
-    def _test_captured_payment_doesnt_get_updated_before_capture(self, settlement_summary):
+    @mock.patch('send_money.mail.send_email')
+    def _test_captured_payment_doesnt_get_updated_before_capture(self, settlement_summary, mock_send_email):
         govuk_payment_data = {
             'payment_id': PAYMENT_DATA['processor_id'],
             'reference': PAYMENT_DATA['uuid'],
@@ -1084,7 +1124,7 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
 
             call_command('update_incomplete_payments', verbosity=0)
 
-        self.assertEqual(len(mail.outbox), 0)
+        mock_send_email.assert_not_called()
 
     def test_captured_payment_doesnt_get_updated_with_missing_captured_date(self):
         self._test_captured_payment_doesnt_get_updated_before_capture({
@@ -1110,7 +1150,11 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
         })
 
     @override_settings(ENVIRONMENT='prod')  # because non-prod environments don't send to @outside.local
-    def _test_received_at_date_matches_captured_date(self, capture_submit_time, captured_date, received_at):
+    @mock.patch('send_money.mail.send_email')
+    def _test_received_at_date_matches_captured_date(
+        self, capture_submit_time, captured_date, received_at,
+        mock_send_email,
+    ):
         with responses.RequestsMock() as rsps:
             mock_auth(rsps)
             rsps.add(
@@ -1152,6 +1196,7 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
                 json.loads(rsps.calls[-1].request.body.decode())['received_at'],
                 received_at
             )
+            self.assertEqual(len(mock_send_email.call_args_list), 1)
 
     def test_submit_time_used_when_date_the_same(self):
         self._test_received_at_date_matches_captured_date(
