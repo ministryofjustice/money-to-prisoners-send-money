@@ -61,6 +61,8 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
         self.assertEqual(send_email_kwargs['personalisation']['short_payment_ref'], expected_short_payment_ref)
         self.assertEqual(send_email_kwargs['personalisation']['prisoner_name'], expected_prisoner_name)
         self.assertEqual(send_email_kwargs['personalisation']['amount'], expected_amount)
+        reference_prefix, payment_uuid = send_email_kwargs['reference'].split('-', 1)
+        self.assertTrue(payment_uuid.upper().startswith(expected_short_payment_ref))
 
     @mock.patch('send_money.mail.send_email')
     def test_update_incomplete_payments(self, mock_send_email):
