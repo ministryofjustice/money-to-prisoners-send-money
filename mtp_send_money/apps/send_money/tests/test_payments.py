@@ -196,10 +196,7 @@ class GovUkPaymentStatusTestCase(SimpleTestCase):
                 GovUkPaymentStatus.payment_timed_out_after_capturable(govuk_payment)
 
 
-@override_settings(
-    GOVUK_PAY_URL='https://pay.gov.local/v1',
-    ENVIRONMENT='prod',  # because non-prod environments don't send to @outside.local
-)
+@override_settings(GOVUK_PAY_URL='https://pay.gov.local/v1')
 @mock.patch('send_money.mail.send_email')
 class CaptureGovukPaymentTestCase(SimpleTestCase):
     """
@@ -342,10 +339,7 @@ class CaptureGovukPaymentTestCase(SimpleTestCase):
         mock_send_email.assert_not_called()
 
 
-@override_settings(
-    GOVUK_PAY_URL='https://pay.gov.local/v1',
-    ENVIRONMENT='prod',  # because non-prod environments don't send to @outside.local
-)
+@override_settings(GOVUK_PAY_URL='https://pay.gov.local/v1')
 @mock.patch('send_money.mail.send_email')
 class CancelGovukPaymentTestCase(SimpleTestCase):
     """
@@ -596,10 +590,7 @@ class GetGovukPaymentEvents(SimpleTestCase):
                 client.get_govuk_payment_events(payment_id)
 
 
-@override_settings(
-    GOVUK_PAY_URL='https://pay.gov.local/v1',
-    ENVIRONMENT='prod',  # because non-prod environments don't send to @outside.local
-)
+@override_settings(GOVUK_PAY_URL='https://pay.gov.local/v1')
 @mock.patch('send_money.mail.send_email')
 class CompletePaymentIfNecessaryTestCase(SimpleTestCase):
     """

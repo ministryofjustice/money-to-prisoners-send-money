@@ -62,7 +62,6 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
         self.assertEqual(send_email_kwargs['personalisation']['prisoner_name'], expected_prisoner_name)
         self.assertEqual(send_email_kwargs['personalisation']['amount'], expected_amount)
 
-    @override_settings(ENVIRONMENT='prod')  # because non-prod environments don't send to @outside.local
     @mock.patch('send_money.mail.send_email')
     def test_update_incomplete_payments(self, mock_send_email):
         """
@@ -532,10 +531,7 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
             # double-check that no more emails were sent
             self.assertEqual(len(mock_send_email.call_args_list), 5)
 
-    @override_settings(
-        ENVIRONMENT='prod',   # because non-prod environments don't send to @outside.local
-        PAYMENT_DELAYED_CAPTURE_ROLLOUT_PERCENTAGE='100',
-    )
+    @override_settings(PAYMENT_DELAYED_CAPTURE_ROLLOUT_PERCENTAGE='100')
     @mock.patch('send_money.mail.send_email')
     def test_skip_payments(self, mock_send_email):
         """
@@ -763,7 +759,6 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
             # double-check that no more emails were sent
             self.assertEqual(len(mock_send_email.call_args_list), 2)
 
-    @override_settings(ENVIRONMENT='prod')  # because non-prod environments don't send to @outside.local
     @mock.patch('send_money.mail.send_email')
     def test_update_incomplete_payments_extracts_card_details(self, mock_send_email):
         """
@@ -858,7 +853,6 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
             )
             self.assertEqual(len(mock_send_email.call_args_list), 1)
 
-    @override_settings(ENVIRONMENT='prod')  # because non-prod environments don't send to @outside.local
     @mock.patch('send_money.mail.send_email')
     def test_update_incomplete_payments_no_govuk_payment_found(self, mock_send_email):
         """
@@ -896,7 +890,6 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
             self.assertEqual(rsps.calls[3].request.body.decode(), '{"status": "failed"}')
             mock_send_email.assert_not_called()
 
-    @override_settings(ENVIRONMENT='prod')  # because non-prod environments don't send to @outside.local
     @mock.patch('send_money.mail.send_email')
     def test_update_incomplete_payments_doesnt_sent_email_if_no_captured_date(self, mock_send_email):
         """
@@ -935,7 +928,6 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
 
             mock_send_email.assert_not_called()
 
-    @override_settings(ENVIRONMENT='prod')  # because non-prod environments don't send to @outside.local
     @mock.patch('send_money.mail.send_email')
     def _test_update_incomplete_payments_doesnt_update_before_capture(self, settlement_summary, mock_send_email):
         with responses.RequestsMock() as rsps:
@@ -988,7 +980,6 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
             'captured_date': '2015'
         })
 
-    @override_settings(ENVIRONMENT='prod')  # because non-prod environments don't send to @outside.local
     @mock.patch('send_money.mail.send_email')
     def test_captured_payment_with_captured_date_gets_updated(self, mock_send_email):
         """
@@ -1072,7 +1063,6 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
                 },
             )
 
-    @override_settings(ENVIRONMENT='prod')  # because non-prod environments don't send to @outside.local
     @mock.patch('send_money.mail.send_email')
     def _test_captured_payment_doesnt_get_updated_before_capture(self, settlement_summary, mock_send_email):
         govuk_payment_data = {
@@ -1149,7 +1139,6 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
             'captured_date': '2015'
         })
 
-    @override_settings(ENVIRONMENT='prod')  # because non-prod environments don't send to @outside.local
     @mock.patch('send_money.mail.send_email')
     def _test_received_at_date_matches_captured_date(
         self, capture_submit_time, captured_date, received_at,

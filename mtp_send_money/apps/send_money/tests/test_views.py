@@ -713,7 +713,6 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
         mocked_api_session.get.assert_called_with('/payments/..%2Fservice-availability%2F/')
         mock_send_email.assert_not_called()
 
-    @override_settings(ENVIRONMENT='prod')  # because non-prod environments don't send to @outside.local
     def test_success_confirmation(self, mock_send_email):
         """
         Test that if the GOV.UK payment is in status 'success', the view:
@@ -771,7 +770,6 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
 
         mock_send_email.assert_not_called()
 
-    @override_settings(ENVIRONMENT='prod')  # because non-prod environments don't send to @outside.local
     def test_automatically_captures_payment(self, mock_send_email):
         """
         Test that if the GOV.UK payment is in status 'capturable' and the payment should be
@@ -841,7 +839,6 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
 
         mock_send_email.assert_not_called()
 
-    @override_settings(ENVIRONMENT='prod')  # because non-prod environments don't send to @outside.local
     def test_puts_payment_on_hold(self, mock_send_email):
         """
         Test that if the GOV.UK payment is in status 'capturable' and the payment should not be captured, the view:
@@ -1531,10 +1528,7 @@ class PaymentServiceUnavailableTestCase(DebitCardFlowTestCase):
         response = self.client.get(self.choose_method_url, follow=True)
         self.assertContains(response, 'Scheduled work message')
 
-    @override_settings(
-        ENVIRONMENT='prod',  # because non-prod environments don't send to @outside.local
-        GOVUK_PAY_URL='https://pay.gov.local/v1',
-    )
+    @override_settings(GOVUK_PAY_URL='https://pay.gov.local/v1')
     def test_payment_can_complete_if_started_before_debit_card_payment_is_disabled(self):
         """
         Test that if a debit card payment starts before the card payment option is disabled,
