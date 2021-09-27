@@ -113,19 +113,19 @@
     {% endblocktrans %}
   </li>
   <li>
+    {% blocktrans trimmed with url='https://www.notifications.service.gov.uk/' %}
+      <a href="{{ url }}">GOV.UK Notify</a> to send emails.
+    {% endblocktrans %}
+    {% blocktrans trimmed with url='https://www.notifications.service.gov.uk/privacy' %}
+      See the <a href="{{ url }}">privacy policy</a>.
+    {% endblocktrans %}
+  </li>
+  <li>
     {% blocktrans trimmed with url='https://www.zendesk.com/' %}
       <a href="{{ url }}">Zendesk</a> to handle any feedback that you leave.
     {% endblocktrans %}
     {% blocktrans trimmed with url='https://www.zendesk.com/company/terms/' %}
       See the <a href="{{ url }}">terms &amp; conditions</a> attached to this service.
-    {% endblocktrans %}
-  </li>
-  <li>
-    {% blocktrans trimmed with url='https://www.mailgun.com/' %}
-      <a href="{{ url }}">Mailgun</a> to send emails.
-    {% endblocktrans %}
-    {% blocktrans trimmed with url='https://www.mailgun.com/privacy-policy' %}
-      See the <a href="{{ url }}">privacy policy</a>.
     {% endblocktrans %}
   </li>
   <li>
