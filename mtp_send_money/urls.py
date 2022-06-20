@@ -50,8 +50,7 @@ urlpatterns += [
     url(r'^sitemap.xml$', SitemapXMLView.as_view(), name='sitemap_xml'),
 
     url(r'^\.well-known/security\.txt$', RedirectView.as_view(
-        url='https://raw.githubusercontent.com/ministryofjustice/security-guidance'
-            '/main/contact/vulnerability-disclosure-security.txt',
+        url='https://security-guidance.service.justice.gov.uk/.well-known/security.txt',
         permanent=True,
     )),
 
