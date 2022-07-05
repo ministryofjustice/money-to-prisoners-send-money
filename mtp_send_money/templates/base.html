@@ -5,24 +5,39 @@
 
 {% block cookie_message %}
   {% if not actioned_cookie_prompt %}
-    <aside class="govuk-width-container mtp-cookie-prompt">
-      <p>
-        {% trans 'This service uses cookies which are essential for the site to work.' %}
-        {% trans 'We also use non-essential cookies to help us improve your experience.' %}
-      </p>
-      <p>
-        {% trans 'Do you accept these non-essential cookies?' %}
-      </p>
-      <form action="{% url 'cookies' %}" method="post">
-        {% csrf_token %}
-        <input type="hidden" name="next" value="{{ request.get_full_path }}" />
-        <div class="govuk-button-group">
-          <button class="govuk-button" data-module="govuk-button" type="submit" name="accept_cookies" value="yes">{% trans 'Accept cookies' %}</button>
-          <button class="govuk-button" data-module="govuk-button" type="submit" name="accept_cookies" value="no">{% trans 'Reject cookies' %}</button>
-          <a class="govuk-link" href="{% url 'cookies' %}">{% trans 'View more information' %}</a>
+    <div class="govuk-cookie-banner" data-nosnippet role="region" aria-label="{% trans 'Cookies on ‘Send money to someone in prison’' %}">
+      <div class="govuk-cookie-banner__message govuk-width-container">
+
+        <div class="govuk-grid-row">
+          <div class="govuk-grid-column-two-thirds">
+            <h2 class="govuk-cookie-banner__heading govuk-heading-m">
+              {% trans 'Cookies on ‘Send money to someone in prison’' %}
+            </h2>
+
+            <div class="govuk-cookie-banner__content">
+              <p>
+                {% trans 'This service uses cookies which are essential for the site to work.' %}
+                {% trans 'We also use non-essential cookies to help us improve your experience.' %}
+              </p>
+              <p>
+                {% trans 'Do you accept these non-essential cookies?' %}
+              </p>
+            </div>
+          </div>
         </div>
-      </form>
-    </aside>
+
+        <form action="{% url 'cookies' %}" method="post">
+          {% csrf_token %}
+          <input type="hidden" name="next" value="{{ request.get_full_path }}" />
+          <div class="govuk-button-group">
+            <button class="govuk-button" data-module="govuk-button" type="submit" name="accept_cookies" value="yes">{% trans 'Accept cookies' %}</button>
+            <button class="govuk-button" data-module="govuk-button" type="submit" name="accept_cookies" value="no">{% trans 'Reject cookies' %}</button>
+            <a class="govuk-link" href="{% url 'cookies' %}">{% trans 'View more information' %}</a>
+          </div>
+        </form>
+
+      </div>
+    </div>
   {% endif %}
 {% endblock %}
 
