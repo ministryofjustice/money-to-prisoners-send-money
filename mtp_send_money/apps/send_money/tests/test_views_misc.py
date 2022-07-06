@@ -27,16 +27,16 @@ class PerformanceCookiesTestCase(BaseTestCase):
 
     def test_prompt_visible_without_cookie(self):
         response = self.client.get(self.test_page)
-        self.assertContains(response, 'mtp-cookie-prompt')
+        self.assertContains(response, 'govuk-cookie-banner')
 
     def test_prompt_not_visible_when_cookie_policy_is_set(self):
         self.client.cookies[AnalyticsPolicy.cookie_name] = '{"usage":true}'
         response = self.client.get(self.test_page)
-        self.assertNotContains(response, 'mtp-cookie-prompt')
+        self.assertNotContains(response, 'govuk-cookie-banner')
 
         self.client.cookies[AnalyticsPolicy.cookie_name] = '{"usage":false}'
         response = self.client.get(self.test_page)
-        self.assertNotContains(response, 'mtp-cookie-prompt')
+        self.assertNotContains(response, 'govuk-cookie-banner')
 
     @override_settings(GOOGLE_ANALYTICS_ID='ABC123')
     def test_performance_analytics_off_by_default(self):
@@ -50,7 +50,7 @@ class PerformanceCookiesTestCase(BaseTestCase):
         cookie = response.cookies.get(AnalyticsPolicy.cookie_name).value
         self.assertDictEqual(json.loads(cookie), {'usage': True})
         response = self.client.get(self.test_page)
-        self.assertNotContains(response, 'mtp-cookie-prompt')
+        self.assertNotContains(response, 'govuk-cookie-banner')
         self.assertContains(response, 'ABC123')
 
     @override_settings(GOOGLE_ANALYTICS_ID='ABC123')
@@ -59,7 +59,7 @@ class PerformanceCookiesTestCase(BaseTestCase):
         cookie = response.cookies.get(AnalyticsPolicy.cookie_name).value
         self.assertDictEqual(json.loads(cookie), {'usage': False})
         response = self.client.get(self.test_page)
-        self.assertNotContains(response, 'mtp-cookie-prompt')
+        self.assertNotContains(response, 'govuk-cookie-banner')
         self.assertNotContains(response, 'ABC123')
 
     @override_settings(GOOGLE_ANALYTICS_ID='ABC123', GOOGLE_ANALYTICS_GDS_ID='GDS321')
