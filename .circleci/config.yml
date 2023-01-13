@@ -41,7 +41,6 @@ jobs:
           name: Build docker image
           command: |
             source /tmp/mtp-env.sh
-            echo 'mtp_send_money/settings/local.py' >> .dockerignore
             docker build \
               --force-rm \
               --build-arg APP_GIT_COMMIT=${CIRCLE_SHA1} \
