@@ -187,5 +187,5 @@ class LegacyFeedbackView(RedirectView):
     permanent = True
 
     def dispatch(self, request, *args, **kwargs):
-        warnings.warn('`submit_ticket` view has been renamed')
+        warnings.warn('`submit_ticket` view has been renamed', stacklevel=1)
         return super().dispatch(request, *args, **kwargs)
