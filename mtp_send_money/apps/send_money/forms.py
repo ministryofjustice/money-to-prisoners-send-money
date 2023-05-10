@@ -8,7 +8,6 @@ from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator
 from django.utils.translation import gettext, gettext_lazy as _
-from form_error_reporting import GARequestErrorReportingMixin
 from mtp_common.auth.exceptions import HttpNotFoundError
 from mtp_common.forms.fields import SplitDateField
 from oauthlib.oauth2 import OAuth2Error, TokenExpiredError
@@ -24,7 +23,7 @@ from send_money.utils import (
 logger = logging.getLogger('mtp')
 
 
-class SendMoneyForm(GARequestErrorReportingMixin, forms.Form):
+class SendMoneyForm(forms.Form):
 
     @classmethod
     def unserialise_from_session(cls, request):
