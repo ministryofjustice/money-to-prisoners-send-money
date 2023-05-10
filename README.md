@@ -91,6 +91,5 @@ This is handled by [money-to-prisoners-deploy](https://github.com/ministryofjust
 
 There are several dependencies of the ``money-to-prisoners-send-money`` python library which are maintained by this team, so they may require code-changes when the dependencies (e.g. Django) of the ``money-to-prisoners-send-money`` python library are incremented.
 
-* django-form-error-reporting: https://github.com/ministryofjustice/django-form-error-reporting
 * django-zendesk-tickets: https://github.com/ministryofjustice/django-zendesk-tickets
 * django-moj-irat: https://github.com/ministryofjustice/django-moj-irat
