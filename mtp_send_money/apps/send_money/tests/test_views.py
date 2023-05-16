@@ -234,9 +234,8 @@ class DebitCardPrisonerDetailsTestCase(DebitCardFlowTestCase):
         self.assertTrue(form.errors)
         self.assertEqual(mocked_is_prisoner_known.call_count, 0)
 
-    @override_settings(DEBIT_CARD_PRISONS='')
     @mock.patch('send_money.forms.PrisonerDetailsForm.get_api_session')
-    def test_search_not_limited_to_specific_prisons(self, mocked_api_session):
+    def test_calls_api(self, mocked_api_session):
         mocked_api_session.side_effect = get_api_session
         self.choose_debit_card_payment_method()
 
@@ -246,33 +245,6 @@ class DebitCardPrisonerDetailsTestCase(DebitCardFlowTestCase):
                 rsps.GET,
                 api_url('/prisoner_validity/') + '?prisoner_number=A1231DE'
                                                  '&prisoner_dob=1980-10-04',
-                match_querystring=True,
-                json={
-                    'count': 0,
-                    'results': []
-                },
-            )
-            self.client.post(self.url, data={
-                'prisoner_name': 'john smith',
-                'prisoner_number': 'A1231DE',
-                'prisoner_dob_0': '4',
-                'prisoner_dob_1': '10',
-                'prisoner_dob_2': '1980',
-            }, follow=True)
-
-    @override_settings(DEBIT_CARD_PRISONS='DEF,ABC,ZZZ')
-    @mock.patch('send_money.forms.PrisonerDetailsForm.get_api_session')
-    def test_can_limit_search_to_specific_prisons(self, mocked_api_session):
-        mocked_api_session.side_effect = get_api_session
-        self.choose_debit_card_payment_method()
-
-        with responses.RequestsMock() as rsps:
-            mock_auth(rsps)
-            rsps.add(
-                rsps.GET,
-                api_url('/prisoner_validity/') + '?prisoner_number=A1231DE'
-                                                 '&prisoner_dob=1980-10-04'
-                                                 '&prisons=ABC,DEF,ZZZ',
                 match_querystring=True,
                 json={
                     'count': 0,
