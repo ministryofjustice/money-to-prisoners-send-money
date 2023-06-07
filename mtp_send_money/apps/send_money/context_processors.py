@@ -7,7 +7,6 @@ from mtp_common.analytics import AnalyticsPolicy
 def analytics(request):
     return {
         'actioned_cookie_prompt': AnalyticsPolicy.cookie_name in request.COOKIES,
-        'GOOGLE_ANALYTICS_GDS_ID': settings.GOOGLE_ANALYTICS_GDS_ID,
     }
 
 
