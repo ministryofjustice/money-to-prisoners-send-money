@@ -38,13 +38,13 @@ class PerformanceCookiesTestCase(BaseTestCase):
         response = self.client.get(self.test_page)
         self.assertNotContains(response, 'govuk-cookie-banner')
 
-    @override_settings(GOOGLE_ANALYTICS_ID='ABC123')
+    @override_settings(GA4_MEASUREMENT_ID='ABC123')
     def test_performance_analytics_off_by_default(self):
         response = self.client.get(self.test_page)
         self.assertNotContains(response, 'ABC123')
         self.assertNotContains(response, 'govuk_shared.send')
 
-    @override_settings(GOOGLE_ANALYTICS_ID='ABC123')
+    @override_settings(GA4_MEASUREMENT_ID='ABC123')
     def test_performace_cookies_can_be_accepted(self):
         response = self.client.post(reverse('cookies'), data={'accept_cookies': 'yes'})
         cookie = response.cookies.get(AnalyticsPolicy.cookie_name).value
@@ -53,7 +53,7 @@ class PerformanceCookiesTestCase(BaseTestCase):
         self.assertNotContains(response, 'govuk-cookie-banner')
         self.assertContains(response, 'ABC123')
 
-    @override_settings(GOOGLE_ANALYTICS_ID='ABC123')
+    @override_settings(GA4_MEASUREMENT_ID='ABC123')
     def test_performace_cookies_can_be_rejected(self):
         response = self.client.post(reverse('cookies'), data={'accept_cookies': 'no'})
         cookie = response.cookies.get(AnalyticsPolicy.cookie_name).value
@@ -62,20 +62,7 @@ class PerformanceCookiesTestCase(BaseTestCase):
         self.assertNotContains(response, 'govuk-cookie-banner')
         self.assertNotContains(response, 'ABC123')
 
-    @override_settings(GOOGLE_ANALYTICS_ID='ABC123', GOOGLE_ANALYTICS_GDS_ID='GDS321')
-    def test_gds_performance_analytics_off_by_default(self):
-        response = self.client.get(self.test_page)
-        self.assertNotContains(response, 'GDS321')
-        self.assertNotContains(response, 'govuk_shared.send')
-
-    @override_settings(GOOGLE_ANALYTICS_ID='ABC123', GOOGLE_ANALYTICS_GDS_ID='GDS321')
-    def test_gds_performance_analytics_can_be_accepted(self):
-        self.client.post(reverse('cookies'), data={'accept_cookies': 'yes'})
-        response = self.client.get(self.test_page)
-        self.assertContains(response, 'GDS321')
-        self.assertContains(response, 'govuk_shared.send')
-
-    @override_settings(GOOGLE_ANALYTICS_ID='ABC123')
+    @override_settings(GA4_MEASUREMENT_ID='ABC123')
     def test_cookie_prompt_safely_redirects_back(self):
         for safe_page in ['send_money:user_agreement', 'send_money:choose_method', 'help_area:help', 'terms']:
             response = self.client.post(reverse('cookies'), data={
