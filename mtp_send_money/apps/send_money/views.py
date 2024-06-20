@@ -291,7 +291,7 @@ class DebitCardPaymentView(DebitCardFlow):
         except RequestException:
             logger.exception('Failed to create new payment (ref %s)', payment_ref)
 
-        return render(request, 'send_money/debit-card-error.html', failure_context)
+        return render(request, 'send_money/debit-card-error.html', failure_context, status=500)
 
 
 class DebitCardConfirmationView(TemplateView):
@@ -300,6 +300,17 @@ class DebitCardConfirmationView(TemplateView):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.status = GovUkPaymentStatus.error
+
+    def dispatch(self, request, *args, **kwargs):
+        response = super().dispatch(request, *args, **kwargs)
+
+        # return 500 code when an error occurred
+        # e.g. failed to communicate with mtp-api or GOV.UK Pay or
+        # GOV.UK Pay returned an error status for the payment
+        if self.status == GovUkPaymentStatus.error and response.status_code == 200:
+            response.status_code = 500
+
+        return response
 
     def get_template_names(self):
         if self.status == GovUkPaymentStatus.success:
@@ -402,5 +413,9 @@ class DebitCardConfirmationView(TemplateView):
             self.status = GovUkPaymentStatus.error
 
         response = super().get(request, *args, **kwargs)
+
+        # clear session once template has rendered
+        # NB: a capturable or success can still be looked up so the page can be refreshed
         request.session.flush()
+
         return response
