@@ -10,7 +10,7 @@ from django.shortcuts import redirect
 from django.urls import reverse, reverse_lazy
 from django.utils.cache import patch_cache_control
 from django.utils.dateparse import parse_date
-from django.utils.http import is_safe_url
+from django.utils.http import url_has_allowed_host_and_scheme
 from django.utils.translation import gettext_lazy as _, override as override_language
 from django.views.generic import FormView, RedirectView, TemplateView, View
 from mtp_common.analytics import AnalyticsPolicy
@@ -44,7 +44,7 @@ class CookiesView(FormView):
 
     def form_valid(self, form):
         success_url = form.cleaned_data['next']
-        if success_url and is_safe_url(success_url, allowed_hosts={self.request.get_host()}):
+        if success_url and url_has_allowed_host_and_scheme(success_url, allowed_hosts={self.request.get_host()}):
             response = redirect(success_url)
         else:
             response = super().form_valid(form)
