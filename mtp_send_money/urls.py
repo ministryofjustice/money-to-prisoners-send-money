@@ -28,7 +28,11 @@ urlpatterns = i18n_patterns(
     re_path(r'^terms/$', CacheableTemplateView.as_view(template_name='terms.html'), name='terms'),
     re_path(r'^privacy/$', CacheableTemplateView.as_view(template_name='privacy.html'), name='privacy'),
     re_path(r'^cookies/$', CookiesView.as_view(), name='cookies'),
-    re_path(r'^accessibility/$', CacheableTemplateView.as_view(template_name='accessibility.html'), name='accessibility'),
+    re_path(
+        r'^accessibility/$',
+        CacheableTemplateView.as_view(template_name='accessibility.html'),
+        name='accessibility',
+    ),
 
     re_path(r'^js-i18n.js$', cache_control(public=True, max_age=86400)(JavaScriptCatalog.as_view()), name='js-i18n'),
 
