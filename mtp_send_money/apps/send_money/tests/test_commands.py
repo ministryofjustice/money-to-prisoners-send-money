@@ -1,11 +1,10 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import json
 from unittest import mock
 
 from django.core.management import call_command
 from django.test import override_settings
 from django.test.testcases import SimpleTestCase
-from django.utils.timezone import utc
 import responses
 
 from send_money.tests import mock_auth
@@ -1214,7 +1213,7 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
 
     @mock.patch('mtp_send_money.apps.send_money.payments.timezone.now')
     def test_received_at_date_is_set_to_now_when_submit_time_absent(self, mock_now):
-        mock_now.return_value = datetime(2016, 10, 28, 12, 45, 22, tzinfo=utc)
+        mock_now.return_value = datetime(2016, 10, 28, 12, 45, 22, tzinfo=timezone.utc)
         self._test_received_at_date_matches_captured_date(
             '',
             '2016-10-28',
@@ -1223,7 +1222,7 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
 
     @mock.patch('mtp_send_money.apps.send_money.payments.timezone.now')
     def test_received_at_date_is_put_back(self, mock_now):
-        mock_now.return_value = datetime(2016, 10, 29, 0, 5, 22, tzinfo=utc)
+        mock_now.return_value = datetime(2016, 10, 29, 0, 5, 22, tzinfo=timezone.utc)
         self._test_received_at_date_matches_captured_date(
             '',
             '2016-10-28',
