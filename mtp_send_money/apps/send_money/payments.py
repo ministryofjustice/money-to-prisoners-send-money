@@ -1,5 +1,5 @@
 import enum
-from datetime import datetime, time, timedelta
+from datetime import datetime, time, timedelta, timezone as tz
 import logging
 from urllib.parse import quote_plus as url_quote
 
@@ -445,15 +445,15 @@ class PaymentClient:
             if captured_date is not None:
                 capture_submit_time = (
                     capture_submit_time or timezone.now()
-                ).astimezone(timezone.utc)
+                ).astimezone(tz.utc)
                 if capture_submit_time.date() < captured_date:
                     return datetime.combine(
                         captured_date, time.min
-                    ).replace(tzinfo=timezone.utc)
+                    ).replace(tzinfo=tz.utc)
                 elif capture_submit_time.date() > captured_date:
                     return datetime.combine(
                         captured_date, time.max
-                    ).replace(tzinfo=timezone.utc)
+                    ).replace(tzinfo=tz.utc)
                 else:
                     return capture_submit_time
         except (KeyError, TypeError):
