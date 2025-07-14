@@ -41,16 +41,19 @@
   {% endif %}
 {% endblock %}
 
+{% block page_title %}{% trans 'Send money to someone in prison' %} – GOV.UK{% endblock %}
+{% block header %}
+  {{ block.super }}
+  {% include 'govuk-frontend/components/service-navigation.html' %}
+{% endblock %}
+
+
 {% block body_end %}
   <script src="{% url 'js-i18n' %}?{{ APP_GIT_COMMIT_SHORT }}"></script>
   {{ block.super }}
   {% sentry_js %}
   <!-- {{ request.resolver_match.url_name }} -->
 {% endblock %}
-
-
-{% block page_title %}{% trans 'Send money to someone in prison' %} – GOV.UK{% endblock %}
-{% block proposition %}{% trans 'Send money to someone in prison' %}{% endblock %}
 
 
 {% block phase_banner %}

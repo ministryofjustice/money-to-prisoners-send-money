@@ -12,6 +12,7 @@ def analytics(request):
 
 def links(_):
     return {
+        'service_name': gettext('Send money to someone in prison'),
         'site_url': settings.START_PAGE_URL,
         'support_links': [
             {
