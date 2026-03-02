@@ -1,5 +1,4 @@
 # Dependencies needed for all environments
 
 money-to-prisoners-common~=21.2.1
-# setuptools>=82 breaks pkg_resources import used by mtp_common build tooling
-setuptools<82
+
