@@ -8,7 +8,6 @@ from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator
 from django.utils.translation import gettext, gettext_lazy as _
-from form_error_reporting import GARequestErrorReportingMixin
 from mtp_common.auth.exceptions import HttpNotFoundError
 from mtp_common.forms.fields import SplitDateField
 from oauthlib.oauth2 import OAuth2Error, TokenExpiredError
@@ -24,7 +23,7 @@ from send_money.utils import (
 logger = logging.getLogger('mtp')
 
 
-class SendMoneyForm(GARequestErrorReportingMixin, forms.Form):
+class SendMoneyForm(forms.Form):
 
     @classmethod
     def unserialise_from_session(cls, request):
@@ -109,10 +108,6 @@ class PrisonerDetailsForm(SendMoneyForm):
     shared_api_session = None
 
     @classmethod
-    def get_prison_set(cls):
-        return set()
-
-    @classmethod
     def get_api_session(cls, reconnect=False):
         with cls.shared_api_session_lock:
             if reconnect or not cls.shared_api_session:
@@ -151,14 +146,7 @@ class PrisonerDetailsForm(SendMoneyForm):
         prisoner_number = self.cleaned_data['prisoner_number']
         prisoner_dob = serialise_date(self.cleaned_data['prisoner_dob'])
         try:
-            filters = {
-                'prisoner_number': prisoner_number,
-                'prisoner_dob': prisoner_dob,
-            }
-            prison_set = self.get_prison_set()
-            if prison_set:
-                filters['prisons'] = ','.join(sorted(prison_set))
-            prisoners = self.lookup_prisoner(**filters)
+            prisoners = self.lookup_prisoner(prisoner_number=prisoner_number, prisoner_dob=prisoner_dob)
             assert prisoners['count'] == len(prisoners['results']) == 1
             prisoner = prisoners['results'][0]
             return prisoner and prisoner['prisoner_number'] == prisoner_number \
@@ -184,10 +172,6 @@ class DebitCardPrisonerDetailsForm(PrisonerDetailsForm):
         max_length=250,
         validators=[RejectCardNumberValidator()],
     )
-
-    @classmethod
-    def get_prison_set(cls):
-        return set(filter(None, settings.DEBIT_CARD_PRISONS.split(',')))
 
 
 class MaxAmountValidator(MaxValueValidator):

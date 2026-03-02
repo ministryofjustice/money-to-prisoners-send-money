@@ -5,7 +5,7 @@
 {# copy of govuk-frontend/components/error-summary.html from mtp-common including additional content #}
 
 {% if form.errors %}
-  <div class="govuk-error-summary" aria-labelledby="error-summary-heading" role="alert" tabindex="-1" data-module="govuk-error-summary">
+  <div class="govuk-error-summary" aria-labelledby="error-summary-heading" role="alert" data-module="govuk-error-summary">
     <h2 class="govuk-error-summary__title" id="error-summary-heading">
       {{ form.error_summary_title|default:_('There was a problem') }}
     </h2>

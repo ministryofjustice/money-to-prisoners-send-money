@@ -7,12 +7,12 @@ from mtp_common.analytics import AnalyticsPolicy
 def analytics(request):
     return {
         'actioned_cookie_prompt': AnalyticsPolicy.cookie_name in request.COOKIES,
-        'GOOGLE_ANALYTICS_GDS_ID': settings.GOOGLE_ANALYTICS_GDS_ID,
     }
 
 
 def links(_):
     return {
+        'service_name': gettext('Send money to someone in prison'),
         'site_url': settings.START_PAGE_URL,
         'support_links': [
             {

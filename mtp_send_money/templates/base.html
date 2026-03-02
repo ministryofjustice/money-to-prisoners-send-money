@@ -5,45 +5,48 @@
 
 {% block cookie_message %}
   {% if not actioned_cookie_prompt %}
-    <aside class="govuk-width-container mtp-cookie-prompt">
-      <p>
-        {% trans 'This service uses cookies which are essential for the site to work.' %}
-        {% trans 'We also use non-essential cookies to help us improve your experience.' %}
-      </p>
-      <p>
-        {% trans 'Do you accept these non-essential cookies?' %}
-      </p>
-      <form action="{% url 'cookies' %}" method="post">
-        {% csrf_token %}
-        <input type="hidden" name="next" value="{{ request.get_full_path }}" />
-        <div class="govuk-button-group">
-          <button class="govuk-button" data-module="govuk-button" type="submit" name="accept_cookies" value="yes">{% trans 'Accept cookies' %}</button>
-          <button class="govuk-button" data-module="govuk-button" type="submit" name="accept_cookies" value="no">{% trans 'Reject cookies' %}</button>
-          <a class="govuk-link" href="{% url 'cookies' %}">{% trans 'View more information' %}</a>
+    <div class="govuk-cookie-banner" data-nosnippet role="region" aria-label="{% trans 'Cookies on ‘Send money to someone in prison’' %}">
+      <div class="govuk-cookie-banner__message govuk-width-container">
+
+        <div class="govuk-grid-row">
+          <div class="govuk-grid-column-two-thirds">
+            <h2 class="govuk-cookie-banner__heading govuk-heading-m">
+              {% trans 'Cookies on ‘Send money to someone in prison’' %}
+            </h2>
+
+            <div class="govuk-cookie-banner__content">
+              <p>
+                {% trans 'This service uses cookies which are essential for the site to work.' %}
+                {% trans 'We also use non-essential cookies to help us improve your experience.' %}
+              </p>
+              <p>
+                {% trans 'Do you accept these non-essential cookies?' %}
+              </p>
+            </div>
+          </div>
         </div>
-      </form>
-    </aside>
+
+        <form action="{% url 'cookies' %}" method="post">
+          {% csrf_token %}
+          <input type="hidden" name="next" value="{{ request.get_full_path }}" />
+          <div class="govuk-button-group">
+            <button class="govuk-button" data-module="govuk-button" type="submit" name="accept_cookies" value="yes">{% trans 'Accept cookies' %}</button>
+            <button class="govuk-button" data-module="govuk-button" type="submit" name="accept_cookies" value="no">{% trans 'Reject cookies' %}</button>
+            <a class="govuk-link" href="{% url 'cookies' %}">{% trans 'View more information' %}</a>
+          </div>
+        </form>
+
+      </div>
+    </div>
   {% endif %}
 {% endblock %}
 
-
-{% block google_analytics_end %}
-  {% if GOOGLE_ANALYTICS_GDS_ID %}
-    ga('create', '{{ GOOGLE_ANALYTICS_GDS_ID }}', 'auto', 'govuk_shared', {'allowLinker': true});
-    ga('govuk_shared.require', 'linker');
-    ga('govuk_shared.set', 'anonymizeIp', true);
-    ga('govuk_shared.set', 'allowAdFeatures', false);
-    ga('govuk_shared.linker:autoLink', ['www.gov.uk']);
-    {% with default_ga_data=default_google_analytics_pageview %}
-    {% with ga_data=google_analytics_pageview|default:default_ga_data %}
-      {% for key, value in ga_data.items %}
-        {% if value %}ga('govuk_shared.set', '{{ key }}', '{{ value }}');{% endif %}
-      {% endfor %}
-    {% endwith %}
-    {% endwith %}
-    ga('govuk_shared.send', 'pageview');
-  {% endif %}
+{% block page_title %}{% trans 'Send money to someone in prison' %} – GOV.UK{% endblock %}
+{% block header %}
+  {{ block.super }}
+  {% include 'govuk-frontend/components/service-navigation.html' %}
 {% endblock %}
+
 
 {% block body_end %}
   <script src="{% url 'js-i18n' %}?{{ APP_GIT_COMMIT_SHORT }}"></script>
@@ -51,10 +54,6 @@
   {% sentry_js %}
   <!-- {{ request.resolver_match.url_name }} -->
 {% endblock %}
-
-
-{% block page_title %}{% trans 'Send money to someone in prison' %} – GOV.UK{% endblock %}
-{% block proposition %}{% trans 'Send money to someone in prison' %}{% endblock %}
 
 
 {% block phase_banner %}

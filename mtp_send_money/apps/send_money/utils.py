@@ -10,7 +10,7 @@ from django.utils import formats
 from django.utils.cache import patch_cache_control
 from django.utils.dateformat import format as format_date
 from django.utils.dateparse import parse_date
-from django.utils.encoding import force_text
+from django.utils.encoding import force_str
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import TemplateView
 from mtp_common.auth import api_client, urljoin
@@ -123,7 +123,7 @@ def serialise_amount(amount):
 
 
 def unserialise_amount(amount_text):
-    amount_text = force_text(amount_text)
+    amount_text = force_str(amount_text)
     return Decimal(amount_text)
 
 
@@ -132,7 +132,7 @@ def serialise_date(date):
 
 
 def unserialise_date(date_text):
-    date_text = force_text(date_text)
+    date_text = force_str(date_text)
     date = parse_date(date_text)
     if not date:
         raise ValueError('Invalid date')
@@ -140,7 +140,7 @@ def unserialise_date(date_text):
 
 
 def lenient_unserialise_date(date_text):
-    date_text = force_text(date_text)
+    date_text = force_str(date_text)
     date_formats = formats.get_format('DATE_INPUT_FORMATS')
     for date_format in date_formats:
         try:

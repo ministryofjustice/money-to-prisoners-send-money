@@ -129,19 +129,19 @@ msgid "Get a prisoner reference to use in a UK bank transfer"
 msgstr ""
 
 #: apps/send_money/templatetags/prisons.py:8
-msgid "Her Majesty’s Prison and Young Offender Institution"
+msgid "His Majesty’s Prison and Young Offender Institution"
 msgstr ""
 
 #: apps/send_money/templatetags/prisons.py:9
-msgid "Her Majesty’s Prison"
+msgid "His Majesty’s Prison"
 msgstr ""
 
 #: apps/send_money/templatetags/prisons.py:10
-msgid "Her Majesty’s Young Offender Institution and Remand Centre"
+msgid "His Majesty’s Young Offender Institution and Remand Centre"
 msgstr ""
 
 #: apps/send_money/templatetags/prisons.py:11
-msgid "Her Majesty’s Young Offender Institution"
+msgid "His Majesty’s Young Offender Institution"
 msgstr ""
 
 #: apps/send_money/templatetags/prisons.py:12
