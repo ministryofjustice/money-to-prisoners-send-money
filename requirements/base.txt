@@ -1,4 +1,4 @@
 # Dependencies needed for all environments
 
-money-to-prisoners-common~=21.2.1
+money-to-prisoners-common~=21.2.2
 
