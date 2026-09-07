@@ -300,12 +300,19 @@ class DebitCardConfirmationView(TemplateView):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.status = GovUkPaymentStatus.error
+        # True when we failed to determine the outcome (e.g. a timeout talking to GOV.UK Pay
+        # or the MTP API), as opposed to GOV.UK Pay telling us the payment definitely failed.
+        # These must not be shown the same "your payment could not be processed" message, since
+        # the payment may in fact have succeeded and the confirmation/capture is still pending.
+        self.outcome_uncertain = False
 
     def get_template_names(self):
         if self.status == GovUkPaymentStatus.success:
             return ['send_money/debit-card-confirmation.html']
         if self.status == GovUkPaymentStatus.capturable:
             return ['send_money/debit-card-on-hold.html']
+        if self.outcome_uncertain:
+            return ['send_money/debit-card-check-pending.html']
         return ['send_money/debit-card-error.html']
 
     def get(self, request, *args, **kwargs):
@@ -387,6 +394,7 @@ class DebitCardConfirmationView(TemplateView):
                 {'payment_ref': payment_ref},
             )
             self.status = GovUkPaymentStatus.error
+            self.outcome_uncertain = True
         except RequestException as error:
             response_content = get_requests_exception_for_logging(error)
             logger.exception(
@@ -394,12 +402,14 @@ class DebitCardConfirmationView(TemplateView):
                 {'payment_ref': payment_ref, 'response_content': response_content},
             )
             self.status = GovUkPaymentStatus.error
+            self.outcome_uncertain = True
         except GovUkPaymentStatusException:
             logger.exception(
                 'GOV.UK Pay returned unexpected status for ref %(payment_ref)s',
                 {'payment_ref': payment_ref},
             )
             self.status = GovUkPaymentStatus.error
+            self.outcome_uncertain = True
 
         response = super().get(request, *args, **kwargs)
         request.session.flush()

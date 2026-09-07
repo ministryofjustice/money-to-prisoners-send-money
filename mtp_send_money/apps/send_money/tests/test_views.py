@@ -925,7 +925,7 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
 
     def assertOnPaymentErrorPage(self, response, mock_send_email):  # noqa: N802
         """
-        An unexpected error occurred communicating with mtp-api, GOV.UK Pay or GOV.UK Pay returned an explicit error
+        GOV.UK Pay returned an explicit error/failure for the payment
         - payment error page presented with reference
         - no emails sent
         - session cleared
@@ -938,9 +938,28 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
         for key in self.complete_session_keys:
             self.assertNotIn(key, self.client.session)
 
+    def assertOnPaymentCheckPendingPage(self, response, mock_send_email):  # noqa: N802
+        """
+        We failed to determine the outcome of the payment (e.g. a timeout talking to mtp-api or
+        GOV.UK Pay) - since the payment may in fact have succeeded, this must NOT show the same
+        "your payment could not be processed" messaging as assertOnPaymentErrorPage, or a sender
+        who was really successful may be misled into paying again.
+        - check-pending page presented with reference, telling the sender not to retry yet
+        - no emails sent
+        - session cleared
+        """
+        self.assertContains(response, 'We could not confirm your payment')
+        self.assertContains(response, self.ref[:8].upper())
+
+        mock_send_email.assert_not_called()
+
+        for key in self.complete_session_keys:
+            self.assertNotIn(key, self.client.session)
+
     def test_handles_api_update_errors(self, mock_send_email):
         """
-        Test that if the MTP API call returns 500, the view shows a generic error page
+        Test that if the MTP API call returns 500, the view shows the check-pending page
+        (not the hard error page, since the payment's outcome is unknown, not confirmed failed)
         and no email is sent.
         """
         self.choose_debit_card_payment_method()
@@ -961,11 +980,12 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
                     follow=False,
                 )
 
-        self.assertOnPaymentErrorPage(response, mock_send_email)
+        self.assertOnPaymentCheckPendingPage(response, mock_send_email)
 
     def test_handles_govuk_errors(self, mock_send_email):
         """
-        Test that if the GOV.UK API call returns 500, the view shows a generic error page
+        Test that if the GOV.UK API call returns 500, the view shows the check-pending page
+        (not the hard error page, since the payment's outcome is unknown, not confirmed failed)
         and no email is sent.
         """
         self.choose_debit_card_payment_method()
@@ -992,7 +1012,7 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
                     follow=False,
                 )
 
-        self.assertOnPaymentErrorPage(response, mock_send_email)
+        self.assertOnPaymentCheckPendingPage(response, mock_send_email)
 
     def test_handles_missing_govuk_payment(self, mock_send_email):
         """
@@ -1027,8 +1047,9 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
 
     def test_handles_unexpected_govuk_response(self, mock_send_email):
         """
-        Test that if the GOV.UK API call returns unexpected status, the view shows a generic error page
-        and no email is sent.
+        Test that if the GOV.UK API call returns an unrecognised status, the view shows the
+        check-pending page (not the hard error page, since we don't actually know what an
+        unrecognised status means for the payment's outcome) and no email is sent.
         """
         self.choose_debit_card_payment_method()
         self.fill_in_prisoner_details()
@@ -1059,7 +1080,7 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
                     follow=True,
                 )
 
-        self.assertOnPaymentErrorPage(response, mock_send_email)
+        self.assertOnPaymentCheckPendingPage(response, mock_send_email)
 
     def test_handles_declined_card(self, mock_send_email):
         """
