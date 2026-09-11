@@ -74,8 +74,17 @@ msgid "This service is currently unavailable"
 msgstr "Nid yw'r gwasanaeth hwn ar gael ar hyn o bryd"
 
 #: apps/send_money/forms.py:93
-msgid "No prisoner matches the details you’ve supplied."
-msgstr "Nid oes carcharor sy'n cyfateb i'r manylion a roddwyd gennych."
+msgid "No prisoner matches the details you’ve supplied"
+msgstr "Nid oes carcharor sy'n cyfateb i'r manylion a roddwyd gennych"
+
+#: apps/send_money/forms.py:189
+#, python-format
+msgid "You’ve tried too many times. Wait %(minutes)d minute and try again"
+msgid_plural "You’ve tried too many times. Wait %(minutes)d minutes and try again"
+msgstr[0] ""
+msgstr[1] ""
+msgstr[2] ""
+msgstr[3] ""
 
 #: apps/send_money/forms.py:177
 msgid "Prisoner name"

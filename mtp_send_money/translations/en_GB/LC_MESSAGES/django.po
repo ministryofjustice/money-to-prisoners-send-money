@@ -74,8 +74,15 @@ msgid "This service is currently unavailable"
 msgstr ""
 
 #: apps/send_money/forms.py:93
-msgid "No prisoner matches the details you’ve supplied."
+msgid "No prisoner matches the details you’ve supplied"
 msgstr ""
+
+#: apps/send_money/forms.py:189
+#, python-format
+msgid "You’ve tried too many times. Wait %(minutes)d minute and try again"
+msgid_plural "You’ve tried too many times. Wait %(minutes)d minutes and try again"
+msgstr[0] ""
+msgstr[1] ""
 
 #: apps/send_money/forms.py:177
 msgid "Prisoner name"
