@@ -259,6 +259,139 @@ class DebitCardPrisonerDetailsTestCase(DebitCardFlowTestCase):
                 'prisoner_dob_2': '1980',
             }, follow=True)
 
+    prisoner_details_data = {
+        'prisoner_name': 'john smith',
+        'prisoner_number': 'A1231DE',
+        'prisoner_dob_0': '4',
+        'prisoner_dob_1': '10',
+        'prisoner_dob_2': '1980',
+    }
+    prisoner_validity_url = api_url('/prisoner_validity/') + '?prisoner_number=A1231DE&prisoner_dob=1980-10-04'
+
+    def mock_prisoner_validity(self, rsps, **kwargs):
+        kwargs.setdefault('json', {
+            'count': 1,
+            'results': [{'prisoner_number': 'A1231DE', 'prisoner_dob': '1980-10-04'}],
+        })
+        rsps.add(rsps.GET, self.prisoner_validity_url, match_querystring=True, **kwargs)
+
+    def prisoner_validity_calls(self, rsps):
+        return [call for call in rsps.calls if call.request.url.startswith(api_url('/prisoner_validity/'))]
+
+    @mock.patch('send_money.forms.PrisonerDetailsForm.get_api_session')
+    def test_forwards_sender_ip_to_api(self, mocked_api_session):
+        mocked_api_session.side_effect = get_api_session
+        self.choose_debit_card_payment_method()
+
+        with responses.RequestsMock() as rsps:
+            mock_auth(rsps)
+            self.mock_prisoner_validity(rsps)
+            # the last address is the one the ingress saw; earlier ones are client-supplied
+            self.client.post(self.url, data=self.prisoner_details_data,
+                             HTTP_X_FORWARDED_FOR='1.2.3.4, 203.0.113.5')
+            validity_calls = self.prisoner_validity_calls(rsps)
+        self.assertEqual(len(validity_calls), 1)
+        self.assertEqual(validity_calls[0].request.headers['X-Sender-IP'], '203.0.113.5')
+
+    @mock.patch('send_money.forms.PrisonerDetailsForm.get_api_session')
+    def test_does_not_send_sender_ip_header_when_unknown(self, mocked_api_session):
+        mocked_api_session.side_effect = get_api_session
+        self.choose_debit_card_payment_method()
+
+        with responses.RequestsMock() as rsps:
+            mock_auth(rsps)
+            self.mock_prisoner_validity(rsps)
+            self.client.post(self.url, data=self.prisoner_details_data)
+            validity_calls = self.prisoner_validity_calls(rsps)
+        self.assertNotIn('X-Sender-IP', validity_calls[0].request.headers)
+
+    @mock.patch('send_money.forms.PrisonerDetailsForm.get_api_session')
+    def test_later_pages_do_not_repeat_the_lookup(self, mocked_api_session):
+        mocked_api_session.side_effect = get_api_session
+        self.choose_debit_card_payment_method()
+
+        with responses.RequestsMock() as rsps, self.patch_prisoner_balance_check():
+            mock_auth(rsps)
+            self.mock_prisoner_validity(rsps)
+            response = self.client.post(self.url, data=self.prisoner_details_data, follow=True)
+            self.assertOnPage(response, 'send_money_debit')
+            self.assertEqual(self.client.session['prisoner_validated'], 'A1231DE|1980-10-04')
+
+            # every later page re-validates the details form from the session
+            response = self.client.get(DebitCardAmountTestCase.url)
+            self.assertOnPage(response, 'send_money_debit')
+            response = self.client.post(DebitCardAmountTestCase.url, data={'amount': '17'}, follow=True)
+            self.assertOnPage(response, 'check_details')
+            response = self.client.get(self.url)
+            self.assertOnPage(response, 'prisoner_details_debit')
+
+            self.assertEqual(len(self.prisoner_validity_calls(rsps)), 1)
+
+    @mock.patch('send_money.forms.PrisonerDetailsForm.get_api_session')
+    def test_changed_details_are_looked_up_again(self, mocked_api_session):
+        mocked_api_session.side_effect = get_api_session
+        self.choose_debit_card_payment_method()
+
+        with responses.RequestsMock() as rsps:
+            mock_auth(rsps)
+            self.mock_prisoner_validity(rsps)
+            self.client.post(self.url, data=self.prisoner_details_data, follow=True)
+            rsps.add(
+                rsps.GET,
+                api_url('/prisoner_validity/') + '?prisoner_number=A1231DE&prisoner_dob=1980-10-05',
+                match_querystring=True,
+                json={'count': 0, 'results': []},
+            )
+            response = self.client.post(self.url, data=dict(self.prisoner_details_data, prisoner_dob_0='5'))
+            self.assertContains(response, 'No prisoner matches the details')
+            self.assertEqual(len(self.prisoner_validity_calls(rsps)), 2)
+        # the earlier confirmation must not vouch for the new details
+        self.assertEqual(self.client.session['prisoner_validated'], 'A1231DE|1980-10-04')
+
+    @mock.patch('send_money.forms.PrisonerDetailsForm.get_api_session')
+    def test_displays_error_when_rate_limited(self, mocked_api_session):
+        mocked_api_session.side_effect = get_api_session
+        self.choose_debit_card_payment_method()
+
+        with responses.RequestsMock() as rsps:
+            mock_auth(rsps)
+            self.mock_prisoner_validity(
+                rsps,
+                status=429,
+                json={'errors': 'too_many_attempts', 'retry_after': 540},
+                headers={'Retry-After': '540'},
+            )
+            response = self.client.post(self.url, data=self.prisoner_details_data)
+        self.assertContains(response, 'You’ve tried too many times. Wait 9 minutes and try again')
+        self.assertNotContains(response, 'What to do:')
+        self.assertNotContains(response, 'No prisoner matches the details')
+        self.assertNotContains(response, 'This service is currently unavailable')
+        form = response.context['form']
+        self.assertEqual(form.non_field_errors().as_data()[0].code, 'too_many_attempts')
+        self.assertNotIn('prisoner_validated', self.client.session)
+
+    @mock.patch('send_money.forms.PrisonerDetailsForm.get_api_session')
+    def test_rate_limit_message_uses_singular_minute(self, mocked_api_session):
+        mocked_api_session.side_effect = get_api_session
+        self.choose_debit_card_payment_method()
+
+        with responses.RequestsMock() as rsps:
+            mock_auth(rsps)
+            self.mock_prisoner_validity(rsps, status=429, json={'errors': 'too_many_attempts', 'retry_after': 30})
+            response = self.client.post(self.url, data=self.prisoner_details_data)
+        self.assertContains(response, 'Wait 1 minute and try again')
+
+    @mock.patch('send_money.forms.PrisonerDetailsForm.get_api_session')
+    def test_other_client_errors_show_service_unavailable(self, mocked_api_session):
+        mocked_api_session.side_effect = get_api_session
+        self.choose_debit_card_payment_method()
+
+        with responses.RequestsMock() as rsps, silence_logger():
+            mock_auth(rsps)
+            self.mock_prisoner_validity(rsps, status=400, json={'errors': 'bad request'})
+            response = self.client.post(self.url, data=self.prisoner_details_data)
+        self.assertContains(response, 'This service is currently unavailable')
+
 
 @patch_notifications()
 @patch_gov_uk_pay_availability_check()

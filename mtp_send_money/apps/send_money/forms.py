@@ -1,14 +1,15 @@
 import datetime
 import decimal
 import logging
+import math
 import threading
 
 from django import forms
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator
-from django.utils.translation import gettext, gettext_lazy as _
-from mtp_common.auth.exceptions import HttpNotFoundError
+from django.utils.translation import gettext, gettext_lazy as _, ngettext
+from mtp_common.auth.exceptions import HttpClientError, HttpNotFoundError
 from mtp_common.forms.fields import SplitDateField
 from oauthlib.oauth2 import OAuth2Error, TokenExpiredError
 from requests.exceptions import RequestException
@@ -17,7 +18,7 @@ from send_money.models import PaymentMethodBankTransferDisabled
 from send_money.utils import (
     serialise_amount, unserialise_amount, serialise_date, unserialise_date,
     RejectCardNumberValidator, validate_prisoner_number,
-    get_api_session, check_payment_service_available,
+    get_api_session, get_client_ip, check_payment_service_available,
 )
 
 logger = logging.getLogger('mtp')
@@ -103,6 +104,9 @@ class PrisonerDetailsForm(SendMoneyForm):
         'connection': _('This service is currently unavailable'),
         'not_found': _('No prisoner matches the details you’ve supplied'),
     }
+    # session key recording which prisoner details have already been confirmed by the API,
+    # so that later pages in the journey do not repeat the lookup
+    validated_session_key = 'prisoner_validated'
 
     shared_api_session_lock = threading.RLock()
     shared_api_session = None
@@ -125,16 +129,21 @@ class PrisonerDetailsForm(SendMoneyForm):
         super().__init__(**kwargs)
 
     def lookup_prisoner(self, **filters):
+        # the API records each check against the sender's address and may limit repeated attempts
+        headers = {}
+        client_ip = get_client_ip(self.request)
+        if client_ip:
+            headers['X-Sender-IP'] = client_ip
         session = self.get_api_session()
         try:
-            return session.get('/prisoner_validity/', params=filters).json()
+            return session.get('/prisoner_validity/', params=filters, headers=headers).json()
         except TokenExpiredError:
             pass
         except RequestException as e:
             if getattr(e.response, 'status_code', None) != 401:
                 raise
         session = self.get_api_session(reconnect=True)
-        return session.get('/prisoner_validity/', params=filters).json()
+        return session.get('/prisoner_validity/', params=filters, headers=headers).json()
 
     def clean_prisoner_number(self):
         prisoner_number = self.cleaned_data.get('prisoner_number')
@@ -142,23 +151,57 @@ class PrisonerDetailsForm(SendMoneyForm):
             prisoner_number = prisoner_number.upper()
         return prisoner_number
 
+    def get_validated_marker(self):
+        return '%s|%s' % (self.cleaned_data['prisoner_number'], serialise_date(self.cleaned_data['prisoner_dob']))
+
+    def is_prisoner_already_validated(self):
+        session = getattr(self.request, 'session', None)
+        return session is not None and session.get(self.validated_session_key) == self.get_validated_marker()
+
+    def remember_prisoner_validated(self):
+        session = getattr(self.request, 'session', None)
+        if session is not None:
+            session[self.validated_session_key] = self.get_validated_marker()
+
     def is_prisoner_known(self):
+        if self.is_prisoner_already_validated():
+            return True
         prisoner_number = self.cleaned_data['prisoner_number']
         prisoner_dob = serialise_date(self.cleaned_data['prisoner_dob'])
         try:
             prisoners = self.lookup_prisoner(prisoner_number=prisoner_number, prisoner_dob=prisoner_dob)
             assert prisoners['count'] == len(prisoners['results']) == 1
             prisoner = prisoners['results'][0]
-            return prisoner and prisoner['prisoner_number'] == prisoner_number \
-                and prisoner['prisoner_dob'] == prisoner_dob
+            known = bool(prisoner and prisoner['prisoner_number'] == prisoner_number
+                         and prisoner['prisoner_dob'] == prisoner_dob)
         except (HttpNotFoundError, KeyError, IndexError, ValueError, AssertionError):
-            pass
-        return False
+            known = False
+        if known:
+            self.remember_prisoner_validated()
+        return known
+
+    def too_many_attempts_error(self, response):
+        try:
+            retry_after = int(response.json().get('retry_after') or response.headers.get('Retry-After'))
+        except (ValueError, TypeError, AttributeError):
+            retry_after = 60
+        minutes = max(math.ceil(retry_after / 60), 1)
+        message = ngettext(
+            'You’ve tried too many times. Wait %(minutes)d minute and try again',
+            'You’ve tried too many times. Wait %(minutes)d minutes and try again',
+            minutes,
+        )
+        return ValidationError(message, code='too_many_attempts', params={'minutes': minutes})
 
     def clean(self):
         try:
             if not self.errors and not self.is_prisoner_known():
                 raise ValidationError(self.error_messages['not_found'], code='not_found')
+        except HttpClientError as e:
+            if getattr(e.response, 'status_code', None) == 429:
+                raise self.too_many_attempts_error(e.response)
+            logger.exception('Could not look up prisoner validity')
+            raise ValidationError(self.error_messages['connection'], code='connection')
         except (RequestException, OAuth2Error):
             logger.exception('Could not look up prisoner validity')
             raise ValidationError(self.error_messages['connection'], code='connection')
