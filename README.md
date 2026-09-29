@@ -95,13 +95,16 @@ python_dependencies --common-path [path]
 
 Update translation files with `./run.py make_messages` – you need to do this every time any translatable text is updated.
 
-Requires [transifex cli tool](https://github.com/transifex/cli#installation) for synchronisation:
+**Do not pull translations from Transifex** (`./run.py translations --pull`). The Welsh translations were last
+synchronised with Transifex in 2017, so pulling replaces the Welsh file with that old text and loses every Welsh
+string added since, such as the prisoner check limit message (SMTPS-45).
 
-Pull updates from Transifex with `./run.py translations --pull`.
-You’ll need to update translation files afterwards and manually check that the merges occurred correctly.
+Welsh text is currently requested directly from a Welsh translator and added to
+`mtp_send_money/translations/cy/LC_MESSAGES/django.po` by hand. Edit only the entries that have changed, and check the
+file with `msgfmt -c` afterwards.
 
-Push latest English to Transifex with `./run.py translations --push`.
-NB: you should pull updates before pushing to merge correctly.
+The `translations` build task and `.tx/config` are left in place in case Transifex is used again; if it is, push the
+current Welsh file to Transifex before anyone pulls.
 
 ## Deploying
 
