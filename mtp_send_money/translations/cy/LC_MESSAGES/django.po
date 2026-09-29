@@ -79,8 +79,8 @@ msgstr "Nid oes carcharor sy'n cyfateb i'r manylion a roddwyd gennych"
 
 #: apps/send_money/forms.py:189
 #, python-format
-msgid "You’ve tried too many times. Wait %(minutes)d minute and try again"
-msgid_plural "You’ve tried too many times. Wait %(minutes)d minutes and try again"
+msgid "There have been too many attempts to enter these details. Wait %(minutes)d minute and try again."
+msgid_plural "There have been too many attempts to enter these details. Wait %(minutes)d minutes and try again."
 msgstr[0] ""
 msgstr[1] ""
 msgstr[2] ""

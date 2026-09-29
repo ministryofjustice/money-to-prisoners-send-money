@@ -187,8 +187,8 @@ class PrisonerDetailsForm(SendMoneyForm):
             retry_after = 60
         minutes = max(math.ceil(retry_after / 60), 1)
         message = ngettext(
-            'You’ve tried too many times. Wait %(minutes)d minute and try again',
-            'You’ve tried too many times. Wait %(minutes)d minutes and try again',
+            'There have been too many attempts to enter these details. Wait %(minutes)d minute and try again.',
+            'There have been too many attempts to enter these details. Wait %(minutes)d minutes and try again.',
             minutes,
         )
         return ValidationError(message, code='too_many_attempts', params={'minutes': minutes})
