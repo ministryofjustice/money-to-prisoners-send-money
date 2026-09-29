@@ -362,12 +362,30 @@ class DebitCardPrisonerDetailsTestCase(DebitCardFlowTestCase):
                 headers={'Retry-After': '540'},
             )
             response = self.client.post(self.url, data=self.prisoner_details_data)
-        self.assertContains(response, 'You’ve tried too many times. Wait 9 minutes and try again')
+        self.assertContains(response, 'There have been too many attempts to enter these details. '
+                                      'Wait 9 minutes and try again.')
         self.assertNotContains(response, 'What to do:')
         self.assertNotContains(response, 'No prisoner matches the details')
         self.assertNotContains(response, 'This service is currently unavailable')
         form = response.context['form']
         self.assertEqual(form.non_field_errors().as_data()[0].code, 'too_many_attempts')
+
+    @mock.patch('send_money.forms.PrisonerDetailsForm.get_api_session')
+    def test_rate_limited_error_uses_singular_for_last_minute(self, mocked_api_session):
+        mocked_api_session.side_effect = get_api_session
+        self.choose_debit_card_payment_method()
+
+        with responses.RequestsMock() as rsps:
+            mock_auth(rsps)
+            self.mock_prisoner_validity(
+                rsps,
+                status=429,
+                json={'errors': 'too_many_attempts', 'retry_after': 45},
+                headers={'Retry-After': '45'},
+            )
+            response = self.client.post(self.url, data=self.prisoner_details_data)
+        self.assertContains(response, 'There have been too many attempts to enter these details. '
+                                      'Wait 1 minute and try again.')
         self.assertNotIn('prisoner_validated', self.client.session)
 
     @mock.patch('send_money.forms.PrisonerDetailsForm.get_api_session')
