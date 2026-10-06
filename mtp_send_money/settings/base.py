@@ -228,6 +228,8 @@ if os.environ.get('SENTRY_DSN'):
     import sentry_sdk
     from sentry_sdk.integrations.django import DjangoIntegration
 
+    from send_money.sentry import scrub_prisoner_details
+
     sentry_sdk.init(
         dsn=os.environ['SENTRY_DSN'],
         integrations=[DjangoIntegration()],
@@ -235,6 +237,7 @@ if os.environ.get('SENTRY_DSN'):
         release=APP_GIT_COMMIT or 'unknown',
         send_default_pii=DEBUG,
         max_request_body_size='medium' if DEBUG else 'never',
+        before_send=scrub_prisoner_details,
     )
 
 TEST_RUNNER = 'mtp_common.test_utils.runner.TestRunner'
