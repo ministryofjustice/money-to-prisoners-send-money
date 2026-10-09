@@ -237,6 +237,8 @@ if os.environ.get('SENTRY_DSN'):
         release=APP_GIT_COMMIT or 'unknown',
         send_default_pii=DEBUG,
         max_request_body_size='medium' if DEBUG else 'never',
+        # local variables hold personal details that senders entered throughout the payment journey
+        include_local_variables=False,
         before_send=scrub_prisoner_details,
     )
 
