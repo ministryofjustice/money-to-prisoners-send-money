@@ -7,6 +7,7 @@ from unittest import mock
 from django.test import override_settings
 from django.test.testcases import SimpleTestCase
 from django.urls import reverse, reverse_lazy
+from mtp_common.logging import ELKFormatter
 from mtp_common.test_utils import silence_logger
 from requests import ConnectionError
 import responses
@@ -409,6 +410,30 @@ class DebitCardPrisonerDetailsTestCase(DebitCardFlowTestCase):
             self.mock_prisoner_validity(rsps, status=400, json={'errors': 'bad request'})
             response = self.client.post(self.url, data=self.prisoner_details_data)
         self.assertContains(response, 'This service is currently unavailable')
+
+    @mock.patch('send_money.forms.PrisonerDetailsForm.get_api_session')
+    def test_lookup_errors_do_not_log_prisoner_details(self, mocked_api_session):
+        mocked_api_session.side_effect = get_api_session
+        self.choose_debit_card_payment_method()
+
+        for mock_kwargs, expected_message in [
+            ({'status': 500, 'json': {}}, 'HttpServerError (status 500)'),
+            ({'status': 400, 'json': {}}, 'HttpClientError (status 400)'),
+            ({'json': None, 'body': ConnectionError(f'Max retries exceeded with url: {self.prisoner_validity_url}')},
+             'ConnectionError (status None)'),
+        ]:
+            with self.subTest(expected_message), responses.RequestsMock() as rsps, \
+                    self.assertLogs('mtp', level='ERROR') as logs:
+                mock_auth(rsps)
+                self.mock_prisoner_validity(rsps, **mock_kwargs)
+                response = self.client.post(self.url, data=self.prisoner_details_data)
+            self.assertContains(response, 'This service is currently unavailable')
+            # formatted as in deployed environments, which would include any traceback
+            log_lines = [ELKFormatter().format(record) for record in logs.records]
+            self.assertEqual(len(log_lines), 1)
+            self.assertIn(f'Could not look up prisoner validity: {expected_message}', log_lines[0])
+            self.assertNotIn('A1231DE', log_lines[0])
+            self.assertNotIn('1980-10-04', log_lines[0])
 
 
 @patch_notifications()
