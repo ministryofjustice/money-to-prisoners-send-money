@@ -28,6 +28,18 @@ def get_api_session():
     )
 
 
+def get_client_ip(request):
+    """
+    The address the ingress saw the request come from, i.e. the last entry in X-Forwarded-For.
+    Earlier entries are supplied by the client and cannot be trusted.
+    Only the forwarded header is used, so there is no address when running without a proxy.
+    """
+    if request is None:
+        return None
+    forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR', '')
+    return forwarded_for.rsplit(',', 1)[-1].strip() or None
+
+
 def check_payment_service_available():
     # service is deemed unavailable only if status is explicitly false, not if it cannot be determined
     try:

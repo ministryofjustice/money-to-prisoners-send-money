@@ -16,6 +16,7 @@ from send_money.exceptions import GovUkPaymentStatusException
 from send_money.models import PaymentMethodBankTransferEnabled as PaymentMethod
 from send_money.payments import is_active_payment, GovUkPaymentStatus, PaymentClient
 from send_money.utils import (
+    get_client_ip,
     get_link_by_rel,
     get_service_charge,
     site_url,
@@ -251,8 +252,7 @@ class DebitCardPaymentView(DebitCardFlow):
 
         amount_pence = int(amount_details['amount'] * 100)
         service_charge_pence = int(get_service_charge(amount_details['amount']) * 100)
-        user_ip = request.META.get('HTTP_X_FORWARDED_FOR', '')
-        user_ip = user_ip.split(',')[0].strip() or None
+        user_ip = get_client_ip(request)
 
         payment_ref = None
         failure_context = {

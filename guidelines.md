@@ -2,12 +2,11 @@
 
 ## Project Overview and Core Functions
 
-The Prisoner Money Send Money application is the public-facing site where family and friends can send money to someone in prison. It allows users to make payments using a debit card (via GOV.UK Pay) or get details for a bank transfer.
+The Prisoner Money Send Money application is the public-facing site where family and friends can send money to someone in prison. It allows users to make payments using a debit card (via GOV.UK Pay). Bank transfers are no longer offered.
 
 ### Core Functionalities
 - **Prisoner Lookup**: Validates prisoner details (number and date of birth) before allowing a payment.
 - **Debit Card Payments**: Integrates with GOV.UK Pay to facilitate secure online payments.
-- **Bank Transfer Information**: Provides users with the necessary details (account number, sort code, and reference) to make a bank transfer.
 - **Payment Tracking**: Monitors the status of card payments and handles successful, failed, or cancelled transactions.
 - **Service Availability Check**: Checks if the payment service is available before allowing users to start the process.
 - **Incomplete Payment Reconciliation**: Background tasks reconcile payments that were started but not finished (e.g., due to browser closure).
@@ -110,4 +109,5 @@ The application interacts with the `money-to-prisoners-api` using shared credent
   - Follow PEP8 and Django coding conventions.
   - Linting can be checked via `./run.py lint`.
 - **Docker**:
-  - A Docker environment is available for local testing that mirrors production: `./run.py local_docker`.
+  - `docker compose up` runs this app from your checkout with the database and API; add `--profile full` for the other apps.
+    See [Running locally with Docker](README.md#running-locally-with-docker).

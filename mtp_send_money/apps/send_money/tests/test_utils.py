@@ -4,6 +4,7 @@ from functools import partial
 import unittest
 
 from django.core.exceptions import ValidationError
+from django.test import RequestFactory
 from django.test.utils import override_settings
 from requests.exceptions import Timeout
 import responses
@@ -14,7 +15,7 @@ from send_money.utils import (
     format_percentage, currency_format, currency_format_pence,
     clamp_amount, get_service_charge, get_total_charge,
     RejectCardNumberValidator, validate_prisoner_number,
-    api_url, check_payment_service_available,
+    api_url, check_payment_service_available, get_client_ip,
 )
 
 
@@ -367,3 +368,28 @@ class PaymentServiceAvailabilityTestCase(unittest.TestCase):
             available, message_to_users = check_payment_service_available()
         self.assertFalse(available)
         self.assertEqual(message_to_users, 'Scheduled downtime')
+
+
+class ClientIPTestCase(unittest.TestCase):
+    def make_request(self, **headers):
+        return RequestFactory().get('/', **headers)
+
+    def test_single_forwarded_address(self):
+        request = self.make_request(HTTP_X_FORWARDED_FOR='203.0.113.5')
+        self.assertEqual(get_client_ip(request), '203.0.113.5')
+
+    def test_takes_last_forwarded_address_as_the_one_the_ingress_saw(self):
+        # earlier entries are supplied by the client and cannot be trusted
+        request = self.make_request(HTTP_X_FORWARDED_FOR='1.2.3.4, 203.0.113.5')
+        self.assertEqual(get_client_ip(request), '203.0.113.5')
+        request = self.make_request(HTTP_X_FORWARDED_FOR='1.2.3.4,203.0.113.5 ')
+        self.assertEqual(get_client_ip(request), '203.0.113.5')
+
+    def test_no_address_without_forwarded_header(self):
+        # REMOTE_ADDR is deliberately not used: it is only meaningful behind the ingress
+        self.assertIsNone(get_client_ip(self.make_request()))
+        self.assertIsNone(get_client_ip(self.make_request(HTTP_X_FORWARDED_FOR='')))
+        self.assertIsNone(get_client_ip(self.make_request(HTTP_X_FORWARDED_FOR=' , ')))
+
+    def test_no_request(self):
+        self.assertIsNone(get_client_ip(None))
