@@ -7,6 +7,7 @@ from unittest import mock
 from django.test import override_settings
 from django.test.testcases import SimpleTestCase
 from django.urls import reverse, reverse_lazy
+from mtp_common.logging import ELKFormatter
 from mtp_common.test_utils import silence_logger
 from requests import ConnectionError
 import responses
@@ -409,6 +410,30 @@ class DebitCardPrisonerDetailsTestCase(DebitCardFlowTestCase):
             self.mock_prisoner_validity(rsps, status=400, json={'errors': 'bad request'})
             response = self.client.post(self.url, data=self.prisoner_details_data)
         self.assertContains(response, 'This service is currently unavailable')
+
+    @mock.patch('send_money.forms.PrisonerDetailsForm.get_api_session')
+    def test_lookup_errors_do_not_log_prisoner_details(self, mocked_api_session):
+        mocked_api_session.side_effect = get_api_session
+        self.choose_debit_card_payment_method()
+
+        for mock_kwargs, expected_message in [
+            ({'status': 500, 'json': {}}, 'HttpServerError (status 500)'),
+            ({'status': 400, 'json': {}}, 'HttpClientError (status 400)'),
+            ({'json': None, 'body': ConnectionError(f'Max retries exceeded with url: {self.prisoner_validity_url}')},
+             'ConnectionError (status None)'),
+        ]:
+            with self.subTest(expected_message), responses.RequestsMock() as rsps, \
+                    self.assertLogs('mtp', level='ERROR') as logs:
+                mock_auth(rsps)
+                self.mock_prisoner_validity(rsps, **mock_kwargs)
+                response = self.client.post(self.url, data=self.prisoner_details_data)
+            self.assertContains(response, 'This service is currently unavailable')
+            # formatted as in deployed environments, which would include any traceback
+            log_lines = [ELKFormatter().format(record) for record in logs.records]
+            self.assertEqual(len(log_lines), 1)
+            self.assertIn(f'Could not look up prisoner validity: {expected_message}', log_lines[0])
+            self.assertNotIn('A1231DE', log_lines[0])
+            self.assertNotIn('1980-10-04', log_lines[0])
 
 
 @patch_notifications()
@@ -1076,7 +1101,7 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
 
     def assertOnPaymentErrorPage(self, response, mock_send_email):  # noqa: N802
         """
-        An unexpected error occurred communicating with mtp-api, GOV.UK Pay or GOV.UK Pay returned an explicit error
+        GOV.UK Pay returned an explicit error/failure for the payment
         - payment error page presented with reference
         - no emails sent
         - session cleared
@@ -1089,9 +1114,28 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
         for key in self.complete_session_keys:
             self.assertNotIn(key, self.client.session)
 
+    def assertOnPaymentCheckPendingPage(self, response, mock_send_email):  # noqa: N802
+        """
+        We failed to determine the outcome of the payment (e.g. a timeout talking to mtp-api or
+        GOV.UK Pay) - since the payment may in fact have succeeded, this must NOT show the same
+        "your payment could not be processed" messaging as assertOnPaymentErrorPage, or a sender
+        who was really successful may be misled into paying again.
+        - check-pending page presented with reference, telling the sender not to retry yet
+        - no emails sent
+        - session cleared
+        """
+        self.assertContains(response, 'We could not confirm your payment')
+        self.assertContains(response, self.ref[:8].upper())
+
+        mock_send_email.assert_not_called()
+
+        for key in self.complete_session_keys:
+            self.assertNotIn(key, self.client.session)
+
     def test_handles_api_update_errors(self, mock_send_email):
         """
-        Test that if the MTP API call returns 500, the view shows a generic error page
+        Test that if the MTP API call returns 500, the view shows the check-pending page
+        (not the hard error page, since the payment's outcome is unknown, not confirmed failed)
         and no email is sent.
         """
         self.choose_debit_card_payment_method()
@@ -1112,11 +1156,12 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
                     follow=False,
                 )
 
-        self.assertOnPaymentErrorPage(response, mock_send_email)
+        self.assertOnPaymentCheckPendingPage(response, mock_send_email)
 
     def test_handles_govuk_errors(self, mock_send_email):
         """
-        Test that if the GOV.UK API call returns 500, the view shows a generic error page
+        Test that if the GOV.UK API call returns 500, the view shows the check-pending page
+        (not the hard error page, since the payment's outcome is unknown, not confirmed failed)
         and no email is sent.
         """
         self.choose_debit_card_payment_method()
@@ -1143,7 +1188,7 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
                     follow=False,
                 )
 
-        self.assertOnPaymentErrorPage(response, mock_send_email)
+        self.assertOnPaymentCheckPendingPage(response, mock_send_email)
 
     def test_handles_missing_govuk_payment(self, mock_send_email):
         """
@@ -1178,8 +1223,9 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
 
     def test_handles_unexpected_govuk_response(self, mock_send_email):
         """
-        Test that if the GOV.UK API call returns unexpected status, the view shows a generic error page
-        and no email is sent.
+        Test that if the GOV.UK API call returns an unrecognised status, the view shows the
+        check-pending page (not the hard error page, since we don't actually know what an
+        unrecognised status means for the payment's outcome) and no email is sent.
         """
         self.choose_debit_card_payment_method()
         self.fill_in_prisoner_details()
@@ -1210,7 +1256,7 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
                     follow=True,
                 )
 
-        self.assertOnPaymentErrorPage(response, mock_send_email)
+        self.assertOnPaymentCheckPendingPage(response, mock_send_email)
 
     def test_handles_declined_card(self, mock_send_email):
         """

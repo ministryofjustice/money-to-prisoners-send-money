@@ -193,6 +193,12 @@ class PrisonerDetailsForm(SendMoneyForm):
         )
         return ValidationError(message, code='too_many_attempts', params={'minutes': minutes})
 
+    def log_lookup_error(self, error):
+        # not logged with the exception: its message includes the api address,
+        # whose query string holds the prisoner number and date of birth
+        status_code = getattr(getattr(error, 'response', None), 'status_code', None)
+        logger.error('Could not look up prisoner validity: %s (status %s)', type(error).__name__, status_code)
+
     def clean(self):
         try:
             if not self.errors and not self.is_prisoner_known():
@@ -200,10 +206,10 @@ class PrisonerDetailsForm(SendMoneyForm):
         except HttpClientError as e:
             if getattr(e.response, 'status_code', None) == 429:
                 raise self.too_many_attempts_error(e.response)
-            logger.exception('Could not look up prisoner validity')
+            self.log_lookup_error(e)
             raise ValidationError(self.error_messages['connection'], code='connection')
-        except (RequestException, OAuth2Error):
-            logger.exception('Could not look up prisoner validity')
+        except (RequestException, OAuth2Error) as e:
+            self.log_lookup_error(e)
             raise ValidationError(self.error_messages['connection'], code='connection')
         return self.cleaned_data
 
