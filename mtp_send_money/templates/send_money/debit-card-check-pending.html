@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block page_title %}{% trans 'We could not confirm your payment' %} – {{ block.super }}{% endblock %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+
+      <header>
+        <h1 class="govuk-heading-xl">{% trans 'We could not confirm your payment' %}</h1>
+      </header>
+
+      <p>
+        {% trans 'We had a technical problem checking the result of your payment. This does not mean it has failed, it may have been successful.' %}
+      </p>
+
+      <p>
+        {% trans '<strong>Please do not make another payment for the same prisoner yet.</strong> Check your bank statement, or wait for our email confirming what happened, before trying again.' %}
+      </p>
+
+      <p>
+        {% blocktrans trimmed %}
+          Your reference number is <strong>{{ short_payment_ref }}</strong>
+        {% endblocktrans %}
+      </p>
+
+    </div>
+  </div>
+{% endblock %}
