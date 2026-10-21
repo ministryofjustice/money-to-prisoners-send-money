@@ -128,11 +128,7 @@
       See the <a href="{{ url }}">terms &amp; conditions</a> attached to this service.
     {% endblocktrans %}
   </li>
-  <li>
-    {% blocktrans trimmed with url='https://www.justice.gov.uk/about/hmps/contracted-out' %}
-      Selected individuals employed in <a href="{{ url }}">contracted-out prisons</a>.
-    {% endblocktrans %}
-  </li>
+  <li>{% trans 'Selected individuals employed in contracted-out prisons.' %}</li>
 </ul>
 
 <p>
@@ -155,7 +151,7 @@
 <h3 class="govuk-heading-s">{% trans 'Retention period for information collected' %}</h3>
 
 <p>
-  {% blocktrans trimmed with url='https://www.justice.gov.uk/downloads/offenders/psipso/psi-2018/psi-04-2018-records-information-management-retention-policy.pdf' %}
+  {% blocktrans trimmed with url='https://assets.publishing.service.gov.uk/media/69df6e5753469bbcdf408ea2/hmpps-information-management-policy-framework.pdf' %}
     Data is retained for seven years in accordance with HM Prison and Probation Service <a href="{{ url }}">retention policy</a>.
   {% endblocktrans %}
 </p>
