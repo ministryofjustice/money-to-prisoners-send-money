@@ -264,11 +264,6 @@ OAUTHLIB_INSECURE_TRANSPORT = True
 NOMS_HOLDING_ACCOUNT_NUMBER = os.environ.get('NOMS_HOLDING_ACCOUNT_NUMBER', '########')
 NOMS_HOLDING_ACCOUNT_SORT_CODE = os.environ.get('NOMS_HOLDING_ACCOUNT_SORT_CODE', '##-##-##')
 
-# 0 to disable delayed capture
-# 100 to enable delayed capture for all payments
-# x to enable delayed capture for x% payments
-PAYMENT_DELAYED_CAPTURE_ROLLOUT_PERCENTAGE = os.environ.get('PAYMENT_DELAYED_CAPTURE_ROLLOUT_PERCENTAGE', '0')
-
 CHECK_INCOMPLETE_PAYMENT_DELAY = int(  # in minutes
     os.environ.get('CHECK_INCOMPLETE_PAYMENT_DELAY', 30),
 )

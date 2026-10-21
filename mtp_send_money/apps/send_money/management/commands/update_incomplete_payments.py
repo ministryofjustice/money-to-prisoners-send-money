@@ -11,7 +11,6 @@ from requests.exceptions import RequestException
 from send_money.exceptions import GovUkPaymentStatusException
 from send_money.payments import GovUkPaymentStatus, PaymentClient
 from send_money.utils import get_requests_exception_for_logging
-from send_money.views import get_payment_delayed_capture_rollout_percentage
 
 logger = logging.getLogger('mtp')
 
@@ -42,10 +41,6 @@ class Command(BaseCommand):
 
         Used to limit the amount of API calls to GOV.UK Pay endpoints.
         """
-        # if delayed capture hasn't been released yet => always check
-        if not get_payment_delayed_capture_rollout_percentage():
-            return True
-
         creation_date = parse_datetime(payment['created'])
         security_check = payment.get('security_check')
         is_old = creation_date < (timezone.now() - ALWAYS_CHECK_IF_OLDER_THAN)
