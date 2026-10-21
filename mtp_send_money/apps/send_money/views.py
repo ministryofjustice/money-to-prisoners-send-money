@@ -1,6 +1,5 @@
 import decimal
 import logging
-import random
 
 from django.conf import settings
 from django.http import HttpResponseBadRequest
@@ -38,45 +37,6 @@ def clear_session_view(request):
     """
     request.session.flush()
     return redirect(build_view_url(request, UserAgreementView.url_name))
-
-
-def get_payment_delayed_capture_rollout_percentage():
-    """
-    TODO: remove following delayed capture release
-    """
-    try:
-        rollout_perc = int(settings.PAYMENT_DELAYED_CAPTURE_ROLLOUT_PERCENTAGE)
-        if rollout_perc < 0 or rollout_perc > 100:
-            raise ValueError()
-    except ValueError:
-        logger.error(
-            'PAYMENT_DELAYED_CAPTURE_ROLLOUT_PERCENTAGE should be a number between 0 and 100, '
-            f'found {settings.PAYMENT_DELAYED_CAPTURE_ROLLOUT_PERCENTAGE} instead. '
-            'Disabling delayed capture for now.'
-        )
-        rollout_perc = 0
-    return rollout_perc
-
-
-def should_be_capture_delayed():
-    """
-    Util function to roll out delayed payment capture gradually in order to limit damage caused by unknown problems.
-    Returns True if the payment should be created with delayed_capture == True with a chance in
-    percentage equal to settings.PAYMENT_DELAYED_CAPTURE_ROLLOUT_PERCENTAGE.
-
-    TODO remove (and always delay) or allow just an on/off value when happy and confident that things are
-    working fine.
-    """
-    rollout_perc = get_payment_delayed_capture_rollout_percentage()
-
-    if rollout_perc == 0:
-        return False
-
-    if rollout_perc == 100:
-        return True
-
-    chance = random.randint(1, 100)
-    return chance <= rollout_perc
 
 
 class SendMoneyView(View):
@@ -272,7 +232,7 @@ class DebitCardPaymentView(DebitCardFlow):
             failure_context['short_payment_ref'] = payment_ref[:8]
 
             new_govuk_payment = {
-                'delayed_capture': should_be_capture_delayed(),
+                'delayed_capture': True,
                 'amount': amount_pence + service_charge_pence,
                 'reference': payment_ref,
                 'description': gettext('To this prisoner: %(prisoner_number)s' % prisoner_details),

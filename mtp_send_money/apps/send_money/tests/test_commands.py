@@ -9,7 +9,7 @@ import responses
 
 from send_money.tests import mock_auth
 from send_money.utils import api_url, govuk_url
-from send_money.management.commands.update_incomplete_payments import ALWAYS_CHECK_IF_OLDER_THAN
+from send_money.management.commands.update_incomplete_payments import ALWAYS_CHECK_IF_OLDER_THAN, Command
 
 
 PAYMENT_DATA = {
@@ -532,7 +532,24 @@ class UpdateIncompletePaymentsTestCase(SimpleTestCase):
             # double-check that no more emails were sent
             self.assertEqual(len(mock_send_email.call_args_list), 5)
 
-    @override_settings(PAYMENT_DELAYED_CAPTURE_ROLLOUT_PERCENTAGE='100')
+    def test_should_be_checked(self):
+        now = datetime.now(timezone.utc)
+        command = Command()
+        cases = (
+            (timedelta(hours=1), {'status': 'pending'}, False),
+            (ALWAYS_CHECK_IF_OLDER_THAN + timedelta(hours=1), {'status': 'pending'}, True),
+            (timedelta(hours=1), None, True),
+            (timedelta(hours=1), {'status': 'accepted'}, True),
+            (timedelta(hours=1), {'status': 'rejected'}, True),
+        )
+        for age, security_check, expected in cases:
+            with self.subTest(age=age, security_check=security_check):
+                payment = {
+                    'created': (now - age).isoformat(),
+                    'security_check': security_check,
+                }
+                self.assertIs(command.should_be_checked(payment), expected)
+
     @mock.patch('send_money.mail.send_email')
     def test_skip_payments(self, mock_send_email):
         """
