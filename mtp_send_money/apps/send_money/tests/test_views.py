@@ -1254,6 +1254,46 @@ class DebitCardConfirmationTestCase(DebitCardFlowTestCase):
 
         self.assertOnPaymentCheckPendingPage(response, mock_send_email)
 
+    def test_handles_unfinished_govuk_payment(self, mock_send_email):
+        """
+        Test that if GOV.UK Pay has not finished processing the payment, the view shows the
+        check-pending page (not the hard error page, since the payment may still succeed and be
+        completed later by update_incomplete_payments) and no email is sent.
+        """
+        for govuk_status in ('created', 'started', 'submitted'):
+            with self.subTest(govuk_status=govuk_status):
+                self.choose_debit_card_payment_method()
+                self.fill_in_prisoner_details()
+                self.fill_in_amount()
+
+                with responses.RequestsMock() as rsps:
+                    mock_auth(rsps)
+                    rsps.add(
+                        rsps.GET,
+                        api_url(f'/payments/{self.ref}/'),
+                        json=self.payment_data,
+                        status=200,
+                    )
+                    rsps.add(
+                        rsps.GET,
+                        govuk_url(f'/payments/{self.processor_id}/'),
+                        json={
+                            'reference': self.ref,
+                            'state': {'status': govuk_status, 'finished': False},
+                            'email': 'sender@outside.local',
+                        },
+                        status=200
+                    )
+                    with self.patch_prisoner_details_check(), self.patch_prisoner_balance_check():
+                        response = self.client.get(
+                            self.url,
+                            {'payment_ref': self.ref},
+                            follow=True,
+                        )
+
+                self.assertOnPaymentCheckPendingPage(response, mock_send_email)
+                self.assertNotContains(response, 'No money has been taken')
+
     def test_handles_declined_card(self, mock_send_email):
         """
         Test that if the GOV.UK payment is in status 'failed' (P0010 e.g. because the card has insufficient funds),

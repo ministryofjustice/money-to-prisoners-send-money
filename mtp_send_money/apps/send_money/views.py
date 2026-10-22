@@ -342,8 +342,14 @@ class DebitCardConfirmationView(TemplateView):
                 # here status can be either created, started, submitted, capturable, success, error
                 # or None
 
-                # treat statuses created, started, submitted or None as error as they should have never got here
-                if not self.status or self.status.is_awaiting_user_input():
+                # GOV.UK Pay has not finished with the payment (created, started or submitted), so it may
+                # still succeed and be completed later by update_incomplete_payments
+                if self.status and self.status.is_awaiting_user_input():
+                    self.status = GovUkPaymentStatus.error
+                    self.outcome_uncertain = True
+
+                # GOV.UK Pay has no record of the payment (None), so it cannot succeed
+                if not self.status:
                     self.status = GovUkPaymentStatus.error
 
                 # here status can be either capturable, success, error
