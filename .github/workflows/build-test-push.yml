@@ -169,3 +169,52 @@ jobs:
           IMAGE=${GHCR_PACKAGE}:${VERSION}
           kubectl patch configmap app-versions --patch "{\"data\": {\"send-money\": \"${VERSION}\"}}"
           kubectl patch deployment send-money --type strategic --patch "{\"metadata\": {\"annotations\": {\"kubernetes.io/change-cause\": \"${VERSION}\"}}, \"spec\": {\"template\": {\"spec\": {\"containers\": [{\"name\": \"app\", \"image\": \"${IMAGE}\"}], \"initContainers\": [{\"name\": \"copy-static\", \"image\": \"${IMAGE}\"}]}}}}"
+
+  deploy-parity:
+    name: Deploy to parity
+    needs: merge-and-deploy
+    if: ${{ github.ref_name == 'main' && vars.GHA_DEPLOY_ENABLED == 'true' && vars.PARITY_DEPLOY_ENABLED == 'true' }}
+    runs-on: ubuntu-latest
+    environment: parity
+    # never run two parity deploys of the same app at once; the later one wins
+    concurrency:
+      group: deploy-parity
+      cancel-in-progress: false
+    steps:
+      - name: Compute image tags
+        id: tags
+        run: |
+          branch_lc=$(echo "${GITHUB_REF_NAME}" | tr '[:upper:]' '[:lower:]')
+          version=${branch_lc}.${GITHUB_SHA::7}
+          ghcr_package=ghcr.io/${{ github.repository_owner }}/money-to-prisoners-send-money
+          echo "version=${version}"           >> "$GITHUB_OUTPUT"
+          echo "ghcr_package=${ghcr_package}" >> "$GITHUB_OUTPUT"
+
+      - name: Install kubectl
+        uses: azure/setup-kubectl@v5
+        with:
+          version: v1.32.9
+
+      - name: Deploy to parity
+        env:
+          VERSION: ${{ steps.tags.outputs.version }}
+          GHCR_PACKAGE: ${{ steps.tags.outputs.ghcr_package }}
+          KUBE_CERT: ${{ secrets.KUBE_CERT }}
+          KUBE_CLUSTER: ${{ secrets.KUBE_CLUSTER }}
+          KUBE_NAMESPACE: ${{ secrets.KUBE_NAMESPACE }}
+          KUBE_TOKEN: ${{ secrets.KUBE_TOKEN }}
+        run: |
+          if [[ -z "${VERSION}" || -z "${GHCR_PACKAGE}" || -z "${KUBE_CERT}" || -z "${KUBE_CLUSTER}" || -z "${KUBE_NAMESPACE}" || -z "${KUBE_TOKEN}" ]]; then
+            echo "::error::Image version, package, or parity Kubernetes credentials are missing."
+            exit 1
+          fi
+          echo "Deploying to parity"
+          echo "${KUBE_CERT}" > /tmp/mtp-k8s-ca.crt
+          kubectl config set-cluster parity --certificate-authority=/tmp/mtp-k8s-ca.crt --server="https://${KUBE_CLUSTER}"
+          kubectl config set-credentials github-actions --token="${KUBE_TOKEN}"
+          kubectl config set-context parity --cluster=parity --user=github-actions --namespace="${KUBE_NAMESPACE}"
+          kubectl config use-context parity
+          IMAGE=${GHCR_PACKAGE}:${VERSION}
+          kubectl patch configmap app-versions --patch "{\"data\": {\"send-money\": \"${VERSION}\"}}"
+          kubectl patch deployment send-money --type strategic --patch "{\"metadata\": {\"annotations\": {\"kubernetes.io/change-cause\": \"${VERSION}\"}}, \"spec\": {\"template\": {\"spec\": {\"containers\": [{\"name\": \"app\", \"image\": \"${IMAGE}\"}], \"initContainers\": [{\"name\": \"copy-static\", \"image\": \"${IMAGE}\"}]}}}}"
+          kubectl rollout status deployment/send-money --timeout=10m
